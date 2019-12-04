@@ -1,5 +1,46 @@
 info:
   contact: {}
   license: {}
-paths: {}
+paths:
+  /api/v1/rooms:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 获取聊天室
+    post:
+      parameters:
+      - description: RoomName
+        in: query
+        name: room_name
+        required: true
+        type: string
+      - description: RoomDesc
+        in: query
+        name: room_desc
+        type: string
+      - description: RoomType
+        in: query
+        name: room_type
+        type: integer
+      - description: PeopleLimit
+        in: query
+        name: people_limit
+        type: integer
+      - description: CreatedAt
+        in: query
+        name: created_at
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 新增聊天室
 swagger: "2.0"
