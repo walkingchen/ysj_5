@@ -4,5 +4,69 @@
         "contact": {},
         "license": {}
     },
-    "paths": {}
+    "paths": {
+        "/api/v1/rooms": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "获取聊天室",
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "新增聊天室",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "RoomName",
+                        "name": "room_name",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "RoomDesc",
+                        "name": "room_desc",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "RoomType",
+                        "name": "room_type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "PeopleLimit",
+                        "name": "people_limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "CreatedAt",
+                        "name": "created_at",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

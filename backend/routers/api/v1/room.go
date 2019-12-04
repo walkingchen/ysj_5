@@ -11,7 +11,10 @@ import (
 	"gitee.com/codingchan/ysj_5/backend/pkg/util"
 )
 
-//获取聊天室
+// @Summary 获取聊天室
+// @Produce  json
+// @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
+// @Router /api/v1/rooms [get]
 func GetRooms(c *gin.Context) {
 	maps := make(map[string]interface{})
 	data := make(map[string]interface{})
@@ -28,7 +31,15 @@ func GetRooms(c *gin.Context) {
 	})
 }
 
-//新增聊天室
+// @Summary 新增聊天室
+// @Produce  json
+// @Param room_name query string true "RoomName"
+// @Param room_desc query string false "RoomDesc"
+// @Param room_type query int false "RoomType"
+// @Param people_limit query int false "PeopleLimit"
+// @Param created_at query string false "CreatedAt"
+// @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
+// @Router /api/v1/rooms [post]
 func AddRoom(c *gin.Context) {
 }
 
