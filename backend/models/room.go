@@ -9,6 +9,10 @@ type Room struct {
 	PeopleLimit int `json:"people_limit"`
 }
 
+type RoomList struct {
+	Room []Room `json:"room"`
+}
+
 func GetRooms(pageNum int, pageSize int, maps interface {}) (rooms []Room) {
 	db.Where(maps).Offset(pageNum).Limit(pageSize).Find(&rooms)
 

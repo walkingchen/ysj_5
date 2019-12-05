@@ -14,3 +14,9 @@ func MarkErrors(errors []*validation.Error) {
 
 	return
 }
+
+type RoomAddReq struct {
+	RoomType int `json:"room_type"`
+	PeopleLimit int `json:"people_limit"`
+	RoomCount int `json:"room_count"`
+}

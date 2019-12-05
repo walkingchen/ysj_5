@@ -3,6 +3,21 @@ info:
   license: {}
 paths:
   /api/v1/rooms:
+    delete:
+      parameters:
+      - description: RoomId
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 删除聊天室
     get:
       produces:
       - application/json
@@ -14,6 +29,33 @@ paths:
       summary: 获取聊天室
     post:
       parameters:
+      - description: RoomType
+        in: query
+        name: room_type
+        type: integer
+      - description: PeopleLimit
+        in: query
+        name: people_limit
+        type: integer
+      - description: RoomCount
+        in: query
+        name: room_count
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 新增聊天室
+    put:
+      parameters:
+      - description: RoomId
+        in: query
+        name: id
+        required: true
+        type: string
       - description: RoomName
         in: query
         name: room_name
@@ -31,10 +73,6 @@ paths:
         in: query
         name: people_limit
         type: integer
-      - description: CreatedAt
-        in: query
-        name: created_at
-        type: string
       produces:
       - application/json
       responses:
@@ -42,5 +80,5 @@ paths:
           description: '{"code":200,"data":{},"msg":"ok"}'
           schema:
             type: string
-      summary: 新增聊天室
+      summary: 修改聊天室
 swagger: "2.0"

@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"gitee.com/codingchan/ysj_5/backend/models"
+	"gitee.com/codingchan/ysj_5/backend/pkg/app"
 	"gitee.com/codingchan/ysj_5/backend/pkg/e"
 	"gitee.com/codingchan/ysj_5/backend/pkg/setting"
 	"gitee.com/codingchan/ysj_5/backend/pkg/util"
@@ -33,20 +34,41 @@ func GetRooms(c *gin.Context) {
 
 // @Summary 新增聊天室
 // @Produce  json
+// @Param room_type query int false "RoomType"
+// @Param people_limit query int false "PeopleLimit"
+// @Param room_count query int false "RoomCount"
+// @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
+// @Router /api/v1/rooms [post]
+func AddRoom(c *gin.Context) {
+	var req app.RoomAddReq
+	if err := c.BindJSON(&req); err != nil {
+		return
+	}
+
+	code := e.SUCCESS
+	c.JSON(http.StatusOK, gin.H{
+		"code" : code,
+		"msg" : e.GetMsg(code),
+		"data" : req,
+	})
+}
+
+// @Summary 修改聊天室
+// @Produce  json
+// @Param id query string true "RoomId"
 // @Param room_name query string true "RoomName"
 // @Param room_desc query string false "RoomDesc"
 // @Param room_type query int false "RoomType"
 // @Param people_limit query int false "PeopleLimit"
-// @Param created_at query string false "CreatedAt"
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
-// @Router /api/v1/rooms [post]
-func AddRoom(c *gin.Context) {
-}
-
-//修改聊天室
+// @Router /api/v1/rooms [put]
 func EditRoom(c *gin.Context) {
 }
 
-//删除聊天室
+// @Summary 删除聊天室
+// @Produce  json
+// @Param id query string true "RoomId"
+// @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
+// @Router /api/v1/rooms [delete]
 func DeleteRoom(c *gin.Context) {
 }
