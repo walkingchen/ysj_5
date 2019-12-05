@@ -20,12 +20,19 @@
                     }
                 }
             },
-            "post": {
+            "put": {
                 "produces": [
                     "application/json"
                 ],
-                "summary": "新增聊天室",
+                "summary": "修改聊天室",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "RoomId",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "RoomName",
@@ -50,12 +57,63 @@
                         "description": "PeopleLimit",
                         "name": "people_limit",
                         "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "新增聊天室",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "RoomType",
+                        "name": "room_type",
+                        "in": "query"
                     },
                     {
-                        "type": "string",
-                        "description": "CreatedAt",
-                        "name": "created_at",
+                        "type": "integer",
+                        "description": "PeopleLimit",
+                        "name": "people_limit",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "RoomCount",
+                        "name": "room_count",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "删除聊天室",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "RoomId",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {

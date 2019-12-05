@@ -8,8 +8,8 @@ import (
 
 	"gitee.com/codingchan/ysj_5/backend/models"
 	"gitee.com/codingchan/ysj_5/backend/pkg/e"
-	"gitee.com/codingchan/ysj_5/backend/pkg/util"
 	"gitee.com/codingchan/ysj_5/backend/pkg/logging"
+	"gitee.com/codingchan/ysj_5/backend/pkg/util"
 )
 
 type auth struct {
