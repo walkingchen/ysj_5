@@ -35,13 +35,16 @@ func ExistRoomByName(name string) bool {
 	return false
 }
 
-func AddRoom(roomName string, roomDesc string, roomType int, peopleLimit int) bool{
-	db.Create(&Room {
+func AddRoom(roomName string, roomDesc string, roomType int, peopleLimit int) (bool, error) {
+	room := Room {
 		RoomName: roomName,
 		RoomDesc: roomDesc,
 		RoomType: roomType,
 		PeopleLimit: peopleLimit,
-	})
+	}
+	if err := db.Create(&room).Error; err != nil {
+		return false, err
+	}
 
-	return true
+	return true, nil
 }

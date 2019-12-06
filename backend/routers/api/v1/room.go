@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"gitee.com/codingchan/ysj_5/backend/service/room_service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -42,6 +43,22 @@ func GetRooms(c *gin.Context) {
 func AddRoom(c *gin.Context) {
 	var req app.RoomAddReq
 	if err := c.BindJSON(&req); err != nil {
+		code := e.INVALID_PARAMS
+		c.JSON(http.StatusOK, gin.H{
+			"code" : code,
+			"msg" : e.GetMsg(code),
+			"data" : req,
+		})
+		return
+	}
+
+	if err := room_service.AddAll(req.RoomType, req.PeopleLimit, req.RoomCount); err != nil {
+		code := e.ERROR
+		c.JSON(http.StatusOK, gin.H{
+			"code" : code,
+			"msg" : e.GetMsg(code),
+			"data" : req,
+		})
 		return
 	}
 
