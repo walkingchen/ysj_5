@@ -6,10 +6,10 @@ import (
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
 
-	"gitee.com/codingchan/ysj_5/backend/models"
-	"gitee.com/codingchan/ysj_5/backend/pkg/e"
-	"gitee.com/codingchan/ysj_5/backend/pkg/logging"
-	"gitee.com/codingchan/ysj_5/backend/pkg/util"
+	"github.com/codingchan/ysj_5/backend/models"
+	"github.com/codingchan/ysj_5/backend/pkg/e"
+	"github.com/codingchan/ysj_5/backend/pkg/logging"
+	"github.com/codingchan/ysj_5/backend/pkg/util"
 )
 
 type auth struct {

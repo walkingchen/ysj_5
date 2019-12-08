@@ -3,7 +3,7 @@ package app
 import (
 	"github.com/astaxie/beego/validation"
 
-	"gitee.com/codingchan/ysj_5/backend/pkg/logging"
+	"github.com/codingchan/ysj_5/backend/pkg/logging"
 )
 
 // MarkErrors logs error logs

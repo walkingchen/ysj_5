@@ -1,7 +1,7 @@
 package room_service
 
 import (
-	"gitee.com/codingchan/ysj_5/backend/models"
+	"github.com/codingchan/ysj_5/backend/models"
 	"strconv"
 	"time"
 )
