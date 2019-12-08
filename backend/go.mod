@@ -1,4 +1,4 @@
-module gitee.com/codingchan/ysj_5/backend
+module github.com/codingchan/ysj_5/backend
 
 go 1.13
 
@@ -39,17 +39,17 @@ require (
 )
 
 replace (
-	gitee.com/codingchan/ysj_5/backend/conf => ./conf
-	gitee.com/codingchan/ysj_5/backend/docs => ./docs
-	gitee.com/codingchan/ysj_5/backend/middleware => ./middleware
-	gitee.com/codingchan/ysj_5/backend/middleware/jwt => ./middleware/jwt
-	gitee.com/codingchan/ysj_5/backend/models => ./models
-	gitee.com/codingchan/ysj_5/backend/pkg => ./pkg
-	gitee.com/codingchan/ysj_5/backend/pkg/e => ./pkg/e
-	gitee.com/codingchan/ysj_5/backend/pkg/logging => ./pkg/logging
-	gitee.com/codingchan/ysj_5/backend/pkg/setting => ./pkg/setting
-	gitee.com/codingchan/ysj_5/backend/pkg/util => ./pkg/util
-	gitee.com/codingchan/ysj_5/backend/routers => ./routers
-	gitee.com/codingchan/ysj_5/backend/routers/api => ./routers/api
-	gitee.com/codingchan/ysj_5/backend/runtime => ./runtime
+	github.com/codingchan/ysj_5/backend/conf => ./conf
+	github.com/codingchan/ysj_5/backend/docs => ./docs
+	github.com/codingchan/ysj_5/backend/middleware => ./middleware
+	github.com/codingchan/ysj_5/backend/middleware/jwt => ./middleware/jwt
+	github.com/codingchan/ysj_5/backend/models => ./models
+	github.com/codingchan/ysj_5/backend/pkg => ./pkg
+	github.com/codingchan/ysj_5/backend/pkg/e => ./pkg/e
+	github.com/codingchan/ysj_5/backend/pkg/logging => ./pkg/logging
+	github.com/codingchan/ysj_5/backend/pkg/setting => ./pkg/setting
+	github.com/codingchan/ysj_5/backend/pkg/util => ./pkg/util
+	github.com/codingchan/ysj_5/backend/routers => ./routers
+	github.com/codingchan/ysj_5/backend/routers/api => ./routers/api
+	github.com/codingchan/ysj_5/backend/runtime => ./runtime
 )

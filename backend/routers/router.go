@@ -5,10 +5,10 @@ import (
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 
-	_ "gitee.com/codingchan/ysj_5/backend/docs"
-	"gitee.com/codingchan/ysj_5/backend/pkg/setting"
-	"gitee.com/codingchan/ysj_5/backend/routers/api"
-	"gitee.com/codingchan/ysj_5/backend/routers/api/v1"
+	_ "github.com/codingchan/ysj_5/backend/docs"
+	"github.com/codingchan/ysj_5/backend/pkg/setting"
+	"github.com/codingchan/ysj_5/backend/routers/api"
+	"github.com/codingchan/ysj_5/backend/routers/api/v1"
 )
 
 func InitRouter() *gin.Engine {

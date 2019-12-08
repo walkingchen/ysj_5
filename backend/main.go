@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"gitee.com/codingchan/ysj_5/backend/pkg/setting"
-	"gitee.com/codingchan/ysj_5/backend/routers"
+	"github.com/codingchan/ysj_5/backend/pkg/setting"
+	"github.com/codingchan/ysj_5/backend/routers"
 )
 
 func main() {

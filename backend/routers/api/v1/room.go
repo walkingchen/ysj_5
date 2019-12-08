@@ -1,16 +1,16 @@
 package v1
 
 import (
-	"gitee.com/codingchan/ysj_5/backend/service/room_service"
+	"github.com/codingchan/ysj_5/backend/service/room_service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 
-	"gitee.com/codingchan/ysj_5/backend/models"
-	"gitee.com/codingchan/ysj_5/backend/pkg/app"
-	"gitee.com/codingchan/ysj_5/backend/pkg/e"
-	"gitee.com/codingchan/ysj_5/backend/pkg/setting"
-	"gitee.com/codingchan/ysj_5/backend/pkg/util"
+	"github.com/codingchan/ysj_5/backend/models"
+	"github.com/codingchan/ysj_5/backend/pkg/app"
+	"github.com/codingchan/ysj_5/backend/pkg/e"
+	"github.com/codingchan/ysj_5/backend/pkg/setting"
+	"github.com/codingchan/ysj_5/backend/pkg/util"
 )
 
 // @Summary 获取聊天室
