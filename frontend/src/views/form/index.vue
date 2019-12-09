@@ -19,23 +19,32 @@
         <el-button @click="onCancel">Cancel</el-button>
       </el-form-item>
     </el-form>
-    <el-table :data="roomList" border>
+    <el-table :data="roomList.slice((currentPage-1)*pageSize,currentPage*pageSize)" border>
       <el-table-column label="room ID" prop="id"></el-table-column>
-      <el-table-column label="room name" prop="room_name"></el-table-column>
+      <el-table-column label="room name" prop="room_name" show-overflow-tooltip></el-table-column>
       <el-table-column label="room type">
         <template slot-scope="scope">
           <span>{{ scope.row.room_type === 1 ? 'star' : 'net' }}</span>
         </template>
       </el-table-column>
       <el-table-column label="people limit" prop="people_limit"></el-table-column>
-      <el-table-column label="room desc" prop="room_desc"></el-table-column>
-      <el-table-column label="created time" prop="createdTime" :formatter="formatTime">
-      </el-table-column>
+      <el-table-column label="room desc" prop="room_desc" show-overflow-tooltip></el-table-column>
+      <el-table-column label="created time" prop="createdTime" :formatter="formatTime" show-overflow-tooltip></el-table-column>
+      <el-table-column label="updated time" prop="updatedAt" :formatter="formatTime" show-overflow-tooltip></el-table-column>
       <el-table-column label="operate">
         <el-button type="text">amend</el-button>
         <el-button type="text">delete</el-button>
       </el-table-column>
     </el-table>
+    <el-pagination
+      class="paging"
+      background
+      @current-change="handleCurrentChange"
+      :current-page="currentPage"
+      :page-size="pageSize"
+      layout="prev, pager, next"
+      :total="total">
+    </el-pagination>
   </div>
 </template>
 
@@ -51,25 +60,26 @@ export default {
         people_limit: null,
         room_count: null
       },
-      roomList: [{
-
-      }]
+      roomList: [],
+      total: null,
+      pageSize: 8,
+      currentPage: 1
     }
   },
-  created () {
+  created() {
     this.getRoomList()
   },
   methods: {
     onSubmit() {
       console.log(this.form)
       createChatRoom(this.form).then(res => {
-        if(res.code === 2000) {
+        if (res.code === 2000) {
           this.$message.success(res.msg)
           this.getRoomList()
           this.form.room_type = ''
           this.form.room_count = ''
           this.form.people_limit = ''
-        }else{
+        } else {
           this.$message.error(res.msg)
         }
       })
@@ -81,22 +91,29 @@ export default {
     },
     getRoomList() {
       getChatRoomList().then(res => {
-        if(res.code === 2000) {
+        if (res.code === 2000) {
           this.roomList = res.data.lists
-          console.log(this.roomList)
-        }else{
+          this.total = res.data.total
+        } else {
           this.$message.error(res.msg)
         }
       })
     },
     formatTime(row) {
       return parseTime(row.created_at)
+    },
+    handleCurrentChange(value) {
+      this.currentPage = value
     }
   }
 }
 </script>
 
 <style scoped>
+.paging{
+  float: right;
+  margin: 15px 5px;
+}
 .line{
   text-align: center;
 }
