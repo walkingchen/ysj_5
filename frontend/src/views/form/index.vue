@@ -19,7 +19,7 @@
         <el-button @click="onCancel">Cancel</el-button>
       </el-form-item>
     </el-form>
-    <el-table :data="roomList.slice((currentPage-1)*pageSize,currentPage*pageSize)" border>
+    <el-table :data="roomList.slice((currentPage-1)*pageSize,currentPage*pageSize)" v-loading="loading" border>
       <el-table-column label="room ID" prop="id"></el-table-column>
       <el-table-column label="room name" prop="room_name" show-overflow-tooltip></el-table-column>
       <el-table-column label="room type">
@@ -32,8 +32,10 @@
       <el-table-column label="created time" prop="createdTime" :formatter="formatTime" show-overflow-tooltip></el-table-column>
       <el-table-column label="updated time" prop="updatedAt" :formatter="formatTime" show-overflow-tooltip></el-table-column>
       <el-table-column label="operate">
-        <el-button type="text">amend</el-button>
-        <el-button type="text">delete</el-button>
+        <template slot-scope="scope">
+          <el-button type="text" @click="amendShow(scope.row.id)">amend</el-button>
+          <el-button type="text">delete</el-button>
+        </template>
       </el-table-column>
     </el-table>
     <el-pagination
@@ -45,16 +47,19 @@
       layout="prev, pager, next"
       :total="total">
     </el-pagination>
+    <d-amend ref="dam" @update="getRoomList"></d-amend>
   </div>
 </template>
 
 <script>
-import { createChatRoom, getChatRoomList } from '@/api/chatRoom.js'
+import { createChatRoom, getChatRoomList, amendChatRoom } from '@/api/chatRoom.js'
 import { parseTime } from '@/utils/index.js'
+import DAmend from './components/d-amend'
 
 export default {
   data() {
     return {
+      loading: false,
       form: {
         room_type: null,
         people_limit: null,
@@ -65,6 +70,9 @@ export default {
       pageSize: 8,
       currentPage: 1
     }
+  },
+  components: {
+    DAmend
   },
   created() {
     this.getRoomList()
@@ -90,14 +98,22 @@ export default {
       this.form.people_limit = ''
     },
     getRoomList() {
+      this.loading = true
       getChatRoomList().then(res => {
         if (res.code === 2000) {
+          this.loading = false
           this.roomList = res.data.lists
           this.total = res.data.total
         } else {
           this.$message.error(res.msg)
         }
       })
+    },
+    amendShow(id) {
+      this.$refs.dam._show(id)
+    },
+    amendDetail() {
+      amendChatRoom().then()
     },
     formatTime(row) {
       return parseTime(row.created_at)

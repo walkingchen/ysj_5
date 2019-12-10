@@ -11,3 +11,8 @@ export const createChatRoom = data => {
 export const getChatRoomList = () => {
   return axios.get('/api/v1/rooms').then(res => res.data)
 }
+
+// 修改聊天室信息
+export const amendChatRoom = data => {
+  return axios.put('/api/v1/rooms', data).then(res => res.data)
+}
