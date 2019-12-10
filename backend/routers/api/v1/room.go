@@ -34,9 +34,9 @@ func GetRooms(c *gin.Context) {
 
 // @Summary 新增聊天室
 // @Produce  json
-// @Param room_type query int false "RoomType"
-// @Param people_limit query int false "PeopleLimit"
-// @Param room_count query int false "RoomCount"
+// @Param room_type query int true "RoomType"
+// @Param people_limit query int true "PeopleLimit"
+// @Param room_count query int true "RoomCount"
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/rooms [post]
 func AddRoom(c *gin.Context) {
@@ -72,7 +72,7 @@ func AddRoom(c *gin.Context) {
 // @Summary 修改聊天室
 // @Produce  json
 // @Param id query string true "RoomId"
-// @Param room_name query string true "RoomName"
+// @Param room_name query string false "RoomName"
 // @Param room_desc query string false "RoomDesc"
 // @Param room_type query int false "RoomType"
 // @Param people_limit query int false "PeopleLimit"

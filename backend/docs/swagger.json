@@ -37,8 +37,7 @@
                         "type": "string",
                         "description": "RoomName",
                         "name": "room_name",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "string",
@@ -78,19 +77,22 @@
                         "type": "integer",
                         "description": "RoomType",
                         "name": "room_type",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
                         "description": "PeopleLimit",
                         "name": "people_limit",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
                         "description": "RoomCount",
                         "name": "room_count",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {

@@ -32,14 +32,17 @@ paths:
       - description: RoomType
         in: query
         name: room_type
+        required: true
         type: integer
       - description: PeopleLimit
         in: query
         name: people_limit
+        required: true
         type: integer
       - description: RoomCount
         in: query
         name: room_count
+        required: true
         type: integer
       produces:
       - application/json
@@ -59,7 +62,6 @@ paths:
       - description: RoomName
         in: query
         name: room_name
-        required: true
         type: string
       - description: RoomDesc
         in: query
