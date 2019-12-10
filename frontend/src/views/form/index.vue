@@ -19,57 +19,75 @@
         <el-button @click="onCancel">Cancel</el-button>
       </el-form-item>
     </el-form>
-    <el-table :data="roomList" border>
+    <el-table :data="roomList.slice((currentPage-1)*pageSize,currentPage*pageSize)" v-loading="loading" border>
       <el-table-column label="room ID" prop="id"></el-table-column>
-      <el-table-column label="room name" prop="room_name"></el-table-column>
+      <el-table-column label="room name" prop="room_name" show-overflow-tooltip></el-table-column>
       <el-table-column label="room type">
         <template slot-scope="scope">
           <span>{{ scope.row.room_type === 1 ? 'star' : 'net' }}</span>
         </template>
       </el-table-column>
       <el-table-column label="people limit" prop="people_limit"></el-table-column>
-      <el-table-column label="room desc" prop="room_desc"></el-table-column>
-      <el-table-column label="created time" prop="createdTime" :formatter="formatTime">
-      </el-table-column>
+      <el-table-column label="room desc" prop="room_desc" show-overflow-tooltip></el-table-column>
+      <el-table-column label="created time" prop="createdTime" :formatter="formatTime" show-overflow-tooltip></el-table-column>
+      <el-table-column label="updated time" prop="updatedAt" :formatter="formatTime" show-overflow-tooltip></el-table-column>
       <el-table-column label="operate">
-        <el-button type="text">amend</el-button>
-        <el-button type="text">delete</el-button>
+        <template slot-scope="scope">
+          <el-button type="text" @click="amendShow(scope.row.id)">amend</el-button>
+          <el-button type="text">delete</el-button>
+        </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      class="paging"
+      background
+      @current-change="handleCurrentChange"
+      :current-page="currentPage"
+      :page-size="pageSize"
+      layout="prev, pager, next"
+      :total="total">
+    </el-pagination>
+    <d-amend ref="dam" @update="getRoomList"></d-amend>
   </div>
 </template>
 
 <script>
-import { createChatRoom, getChatRoomList } from '@/api/chatRoom.js'
+import { createChatRoom, getChatRoomList, amendChatRoom } from '@/api/chatRoom.js'
 import { parseTime } from '@/utils/index.js'
+import DAmend from './components/d-amend'
 
 export default {
   data() {
     return {
+      loading: false,
       form: {
         room_type: null,
         people_limit: null,
         room_count: null
       },
-      roomList: [{
-
-      }]
+      roomList: [],
+      total: null,
+      pageSize: 8,
+      currentPage: 1
     }
   },
-  created () {
+  components: {
+    DAmend
+  },
+  created() {
     this.getRoomList()
   },
   methods: {
     onSubmit() {
       console.log(this.form)
       createChatRoom(this.form).then(res => {
-        if(res.code === 2000) {
+        if (res.code === 2000) {
           this.$message.success(res.msg)
           this.getRoomList()
           this.form.room_type = ''
           this.form.room_count = ''
           this.form.people_limit = ''
-        }else{
+        } else {
           this.$message.error(res.msg)
         }
       })
@@ -80,23 +98,38 @@ export default {
       this.form.people_limit = ''
     },
     getRoomList() {
+      this.loading = true
       getChatRoomList().then(res => {
-        if(res.code === 2000) {
+        if (res.code === 2000) {
+          this.loading = false
           this.roomList = res.data.lists
-          console.log(this.roomList)
-        }else{
+          this.total = res.data.total
+        } else {
           this.$message.error(res.msg)
         }
       })
     },
+    amendShow(id) {
+      this.$refs.dam._show(id)
+    },
+    amendDetail() {
+      amendChatRoom().then()
+    },
     formatTime(row) {
       return parseTime(row.created_at)
+    },
+    handleCurrentChange(value) {
+      this.currentPage = value
     }
   }
 }
 </script>
 
 <style scoped>
+.paging{
+  float: right;
+  margin: 15px 5px;
+}
 .line{
   text-align: center;
 }
