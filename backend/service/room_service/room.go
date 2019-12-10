@@ -35,6 +35,20 @@ func AddAll(roomType int, peopleLimit int, roomCount int) error {
 	return nil
 }
 
-func (a *Room) Add() (bool, error) {
+func (a *Room) Add() error {
 	return models.AddRoom(a.RoomName, a.RoomDesc, a.RoomType, a.PeopleLimit)
+}
+
+func (a *Room) Edit() error {
+	return models.EditRoom(a.ID, map[string]interface{}{
+		"room_name": a.RoomName,
+		"room_desc": a.RoomDesc,
+		"room_type": a.RoomType,
+		"people_limit": a.PeopleLimit,
+	})
+}
+
+
+func (a *Room) Delete() error {
+	return models.DeleteRoom(a.ID)
 }
