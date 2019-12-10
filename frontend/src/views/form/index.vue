@@ -34,7 +34,7 @@
       <el-table-column label="operate">
         <template slot-scope="scope">
           <el-button type="text" @click="amendShow(scope.row.id)">amend</el-button>
-          <el-button type="text">delete</el-button>
+          <el-button type="text" @click="delShow(scope.row.id)">delete</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -48,6 +48,7 @@
       :total="total">
     </el-pagination>
     <d-amend ref="dam" @update="getRoomList"></d-amend>
+    <d-del ref="del" @update="getRoomList"></d-del>
   </div>
 </template>
 
@@ -55,6 +56,7 @@
 import { createChatRoom, getChatRoomList, amendChatRoom } from '@/api/chatRoom.js'
 import { parseTime } from '@/utils/index.js'
 import DAmend from './components/d-amend'
+import DDel from './components/d-del'
 
 export default {
   data() {
@@ -72,7 +74,8 @@ export default {
     }
   },
   components: {
-    DAmend
+    DAmend,
+    DDel
   },
   created() {
     this.getRoomList()
@@ -111,6 +114,9 @@ export default {
     },
     amendShow(id) {
       this.$refs.dam._show(id)
+    },
+    delShow(id) {
+      this.$refs.del._show(id)
     },
     amendDetail() {
       amendChatRoom().then()
