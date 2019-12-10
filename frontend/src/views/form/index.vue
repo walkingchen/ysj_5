@@ -33,7 +33,7 @@
       <el-table-column label="updated time" prop="updatedAt" :formatter="formatTime" show-overflow-tooltip></el-table-column>
       <el-table-column label="operate">
         <template slot-scope="scope">
-          <el-button type="text" @click="amendShow(scope.row.id)">amend</el-button>
+          <el-button type="text" @click="amendShow(scope.row.id)">edit</el-button>
           <el-button type="text">delete</el-button>
         </template>
       </el-table-column>
