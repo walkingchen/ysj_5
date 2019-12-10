@@ -2,9 +2,8 @@ package v1
 
 import (
 	"github.com/codingchan/ysj_5/backend/service/room_service"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"net/http"
 
 	"github.com/codingchan/ysj_5/backend/models"
 	"github.com/codingchan/ysj_5/backend/pkg/app"
@@ -35,9 +34,9 @@ func GetRooms(c *gin.Context) {
 
 // @Summary 新增聊天室
 // @Produce  json
-// @Param room_type query int false "RoomType"
-// @Param people_limit query int false "PeopleLimit"
-// @Param room_count query int false "RoomCount"
+// @Param room_type query int true "RoomType"
+// @Param people_limit query int true "PeopleLimit"
+// @Param room_count query int true "RoomCount"
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/rooms [post]
 func AddRoom(c *gin.Context) {
@@ -73,13 +72,47 @@ func AddRoom(c *gin.Context) {
 // @Summary 修改聊天室
 // @Produce  json
 // @Param id query string true "RoomId"
-// @Param room_name query string true "RoomName"
+// @Param room_name query string false "RoomName"
 // @Param room_desc query string false "RoomDesc"
 // @Param room_type query int false "RoomType"
 // @Param people_limit query int false "PeopleLimit"
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/rooms [put]
 func EditRoom(c *gin.Context) {
+	var req app.RoomAddReq
+	if err := c.BindJSON(&req); err != nil {
+		code := e.INVALID_PARAMS
+		c.JSON(http.StatusOK, gin.H{
+			"code" : code,
+			"msg" : e.GetMsg(code),
+			"data" : req,
+		})
+		return
+	}
+
+	roomService := room_service.Room{
+		ID: req.ID,
+		RoomName:    req.RoomName,
+		RoomDesc:    req.RoomDesc,
+		RoomType:    req.RoomType,
+		PeopleLimit: req.PeopleLimit,
+	}
+	if err := roomService.Edit(); err != nil {
+		code := e.ERROR
+		c.JSON(http.StatusOK, gin.H{
+			"code" : code,
+			"msg" : e.GetMsg(code),
+			"data" : req,
+		})
+		return
+	}
+
+	code := e.SUCCESS
+	c.JSON(http.StatusOK, gin.H{
+		"code" : code,
+		"msg" : e.GetMsg(code),
+		"data" : req,
+	})
 }
 
 // @Summary 删除聊天室
@@ -88,4 +121,5 @@ func EditRoom(c *gin.Context) {
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/rooms [delete]
 func DeleteRoom(c *gin.Context) {
+
 }
