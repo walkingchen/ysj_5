@@ -35,7 +35,7 @@ func ExistRoomByName(name string) bool {
 	return false
 }
 
-func AddRoom(roomName string, roomDesc string, roomType int, peopleLimit int) (bool, error) {
+func AddRoom(roomName string, roomDesc string, roomType int, peopleLimit int) error {
 	room := Room {
 		RoomName: roomName,
 		RoomDesc: roomDesc,
@@ -43,8 +43,24 @@ func AddRoom(roomName string, roomDesc string, roomType int, peopleLimit int) (b
 		PeopleLimit: peopleLimit,
 	}
 	if err := db.Create(&room).Error; err != nil {
-		return false, err
+		return err
 	}
 
-	return true, nil
+	return nil
+}
+
+func EditRoom(id int, data interface{}) error {
+	if err := db.Model(&Room{}).Where("id = ?", id).Updates(data).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func DeleteRoom(id int) error {
+	if err := db.Where("id = ?", id).Delete(Room{}).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
