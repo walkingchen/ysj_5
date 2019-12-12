@@ -4,19 +4,19 @@
       <el-form :model="form">
         <el-form-item label="room type" label-width="100px">
           <el-select v-model="form.room_type" placeholder="type">
-            <el-option label="star" :value="1"></el-option>
-            <el-option label="net" :value="2"></el-option>
+            <el-option label="star" :value="1" />
+            <el-option label="net" :value="2" />
           </el-select>
-        </el-form-item >
+        </el-form-item>
         <el-form-item label="room name" label-width="100px">
-          <el-input v-model="form.room_name"></el-input>
+          <el-input v-model="form.room_name" />
         </el-form-item>
 
         <el-form-item label="people limit" label-width="100px">
-          <el-input v-model.number="form.people_limit"></el-input>
+          <el-input v-model.number="form.people_limit" />
         </el-form-item>
         <el-form-item label="room desc" label-width="100px">
-          <el-input v-model="form.room_desc"></el-input>
+          <el-input v-model="form.room_desc" />
         </el-form-item>
       </el-form>
       <div slot="footer">
@@ -50,7 +50,7 @@ export default {
     _hide(isChange) {
       this.isShow = false
       this.form = []
-      if (isChange == true) {
+      if (isChange === true) {
         this.$emit('update')
       }
     },

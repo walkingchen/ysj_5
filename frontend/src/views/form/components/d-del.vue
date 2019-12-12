@@ -31,12 +31,12 @@ methods: {
     _hide(isChange) {
       this.isShow = false
       this.id = null
-      if (isChange == true) {
+      if (isChange === true) {
         this.$emit('update')
       }
     },
     handleSubmit() {
-      delChatRoom({id: this.id}).then(res => {
+      delChatRoom({ id: this.id }).then(res => {
         if (res.code === 2000) {
           this.$message.success(res.msg)
         } else {
