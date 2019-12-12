@@ -33,7 +33,7 @@
       <el-table-column label="updated time" prop="updatedAt" :formatter="formatTime" show-overflow-tooltip></el-table-column>
       <el-table-column label="operate">
         <template slot-scope="scope">
-          <el-button type="text" @click="amendShow(scope.row.id)">amend</el-button>
+          <el-button type="text" @click="amendShow(scope.row.id)">edit</el-button>
           <el-button type="text" @click="delShow(scope.row.id)">delete</el-button>
         </template>
       </el-table-column>
@@ -87,9 +87,7 @@ export default {
         if (res.code === 2000) {
           this.$message.success(res.msg)
           this.getRoomList()
-          this.form.room_type = ''
-          this.form.room_count = ''
-          this.form.people_limit = ''
+          this.form = []
         } else {
           this.$message.error(res.msg)
         }
