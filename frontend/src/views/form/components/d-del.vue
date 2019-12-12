@@ -3,7 +3,8 @@
     <el-dialog
       title="delete chatroom"
       :visible.sync="isShow"
-      width="30%">
+      width="30%"
+    >
       <span>Are you sure to delete this chat room ?</span>
       <span slot="footer">
         <el-button @click="_hide">cancel</el-button>
@@ -23,7 +24,7 @@ export default {
       id: null
     }
   },
-methods: {
+  methods: {
     _show(id) {
       this.id = id
       this.isShow = true
