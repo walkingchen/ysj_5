@@ -43,8 +43,8 @@ export default {
     }
   },
   methods: {
-    _show(id) {
-      this.form.id = id
+    _show(data) {
+      this.form = data
       this.isShow = true
     },
     _hide(isChange) {

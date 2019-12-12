@@ -33,7 +33,7 @@
       <el-table-column label="Updated time" prop="updatedAt" :formatter="formatTime" show-overflow-tooltip />
       <el-table-column label="Operate">
         <template slot-scope="scope">
-          <el-button type="text" @click="editShow(scope.row.id)">edit</el-button>
+          <el-button type="text" @click="editShow(scope.row)">edit</el-button>
           <el-button type="text" @click="delShow(scope.row.id)">delete</el-button>
         </template>
       </el-table-column>
@@ -110,8 +110,8 @@ export default {
         }
       })
     },
-    editShow(id) {
-      this.$refs.edit._show(id)
+    editShow(data) {
+      this.$refs.edit._show(data)
     },
     delShow(id) {
       this.$refs.del._show(id)
