@@ -7,8 +7,8 @@
     >
       <span>Are you sure to delete this chat room ?</span>
       <span slot="footer">
-        <el-button @click="_hide">cancel</el-button>
-        <el-button type="primary" @click="handleSubmit">confirm</el-button>
+        <el-button @click="_hide">Cancel</el-button>
+        <el-button type="primary" @click="handleSubmit">Confirm</el-button>
       </span>
     </el-dialog>
   </div>

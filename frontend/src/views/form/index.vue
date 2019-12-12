@@ -1,17 +1,17 @@
 <template>
   <div class="app-container">
     <el-form ref="form" :model="form" label-width="120px">
-      <el-form-item label="room type">
+      <el-form-item label="Room type">
         <!-- <el-input v-model="form.name" /> -->
-        <el-select v-model="form.room_type" placeholder="请选择">
-          <el-option label="star" :value="1" />
-          <el-option label="net" :value="2" />
+        <el-select v-model="form.room_type" placeholder="please choose">
+          <el-option label="Star" :value="1" />
+          <el-option label="Net" :value="2" />
         </el-select>
       </el-form-item>
-      <el-form-item label="people limit">
+      <el-form-item label="People limit">
         <el-input v-model.number="form.people_limit" style="width: 18%" />
       </el-form-item>
-      <el-form-item label="room count">
+      <el-form-item label="Room count">
         <el-input v-model.number="form.room_count" style="width: 18%" />
       </el-form-item>
       <el-form-item>
@@ -20,20 +20,20 @@
       </el-form-item>
     </el-form>
     <el-table v-loading="loading" :data="roomList.slice((currentPage-1)*pageSize,currentPage*pageSize)" border>
-      <el-table-column label="room ID" prop="id" />
-      <el-table-column label="room name" prop="room_name" show-overflow-tooltip />
-      <el-table-column label="room type">
+      <el-table-column label="Room ID" prop="id" />
+      <el-table-column label="Room name" prop="room_name" show-overflow-tooltip />
+      <el-table-column label="Room type">
         <template slot-scope="scope">
           <span>{{ scope.row.room_type === 1 ? 'star' : 'net' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="people limit" prop="people_limit" />
-      <el-table-column label="room desc" prop="room_desc" show-overflow-tooltip />
-      <el-table-column label="created time" prop="createdTime" :formatter="formatTime" show-overflow-tooltip />
-      <el-table-column label="updated time" prop="updatedAt" :formatter="formatTime" show-overflow-tooltip />
-      <el-table-column label="operate">
+      <el-table-column label="People limit" prop="people_limit" />
+      <el-table-column label="Room desc" prop="room_desc" show-overflow-tooltip />
+      <el-table-column label="Created time" prop="createdTime" :formatter="formatTime" show-overflow-tooltip />
+      <el-table-column label="Updated time" prop="updatedAt" :formatter="formatTime" show-overflow-tooltip />
+      <el-table-column label="Operate">
         <template slot-scope="scope">
-          <el-button type="text" @click="amendShow(scope.row.id)">edit</el-button>
+          <el-button type="text" @click="editShow(scope.row.id)">edit</el-button>
           <el-button type="text" @click="delShow(scope.row.id)">delete</el-button>
         </template>
       </el-table-column>
@@ -47,20 +47,20 @@
       :total="total"
       @current-change="handleCurrentChange"
     />
-    <d-amend ref="dam" @update="getRoomList" />
+    <d-edit ref="edit" @update="getRoomList" />
     <d-del ref="del" @update="getRoomList" />
   </div>
 </template>
 
 <script>
-import { createChatRoom, getChatRoomList, amendChatRoom } from '@/api/chatRoom.js'
+import { createChatRoom, getChatRoomList } from '@/api/chatRoom.js'
 import { parseTime } from '@/utils/index.js'
-import DAmend from './components/d-amend'
+import DEdit from './components/d-edit'
 import DDel from './components/d-del'
 
 export default {
   components: {
-    DAmend,
+    DEdit,
     DDel
   },
   data() {
@@ -110,14 +110,11 @@ export default {
         }
       })
     },
-    amendShow(id) {
-      this.$refs.dam._show(id)
+    editShow(id) {
+      this.$refs.edit._show(id)
     },
     delShow(id) {
       this.$refs.del._show(id)
-    },
-    amendDetail() {
-      amendChatRoom().then()
     },
     formatTime(row) {
       return parseTime(row.created_at)

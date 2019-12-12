@@ -13,7 +13,7 @@ export const getChatRoomList = () => {
 }
 
 // 修改聊天室信息
-export const amendChatRoom = data => {
+export const editChatRoom = data => {
   return axios.put(`/api/v1/rooms/${data.id}`, data).then(res => res.data)
 }
 
