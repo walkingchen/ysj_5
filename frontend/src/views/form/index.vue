@@ -54,7 +54,7 @@
 <script>
 import { createChatRoom, getChatRoomList, amendChatRoom } from '@/api/chatRoom.js'
 import { parseTime } from '@/utils/index.js'
-import DAmend from './components/d-amend'
+import DEdit from './components/d-edit'
 
 export default {
   data() {
