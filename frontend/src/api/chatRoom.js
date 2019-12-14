@@ -12,6 +12,12 @@ export const getChatRoomList = () => {
   return axios.get('/api/v1/rooms').then(res => res.data)
 }
 
+// 修改聊天室信息
 export const editChatRoom = data => {
   return axios.put(`/api/v1/rooms/${data.id}`, data).then(res => res.data)
+}
+
+// 删除聊天室信息
+export const delChatRoom = data => {
+  return axios.delete(`/api/v1/rooms/${data.id}`, data).then(res => res.data)
 }
