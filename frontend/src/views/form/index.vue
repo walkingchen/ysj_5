@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { createChatRoom, getChatRoomList } from '@/api/chatRoom.js'
+import { createChatRoom, getChatRoomList, amendChatRoom } from '@/api/chatRoom.js'
 import { parseTime } from '@/utils/index.js'
 import DEdit from './components/d-edit'
 

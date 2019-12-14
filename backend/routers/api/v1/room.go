@@ -3,6 +3,7 @@ package v1
 import (
 	"github.com/codingchan/ysj_5/backend/service/room_service"
 	"github.com/gin-gonic/gin"
+	"github.com/unknwon/com"
 	"net/http"
 
 	"github.com/codingchan/ysj_5/backend/models"
@@ -71,7 +72,7 @@ func AddRoom(c *gin.Context) {
 
 // @Summary 修改聊天室
 // @Produce  json
-// @Param id query string true "RoomId"
+// @Param id query int true "RoomId"
 // @Param room_name query string false "RoomName"
 // @Param room_desc query string false "RoomDesc"
 // @Param room_type query int false "RoomType"
@@ -90,8 +91,9 @@ func EditRoom(c *gin.Context) {
 		return
 	}
 
+	id := com.StrTo(c.Param("id")).MustInt()
 	roomService := room_service.Room{
-		ID: req.ID,
+		ID: id,
 		RoomName:    req.RoomName,
 		RoomDesc:    req.RoomDesc,
 		RoomType:    req.RoomType,
@@ -117,9 +119,24 @@ func EditRoom(c *gin.Context) {
 
 // @Summary 删除聊天室
 // @Produce  json
-// @Param id query string true "RoomId"
+// @Param id query int true "RoomId"
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/rooms [delete]
 func DeleteRoom(c *gin.Context) {
+	id := com.StrTo(c.Param("id")).MustInt()
+	roomService := room_service.Room{ID: id}
+	if err := roomService.Delete(); err != nil {
+		code := e.ERROR
+		c.JSON(http.StatusOK, gin.H{
+			"code" : code,
+			"msg" : e.GetMsg(code),
+		})
+		return
+	}
 
+	code := e.SUCCESS
+	c.JSON(http.StatusOK, gin.H{
+		"code" : code,
+		"msg" : e.GetMsg(code),
+	})
 }
