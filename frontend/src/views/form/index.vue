@@ -48,6 +48,7 @@
       @current-change="handleCurrentChange"
     />
     <d-edit ref="edit" @update="getRoomList" />
+    <d-del ref="del" @update="getRoomList" />
   </div>
 </template>
 
@@ -55,10 +56,12 @@
 import { createChatRoom, getChatRoomList } from '@/api/chatRoom.js'
 import { parseTime } from '@/utils/index.js'
 import DEdit from './components/d-edit'
+import DDel from './components/d-del'
 
 export default {
   components: {
-    DEdit
+    DEdit,
+    DDel
   },
   data() {
     return {

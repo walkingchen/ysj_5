@@ -3,9 +3,9 @@
     <el-dialog title="edit chatroom" :visible.sync="isShow">
       <el-form :model="form">
         <el-form-item label="Room type" label-width="100px">
-          <el-select v-model="form.room_type" placeholder="type">
+          <el-select v-model="form.room_type" placeholder="please choose">
             <el-option label="Star" :value="1" />
-            <el-option label="Ret" :value="2" />
+            <el-option label="Net" :value="2" />
           </el-select>
         </el-form-item>
         <el-form-item label="Room name" label-width="100px">
