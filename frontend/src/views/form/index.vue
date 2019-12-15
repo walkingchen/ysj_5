@@ -25,7 +25,7 @@
       border
       @filter-change="handleFilterChange"
     >
-      <el-table-column label="Room ID" prop="id" align="center"/>
+      <el-table-column label="Room ID" prop="id" align="center" />
       <el-table-column label="Room name" prop="room_name" align="center" show-overflow-tooltip />
       <el-table-column
         align="center"
@@ -40,7 +40,7 @@
           <el-tag :type="scope.row.room_type === 1 ? 'primary' : 'success'">{{ scope.row.room_type === 1 ? 'Star' : 'Net' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="People limit" prop="people_limit" align="center"/>
+      <el-table-column label="People limit" prop="people_limit" align="center" />
       <el-table-column label="Room desc" prop="room_desc" align="center" show-overflow-tooltip />
       <el-table-column label="Created time" prop="createdTime" :formatter="formatTime" align="center" show-overflow-tooltip />
       <el-table-column label="Updated time" prop="updatedAt" :formatter="formatTime" align="center" show-overflow-tooltip />
@@ -128,17 +128,21 @@ export default {
     handleFilterChange(obj) {
       this.roomList = this.chatroomList
       const keys = obj[Object.keys(obj)][0]
+      const ROOM_TYPE_STAR = 1
+      const ROOM_TYPE_NET = 2
+      let roomStar = []
+      let roomNet = []
       switch (keys) {
-        case 1:
-          const roomStar = this.roomList.filter((item) => {
-            return item.room_type === 1
+        case ROOM_TYPE_STAR:
+          roomStar = this.roomList.filter((item) => {
+            return item.room_type === ROOM_TYPE_STAR
           })
           this.roomList = roomStar
           this.total = roomStar.length
           break
-        case 2:
-          const roomNet = this.roomList.filter((item) => {
-            return item.room_type === 2
+        case ROOM_TYPE_NET:
+          roomNet = this.roomList.filter((item) => {
+            return item.room_type === ROOM_TYPE_NET
           })
           this.roomList = roomNet
           this.total = roomNet.length
@@ -148,7 +152,8 @@ export default {
           this.total = this.roomList.length
           break
       }
-        this.handleCurrentChange(1)
+      const CURRENT_PAGE = 1
+      this.handleCurrentChange(CURRENT_PAGE)
     },
     editShow(data) {
       this.$refs.edit._show(data)
