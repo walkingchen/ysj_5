@@ -25,9 +25,10 @@
       border
       @filter-change="handleFilterChange"
     >
-      <el-table-column label="Room ID" prop="id" />
-      <el-table-column label="Room name" prop="room_name" show-overflow-tooltip />
+      <el-table-column label="Room ID" prop="id" align="center"/>
+      <el-table-column label="Room name" prop="room_name" align="center" show-overflow-tooltip />
       <el-table-column
+        align="center"
         label="Room type"
         prop="room_type"
         :filters="[{text: 'Star', value: 1}, {text: 'Net', value: 2}]"
@@ -36,14 +37,14 @@
         :filter-multiple="false"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.room_type === 1 ? 'star' : 'net' }}</span>
+          <el-tag :type="scope.row.room_type === 1 ? 'primary' : 'success'">{{ scope.row.room_type === 1 ? 'Star' : 'Net' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="People limit" prop="people_limit" />
-      <el-table-column label="Room desc" prop="room_desc" show-overflow-tooltip />
-      <el-table-column label="Created time" prop="createdTime" :formatter="formatTime" show-overflow-tooltip />
-      <el-table-column label="Updated time" prop="updatedAt" :formatter="formatTime" show-overflow-tooltip />
-      <el-table-column label="Operate">
+      <el-table-column label="People limit" prop="people_limit" align="center"/>
+      <el-table-column label="Room desc" prop="room_desc" align="center" show-overflow-tooltip />
+      <el-table-column label="Created time" prop="createdTime" :formatter="formatTime" align="center" show-overflow-tooltip />
+      <el-table-column label="Updated time" prop="updatedAt" :formatter="formatTime" align="center" show-overflow-tooltip />
+      <el-table-column label="Operate" align="center">
         <template slot-scope="scope">
           <el-button type="text" @click="editShow(scope.row)">edit</el-button>
           <el-button type="text" @click="delShow(scope.row.id)">delete</el-button>
@@ -147,6 +148,7 @@ export default {
           this.total = this.roomList.length
           break
       }
+        this.handleCurrentChange(1)
     },
     editShow(data) {
       this.$refs.edit._show(data)
