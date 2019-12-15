@@ -44,6 +44,11 @@ export const constantRoutes = [
   },
 
   {
+    path: '/notice',
+    component: () => import('@/views/login/components/notice')
+  },
+
+  {
     path: '/',
     component: Layout,
     redirect: '/dashboard',
