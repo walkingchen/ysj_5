@@ -19,10 +19,22 @@
         <el-button @click="onCancel">Cancel</el-button>
       </el-form-item>
     </el-form>
-    <el-table v-loading="loading" :data="roomList.slice((currentPage-1)*pageSize,currentPage*pageSize)" border>
+    <el-table
+      v-loading="loading"
+      :data="roomList.slice((currentPage-1)*pageSize,currentPage*pageSize)"
+      border
+      @filter-change="handleFilterChange"
+    >
       <el-table-column label="Room ID" prop="id" />
       <el-table-column label="Room name" prop="room_name" show-overflow-tooltip />
-      <el-table-column label="Room type">
+      <el-table-column
+        label="Room type"
+        prop="room_type"
+        :filters="[{text: 'Star', value: 1}, {text: 'Net', value: 2}]"
+        column-key="room_type"
+        :filter-method="()=>true"
+        :filter-multiple="false"
+      >
         <template slot-scope="scope">
           <span>{{ scope.row.room_type === 1 ? 'star' : 'net' }}</span>
         </template>
@@ -65,6 +77,7 @@ export default {
   },
   data() {
     return {
+      chatroomList: [],
       loading: false,
       form: {
         room_type: null,
@@ -101,14 +114,39 @@ export default {
     getRoomList() {
       this.loading = true
       getChatRoomList().then(res => {
+        this.loading = false
         if (res.code === 2000) {
-          this.loading = false
           this.roomList = res.data.lists
+          this.chatroomList = res.data.lists
           this.total = res.data.total
         } else {
           this.$message.error(res.msg)
         }
       })
+    },
+    handleFilterChange(obj) {
+      this.roomList = this.chatroomList
+      const keys = obj[Object.keys(obj)][0]
+      switch (keys) {
+        case 1:
+          const roomStar = this.roomList.filter((item) => {
+            return item.room_type === 1
+          })
+          this.roomList = roomStar
+          this.total = roomStar.length
+          break
+        case 2:
+          const roomNet = this.roomList.filter((item) => {
+            return item.room_type === 2
+          })
+          this.roomList = roomNet
+          this.total = roomNet.length
+          break
+        default:
+          this.roomList = this.chatroomList
+          this.total = this.roomList.length
+          break
+      }
     },
     editShow(data) {
       this.$refs.edit._show(data)
