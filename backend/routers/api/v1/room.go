@@ -14,6 +14,7 @@ import (
 )
 
 // @Summary 获取聊天室
+// @Tags Room
 // @Produce  json
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/rooms [get]
@@ -34,6 +35,7 @@ func GetRooms(c *gin.Context) {
 }
 
 // @Summary 新增聊天室
+// @Tags Room
 // @Produce  json
 // @Param room_type query int true "RoomType"
 // @Param people_limit query int true "PeopleLimit"
@@ -71,6 +73,7 @@ func AddRoom(c *gin.Context) {
 }
 
 // @Summary 修改聊天室
+// @Tags Room
 // @Produce  json
 // @Param id query int true "RoomId"
 // @Param room_name query string false "RoomName"
@@ -118,6 +121,7 @@ func EditRoom(c *gin.Context) {
 }
 
 // @Summary 删除聊天室
+// @Tags Room
 // @Produce  json
 // @Param id query int true "RoomId"
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"

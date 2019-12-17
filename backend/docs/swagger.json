@@ -10,6 +10,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Room"
+                ],
                 "summary": "获取聊天室",
                 "responses": {
                     "200": {
@@ -24,10 +27,13 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Room"
+                ],
                 "summary": "修改聊天室",
                 "parameters": [
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "RoomId",
                         "name": "id",
                         "in": "query",
@@ -71,6 +77,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Room"
+                ],
                 "summary": "新增聊天室",
                 "parameters": [
                     {
@@ -108,10 +117,13 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Room"
+                ],
                 "summary": "删除聊天室",
                 "parameters": [
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "RoomId",
                         "name": "id",
                         "in": "query",
@@ -121,6 +133,83 @@
                 "responses": {
                     "200": {
                         "description": "{\"code\":200,\"data\":{},\"msg\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "登录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Username",
+                        "name": "username",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Password",
+                        "name": "password",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":2000,\"data\":{},\"msg\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/register": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "注册",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Username",
+                        "name": "username",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nickname",
+                        "name": "nickname",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Password",
+                        "name": "password",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":2000,\"data\":{},\"msg\":\"ok\"}",
                         "schema": {
                             "type": "string"
                         }
