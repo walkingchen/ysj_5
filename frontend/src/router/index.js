@@ -31,6 +31,13 @@ import Layout from '@/layout'
  * all roles can be accessed
  */
 export const constantRoutes = [
+
+  {
+    path: '/register',
+    component: () => import('@/views/register/index'),
+    hidden: true
+  },
+
   {
     path: '/login',
     component: () => import('@/views/login/index'),
