@@ -10,6 +10,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Room"
+                ],
                 "summary": "获取聊天室",
                 "responses": {
                     "200": {
@@ -23,6 +26,9 @@
             "put": {
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Room"
                 ],
                 "summary": "修改聊天室",
                 "parameters": [
@@ -71,6 +77,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Room"
+                ],
                 "summary": "新增聊天室",
                 "parameters": [
                     {
@@ -108,6 +117,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Room"
+                ],
                 "summary": "删除聊天室",
                 "parameters": [
                     {
@@ -132,6 +144,9 @@
             "post": {
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "User"
                 ],
                 "summary": "登录",
                 "parameters": [
@@ -164,6 +179,9 @@
             "post": {
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "User"
                 ],
                 "summary": "注册",
                 "parameters": [

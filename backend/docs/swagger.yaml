@@ -18,6 +18,8 @@ paths:
           schema:
             type: string
       summary: 删除聊天室
+      tags:
+      - Room
     get:
       produces:
       - application/json
@@ -27,6 +29,8 @@ paths:
           schema:
             type: string
       summary: 获取聊天室
+      tags:
+      - Room
     post:
       parameters:
       - description: RoomType
@@ -52,6 +56,8 @@ paths:
           schema:
             type: string
       summary: 新增聊天室
+      tags:
+      - Room
     put:
       parameters:
       - description: RoomId
@@ -83,6 +89,8 @@ paths:
           schema:
             type: string
       summary: 修改聊天室
+      tags:
+      - Room
   /auth:
     post:
       parameters:
@@ -104,6 +112,8 @@ paths:
           schema:
             type: string
       summary: 登录
+      tags:
+      - User
   /register:
     post:
       parameters:
@@ -130,4 +140,6 @@ paths:
           schema:
             type: string
       summary: 注册
+      tags:
+      - User
 swagger: "2.0"

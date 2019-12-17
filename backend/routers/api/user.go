@@ -26,6 +26,7 @@ type register struct {
 }
 
 // @Summary 登录
+// @Tags User
 // @Produce  json
 // @Param username query string true "Username"
 // @Param password query string true "Password"
@@ -68,6 +69,7 @@ func GetAuth(c *gin.Context) {
 }
 
 // @Summary 注册
+// @Tags User
 // @Produce  json
 // @Param username query string true "Username"
 // @Param nickname query string true "Nickname"
