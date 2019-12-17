@@ -9,7 +9,7 @@ paths:
         in: query
         name: id
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
@@ -58,7 +58,7 @@ paths:
         in: query
         name: id
         required: true
-        type: string
+        type: integer
       - description: RoomName
         in: query
         name: room_name
@@ -83,4 +83,51 @@ paths:
           schema:
             type: string
       summary: 修改聊天室
+  /auth:
+    post:
+      parameters:
+      - description: Username
+        in: query
+        name: username
+        required: true
+        type: string
+      - description: Password
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":2000,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 登录
+  /register:
+    post:
+      parameters:
+      - description: Username
+        in: query
+        name: username
+        required: true
+        type: string
+      - description: Nickname
+        in: query
+        name: nickname
+        required: true
+        type: string
+      - description: Password
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":2000,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 注册
 swagger: "2.0"

@@ -23,3 +23,10 @@ type RoomAddReq struct {
 	PeopleLimit int `json:"people_limit"`
 	RoomCount int `json:"room_count"`
 }
+
+type RegisterReq struct {
+	ID int `json:"id"`
+	Username string `json:"username" valid:"Required; MaxSize(50)"`
+	Nickname string `json:"nickname" valid:"Required; MaxSize(50)"`
+	Password string `json:"password" valid:"Required; MaxSize(20)"`
+}
