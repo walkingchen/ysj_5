@@ -22,7 +22,8 @@ func InitRouter() *gin.Engine {
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	r.GET("/auth", api.GetAuth)
+	r.POST("/auth", api.GetAuth)
+	r.POST("/register", api.Register)
 
 	apiv1 := r.Group("/api/v1")
 	// apiv1.Use(jwt.JWT())
