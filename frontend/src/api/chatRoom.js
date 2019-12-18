@@ -21,3 +21,8 @@ export const editChatRoom = data => {
 export const delChatRoom = data => {
   return axios.delete(`/api/v1/rooms/${data.id}`, data).then(res => res.data)
 }
+
+// 用户注册
+export const uesrRegister = data => {
+  return axios.post('/register', data).then(res => res.data)
+}
