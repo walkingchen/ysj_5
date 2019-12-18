@@ -17,7 +17,7 @@ import (
 // @Tags Room
 // @Produce  json
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
-// @Router /api/v1/rooms [get]
+// @Router /api/v1/rooms [GET]
 func GetRooms(c *gin.Context) {
 	maps := make(map[string]interface{})
 	data := make(map[string]interface{})
@@ -41,7 +41,7 @@ func GetRooms(c *gin.Context) {
 // @Param people_limit query int true "PeopleLimit"
 // @Param room_count query int true "RoomCount"
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
-// @Router /api/v1/rooms [post]
+// @Router /api/v1/rooms [POST]
 func AddRoom(c *gin.Context) {
 	var req app.RoomAddReq
 	if err := c.BindJSON(&req); err != nil {
@@ -75,13 +75,12 @@ func AddRoom(c *gin.Context) {
 // @Summary 修改聊天室
 // @Tags Room
 // @Produce  json
-// @Param id query int true "RoomId"
 // @Param room_name query string false "RoomName"
 // @Param room_desc query string false "RoomDesc"
 // @Param room_type query int false "RoomType"
 // @Param people_limit query int false "PeopleLimit"
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
-// @Router /api/v1/rooms [put]
+// @Router /api/v1/rooms/{id} [PUT]
 func EditRoom(c *gin.Context) {
 	var req app.RoomAddReq
 	if err := c.BindJSON(&req); err != nil {
@@ -95,14 +94,14 @@ func EditRoom(c *gin.Context) {
 	}
 
 	id := com.StrTo(c.Param("id")).MustInt()
-	roomService := room_service.Room{
+	room := room_service.Room{
 		ID: id,
 		RoomName:    req.RoomName,
 		RoomDesc:    req.RoomDesc,
 		RoomType:    req.RoomType,
 		PeopleLimit: req.PeopleLimit,
 	}
-	if err := roomService.Edit(); err != nil {
+	if err := room.Edit(); err != nil {
 		code := e.ERROR
 		c.JSON(http.StatusOK, gin.H{
 			"code" : code,
@@ -123,13 +122,12 @@ func EditRoom(c *gin.Context) {
 // @Summary 删除聊天室
 // @Tags Room
 // @Produce  json
-// @Param id query int true "RoomId"
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
-// @Router /api/v1/rooms [delete]
+// @Router /api/v1/rooms/{id} [DELETE]
 func DeleteRoom(c *gin.Context) {
 	id := com.StrTo(c.Param("id")).MustInt()
-	roomService := room_service.Room{ID: id}
-	if err := roomService.Delete(); err != nil {
+	room := room_service.Room{ID: id}
+	if err := room.Delete(); err != nil {
 		code := e.ERROR
 		c.JSON(http.StatusOK, gin.H{
 			"code" : code,
