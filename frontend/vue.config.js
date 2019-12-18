@@ -48,6 +48,9 @@ module.exports = {
       },
       '/api': {
         target: 'http://localhost:8000/'
+      },
+      '/register': {
+        target: 'http://localhost:8000/'
       }
     },
     after: require('./mock/mock-server.js')
