@@ -100,12 +100,6 @@ paths:
       - Room
   /api/v1/rooms/{id}:
     delete:
-      parameters:
-      - description: RoomId
-        in: query
-        name: id
-        required: true
-        type: integer
       produces:
       - application/json
       responses:
@@ -118,11 +112,6 @@ paths:
       - Room
     put:
       parameters:
-      - description: RoomId
-        in: query
-        name: id
-        required: true
-        type: integer
       - description: RoomName
         in: query
         name: room_name

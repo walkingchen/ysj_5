@@ -75,7 +75,6 @@ func AddRoom(c *gin.Context) {
 // @Summary 修改聊天室
 // @Tags Room
 // @Produce  json
-// @Param id query int true "RoomId"
 // @Param room_name query string false "RoomName"
 // @Param room_desc query string false "RoomDesc"
 // @Param room_type query int false "RoomType"
@@ -123,7 +122,6 @@ func EditRoom(c *gin.Context) {
 // @Summary 删除聊天室
 // @Tags Room
 // @Produce  json
-// @Param id query int true "RoomId"
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/rooms/{id} [DELETE]
 func DeleteRoom(c *gin.Context) {

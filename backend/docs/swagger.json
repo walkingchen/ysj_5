@@ -162,13 +162,6 @@
                 "summary": "修改聊天室",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "RoomId",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
                         "type": "string",
                         "description": "RoomName",
                         "name": "room_name",
@@ -210,15 +203,6 @@
                     "Room"
                 ],
                 "summary": "删除聊天室",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "RoomId",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "{\"code\":200,\"data\":{},\"msg\":\"ok\"}",

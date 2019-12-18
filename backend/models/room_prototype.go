@@ -3,7 +3,7 @@ package models
 type RoomPrototype struct {
 	Model
 
-	PrototypeName string `json:prototype_name`
+	PrototypeName string `json:"prototype_name"`
 	Friendship string `json:"friendship"`
 	PeopleLimit int `json:"people_limit"`
 }
