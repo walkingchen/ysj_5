@@ -2,10 +2,49 @@ info:
   contact: {}
   license: {}
 paths:
-  /api/v1/rooms:
+  /api/v1/room_prototypes:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 获取聊天室原型列表
+      tags:
+      - Room Prototype
+    post:
+      parameters:
+      - description: PrototypeName
+        in: query
+        name: prototype_name
+        required: true
+        type: string
+      - description: PeopleLimit
+        in: query
+        name: people_limit
+        required: true
+        type: integer
+      - description: Friendship
+        in: query
+        name: friendship
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 新增聊天室原型
+      tags:
+      - Room Prototype
+  /api/v1/room_prototypes/{id}:
     delete:
       parameters:
-      - description: RoomId
+      - description: Room Prototype Id
         in: query
         name: id
         required: true
@@ -17,9 +56,10 @@ paths:
           description: '{"code":200,"data":{},"msg":"ok"}'
           schema:
             type: string
-      summary: 删除聊天室
+      summary: 删除聊天室原型
       tags:
-      - Room
+      - Room Prototype
+  /api/v1/rooms:
     get:
       produces:
       - application/json
@@ -56,6 +96,24 @@ paths:
           schema:
             type: string
       summary: 新增聊天室
+      tags:
+      - Room
+  /api/v1/rooms/{id}:
+    delete:
+      parameters:
+      - description: RoomId
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 删除聊天室
       tags:
       - Room
     put:

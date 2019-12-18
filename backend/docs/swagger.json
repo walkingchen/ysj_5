@@ -5,6 +5,93 @@
         "license": {}
     },
     "paths": {
+        "/api/v1/room_prototypes": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Room Prototype"
+                ],
+                "summary": "获取聊天室原型列表",
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Room Prototype"
+                ],
+                "summary": "新增聊天室原型",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "PrototypeName",
+                        "name": "prototype_name",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "PeopleLimit",
+                        "name": "people_limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Friendship",
+                        "name": "friendship",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/room_prototypes/{id}": {
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Room Prototype"
+                ],
+                "summary": "删除聊天室原型",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Room Prototype Id",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/rooms": {
             "get": {
                 "produces": [
@@ -23,6 +110,48 @@
                     }
                 }
             },
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Room"
+                ],
+                "summary": "新增聊天室",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "RoomType",
+                        "name": "room_type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "PeopleLimit",
+                        "name": "people_limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "RoomCount",
+                        "name": "room_count",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/rooms/{id}": {
             "put": {
                 "produces": [
                     "application/json"
@@ -62,46 +191,6 @@
                         "description": "PeopleLimit",
                         "name": "people_limit",
                         "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "{\"code\":200,\"data\":{},\"msg\":\"ok\"}",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Room"
-                ],
-                "summary": "新增聊天室",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "RoomType",
-                        "name": "room_type",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "PeopleLimit",
-                        "name": "people_limit",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "RoomCount",
-                        "name": "room_count",
-                        "in": "query",
-                        "required": true
                     }
                 ],
                 "responses": {

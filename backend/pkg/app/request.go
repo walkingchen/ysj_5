@@ -24,6 +24,13 @@ type RoomAddReq struct {
 	RoomCount int `json:"room_count"`
 }
 
+type RoomPrototypeAddReq struct {
+	ID int `json:"id"`
+	PrototypeName string `json:"prototype_name"`
+	PeopleLimit int `json:"people_limit"`
+	Friendship string `json:"friendship"`
+}
+
 type RegisterReq struct {
 	ID int `json:"id"`
 	Username string `json:"username" valid:"Required; MaxSize(50)"`
