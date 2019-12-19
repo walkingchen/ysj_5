@@ -6,25 +6,25 @@ import (
 	"github.com/codingchan/ysj_5/backend/pkg/e"
 	"github.com/codingchan/ysj_5/backend/pkg/setting"
 	"github.com/codingchan/ysj_5/backend/pkg/util"
-	"github.com/codingchan/ysj_5/backend/service/room_prototype_service"
+	"github.com/codingchan/ysj_5/backend/service/post_service"
 	"github.com/gin-gonic/gin"
 	"github.com/unknwon/com"
 	"net/http"
 )
 
-// @Summary 获取聊天室原型列表
-// @Tags Room Prototype
+// @Summary 获取 PostType 列表
+// @Tags Post Type
 // @Produce  json
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
-// @Router /api/v1/room_prototypes [GET]
-func GetRoomPrototypes(c *gin.Context) {
+// @Router /api/v1/post_types [GET]
+func GetPostTypes(c *gin.Context) {
 	maps := make(map[string]interface{})
 	data := make(map[string]interface{})
 
 	code := e.SUCCESS
 
-	data["lists"] = models.GetRoomPrototypes(util.GetPage(c), setting.PageSize, maps)
-	data["total"] = models.GetRoomPrototypeTotal(maps)
+	data["lists"] = models.GetPostTypes(util.GetPage(c), setting.PageSize, maps)
+	data["total"] = models.GetPostTypeTotal(maps)
 
 	c.JSON(http.StatusOK, gin.H{
 		"code" : code,
@@ -33,16 +33,15 @@ func GetRoomPrototypes(c *gin.Context) {
 	})
 }
 
-// @Summary 新增聊天室原型
-// @Tags Room Prototype
+// @Summary 新增 PostType
+// @Tags Post Type
 // @Produce  json
-// @Param prototype_name query string true "PrototypeName"
-// @Param people_limit query int true "PeopleLimit"
-// @Param friendship query string true "Friendship"
+// @Param type_name query string true "Type Name"
+// @Param type_structure query string true "Type Structure"
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
-// @Router /api/v1/room_prototypes [POST]
-func AddRoomPrototype(c *gin.Context) {
-	var req app.RoomPrototypeReq
+// @Router /api/v1/post_types [POST]
+func AddPostType(c *gin.Context) {
+	var req app.PostTypeReq
 	if err := c.BindJSON(&req); err != nil {
 		code := e.INVALID_PARAMS
 		c.JSON(http.StatusOK, gin.H{
@@ -53,12 +52,11 @@ func AddRoomPrototype(c *gin.Context) {
 		return
 	}
 
-	prototype := room_prototype_service.RoomPrototype{
-		PrototypeName: req.PrototypeName,
-		PeopleLimit: req.PeopleLimit,
-		Friendship: req.Friendship,
+	postType := post_service.PostType{
+		TypeName:      req.TypeName,
+		TypeStructure: req.TypeStructure,
 	}
-	if err := prototype.Add(); err != nil {
+	if err := postType.Add(); err != nil {
 		code := e.ERROR
 		c.JSON(http.StatusOK, gin.H{
 			"code" : code,
@@ -76,16 +74,15 @@ func AddRoomPrototype(c *gin.Context) {
 	})
 }
 
-// @Summary 删除聊天室原型
-// @Tags Room Prototype
+// @Summary 删除 PostType
+// @Tags Post Type
 // @Produce  json
-// @Param id query int true "Room Prototype Id"
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
-// @Router /api/v1/room_prototypes/{id} [DELETE]
-func DeleteRoomPrototype(c *gin.Context) {
+// @Router /api/v1/post_types/{id} [DELETE]
+func DeletePostType(c *gin.Context) {
 	id := com.StrTo(c.Param("id")).MustInt()
-	prototype := room_prototype_service.RoomPrototype{ID: id}
-	if err := prototype.Delete(); err != nil {
+	postType := post_service.PostType{ID: id}
+	if err := postType.Delete(); err != nil {
 		code := e.ERROR
 		c.JSON(http.StatusOK, gin.H{
 			"code" : code,

@@ -2,6 +2,52 @@ info:
   contact: {}
   license: {}
 paths:
+  /api/v1/post_types:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 获取 PostType 列表
+      tags:
+      - Post Type
+    post:
+      parameters:
+      - description: Type Name
+        in: query
+        name: type_name
+        required: true
+        type: string
+      - description: Type Structure
+        in: query
+        name: type_structure
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 新增 PostType
+      tags:
+      - Post Type
+  /api/v1/post_types/{id}:
+    delete:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 删除 PostType
+      tags:
+      - Post Type
   /api/v1/room_prototypes:
     get:
       produces:

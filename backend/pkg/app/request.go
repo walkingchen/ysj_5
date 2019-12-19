@@ -15,7 +15,14 @@ func MarkErrors(errors []*validation.Error) {
 	return
 }
 
-type RoomAddReq struct {
+type RegisterReq struct {
+	ID int `json:"id"`
+	Username string `json:"username" valid:"Required; MaxSize(50)"`
+	Nickname string `json:"nickname" valid:"Required; MaxSize(50)"`
+	Password string `json:"password" valid:"Required; MaxSize(20)"`
+}
+
+type RoomReq struct {
 	ID int `json:"id"`
 	RoomName string `json:"room_name"`
 	RoomDesc string `json:"room_desc"`
@@ -24,16 +31,15 @@ type RoomAddReq struct {
 	RoomCount int `json:"room_count"`
 }
 
-type RoomPrototypeAddReq struct {
+type RoomPrototypeReq struct {
 	ID int `json:"id"`
 	PrototypeName string `json:"prototype_name"`
 	PeopleLimit int `json:"people_limit"`
 	Friendship string `json:"friendship"`
 }
 
-type RegisterReq struct {
-	ID int `json:"id"`
-	Username string `json:"username" valid:"Required; MaxSize(50)"`
-	Nickname string `json:"nickname" valid:"Required; MaxSize(50)"`
-	Password string `json:"password" valid:"Required; MaxSize(20)"`
+type PostTypeReq struct {
+	ID            int    `json:"id"`
+	TypeName      string `json:"type_name"`
+	TypeStructure string `json:"type_structure"`
 }
