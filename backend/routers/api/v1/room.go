@@ -43,7 +43,7 @@ func GetRooms(c *gin.Context) {
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/rooms [POST]
 func AddRoom(c *gin.Context) {
-	var req app.RoomAddReq
+	var req app.RoomReq
 	if err := c.BindJSON(&req); err != nil {
 		code := e.INVALID_PARAMS
 		c.JSON(http.StatusOK, gin.H{
@@ -82,7 +82,7 @@ func AddRoom(c *gin.Context) {
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/rooms/{id} [PUT]
 func EditRoom(c *gin.Context) {
-	var req app.RoomAddReq
+	var req app.RoomReq
 	if err := c.BindJSON(&req); err != nil {
 		code := e.INVALID_PARAMS
 		c.JSON(http.StatusOK, gin.H{

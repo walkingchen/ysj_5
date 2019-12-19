@@ -37,6 +37,12 @@ func InitRouter() *gin.Engine {
 		apiv1.POST("/room_prototypes", v1.AddRoomPrototype)
 		// apiv1.PUT("/room_prototypes/:id", v1.EditRoomPrototype)
 		apiv1.DELETE("/room_prototypes/:id", v1.DeleteRoomPrototype)
+
+		apiv1.GET("/post_types", v1.GetPostTypes)
+		apiv1.POST("/post_types", v1.AddPostType)
+		// apiv1.PUT("/post_types/:id", v1.EditPostType)
+		apiv1.DELETE("/post_types/:id", v1.DeletePostType)
+
 	}
 
 	return r

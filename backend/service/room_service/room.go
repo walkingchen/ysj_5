@@ -32,7 +32,7 @@ func AddAll(roomType int, peopleLimit int, roomCount int) error {
 		}
 		roomService.Add()
 	}
-	return nilgit
+	return nil
 }
 
 func (a *Room) Add() error {
