@@ -8,7 +8,7 @@
 
       <el-form-item prop="username">
         <span class="svg-container">
-          <i class="el-icon-message"></i>
+          <i class="el-icon-message" />
         </span>
         <el-input
           ref="username"
@@ -80,7 +80,7 @@ export default {
   data() {
     const validateEmail = (rule, value, callback) => {
       const reg = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/
-      if(value === '') {
+      if (value === '') {
         callback(new Error('Please enter the email'))
       } else if (reg.test(value)) {
         callback()
@@ -118,10 +118,10 @@ export default {
         password: ''
       },
       rules: {
-        username: [{ required: true, trigger: 'blur',validator: validateEmail }],
+        username: [{ required: true, trigger: 'blur', validator: validateEmail }],
         nickname: [{ required: true, trigger: 'blur', validator: validateUsername }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }],
-        checkPassword: [{ required: true, trigger: 'blur', validator: validateCheckPassword }],
+        checkPassword: [{ required: true, trigger: 'blur', validator: validateCheckPassword }]
       },
       loading: false,
       passwordType: 'password',
@@ -152,7 +152,7 @@ export default {
       this.$refs.register.validate(valid => {
         if (valid) {
           this.loading = true
-          let registerForm = {...this.registerForm}
+          const registerForm = { ...this.registerForm }
           delete registerForm.checkPassword
           console.log(registerForm, this.registerForm)
           uesrRegister(registerForm).then(() => {
