@@ -81,6 +81,7 @@ export default {
       addPrototype(this.listParams).then(res => {
         if (res.code === 2000) {
           this.$message.success(res.msg)
+          this.getPrototypeListDate()
         } else {
           this.$message.error(res.msg)
         }
