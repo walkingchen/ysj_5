@@ -26,3 +26,13 @@ export const delChatRoom = data => {
 export const uesrRegister = data => {
   return axios.post('/register', data).then(res => res.data)
 }
+
+// 新增聊天室原型
+export const addPrototype = data => {
+  return axios.post('/api/v1/room_prototypes', data).then(res => res.data)
+}
+
+// 获取聊天室原型列表
+export const getPrototypeList = () => {
+  return axios.get('/api/v1/room_prototypes').then(res => res.data)
+}
