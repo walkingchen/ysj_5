@@ -26,7 +26,7 @@ export default {
   props: {
     beforeUpload: Function, // eslint-disable-line
     onSuccess: Function,// eslint-disable-line
-    uploadPrototype: Function
+    uploadPrototype: Function // eslint-disable-line
   },
   data() {
     return {
