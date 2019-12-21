@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <upload-excel-component ref="upload" :on-success="handleSuccess" :before-upload="beforeUpload" :upload-prototype="handleUpload" :clear-file="clearFileDetail" />
+    <upload-excel-component ref="upload" :on-success="handleSuccess" :before-upload="beforeUpload" :upload-prototype="handleUpload" />
     <!-- <el-table :data="tableData" border highlight-current-row style="width: 100%;margin-top:20px;">
       <el-table-column v-for="item of tableHeader" :key="item" :prop="item" :label="item" />
     </el-table> -->
@@ -101,9 +101,6 @@ export default {
           this.$message.error(res.msg)
         }
       })
-    },
-    clearFileDetail() {
-      this.listParams = {}
     }
   }
 }

@@ -138,8 +138,6 @@ export default {
     },
     removeFile(tag) {
       this.fileList.splice(this.fileList.indexOf(tag), 1)
-      this.$refs['excel-upload-input'].value = null
-      this.clearFile()
     }
   }
 }
