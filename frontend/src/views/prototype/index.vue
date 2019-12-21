@@ -5,11 +5,11 @@
       <el-table-column v-for="item of tableHeader" :key="item" :prop="item" :label="item" />
     </el-table> -->
     <el-table :data="prototypeList" border style="width: 100%;margin-top:20px;">
-      <el-table-column prop="id" label="ID" align="center" />
+      <el-table-column type="index" label="No." align="center" width="100" />
       <el-table-column prop="prototype_name" label="Prototype Name" align="center" />
       <el-table-column prop="people_limit" label="People Limit" align="center" />
-      <el-table-column prop="created_at" label="Created At" :formatter="formatTime" align="center" />
-      <el-table-column prop="updated_at" label="Updated At" :formatter="formatTime" align="center" />
+      <!-- <el-table-column prop="created_at" label="Created At" :formatter="formatTime" align="center" />
+      <el-table-column prop="updated_at" label="Updated At" :formatter="formatTime" align="center" /> -->
       <el-table-column label="Operate" align="center">
         <template slot-scope="scope">
           <el-button size="mini">view</el-button>
@@ -77,7 +77,7 @@ export default {
       this.listParams.friendship = JSON.stringify(friendship)
       this.listParams.people_limit = results.length
       this.listParams.prototype_name = this.$refs.upload.prototype_name
-      console.log(this.listParams)
+      // console.log(this.listParams)
     },
     handleUpload() {
       addPrototype(this.listParams).then(res => {
