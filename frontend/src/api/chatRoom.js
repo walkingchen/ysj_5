@@ -36,3 +36,9 @@ export const addPrototype = data => {
 export const getPrototypeList = () => {
   return axios.get('/api/v1/room_prototypes').then(res => res.data)
 }
+
+// 删除聊天室原型
+export const delPrototypeDetail = id => {
+  return axios.delete(`/api/v1/room_prototypes/${id}`).then(res => res.data)
+}
+

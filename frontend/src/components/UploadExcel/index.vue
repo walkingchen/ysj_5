@@ -2,8 +2,15 @@
   <div>
     <input ref="excel-upload-input" class="excel-upload-input" type="file" accept=".csv" @change="handleClick">
     <div class="drop" @drop="handleDrop" @dragover="handleDragover" @dragenter="handleDragover">
-      Drop excel file here or
-      <el-button :loading="loading" style="margin-left:16px;" size="mini" type="primary" @click="handleUpload">
+      Drop csv file here
+      <el-tag
+        v-for="file in fileList"
+        :key="file.name"
+        @close="removeFile(tag)"
+      >
+        {{ file.name }}
+      </el-tag>
+      <el-button ref="excel-upload-button" :loading="loading" style="margin-left:16px;" size="mini" type="primary" @click="handleUpload">
         Browse
       </el-button>
       <el-button type="success" size="mini" @click="uploadPrototypeCsv">Upload</el-button>
@@ -22,6 +29,7 @@ export default {
   },
   data() {
     return {
+      fileList: [],
       prototype_name: '',
       loading: false,
       excelData: {
@@ -85,6 +93,9 @@ export default {
       // console.log(rawFile.name)
       const place = rawFile.name.indexOf('.')
       this.prototype_name = rawFile.name.substring(0, place)
+      const file = {}
+      file.name = rawFile.name
+      this.fileList.push(file)
       this.loading = true
       return new Promise((resolve, reject) => {
         const reader = new FileReader()
@@ -123,6 +134,11 @@ export default {
     },
     uploadPrototypeCsv() {
       this.uploadPrototype()
+    },
+    removeFile(tag) {
+      this.fileList.splice(this.fileList.indexOf(tag), 1)
+      this.$refs['excel-upload-input'].value = null
+      this.clearFile()
     }
   }
 }

@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <upload-excel-component ref="upload" :on-success="handleSuccess" :before-upload="beforeUpload" :upload-prototype="handleUpload" />
+    <upload-excel-component ref="upload" :on-success="handleSuccess" :before-upload="beforeUpload" :upload-prototype="handleUpload" :clear-file="clearFileDetail" />
     <!-- <el-table :data="tableData" border highlight-current-row style="width: 100%;margin-top:20px;">
       <el-table-column v-for="item of tableHeader" :key="item" :prop="item" :label="item" />
     </el-table> -->
@@ -11,8 +11,10 @@
       <el-table-column prop="created_at" label="Created At" :formatter="formatTime" align="center" />
       <el-table-column prop="updated_at" label="Updated At" :formatter="formatTime" align="center" />
       <el-table-column label="Operate" align="center">
-        <el-button size="mini">view</el-button>
-        <el-button size="mini" type="danger">delete</el-button>
+        <template slot-scope="scope">
+          <el-button size="mini">view</el-button>
+          <el-button size="mini" type="danger" @click="delDetail(scope.row.id)">delete</el-button>
+        </template>
       </el-table-column>
     </el-table>
   </div>
@@ -20,7 +22,7 @@
 
 <script>
 import UploadExcelComponent from '@/components/UploadExcel/index.vue'
-import { addPrototype, getPrototypeList } from '@/api/chatRoom.js'
+import { addPrototype, getPrototypeList, delPrototypeDetail } from '@/api/chatRoom.js'
 import { parseTime } from '@/utils/index.js'
 
 export default {
@@ -89,6 +91,19 @@ export default {
     },
     formatTime(row) {
       return parseTime(row.created_at)
+    },
+    delDetail(id) {
+      delPrototypeDetail(id).then(res => {
+        if (res.code === 2000) {
+          this.$message.success(res.msg)
+          this.getPrototypeListDate()
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
+    },
+    clearFileDetail() {
+      this.listParams = {}
     }
   }
 }
