@@ -30,7 +30,7 @@ export default {
   },
   data() {
     return {
-      fileName: [],
+      fileName: null,
       prototype_name: '',
       loading: false,
       excelData: {
