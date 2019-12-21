@@ -6,9 +6,10 @@
       <el-tag
         v-for="file in fileList"
         :key="file.name"
+        closable
         @close="removeFile(tag)"
-        closable>
-        {{file.name}}
+      >
+        {{ file.name }}
       </el-tag>
       <el-button ref="excel-upload-button" :loading="loading" style="margin-left:16px;" size="mini" type="primary" @click="handleUpload">
         Browse
@@ -25,7 +26,7 @@ export default {
   props: {
     beforeUpload: Function, // eslint-disable-line
     onSuccess: Function,// eslint-disable-line
-    uploadPrototype: Function,
+    uploadPrototype: Function
   },
   data() {
     return {
@@ -93,7 +94,7 @@ export default {
       // console.log(rawFile.name)
       const place = rawFile.name.indexOf('.')
       this.prototype_name = rawFile.name.substring(0, place)
-      let file = {}
+      const file = {}
       file.name = rawFile.name
       this.fileList.push(file)
       this.loading = true
