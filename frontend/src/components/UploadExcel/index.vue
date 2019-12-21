@@ -4,12 +4,12 @@
     <div class="drop" @drop="handleDrop" @dragover="handleDragover" @dragenter="handleDragover">
       Drop csv file here
       <el-tag
-        v-for="file in fileList"
-        :key="file.name"
+        v-if="fileName !== null"
+        type="success"
         closable
-        @close="removeFile(tag)"
+        @close="removeFile"
       >
-        {{ file.name }}
+        {{ fileName }}
       </el-tag>
       <el-button ref="excel-upload-button" :loading="loading" style="margin-left:16px;" size="mini" type="primary" @click="handleUpload">
         Browse
@@ -26,11 +26,11 @@ export default {
   props: {
     beforeUpload: Function, // eslint-disable-line
     onSuccess: Function,// eslint-disable-line
-    uploadPrototype: Function // eslint-disable-line
+    uploadPrototype: Function, // eslint-disable-line
   },
   data() {
     return {
-      fileList: [],
+      fileName: [],
       prototype_name: '',
       loading: false,
       excelData: {
@@ -91,12 +91,9 @@ export default {
       }
     },
     readerData(rawFile) {
-      // console.log(rawFile.name)
       const place = rawFile.name.indexOf('.')
       this.prototype_name = rawFile.name.substring(0, place)
-      const file = {}
-      file.name = rawFile.name
-      this.fileList.push(file)
+      this.fileName = rawFile.name
       this.loading = true
       return new Promise((resolve, reject) => {
         const reader = new FileReader()
@@ -109,7 +106,6 @@ export default {
           const results = XLSX.utils.sheet_to_json(worksheet)
           this.generateData({ header, results })
           this.loading = false
-          // console.log(data)
           resolve()
         }
         reader.readAsArrayBuffer(rawFile)
@@ -136,8 +132,8 @@ export default {
     uploadPrototypeCsv() {
       this.uploadPrototype()
     },
-    removeFile(tag) {
-      this.fileList.splice(this.fileList.indexOf(tag), 1)
+    removeFile() {
+      this.fileName = null
     }
   }
 }

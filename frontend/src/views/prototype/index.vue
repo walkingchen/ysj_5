@@ -77,7 +77,6 @@ export default {
       this.listParams.friendship = JSON.stringify(friendship)
       this.listParams.people_limit = results.length
       this.listParams.prototype_name = this.$refs.upload.prototype_name
-      // console.log(this.listParams)
     },
     handleUpload() {
       addPrototype(this.listParams).then(res => {
