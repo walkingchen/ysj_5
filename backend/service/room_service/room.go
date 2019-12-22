@@ -20,6 +20,15 @@ type Room struct {
 	UpdatedAt time.Time
 }
 
+func (r *Room) Get() (*models.Room, error) {
+	room, err := models.GetRoom(r.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return room, nil
+}
+
 func AddAll(roomType int, peopleLimit int, roomCount int) error {
 	for i := 0; i < roomCount; i++ {
 		roomService := Room{
@@ -35,20 +44,20 @@ func AddAll(roomType int, peopleLimit int, roomCount int) error {
 	return nil
 }
 
-func (a *Room) Add() error {
-	return models.AddRoom(a.RoomName, a.RoomDesc, a.RoomType, a.PeopleLimit)
+func (r *Room) Add() error {
+	return models.AddRoom(r.RoomName, r.RoomDesc, r.RoomType, r.PeopleLimit)
 }
 
-func (a *Room) Edit() error {
-	return models.EditRoom(a.ID, map[string]interface{}{
-		"room_name": a.RoomName,
-		"room_desc": a.RoomDesc,
-		"room_type": a.RoomType,
-		"people_limit": a.PeopleLimit,
+func (r *Room) Edit() error {
+	return models.EditRoom(r.ID, map[string]interface{}{
+		"room_name":    r.RoomName,
+		"room_desc":    r.RoomDesc,
+		"room_type":    r.RoomType,
+		"people_limit": r.PeopleLimit,
 	})
 }
 
 
-func (a *Room) Delete() error {
-	return models.DeleteRoom(a.ID)
+func (r *Room) Delete() error {
+	return models.DeleteRoom(r.ID)
 }

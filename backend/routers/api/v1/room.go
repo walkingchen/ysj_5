@@ -13,7 +13,32 @@ import (
 	"github.com/codingchan/ysj_5/backend/pkg/util"
 )
 
-// @Summary 获取聊天室
+// @Summary 获取指定聊天室
+// @Tags Room
+// @Produce  json
+// @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
+// @Router /api/v1/rooms/{id} [GET]
+func GetRoom(c *gin.Context) {
+	code := e.SUCCESS
+	id := com.StrTo(c.Param("id")).MustInt()
+	roomService := room_service.Room{ID:id}
+	room, err := roomService.Get()
+	if err != nil {
+		code := e.ERROR
+		c.JSON(http.StatusOK, gin.H{
+			"code" : code,
+			"msg" : e.GetMsg(code),
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code" : code,
+		"msg" : e.GetMsg(code),
+		"data" : room,
+	})
+}
+
+// @Summary 获取聊天室列表
 // @Tags Room
 // @Produce  json
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
@@ -21,6 +46,11 @@ import (
 func GetRooms(c *gin.Context) {
 	maps := make(map[string]interface{})
 	data := make(map[string]interface{})
+
+	params := c.Request.URL.Query()
+	for k, v := range params {
+		maps[k] = v[0]
+	}
 
 	code := e.SUCCESS
 
@@ -94,14 +124,14 @@ func EditRoom(c *gin.Context) {
 	}
 
 	id := com.StrTo(c.Param("id")).MustInt()
-	room := room_service.Room{
+	roomService := room_service.Room{
 		ID: id,
 		RoomName:    req.RoomName,
 		RoomDesc:    req.RoomDesc,
 		RoomType:    req.RoomType,
 		PeopleLimit: req.PeopleLimit,
 	}
-	if err := room.Edit(); err != nil {
+	if err := roomService.Edit(); err != nil {
 		code := e.ERROR
 		c.JSON(http.StatusOK, gin.H{
 			"code" : code,
@@ -126,8 +156,8 @@ func EditRoom(c *gin.Context) {
 // @Router /api/v1/rooms/{id} [DELETE]
 func DeleteRoom(c *gin.Context) {
 	id := com.StrTo(c.Param("id")).MustInt()
-	room := room_service.Room{ID: id}
-	if err := room.Delete(); err != nil {
+	roomService := room_service.Room{ID: id}
+	if err := roomService.Delete(); err != nil {
 		code := e.ERROR
 		c.JSON(http.StatusOK, gin.H{
 			"code" : code,

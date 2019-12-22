@@ -12,6 +12,31 @@ import (
 	"net/http"
 )
 
+// @Summary 根据ID获取聊天室原型
+// @Tags Room Prototype
+// @Produce  json
+// @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
+// @Router /api/v1/room_prototypes/{id} [GET]
+func GetRoomPrototype(c *gin.Context) {
+	code := e.SUCCESS
+	id := com.StrTo(c.Param("id")).MustInt()
+	prototypeService := room_prototype_service.RoomPrototype{ID: id}
+	prototype, err := prototypeService.Get()
+	if err != nil {
+		code := e.ERROR
+		c.JSON(http.StatusOK, gin.H{
+			"code" : code,
+			"msg" : e.GetMsg(code),
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code" : code,
+		"msg" : e.GetMsg(code),
+		"data" : prototype,
+	})
+}
+
 // @Summary 获取聊天室原型列表
 // @Tags Room Prototype
 // @Produce  json
@@ -53,12 +78,12 @@ func AddRoomPrototype(c *gin.Context) {
 		return
 	}
 
-	prototype := room_prototype_service.RoomPrototype{
+	prototypeService := room_prototype_service.RoomPrototype{
 		PrototypeName: req.PrototypeName,
 		PeopleLimit: req.PeopleLimit,
 		Friendship: req.Friendship,
 	}
-	if err := prototype.Add(); err != nil {
+	if err := prototypeService.Add(); err != nil {
 		code := e.ERROR
 		c.JSON(http.StatusOK, gin.H{
 			"code" : code,
@@ -84,8 +109,8 @@ func AddRoomPrototype(c *gin.Context) {
 // @Router /api/v1/room_prototypes/{id} [DELETE]
 func DeleteRoomPrototype(c *gin.Context) {
 	id := com.StrTo(c.Param("id")).MustInt()
-	prototype := room_prototype_service.RoomPrototype{ID: id}
-	if err := prototype.Delete(); err != nil {
+	prototypeService := room_prototype_service.RoomPrototype{ID: id}
+	if err := prototypeService.Delete(); err != nil {
 		code := e.ERROR
 		c.JSON(http.StatusOK, gin.H{
 			"code" : code,

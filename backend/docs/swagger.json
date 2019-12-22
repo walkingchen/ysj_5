@@ -136,6 +136,23 @@
             }
         },
         "/api/v1/room_prototypes/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Room Prototype"
+                ],
+                "summary": "根据ID获取聊天室原型",
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "produces": [
                     "application/json"
@@ -171,7 +188,7 @@
                 "tags": [
                     "Room"
                 ],
-                "summary": "获取聊天室",
+                "summary": "获取聊天室列表",
                 "responses": {
                     "200": {
                         "description": "{\"code\":200,\"data\":{},\"msg\":\"ok\"}",
@@ -223,6 +240,23 @@
             }
         },
         "/api/v1/rooms/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Room"
+                ],
+                "summary": "获取指定聊天室",
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
             "put": {
                 "produces": [
                     "application/json"

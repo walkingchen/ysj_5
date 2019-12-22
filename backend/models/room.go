@@ -1,5 +1,9 @@
 package models
 
+import (
+	"github.com/jinzhu/gorm"
+)
+
 type Room struct {
 	Model
 
@@ -11,6 +15,16 @@ type Room struct {
 
 type RoomList struct {
 	Room []Room `json:"room"`
+}
+
+func GetRoom(id int) (*Room, error) {
+	var room Room
+	err := db.Where("id = ?", id).First(&room).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	return &room, nil
 }
 
 func GetRooms(pageNum int, pageSize int, maps interface {}) (rooms []Room) {

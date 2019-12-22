@@ -105,6 +105,17 @@ paths:
       summary: 删除聊天室原型
       tags:
       - Room Prototype
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 根据ID获取聊天室原型
+      tags:
+      - Room Prototype
   /api/v1/rooms:
     get:
       produces:
@@ -114,7 +125,7 @@ paths:
           description: '{"code":200,"data":{},"msg":"ok"}'
           schema:
             type: string
-      summary: 获取聊天室
+      summary: 获取聊天室列表
       tags:
       - Room
     post:
@@ -154,6 +165,17 @@ paths:
           schema:
             type: string
       summary: 删除聊天室
+      tags:
+      - Room
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 获取指定聊天室
       tags:
       - Room
     put:
