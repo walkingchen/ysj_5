@@ -68,23 +68,23 @@ export const constantRoutes = [
   },
 
   // {
-  //   path: '/example',
+  //   path: '/prototype',
   //   component: Layout,
-  //   redirect: '/example/table',
-  //   name: 'Example',
-  //   meta: { title: 'Example', icon: 'example' },
+  //   redirect: '/prototype/index',
+  //   name: 'prototype',
+  //   meta: { title: 'prototype', icon: 'table' },
   //   children: [
   //     {
-  //       path: 'table',
-  //       name: 'Table',
-  //       component: () => import('@/views/table/index'),
-  //       meta: { title: 'Table', icon: 'table' }
+  //       path: 'index',
+  //       name: 'index',
+  //       component: () => import('@/views/prototype/index'),
+  //       meta: { title: 'prototype' }
   //     },
   //     {
-  //       path: 'tree',
-  //       name: 'Tree',
-  //       component: () => import('@/views/tree/index'),
-  //       meta: { title: 'Tree', icon: 'tree' }
+  //       path: 'detail',
+  //       name: 'detail',
+  //       component: () => import('@/views/prototype/detail'),
+  //       meta: { title: 'prototypeDetail' }
   //     }
   //   ]
   // },
@@ -92,12 +92,20 @@ export const constantRoutes = [
   {
     path: '/chatroom',
     component: Layout,
+    redirect: '/chatroom/prototype',
+    meta: { title: 'Chatroom', icon: 'table' },
     children: [
       {
-        path: 'index',
-        name: 'Chatroom',
+        path: '/prototype',
+        name: 'prototype',
+        component: () => import('@/views/prototype/index'),
+        meta: { title: 'Prototype', icon: 'form' }
+      },
+      {
+        path: 'roomlist',
+        name: 'roomlist',
         component: () => import('@/views/chatroom/index'),
-        meta: { title: 'Chatroom', icon: 'form' }
+        meta: { title: 'Room List', icon: 'nested' }
       }
     ]
   },

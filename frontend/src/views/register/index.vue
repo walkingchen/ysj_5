@@ -74,7 +74,7 @@
 
 <script>
 // import { validUsername } from '@/utils/validate'
-import { uesrRegister } from '@/api/chatRoom.js'
+import { uesrRegister } from '@/api/user.js'
 
 export default {
   data() {
