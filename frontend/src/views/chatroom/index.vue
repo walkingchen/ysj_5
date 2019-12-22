@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import { createChatRoom, getChatRoomList } from '@/api/chatRoom.js'
+import { createChatRoom, getChatRoomList } from '@/api/room.js'
 import { parseTime } from '@/utils/index.js'
 import DEdit from './components/d-edit'
 import DDel from './components/d-del'
