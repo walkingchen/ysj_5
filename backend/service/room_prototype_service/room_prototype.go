@@ -14,6 +14,15 @@ type RoomPrototype struct {
 	UpdatedAt time.Time
 }
 
+func (p *RoomPrototype) Get() (*models.RoomPrototype, error) {
+	prototype, err := models.GetRoomPrototype(p.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return prototype, nil
+}
+
 func (p *RoomPrototype) Add() error {
 	return models.AddRoomPrototype(p.PrototypeName, p.PeopleLimit, p.Friendship)
 }

@@ -1,11 +1,23 @@
 package models
 
+import "github.com/jinzhu/gorm"
+
 type RoomPrototype struct {
 	Model
 
 	PrototypeName string `json:"prototype_name"`
 	Friendship string `json:"friendship"`
 	PeopleLimit int `json:"people_limit"`
+}
+
+func GetRoomPrototype(id int) (*RoomPrototype, error) {
+	var prototype RoomPrototype
+	err := db.Where("id = ?", id).First(&prototype).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	return &prototype, nil
 }
 
 func GetRoomPrototypes(pageNum int, pageSize int, maps interface {}) (roomPrototypes []RoomPrototype) {

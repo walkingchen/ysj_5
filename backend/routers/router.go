@@ -29,11 +29,13 @@ func InitRouter() *gin.Engine {
 	// apiv1.Use(jwt.JWT())
 	{
 		apiv1.GET("/rooms", v1.GetRooms)
+		apiv1.GET("/rooms/:id", v1.GetRoom)
 		apiv1.POST("/rooms", v1.AddRoom)
 		apiv1.PUT("/rooms/:id", v1.EditRoom)
 		apiv1.DELETE("/rooms/:id", v1.DeleteRoom)
 
 		apiv1.GET("/room_prototypes", v1.GetRoomPrototypes)
+		apiv1.GET("room_prototypes/:id", v1.GetRoomPrototype)
 		apiv1.POST("/room_prototypes", v1.AddRoomPrototype)
 		// apiv1.PUT("/room_prototypes/:id", v1.EditRoomPrototype)
 		apiv1.DELETE("/room_prototypes/:id", v1.DeleteRoomPrototype)

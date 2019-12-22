@@ -20,10 +20,10 @@ type Room struct {
 	UpdatedAt time.Time
 }
 
-func (r *Room) Get() (Room, error) {
+func (r *Room) Get() (*models.Room, error) {
 	room, err := models.GetRoom(r.ID)
 	if err != nil {
-		return room, err
+		return nil, err
 	}
 
 	return room, nil

@@ -21,8 +21,8 @@ import (
 func GetRoom(c *gin.Context) {
 	code := e.SUCCESS
 	id := com.StrTo(c.Param("id")).MustInt()
-	room := room_service.Room{ID:id}
-	room, err := room.Get()
+	roomService := room_service.Room{ID:id}
+	room, err := roomService.Get()
 	if err != nil {
 		code := e.ERROR
 		c.JSON(http.StatusOK, gin.H{
@@ -124,14 +124,14 @@ func EditRoom(c *gin.Context) {
 	}
 
 	id := com.StrTo(c.Param("id")).MustInt()
-	room := room_service.Room{
+	roomService := room_service.Room{
 		ID: id,
 		RoomName:    req.RoomName,
 		RoomDesc:    req.RoomDesc,
 		RoomType:    req.RoomType,
 		PeopleLimit: req.PeopleLimit,
 	}
-	if err := room.Edit(); err != nil {
+	if err := roomService.Edit(); err != nil {
 		code := e.ERROR
 		c.JSON(http.StatusOK, gin.H{
 			"code" : code,
@@ -156,8 +156,8 @@ func EditRoom(c *gin.Context) {
 // @Router /api/v1/rooms/{id} [DELETE]
 func DeleteRoom(c *gin.Context) {
 	id := com.StrTo(c.Param("id")).MustInt()
-	room := room_service.Room{ID: id}
-	if err := room.Delete(); err != nil {
+	roomService := room_service.Room{ID: id}
+	if err := roomService.Delete(); err != nil {
 		code := e.ERROR
 		c.JSON(http.StatusOK, gin.H{
 			"code" : code,
