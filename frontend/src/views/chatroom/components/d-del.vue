@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { delChatRoom } from '@/api/chatRoom.js'
+import { delChatRoom } from '@/api/room.js'
 
 export default {
   data() {

@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import axios from 'axios'
 
 export function login(data) {
   return request({
@@ -21,4 +22,9 @@ export function logout() {
     url: '/user/logout',
     method: 'post'
   })
+}
+
+// 用户注册
+export const uesrRegister = data => {
+  return axios.post('/register', data).then(res => res.data)
 }

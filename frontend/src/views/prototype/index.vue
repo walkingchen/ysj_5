@@ -22,7 +22,7 @@
 
 <script>
 import UploadExcelComponent from '@/components/UploadExcel/index.vue'
-import { addPrototype, getPrototypeList, delPrototypeDetail } from '@/api/chatRoom.js'
+import { addPrototype, getPrototypeList, delPrototypeDetail } from '@/api/room.js'
 import { parseTime } from '@/utils/index.js'
 
 export default {

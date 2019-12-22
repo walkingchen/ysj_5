@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { editChatRoom } from '@/api/chatRoom.js'
+import { editChatRoom } from '@/api/room.js'
 
 export default {
   data() {
