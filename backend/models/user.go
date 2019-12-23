@@ -27,6 +27,22 @@ func CheckRegistered(username string) bool {
 	return false
 }
 
+func GetUser(id int) (*User, error) {
+	var user User
+	err := db.Where("id = ?", id).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func GetUsers(pageNum int, pageSize int, maps interface {}) (users []User) {
+	db.Where(maps).Offset(pageNum).Limit(pageSize).Find(&users)
+
+	return
+}
+
 func AddUser(username string, nickname string, password string) error {
 	user := User{
 		Username: username,
@@ -35,6 +51,14 @@ func AddUser(username string, nickname string, password string) error {
 	}
 
 	if err := db.Create(&user).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func DeleteUser(id int) error {
+	if err := db.Where("id = ?", id).Delete(User{}).Error; err != nil {
 		return err
 	}
 
