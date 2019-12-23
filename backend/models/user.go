@@ -37,6 +37,12 @@ func GetUser(id int) (*User, error) {
 	return &user, nil
 }
 
+func GetUsers(pageNum int, pageSize int, maps interface {}) (users []User) {
+	db.Where(maps).Offset(pageNum).Limit(pageSize).Find(&users)
+
+	return
+}
+
 func AddUser(username string, nickname string, password string) error {
 	user := User{
 		Username: username,

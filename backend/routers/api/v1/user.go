@@ -1,7 +1,10 @@
 package v1
 
 import (
+	"github.com/codingchan/ysj_5/backend/models"
 	"github.com/codingchan/ysj_5/backend/pkg/e"
+	"github.com/codingchan/ysj_5/backend/pkg/setting"
+	"github.com/codingchan/ysj_5/backend/pkg/util"
 	"github.com/codingchan/ysj_5/backend/service/user_service"
 	"github.com/gin-gonic/gin"
 	"github.com/unknwon/com"
@@ -38,8 +41,20 @@ func GetUser(c *gin.Context) {
 // @Produce  json
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/users [GET]
-func GetUsers() {
+func GetUsers(c *gin.Context) {
+	maps := make(map[string]interface{})
+	data := make(map[string]interface{})
 
+	code := e.SUCCESS
+
+	data["lists"] = models.GetUsers(util.GetPage(c), setting.PageSize, maps)
+	data["total"] = models.GetRoomPrototypeTotal(maps)
+
+	c.JSON(http.StatusOK, gin.H{
+		"code" : code,
+		"msg" : e.GetMsg(code),
+		"data" : data,
+	})
 }
 
 // @Summary 新增user
