@@ -12,7 +12,15 @@ type User struct {
 	Password string
 }
 
+func (u *User) Get() (*models.User, error) {
+	return models.GetUser(u.ID)
+}
+
 func (u *User) Add() error {
 	password := util.GenMD5(u.Password)
 	return models.AddUser(u.Username, u.Nickname, password)
+}
+
+func (u *User) Delete() error {
+	return models.DeleteUser(u.ID)
 }

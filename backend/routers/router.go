@@ -1,13 +1,13 @@
 package routers
 
 import (
+	"github.com/codingchan/ysj_5/backend/routers/api"
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 
 	_ "github.com/codingchan/ysj_5/backend/docs"
 	"github.com/codingchan/ysj_5/backend/pkg/setting"
-	"github.com/codingchan/ysj_5/backend/routers/api"
 	"github.com/codingchan/ysj_5/backend/routers/api/v1"
 )
 
