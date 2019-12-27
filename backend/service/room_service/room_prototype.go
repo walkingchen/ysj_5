@@ -1,4 +1,4 @@
-package room_prototype_service
+package room_service
 
 import (
 	"github.com/codingchan/ysj_5/backend/models"

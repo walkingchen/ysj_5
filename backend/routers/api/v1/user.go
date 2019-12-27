@@ -2,6 +2,7 @@ package v1
 
 import (
 	"github.com/codingchan/ysj_5/backend/models"
+	"github.com/codingchan/ysj_5/backend/pkg/app"
 	"github.com/codingchan/ysj_5/backend/pkg/e"
 	"github.com/codingchan/ysj_5/backend/pkg/setting"
 	"github.com/codingchan/ysj_5/backend/pkg/util"
@@ -17,23 +18,16 @@ import (
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/users/{id} [GET]
 func GetUser(c *gin.Context) {
-	code := e.SUCCESS
+	appG := app.Gin{C: c}
+
 	id := com.StrTo(c.Param("id")).MustInt()
 	userService := user_service.User{ID:id}
 	user, err := userService.Get()
 	if err != nil {
-		code := e.ERROR
-		c.JSON(http.StatusOK, gin.H{
-			"code" : code,
-			"msg" : e.GetMsg(code),
-		})
+		appG.Response(http.StatusInternalServerError, e.ERROR, err)
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code" : code,
-		"msg" : e.GetMsg(code),
-		"data" : user,
-	})
+	appG.Response(http.StatusOK, e.SUCCESS, user)
 }
 
 // @Summary 获取user列表
@@ -42,19 +36,15 @@ func GetUser(c *gin.Context) {
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/users [GET]
 func GetUsers(c *gin.Context) {
+	appG := app.Gin{C: c}
+
 	maps := make(map[string]interface{})
 	data := make(map[string]interface{})
-
-	code := e.SUCCESS
 
 	data["lists"] = models.GetUsers(util.GetPage(c), setting.PageSize, maps)
 	data["total"] = models.GetRoomPrototypeTotal(maps)
 
-	c.JSON(http.StatusOK, gin.H{
-		"code" : code,
-		"msg" : e.GetMsg(code),
-		"data" : data,
-	})
+	appG.Response(http.StatusOK, e.SUCCESS, data)
 }
 
 // @Summary 新增user
@@ -78,20 +68,14 @@ func EditUser() {
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/users/{id} [DELETE]
 func DeleteUser(c *gin.Context) {
+	appG := app.Gin{C: c}
+
 	id := com.StrTo(c.Param("id")).MustInt()
 	userService := user_service.User{ID:id}
 	if err := userService.Delete(); err != nil {
-		code := e.ERROR
-		c.JSON(http.StatusOK, gin.H{
-			"code" : code,
-			"msg" : e.GetMsg(code),
-		})
+		appG.Response(http.StatusInternalServerError, e.ERROR, err)
 		return
 	}
 
-	code := e.SUCCESS
-	c.JSON(http.StatusOK, gin.H{
-		"code" : code,
-		"msg" : e.GetMsg(code),
-	})
+	appG.Response(http.StatusOK, e.SUCCESS, nil)
 }

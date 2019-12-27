@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"github.com/astaxie/beego/validation"
 	"github.com/codingchan/ysj_5/backend/service/room_service"
 	"github.com/gin-gonic/gin"
 	"github.com/unknwon/com"
@@ -19,23 +20,25 @@ import (
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/rooms/{id} [GET]
 func GetRoom(c *gin.Context) {
-	code := e.SUCCESS
+	appG := app.Gin{C: c}
 	id := com.StrTo(c.Param("id")).MustInt()
+	valid := validation.Validation{}
+	valid.Min(id, 1, "id")
+
+	if valid.HasErrors() {
+		app.MarkErrors(valid.Errors)
+		appG.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
+		return
+	}
+
 	roomService := room_service.Room{ID:id}
 	room, err := roomService.Get()
 	if err != nil {
-		code := e.ERROR
-		c.JSON(http.StatusOK, gin.H{
-			"code" : code,
-			"msg" : e.GetMsg(code),
-		})
+		appG.Response(http.StatusInternalServerError, e.ERROR, nil)
+		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code" : code,
-		"msg" : e.GetMsg(code),
-		"data" : room,
-	})
+	appG.Response(http.StatusOK, e.SUCCESS, room)
 }
 
 // @Summary 获取聊天室列表
@@ -44,6 +47,8 @@ func GetRoom(c *gin.Context) {
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/rooms [GET]
 func GetRooms(c *gin.Context) {
+	appG := app.Gin{C: c}
+
 	maps := make(map[string]interface{})
 	data := make(map[string]interface{})
 
@@ -52,16 +57,10 @@ func GetRooms(c *gin.Context) {
 		maps[k] = v[0]
 	}
 
-	code := e.SUCCESS
-
 	data["lists"] = models.GetRooms(util.GetPage(c), setting.PageSize, maps)
 	data["total"] = models.GetRoomTotal(maps)
 
-	c.JSON(http.StatusOK, gin.H{
-		"code" : code,
-		"msg" : e.GetMsg(code),
-		"data" : data,
-	})
+	appG.Response(http.StatusOK, e.SUCCESS, data)
 }
 
 // @Summary 新增聊天室
@@ -73,33 +72,20 @@ func GetRooms(c *gin.Context) {
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/rooms [POST]
 func AddRoom(c *gin.Context) {
+	appG := app.Gin{C: c}
+
 	var req app.RoomReq
 	if err := c.BindJSON(&req); err != nil {
-		code := e.INVALID_PARAMS
-		c.JSON(http.StatusOK, gin.H{
-			"code" : code,
-			"msg" : e.GetMsg(code),
-			"data" : req,
-		})
+		appG.Response(http.StatusOK, e.INVALID_PARAMS, req)
 		return
 	}
 
 	if err := room_service.AddAll(req.RoomType, req.PeopleLimit, req.RoomCount); err != nil {
-		code := e.ERROR
-		c.JSON(http.StatusOK, gin.H{
-			"code" : code,
-			"msg" : e.GetMsg(code),
-			"data" : req,
-		})
+		appG.Response(http.StatusInternalServerError, e.ERROR, err)
 		return
 	}
 
-	code := e.SUCCESS
-	c.JSON(http.StatusOK, gin.H{
-		"code" : code,
-		"msg" : e.GetMsg(code),
-		"data" : req,
-	})
+	appG.Response(http.StatusOK, e.SUCCESS, req)
 }
 
 // @Summary 修改聊天室
@@ -112,14 +98,11 @@ func AddRoom(c *gin.Context) {
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/rooms/{id} [PUT]
 func EditRoom(c *gin.Context) {
+	appG := app.Gin{C: c}
+
 	var req app.RoomReq
 	if err := c.BindJSON(&req); err != nil {
-		code := e.INVALID_PARAMS
-		c.JSON(http.StatusOK, gin.H{
-			"code" : code,
-			"msg" : e.GetMsg(code),
-			"data" : req,
-		})
+		appG.Response(http.StatusOK, e.INVALID_PARAMS, req)
 		return
 	}
 
@@ -132,21 +115,11 @@ func EditRoom(c *gin.Context) {
 		PeopleLimit: req.PeopleLimit,
 	}
 	if err := roomService.Edit(); err != nil {
-		code := e.ERROR
-		c.JSON(http.StatusOK, gin.H{
-			"code" : code,
-			"msg" : e.GetMsg(code),
-			"data" : req,
-		})
+		appG.Response(http.StatusInternalServerError, e.ERROR, err)
 		return
 	}
 
-	code := e.SUCCESS
-	c.JSON(http.StatusOK, gin.H{
-		"code" : code,
-		"msg" : e.GetMsg(code),
-		"data" : req,
-	})
+	appG.Response(http.StatusOK, e.SUCCESS, req)
 }
 
 // @Summary 删除聊天室
@@ -155,20 +128,13 @@ func EditRoom(c *gin.Context) {
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/rooms/{id} [DELETE]
 func DeleteRoom(c *gin.Context) {
+	appG := app.Gin{C: c}
 	id := com.StrTo(c.Param("id")).MustInt()
 	roomService := room_service.Room{ID: id}
 	if err := roomService.Delete(); err != nil {
-		code := e.ERROR
-		c.JSON(http.StatusOK, gin.H{
-			"code" : code,
-			"msg" : e.GetMsg(code),
-		})
+		appG.Response(http.StatusInternalServerError, e.ERROR, err)
 		return
 	}
 
-	code := e.SUCCESS
-	c.JSON(http.StatusOK, gin.H{
-		"code" : code,
-		"msg" : e.GetMsg(code),
-	})
+	appG.Response(http.StatusOK, e.SUCCESS, nil)
 }
