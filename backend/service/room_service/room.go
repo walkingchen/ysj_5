@@ -39,8 +39,12 @@ func AddAll(roomType int, peopleLimit int, roomCount int) error {
 			CreatedAt:   time.Time{},
 			UpdatedAt:   time.Time{},
 		}
-		roomService.Add()
+		if err := roomService.Add(); err != nil {
+			return err
+		}
+
 	}
+
 	return nil
 }
 

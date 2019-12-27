@@ -18,19 +18,15 @@ import (
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/post_types [GET]
 func GetPostTypes(c *gin.Context) {
+	appG := app.Gin{C: c}
+
 	maps := make(map[string]interface{})
 	data := make(map[string]interface{})
-
-	code := e.SUCCESS
 
 	data["lists"] = models.GetPostTypes(util.GetPage(c), setting.PageSize, maps)
 	data["total"] = models.GetPostTypeTotal(maps)
 
-	c.JSON(http.StatusOK, gin.H{
-		"code" : code,
-		"msg" : e.GetMsg(code),
-		"data" : data,
-	})
+	appG.Response(http.StatusOK, e.SUCCESS, data)
 }
 
 // @Summary 新增 PostType
@@ -41,37 +37,24 @@ func GetPostTypes(c *gin.Context) {
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/post_types [POST]
 func AddPostType(c *gin.Context) {
+	appG := app.Gin{C: c}
+
 	var req app.PostTypeReq
 	if err := c.BindJSON(&req); err != nil {
-		code := e.INVALID_PARAMS
-		c.JSON(http.StatusOK, gin.H{
-			"code" : code,
-			"msg" : e.GetMsg(code),
-			"data" : req,
-		})
+		appG.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
 		return
 	}
 
-	postType := post_service.PostType{
+	postTypeService := post_service.PostType{
 		TypeName:      req.TypeName,
 		TypeStructure: req.TypeStructure,
 	}
-	if err := postType.Add(); err != nil {
-		code := e.ERROR
-		c.JSON(http.StatusOK, gin.H{
-			"code" : code,
-			"msg" : e.GetMsg(code),
-			"data" : req,
-		})
+	if err := postTypeService.Add(); err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR, nil)
 		return
 	}
 
-	code := e.SUCCESS
-	c.JSON(http.StatusOK, gin.H{
-		"code" : code,
-		"msg" : e.GetMsg(code),
-		"data" : req,
-	})
+	appG.Response(http.StatusOK, e.SUCCESS, req)
 }
 
 // @Summary 删除 PostType
@@ -80,20 +63,14 @@ func AddPostType(c *gin.Context) {
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/post_types/{id} [DELETE]
 func DeletePostType(c *gin.Context) {
+	appG := app.Gin{C: c}
+
 	id := com.StrTo(c.Param("id")).MustInt()
-	postType := post_service.PostType{ID: id}
-	if err := postType.Delete(); err != nil {
-		code := e.ERROR
-		c.JSON(http.StatusOK, gin.H{
-			"code" : code,
-			"msg" : e.GetMsg(code),
-		})
+	postTypeService := post_service.PostType{ID: id}
+	if err := postTypeService.Delete(); err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR, nil)
 		return
 	}
 
-	code := e.SUCCESS
-	c.JSON(http.StatusOK, gin.H{
-		"code" : code,
-		"msg" : e.GetMsg(code),
-	})
+	appG.Response(http.StatusOK, e.SUCCESS, nil)
 }
