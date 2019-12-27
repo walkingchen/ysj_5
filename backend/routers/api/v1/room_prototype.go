@@ -25,6 +25,7 @@ func GetRoomPrototype(c *gin.Context) {
 	prototype, err := prototypeService.Get()
 	if err != nil {
 		appG.Response(http.StatusInternalServerError, e.ERROR, err)
+		return
 	}
 
 	appG.Response(http.StatusOK, e.SUCCESS, prototype)

@@ -25,6 +25,7 @@ func GetUser(c *gin.Context) {
 	user, err := userService.Get()
 	if err != nil {
 		appG.Response(http.StatusInternalServerError, e.ERROR, err)
+		return
 	}
 
 	appG.Response(http.StatusOK, e.SUCCESS, user)

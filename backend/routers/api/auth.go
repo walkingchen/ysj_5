@@ -48,12 +48,15 @@ func GetAuth(c *gin.Context) {
 			token, err := util.GenerateToken(username, password)
 			if err != nil {
 				appG.Response(http.StatusInternalServerError, e.ERROR_AUTH_TOKEN, err)
+				return
 			} else {
 				data["token"] = token
 				appG.Response(http.StatusOK, e.SUCCESS, data)
+				return
 			}
 		} else {
 			appG.Response(http.StatusInternalServerError, e.ERROR_AUTH, nil)
+			return
 		}
 	} else {
 		for _, err := range valid.Errors {
@@ -93,6 +96,7 @@ func Register(c *gin.Context) {
 		isExist := models.CheckRegistered(req.Username)
 		if isExist {
 			appG.Response(http.StatusInternalServerError, e.ERROR, nil)
+			return
 		} else {
 			userService := user_service.User{
 				Username: r.Username,
@@ -101,8 +105,10 @@ func Register(c *gin.Context) {
 			}
 			if err := userService.Add(); err != nil {
 				appG.Response(http.StatusInternalServerError, e.ERROR, err)
+				return
 			} else {
 				appG.Response(http.StatusOK, e.SUCCESS, nil)
+				return
 			}
 		}
 	} else {
