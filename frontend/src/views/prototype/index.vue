@@ -102,7 +102,7 @@ export default {
       })
     },
     handleToDetail(id) {
-      this.$router.push({path: `/prototype/${id}`})
+      this.$router.push({ path: `/prototype/${id}` })
     }
   }
 }
