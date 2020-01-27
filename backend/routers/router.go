@@ -28,6 +28,10 @@ func InitRouter() *gin.Engine {
 	apiv1 := r.Group("/api/v1")
 	// apiv1.Use(jwt.JWT())
 	{
+		apiv1.GET("/users", v1.GetUsers)
+		apiv1.GET("/users/:id", v1.GetUser)
+		apiv1.DELETE("/users/:id", v1.DeleteUser)
+
 		apiv1.GET("/rooms", v1.GetRooms)
 		apiv1.GET("/rooms/:id", v1.GetRoom)
 		apiv1.POST("/rooms", v1.AddRoom)

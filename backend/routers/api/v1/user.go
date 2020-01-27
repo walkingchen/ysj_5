@@ -38,9 +38,23 @@ func GetUser(c *gin.Context) {
 // @Router /api/v1/users [GET]
 func GetUsers(c *gin.Context) {
 	appG := app.Gin{C: c}
+	download := c.Query("download")
 
 	maps := make(map[string]interface{})
 	data := make(map[string]interface{})
+
+	params := c.Request.URL.Query()
+	for k, v := range params {
+		if k != "download" {
+			maps[k] = v[0]
+		}
+	}
+
+	if download != "" {
+		// fixme
+		appG.Response(http.StatusOK, e.ERROR, nil)
+		return
+	}
 
 	data["lists"] = models.GetUsers(util.GetPage(c), setting.PageSize, maps)
 	data["total"] = models.GetRoomPrototypeTotal(maps)
