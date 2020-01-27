@@ -1,9 +1,6 @@
 <template>
   <div class="app-container">
     <upload-excel-component ref="upload" :on-success="handleSuccess" :before-upload="beforeUpload" :upload-prototype="handleUpload" />
-    <!-- <el-table :data="tableData" border highlight-current-row style="width: 100%;margin-top:20px;">
-      <el-table-column v-for="item of tableHeader" :key="item" :prop="item" :label="item" />
-    </el-table> -->
     <el-table :data="prototypeList" border style="width: 100%;margin-top:20px;">
       <el-table-column type="index" label="No." align="center" width="100" />
       <el-table-column prop="prototype_name" label="Prototype Name" align="center" />

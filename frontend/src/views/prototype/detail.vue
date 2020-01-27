@@ -1,16 +1,13 @@
 <template>
-  <div>
-    <el-form style="margin: 20px auto 10px 30px">
+  <div class="app-container">
+    <el-form>
       <el-form-item label="Prototype Name：">{{ prototypeName }}</el-form-item>
       <el-form-item label="People Limit：">{{ peopleLimit }}</el-form-item>
     </el-form>
-    <el-table :data="friendshipList" border style="width: 100%; margin: 20px auto 20px 30px;">
+    <el-table :data="friendshipList" border style="width: 100%;margin-top:20px;">
       <el-table-column label="seat ID" prop="seatId" width="300" />
       <el-table-column label="friend seat ID" prop="friendId">
         <template slot-scope="scope">{{ scope.row.friendId | filter }}
-          <!-- <div v-for="{item, index} in scope.row.friendId" :key="index">
-          <span>{{item}}</span>
-          </div> -->
         </template>
       </el-table-column>
     </el-table>
@@ -48,7 +45,6 @@ export default {
             const o = { 'seatId': i, 'friendId': obj[i] }
             this.friendshipList.push(o)
           }
-          console.log(this.friendshipList)
           this.prototypeName = res.data.prototype_name
           this.peopleLimit = res.data.people_limit
         } else {
@@ -59,3 +55,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.container{
+  width: 100vw
+}
+</style>
