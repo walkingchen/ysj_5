@@ -12,7 +12,7 @@
       <el-table-column prop="updated_at" label="Updated At" :formatter="formatTime" align="center" /> -->
       <el-table-column label="Operate" align="center">
         <template slot-scope="scope">
-          <el-button size="mini">view</el-button>
+          <el-button size="mini" @click="handleToDetail(scope.row.id)">view</el-button>
           <el-button size="mini" type="danger" @click="delDetail(scope.row.id)">delete</el-button>
         </template>
       </el-table-column>
@@ -100,6 +100,9 @@ export default {
           this.$message.error(res.msg)
         }
       })
+    },
+    handleToDetail(id) {
+      this.$router.push({path: `/prototype/${id}`})
     }
   }
 }

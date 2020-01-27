@@ -48,6 +48,18 @@ paths:
       summary: 删除 PostType
       tags:
       - Post Type
+  /api/v1/room_members:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 获取room member list
+      tags:
+      - User
   /api/v1/room_prototypes:
     get:
       produces:
@@ -206,6 +218,68 @@ paths:
       summary: 修改聊天室
       tags:
       - Room
+  /api/v1/users:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 获取user列表
+      tags:
+      - User
+  /api/v1/users/{id}:
+    delete:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 删除user
+      tags:
+      - User
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 获取指定user
+      tags:
+      - User
+    put:
+      parameters:
+      - description: Username
+        in: query
+        name: username
+        required: true
+        type: integer
+      - description: Nickname
+        in: query
+        name: nickname
+        required: true
+        type: integer
+      - description: password
+        in: query
+        name: password
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 修改user
+      tags:
+      - User
   /auth:
     post:
       parameters:

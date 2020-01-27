@@ -37,3 +37,7 @@ export const delPrototypeDetail = id => {
   return axios.delete(`/api/v1/room_prototypes/${id}`).then(res => res.data)
 }
 
+// 获取聊天室原型详情
+export const getPrototypeDetail = id => {
+  return axios.get(`/api/v1/room_prototypes/${id}`).then(res => res.data)
+}

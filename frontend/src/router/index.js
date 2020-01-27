@@ -102,7 +102,11 @@ export const constantRoutes = [
         meta: { title: 'Prototype', icon: 'form' }
       },
       {
-        path: 'roomlist',
+        path: '/prototype/:id',
+        component: () => import('@/views/prototype/detail')
+      },
+      {
+        path: '/roomlist',
         name: 'roomlist',
         component: () => import('@/views/chatroom/index'),
         meta: { title: 'Room List', icon: 'nested' }
