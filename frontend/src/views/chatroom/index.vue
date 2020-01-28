@@ -1,8 +1,7 @@
 <template>
   <div class="app-container">
-    <el-form ref="form" :model="form" label-width="120px">
+    <!-- <el-form ref="form" :model="form" label-width="120px">
       <el-form-item label="Room type">
-        <!-- <el-input v-model="form.name" /> -->
         <el-select v-model="form.room_type" placeholder="please choose">
           <el-option label="Star" :value="1" />
           <el-option label="Net" :value="2" />
@@ -18,7 +17,10 @@
         <el-button type="primary" @click="onSubmit">Create</el-button>
         <el-button @click="onCancel">Cancel</el-button>
       </el-form-item>
-    </el-form>
+    </el-form> -->
+    <FilenameOption v-model="filename" />
+    <br>
+    <el-button :loading="downloadLoading" style="margin: 20px;" type="primary" icon="el-icon-document" @click="handleDownload">Export Excel</el-button>
     <el-table
       v-loading="loading"
       :data="roomList.slice((currentPage-1)*pageSize,currentPage*pageSize)"
@@ -70,11 +72,13 @@ import { createChatRoom, getChatRoomList } from '@/api/room.js'
 import { parseTime } from '@/utils/index.js'
 import DEdit from './components/d-edit'
 import DDel from './components/d-del'
+import FilenameOption from './components/FilenameOption'
 
 export default {
   components: {
     DEdit,
-    DDel
+    DDel,
+    FilenameOption
   },
   data() {
     return {
@@ -85,10 +89,13 @@ export default {
         people_limit: null,
         room_count: null
       },
+      list: [],
       roomList: [],
       total: null,
       pageSize: 8,
-      currentPage: 1
+      currentPage: 1,
+      downloadLoading: false,
+      filename: ''
     }
   },
   created() {
@@ -96,7 +103,6 @@ export default {
   },
   methods: {
     onSubmit() {
-      console.log(this.form)
       createChatRoom(this.form).then(res => {
         if (res.code === 2000) {
           this.$message.success(res.msg)
@@ -119,6 +125,14 @@ export default {
         if (res.code === 2000) {
           this.roomList = res.data.lists
           this.chatroomList = res.data.lists
+          this.list = res.data.lists
+          for (const item in this.list) {
+            for (const i in this.list[item]) {
+              if (i === 'created_at' || i === 'updated_at') {
+                this.list[item][i] = parseTime(this.list[item][i])
+              }
+            }
+          }
           this.total = res.data.total
         } else {
           this.$message.error(res.msg)
@@ -154,6 +168,31 @@ export default {
       }
       const CURRENT_PAGE = 1
       this.handleCurrentChange(CURRENT_PAGE)
+    },
+    handleDownload() {
+      this.downloadLoading = true
+      import('@/vendor/Export2Excel').then(excel => {
+        const tHeader = ['Room Id', 'Room name', 'Room type', 'People limit', 'Room desc', 'Created time', 'Updated time']
+        const filterVal = ['id', 'room_name', 'room_type', 'people_limit', 'room_desc', 'created_at', 'updated_at']
+        const list = this.list
+        const data = this.formatJson(filterVal, list)
+        excel.export_json_to_excel({
+          header: tHeader,
+          data,
+          filename: this.filename,
+          bookType: 'csv'
+        })
+        this.downloadLoading = false
+      })
+    },
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => {
+        if (j === 'timestamp') {
+          return parseTime(v[j])
+        } else {
+          return v[j]
+        }
+      }))
     },
     editShow(data) {
       this.$refs.edit._show(data)
