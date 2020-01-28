@@ -113,6 +113,16 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/user',
+    component: Layout,
+    children: [{
+      path: '',
+      component: () => import('@/views/user/index'),
+      meta: { title: 'User', icon: 'user' }
+    }]
+
+  },
 
   // {
   //   path: '/nested',
