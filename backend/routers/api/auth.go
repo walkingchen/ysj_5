@@ -33,6 +33,7 @@ type register struct {
 // @Success 200 {string} string "{"code":2000,"data":{},"msg":"ok"}"
 // @Router /auth [POST]
 func GetAuth(c *gin.Context) {
+	appG := app.Gin{C: c}
 	username := c.Query("username")
 	password := c.Query("password")
 
@@ -41,19 +42,21 @@ func GetAuth(c *gin.Context) {
 	ok, _ := valid.Valid(&a)
 
 	data := make(map[string]interface{})
-	code := e.INVALID_PARAMS
 	if ok {
 		isExist := models.CheckAuth(username, util.GenMD5(password))
 		if isExist {
 			token, err := util.GenerateToken(username, password)
 			if err != nil {
-				code = e.ERROR_AUTH_TOKEN
+				appG.Response(http.StatusInternalServerError, e.ERROR_AUTH_TOKEN, err)
+				return
 			} else {
 				data["token"] = token
-				code = e.SUCCESS
+				appG.Response(http.StatusOK, e.SUCCESS, data)
+				return
 			}
 		} else {
-			code = e.ERROR_AUTH
+			appG.Response(http.StatusInternalServerError, e.ERROR_AUTH, nil)
+			return
 		}
 	} else {
 		for _, err := range valid.Errors {
@@ -61,11 +64,7 @@ func GetAuth(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code" : code,
-		"msg" : e.GetMsg(code),
-		"data" : data,
-	})
+	appG.Response(http.StatusOK, e.SUCCESS, data)
 }
 
 // @Summary 注册
@@ -77,14 +76,11 @@ func GetAuth(c *gin.Context) {
 // @Success 200 {string} string "{"code":2000,"data":{},"msg":"ok"}"
 // @Router /register [POST]
 func Register(c *gin.Context) {
+	appG := app.Gin{C: c}
+
 	var req app.RegisterReq
 	if err := c.BindJSON(&req); err != nil {
-		code := e.INVALID_PARAMS
-		c.JSON(http.StatusOK, gin.H{
-			"code" : code,
-			"msg" : e.GetMsg(code),
-			"data" : req,
-		})
+		appG.Response(http.StatusInternalServerError, e.INVALID_PARAMS, err)
 		return
 	}
 	valid := validation.Validation{}
@@ -96,11 +92,11 @@ func Register(c *gin.Context) {
 	ok, _ := valid.Valid(&r)
 
 	data := make(map[string]interface{})
-	code := e.INVALID_PARAMS
 	if ok {
 		isExist := models.CheckRegistered(req.Username)
 		if isExist {
-			code = e.ERROR
+			appG.Response(http.StatusInternalServerError, e.ERROR, nil)
+			return
 		} else {
 			userService := user_service.User{
 				Username: r.Username,
@@ -108,9 +104,11 @@ func Register(c *gin.Context) {
 				Password: r.Password,
 			}
 			if err := userService.Add(); err != nil {
-				code = e.ERROR
+				appG.Response(http.StatusInternalServerError, e.ERROR, err)
+				return
 			} else {
-				code = e.SUCCESS
+				appG.Response(http.StatusOK, e.SUCCESS, nil)
+				return
 			}
 		}
 	} else {
@@ -119,9 +117,5 @@ func Register(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code" : code,
-		"msg" : e.GetMsg(code),
-		"data" : data,
-	})
+	appG.Response(http.StatusOK, e.SUCCESS, data)
 }

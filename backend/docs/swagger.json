@@ -82,7 +82,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "Room Member"
                 ],
                 "summary": "获取room member list",
                 "responses": {

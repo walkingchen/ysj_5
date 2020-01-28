@@ -59,7 +59,7 @@ paths:
             type: string
       summary: 获取room member list
       tags:
-      - User
+      - Room Member
   /api/v1/room_prototypes:
     get:
       produces:
