@@ -92,7 +92,7 @@ export default {
       list: [],
       roomList: [],
       total: null,
-      pageSize: 8,
+      pageSize: 10,
       currentPage: 1,
       downloadLoading: false,
       filename: ''
@@ -133,7 +133,7 @@ export default {
               }
             }
           }
-          this.total = res.data.total
+          this.total = res.data.lists.length
         } else {
           this.$message.error(res.msg)
         }

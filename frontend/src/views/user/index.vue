@@ -11,7 +11,6 @@
       <el-table-column prop="id" label="ID" />
       <el-table-column prop="username" label="Username" />
       <el-table-column prop="nickname" label="Nickname" />
-      <el-table-column prop="password" label="Password" />
     </el-table>
     <el-pagination
       class="paging"
@@ -38,7 +37,7 @@ export default {
     return {
       userList: [],
       loading: false,
-      pageSize: 8,
+      pageSize: 10,
       currentPage: 1,
       total: null,
       filename: ''
@@ -63,8 +62,8 @@ export default {
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['Id', 'Username', 'Nickname', 'Password']
-        const filterVal = ['id', 'username', 'nickname', 'password']
+        const tHeader = ['Id', 'Username', 'Nickname']
+        const filterVal = ['id', 'username', 'nickname']
         const list = this.userList
         const data = this.formatJson(filterVal, list)
         excel.export_json_to_excel({
