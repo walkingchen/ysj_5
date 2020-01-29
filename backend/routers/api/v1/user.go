@@ -42,8 +42,13 @@ func GetUsers(c *gin.Context) {
 	maps := make(map[string]interface{})
 	data := make(map[string]interface{})
 
+	params := c.Request.URL.Query()
+	for k, v := range params {
+		maps[k] = v[0]
+	}
+
 	data["lists"] = models.GetUsers(util.GetPage(c), setting.PageSize, maps)
-	data["total"] = models.GetRoomPrototypeTotal(maps)
+	data["total"] = models.GetUserTotal(maps)
 
 	appG.Response(http.StatusOK, e.SUCCESS, data)
 }

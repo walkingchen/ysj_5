@@ -43,6 +43,12 @@ func GetUsers(pageNum int, pageSize int, maps interface {}) (users []User) {
 	return
 }
 
+func GetUserTotal(maps interface {}) (count int){
+	db.Model(&User{}).Where(maps).Count(&count)
+
+	return
+}
+
 func AddUser(username string, nickname string, password string) error {
 	user := User{
 		Username: username,

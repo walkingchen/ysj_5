@@ -63,5 +63,9 @@ func (r *Room) Edit() error {
 
 
 func (r *Room) Delete() error {
-	return models.DeleteRoom(r.ID)
+	if err := models.DeleteRoom(r.ID); err != nil {
+		return err
+	}
+
+	return nil
 }
