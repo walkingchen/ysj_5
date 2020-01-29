@@ -28,3 +28,8 @@ export function logout() {
 export const uesrRegister = data => {
   return axios.post('/register', data).then(res => res.data)
 }
+
+// 用户列表
+export const getUserList = () => {
+  return axios.get('/api/v1/users').then(res => res.data)
+}
