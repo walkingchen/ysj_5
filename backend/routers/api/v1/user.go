@@ -42,12 +42,26 @@ func GetUsers(c *gin.Context) {
 	maps := make(map[string]interface{})
 	data := make(map[string]interface{})
 
-	params := c.Request.URL.Query()
-	for k, v := range params {
-		maps[k] = v[0]
+	//params := c.Request.URL.Query()
+	//for k, v := range params {
+	//	maps[k] = v[0]
+	//}
+
+	page, _ := com.StrTo(c.Query("page")).Int()
+	size, _ := com.StrTo(c.Query("size")).Int()
+
+	// 下载分支
+	if page == 0 && size == 0 {
+		data["lists"] = models.GetUsers(0, -1, maps)
+	} else {
+		if size != 0 {
+			data["lists"] = models.GetUsers(util.GetPage(c), size, maps)
+		} else {
+			// 默认 page size
+			data["lists"] = models.GetUsers(util.GetPage(c), setting.PageSize, maps)
+		}
 	}
 
-	data["lists"] = models.GetUsers(util.GetPage(c), setting.PageSize, maps)
 	data["total"] = models.GetUserTotal(maps)
 
 	appG.Response(http.StatusOK, e.SUCCESS, data)
