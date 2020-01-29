@@ -40,8 +40,7 @@ export default {
       pageSize: 10,
       currentPage: 1,
       total: null,
-      filename: '',
-      downloadLoading: false
+      filename: ''
     }
   },
   created() {
@@ -54,7 +53,7 @@ export default {
         this.loading = false
         if (res.code === 2000) {
           this.userList = res.data.lists
-          this.total = res.data.total
+          this.total = res.data.lists.length
         } else {
           this.$message.error(res.msg)
         }
