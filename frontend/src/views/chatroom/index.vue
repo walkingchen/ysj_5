@@ -133,7 +133,7 @@ export default {
               }
             }
           }
-          this.total = res.data.lists.length
+          this.total = res.data.total
         } else {
           this.$message.error(res.msg)
         }
