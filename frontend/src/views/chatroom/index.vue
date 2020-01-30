@@ -89,7 +89,6 @@ export default {
         people_limit: null,
         room_count: null
       },
-      list: [],
       roomList: [],
       total: null,
       pageSize: 10,
@@ -125,14 +124,6 @@ export default {
         if (res.code === 2000) {
           this.roomList = res.data.lists
           this.chatroomList = res.data.lists
-          this.list = res.data.lists
-          for (const item in this.list) {
-            for (const i in this.list[item]) {
-              if (i === 'created_at' || i === 'updated_at') {
-                this.list[item][i] = parseTime(this.list[item][i])
-              }
-            }
-          }
           this.total = res.data.lists.length
         } else {
           this.$message.error(res.msg)
@@ -174,7 +165,7 @@ export default {
       import('@/vendor/Export2Excel').then(excel => {
         const tHeader = ['Room Id', 'Room name', 'Room type', 'People limit', 'Room desc', 'Created time', 'Updated time']
         const filterVal = ['id', 'room_name', 'room_type', 'people_limit', 'room_desc', 'created_at', 'updated_at']
-        const list = this.list
+        const list = this.roomList
         const data = this.formatJson(filterVal, list)
         excel.export_json_to_excel({
           header: tHeader,
@@ -187,7 +178,7 @@ export default {
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
+        if (j === 'created_at' || j === 'updated_at') {
           return parseTime(v[j])
         } else {
           return v[j]
