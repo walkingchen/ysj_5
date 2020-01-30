@@ -30,6 +30,6 @@ export const uesrRegister = data => {
 }
 
 // 用户列表
-export const getUserList = () => {
-  return axios.get('/api/v1/users').then(res => res.data)
+export const getUserList = params => {
+  return axios.get('/api/v1/users', { params: params }).then(res => res.data)
 }
