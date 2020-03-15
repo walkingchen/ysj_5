@@ -20,7 +20,7 @@
     </el-form> -->
     <FilenameOption v-model="filename" />
     <br>
-    <el-button :loading="downloadLoading" style="margin: 20px;" type="primary" icon="el-icon-document" @click="handleDownload">Export Excel</el-button>
+    <el-button :loading="downloadLoading" style="margin: 20px;" type="primary" icon="el-icon-document" @click="handleDownload">Export CSV</el-button>
     <el-table
       v-loading="loading"
       :data="roomList.slice((currentPage-1)*pageSize,currentPage*pageSize)"
@@ -163,7 +163,7 @@ export default {
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['Room Id', 'Room name', 'Room type', 'People limit', 'Room desc', 'Created time', 'Updated time']
+        const tHeader = ['Room id', 'Room name', 'Room type', 'People limit', 'Room desc', 'Created time', 'Updated time']
         const filterVal = ['id', 'room_name', 'room_type', 'people_limit', 'room_desc', 'created_at', 'updated_at']
         const list = this.roomList
         const data = this.formatJson(filterVal, list)

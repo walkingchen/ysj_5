@@ -2,7 +2,7 @@
   <div class="app-container">
     <FilenameOption v-model="filename" />
     <br>
-    <el-button :loading="downloadLoading" style="margin: 20px;" type="primary" icon="el-icon-document" @click="handleDownload">Export Excel</el-button>
+    <el-button :loading="downloadLoading" style="margin: 20px;" type="primary" icon="el-icon-document" @click="handleDownload">Export CSV</el-button>
     <el-table
       v-loading="loading"
       :data="userList"

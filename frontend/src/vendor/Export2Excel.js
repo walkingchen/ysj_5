@@ -154,7 +154,7 @@ export function export_json_to_excel({
   bookType = 'xlsx'
 } = {}) {
   /* original data */
-  filename = filename || 'excel-list'
+  filename = filename || 'csv-list'
   data = [...data]
   data.unshift(header);
 
