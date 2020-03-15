@@ -163,7 +163,7 @@ export default {
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['Room Id', 'Room name', 'Room type', 'People limit', 'Room desc', 'Created time', 'Updated time']
+        const tHeader = ['Room id', 'Room name', 'Room type', 'People limit', 'Room desc', 'Created time', 'Updated time']
         const filterVal = ['id', 'room_name', 'room_type', 'people_limit', 'room_desc', 'created_at', 'updated_at']
         const list = this.roomList
         const data = this.formatJson(filterVal, list)
