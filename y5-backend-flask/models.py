@@ -1,0 +1,146 @@
+# coding: utf-8
+from flask_login import UserMixin
+from sqlalchemy import Column, DateTime, Integer, MetaData, String, Text
+from sqlalchemy.schema import FetchedValue
+from sqlalchemy.ext.declarative import declarative_base
+from extensions import db
+
+
+class Message(db.Model):
+    __tablename__ = 'tb_message'
+
+    id = Column(Integer, primary_key=True)
+    message = Column(String(255))
+    room_id = Column(Integer)
+    _from = Column('from', Integer)
+    to = Column(Integer)
+    created_at = Column(DateTime, server_default=FetchedValue())
+    updated_at = Column(DateTime)
+
+
+class Notice(db.Model):
+    __tablename__ = 'tb_notice'
+
+    id = Column(Integer, primary_key=True)
+    notice_type = Column(Integer, info='公告类型：0全局，1room')
+    message = Column(String(2048))
+    created_at = Column(DateTime, server_default=FetchedValue())
+    updated_at = Column(DateTime)
+
+
+class Post(db.Model):
+    __tablename__ = 'tb_post'
+
+    id = Column(Integer, primary_key=True)
+    timeline_id = Column(Integer)
+    post_title = Column(String(256))
+    post_content = Column(Text)
+    type_id = Column(Integer)
+    user_id = Column(Integer)
+    created_at = Column(DateTime, server_default=FetchedValue())
+    updated_at = Column(DateTime)
+
+
+class PostComment(db.Model):
+    __tablename__ = 'tb_post_comment'
+
+    id = Column(Integer, primary_key=True)
+    post_id = Column(Integer)
+    user_id = Column(Integer)
+    comment_content = Column(String(140))
+    created_at = Column(DateTime, server_default=FetchedValue())
+    updated_at = Column(DateTime)
+
+
+class PostLike(db.Model):
+    __tablename__ = 'tb_post_like'
+
+    id = Column(Integer, primary_key=True)
+    post_id = Column(Integer)
+    post_like = Column(Integer, info='0: none; 1: like; 2: dislike; 3: ...')
+    created_at = Column(DateTime, server_default=FetchedValue())
+    updated_at = Column(DateTime, server_default=FetchedValue())
+
+
+class PostType(db.Model):
+    __tablename__ = 'tb_post_type'
+
+    id = Column(Integer, primary_key=True)
+    type_name = Column(String(64), nullable=False)
+    type_structure = Column(String(2048))
+    created_at = Column(DateTime, server_default=FetchedValue())
+    updated_at = Column(DateTime, server_default=FetchedValue())
+
+
+class Question(db.Model):
+    __tablename__ = 'tb_question'
+
+    id = Column(Integer, primary_key=True)
+
+
+class Room(db.Model):
+    __tablename__ = 'tb_room'
+
+    id = Column(Integer, primary_key=True)
+    room_name = Column(String(255))
+    room_desc = Column(String(255))
+    room_type = Column(Integer)
+    people_limit = Column(Integer)
+    created_at = Column(DateTime, server_default=FetchedValue())
+    updated_at = Column(DateTime)
+
+
+class RoomMember(db.Model):
+    __tablename__ = 'tb_room_member'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer)
+    seat_no = Column(Integer)
+    room_id = Column(Integer)
+    created_at = Column(DateTime, server_default=FetchedValue())
+    updated_at = Column(DateTime)
+
+
+class RoomPrototype(db.Model):
+    __tablename__ = 'tb_room_prototype'
+
+    id = Column(Integer, primary_key=True)
+    prototype_name = Column(String(128))
+    people_limit = Column(Integer)
+    friendship = Column(String)
+    created_at = Column(DateTime, server_default=FetchedValue())
+    updated_at = Column(DateTime, server_default=FetchedValue())
+
+
+class Timeline(db.Model):
+    __tablename__ = 'tb_timeline'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer)
+    room_id = Column(Integer)
+    timeline_type = Column(Integer, info='公共/私人')
+    created_at = Column(DateTime, server_default=FetchedValue())
+    updated_at = Column(DateTime)
+
+
+class User(db.Model, UserMixin):
+    __tablename__ = 'tb_user'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer)
+    username = Column(String(32))
+    password = Column(String(128))
+    email = Column(String(128))
+    nickname = Column(String(32))
+    realname = Column(String(32))
+    created_at = Column(DateTime, server_default=FetchedValue())
+    updated_at = Column(DateTime)
+
+
+class UserProfile(db.Model):
+    __tablename__ = 'tb_user_profile'
+
+    user_id = Column(Integer, primary_key=True)
+    user_status = Column(Integer)
+    created_at = Column(DateTime, server_default=FetchedValue())
+    updated_at = Column(DateTime)

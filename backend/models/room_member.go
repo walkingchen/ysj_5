@@ -1,11 +1,23 @@
 package models
 
+import "github.com/jinzhu/gorm"
+
 type RoomMember struct {
 	Model
 
 	UserId int `json:"user_id"`
 	SeatNo int `json:"seat_no"`
 	RoomId int `json:"room_id"`
+}
+
+func GetMember(id int) (*RoomMember, error) {
+	var member RoomMember
+	err := db.Where("id = ?", id).First(&member).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	return &member, nil
 }
 
 func GetMembers(maps interface {}) (roomMember []RoomMember) {

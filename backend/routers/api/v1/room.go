@@ -31,12 +31,22 @@ func GetRoom(c *gin.Context) {
 		return
 	}
 
+	// room basic info
 	roomService := room_service.Room{ID:id}
 	room, err := roomService.Get()
 	if err != nil {
 		appG.Response(http.StatusInternalServerError, e.ERROR, nil)
 		return
 	}
+
+	// room member list
+
+	// timeline: post & comment
+	// public post && comment
+
+	// private post && comment
+
+	// message
 
 	appG.Response(http.StatusOK, e.SUCCESS, room)
 }
