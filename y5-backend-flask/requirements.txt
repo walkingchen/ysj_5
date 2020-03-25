@@ -18,6 +18,8 @@ flask-ckeditor
 flask_apscheduler
 flask-mail
 flask-cors
-
+flask-socketio
+flask-restful
+flasgger
 pymysql
 requests

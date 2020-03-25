@@ -118,7 +118,7 @@ class Timeline(db.Model):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer)
     room_id = Column(Integer)
-    timeline_type = Column(Integer, info='公共/私人')
+    timeline_type = Column(Integer, info='公共0/私人1')
     created_at = Column(DateTime, server_default=FetchedValue())
     updated_at = Column(DateTime)
 
