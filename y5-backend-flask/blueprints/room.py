@@ -1,4 +1,5 @@
-from flask import Blueprint, request, json
+from flasgger import swag_from
+from flask import Blueprint, request, json, jsonify
 from flask_restful import Api, Resource
 
 from config import MSG_SIZE_INIT
@@ -6,43 +7,13 @@ from entity.Resp import Resp
 from entity.RoomResp import RoomResp
 from models import Room, Timeline, Post
 
-bp_room = Blueprint('/', __name__)
+bp_room = Blueprint('/room', __name__)
 api = Api(bp_room, '/room')
 
 
 class RoomApi(Resource):
+    @swag_from('../swagger/room_job_with_id.yaml')
     def get(self, id):
-        """
-        This is the language awesomeness API
-        Call this api passing a language name and get back its features
-        ---
-        tags:
-          - Room
-        parameters:
-          - name: id
-            in: path
-            type: string
-            required: true
-            description: get room by ID
-        responses:
-          200:
-            description: return room with details
-            schema:
-              id: room id
-              properties:
-                id:
-                  type: string
-                  description: room id
-                  default: null
-                room_name:
-                  type: string
-                room_desc:
-                    type: string
-                room_type:
-                    type: string
-                people_limit:
-                    type: string
-        """
         user_id = request.user.id
         # 获取room ID
         if 'id' in request.args:
@@ -80,5 +51,18 @@ class RoomApi(Resource):
             )
             return json.jsonify(Resp(data=room_resp))
 
+    @swag_from('../swagger/room_job_without_id.yaml')
+    def post(self):
+        return jsonify(Resp(result_code=2000, result_msg='success', data=None))
 
-api.add_resource(RoomApi, '/<int:id>')
+
+api.add_resource(
+    RoomApi,
+    '/<int:id>',
+    methods=['GET', 'PUT', 'DELETE'],
+    endpoint='room_job_with_id')
+api.add_resource(
+    RoomApi,
+    '/',
+    methods=['POST'],
+    endpoint='room_job_without_id')

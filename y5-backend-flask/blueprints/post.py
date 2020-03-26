@@ -1,18 +1,77 @@
 from flask import Blueprint, request
-from flask_restful import Api
+from flask_restful import Api, Resource
 
 from extensions import db
 from models import Post, PostComment, PostLike
 
-bp_post = Blueprint('/', __name__)
+bp_post = Blueprint('/post', __name__)
 api = Api(bp_post, '/post')
 
 
-class PostApi:
+class PostApi(Resource):
     def get(self):
-        pass
+        """
+        ---
+        tags:
+          - Post
+        parameters:
+          - name: id
+            in: path
+            type: string
+            required: true
+            description: get room by ID
+        responses:
+          200:
+            description: return room with details
+            schema:
+              id: room id
+              properties:
+                id:
+                  type: string
+                  description: room id
+                  default: null
+                room_name:
+                  type: string
+                room_desc:
+                    type: string
+                room_type:
+                    type: string
+                people_limit:
+                    type: string
+        """
+        data = request.get_json()
+        timeline_id = data['timeline_id']
 
     def post(self):
+        """
+        ---
+        tags:
+          - Post
+        parameters:
+          - name: id
+            in: path
+            type: string
+            required: true
+            description: get room by ID
+        responses:
+          200:
+            description: return room with details
+            schema:
+              id: room id
+              properties:
+                id:
+                  type: string
+                  description: room id
+                  default: null
+                room_name:
+                  type: string
+                room_desc:
+                    type: string
+                room_type:
+                    type: string
+                people_limit:
+                    type: string
+        """
         data = request.get_json()
         timeline_id = data['timeline_id']
         if 'post_title' in data:
@@ -33,7 +92,7 @@ class PostApi:
 api.add_resource(PostApi, '/<int:id>')
 
 
-class CommentApi:
+class CommentApi(Resource):
     def get(self):
         pass
 
@@ -53,7 +112,7 @@ class CommentApi:
 api.add_resource(CommentApi, '/<int:id>')
 
 
-class LikeApi:
+class LikeApi(Resource):
     def get(self):
         pass
 
