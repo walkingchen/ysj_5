@@ -1,0 +1,27 @@
+---
+tags:
+  - Post
+parameters:
+    - name: room_type
+      in: body
+      type: string
+      required: true
+    - name: people_limit
+      in: body
+      type: string
+      required: true
+    - name: room_count
+      in: body
+      type: string
+      required: true
+    - name: room_desc
+      in: body
+      type: string
+      required: false
+responses:
+  200:
+    description: return room array created
+    schema:
+      result_code: 2000
+      result_msg: ''
+      result_data: ''

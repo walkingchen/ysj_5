@@ -1,0 +1,27 @@
+---
+tags:
+  - Message
+parameters:
+  - name: id
+    in: path
+    type: string
+    required: true
+    description: get room by ID
+responses:
+  200:
+    description: return room with details
+    schema:
+      id: room id
+      properties:
+        id:
+          type: string
+          description: room id
+          default: null
+        room_name:
+          type: string
+        room_desc:
+            type: string
+        room_type:
+            type: string
+        people_limit:
+            type: string

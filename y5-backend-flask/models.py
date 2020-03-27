@@ -1,9 +1,27 @@
 # coding: utf-8
+import datetime
+
 from flask_login import UserMixin
-from sqlalchemy import Column, DateTime, Integer, MetaData, String, Text
+from sqlalchemy import Column, DateTime, Integer, MetaData, String, Text, inspect
 from sqlalchemy.schema import FetchedValue
 from sqlalchemy.ext.declarative import declarative_base
 from extensions import db
+
+
+def datetime_handler(x):
+    if isinstance(x, datetime.datetime):
+        return x.isoformat()
+    return x
+
+
+class Serializer(object):
+
+    def serialize(self):
+        return {c: datetime_handler(getattr(self, c)) for c in inspect(self).attrs.keys()}
+
+    @staticmethod
+    def serialize_list(l):
+        return [m.serialize() for m in l]
 
 
 class Message(db.Model):
@@ -89,6 +107,10 @@ class Room(db.Model):
     created_at = Column(DateTime, server_default=FetchedValue())
     updated_at = Column(DateTime)
 
+    def serialize(self):
+        d = Serializer.serialize(self)
+        return d
+
 
 class RoomMember(db.Model):
     __tablename__ = 'tb_room_member'
@@ -105,6 +127,7 @@ class RoomPrototype(db.Model):
     __tablename__ = 'tb_room_prototype'
 
     id = Column(Integer, primary_key=True)
+    prototype_id = Column(Integer)
     prototype_name = Column(String(128))
     people_limit = Column(Integer)
     friendship = Column(String)
