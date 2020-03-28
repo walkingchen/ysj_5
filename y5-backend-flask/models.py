@@ -75,6 +75,7 @@ class PostLike(db.Model):
 
     id = Column(Integer, primary_key=True)
     post_id = Column(Integer)
+    user_id = Column(Integer)
     post_like = Column(Integer, info='0: none; 1: like; 2: dislike; 3: ...')
     created_at = Column(DateTime, server_default=FetchedValue())
     updated_at = Column(DateTime, server_default=FetchedValue())
@@ -133,6 +134,10 @@ class RoomPrototype(db.Model):
     friendship = Column(String)
     created_at = Column(DateTime, server_default=FetchedValue())
     updated_at = Column(DateTime, server_default=FetchedValue())
+
+    def serialize(self):
+        d = Serializer.serialize(self)
+        return d
 
 
 class Timeline(db.Model):

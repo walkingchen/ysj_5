@@ -9,7 +9,7 @@ from config import MSG_SIZE_INIT
 from entity.Resp import Resp
 from entity.RoomResp import RoomResp
 from extensions import db
-from models import Room, Timeline, Post, RoomMember, RoomPrototype
+from models import Room, Timeline, Post, RoomMember, RoomPrototype, Serializer, PostComment, PostLike
 
 bp_room = Blueprint('/room', __name__)
 api = Api(bp_room, '/room')
@@ -18,42 +18,32 @@ api = Api(bp_room, '/room')
 class RoomApi(Resource):
     @swag_from('../swagger/room/retrieve.yaml')
     def get(self, id):
-        user_id = request.user.id
-        # 获取room ID
-        if 'id' in request.args:
-            id = request.args['id']
-        else:
+        # user_id = request.user.id
+        user_id = 15
+        room = Room.query.filter_by(id=id).first()
+        if room is None:
             return json.jsonify({
                 'resultCode': 4000,
                 'resultMsg': ''
             })
-        # 获取聊天室详情
-        if request.method == 'GET':
-            # room
-            room = Room.query.filter_by(id=id).first()
-            if room is None:
-                return json.jsonify({
-                    'resultCode': 4000,
-                    'resultMsg': ''
-                })
-            # timeline
-            timeline_pub = Timeline.query.filter_by(room_id=room.id, timeline_type=0).first()
-            timeline_pri = Timeline.query.filter_by(room_id=room.id, timeline_type=1, user_id=user_id).first()
-            if timeline_pri is None:
-                pass
-            # post
-            posts_pub = Post.query.filter_by(timeline_id=timeline_pub.id).limit(MSG_SIZE_INIT)
-            posts_pri = Post.query.filter_by(timeline_id=timeline_pri.id).limit(MSG_SIZE_INIT)
-            # message
-            # fixme 多个聊天怎么取数据
-            room_resp = RoomResp(
-                room=room,
-                timeline_pub=timeline_pub,
-                timeline_pri=timeline_pri,
-                posts_pub=posts_pub,
-                posts_pri=posts_pri
-            )
-            return jsonify(Resp(data=room_resp))
+        # timeline
+        timeline_pub = Timeline.query.filter_by(room_id=room.id, timeline_type=0).first()
+        timeline_pri = Timeline.query.filter_by(room_id=room.id, timeline_type=1, user_id=user_id).first()
+        if timeline_pri is None:
+            pass
+        # post
+        posts_pub = Post.query.filter_by(timeline_id=timeline_pub.id).limit(MSG_SIZE_INIT).all()
+        posts_pri = Post.query.filter_by(timeline_id=timeline_pri.id).limit(MSG_SIZE_INIT).all()
+
+        process_posts(posts=posts_pub, user_id=user_id)
+        process_posts(posts=posts_pri, user_id=user_id)
+
+        room_resp = RoomResp(
+            room=Serializer.serialize(room),
+            posts_pub=Serializer.serialize_list(posts_pub),
+            posts_pri=Serializer.serialize_list(posts_pri)
+        )
+        return jsonify(Resp(result_code=2000, result_msg='success', data=room_resp.__dict__).__dict__)
 
     @swag_from('../swagger/room/create.yaml')
     def post(self):
@@ -64,7 +54,10 @@ class RoomApi(Resource):
             people_limit = int(data['people_limit'])
             room_count = int(data['room_count'])
         except KeyError:
-            return json.dumps(Resp(result_code=4000, result_msg='fail', data=None).__dict__)
+            return json.dumps(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
+        except TypeError:
+            return json.dumps(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
+
         if 'room_desc' in data:
             room_desc = data['room_desc']
         else:
@@ -87,8 +80,8 @@ class RoomApi(Resource):
             db.session.commit()
 
             # 添加timeline
-            tl_pub = Timeline(room_id=room.id, timeline_type=0)
-            db.session.add(tl_pub)
+            timeline_pub = Timeline(room_id=room.id, timeline_type=0)
+            db.session.add(timeline_pub)
             db.session.commit()
 
             room_count -= 1
@@ -96,12 +89,57 @@ class RoomApi(Resource):
         return jsonify(Resp(result_code=2000, result_msg='success', data=None).__dict__)
 
     @swag_from('../swagger/room/update.yaml')
-    def put(self):
+    def put(self, id):
+        data = request.get_json()
+        try:
+            room_name = data['room_name']
+            room_type = data['room_type']
+            people_limit = data['people_limit']
+        except KeyError:
+            return json.dumps(Resp(result_code=4000, result_msg='key error', data=None).__dict__)
+        if 'room_desc' in data:
+            room_desc = data['room_desc']
+        else:
+            room_desc = None
+
+        room = Room.query.filter_by(id=id).first()
+        room(
+            room_name=room_name,
+            room_type=room_type,
+            people_limit=people_limit,
+            room_desc=room_desc
+        )
+        db.session.add(room)
+        db.session.commit()
+
         return jsonify(Resp(result_code=2000, result_msg='success', data=None))
 
     @swag_from('../swagger/room/delete.yaml')
-    def delete(self):
+    def delete(self, id):
+        room = Room.query.filter_by(id=id).first()
+        if room is None:
+            return jsonify(Resp(result_code=4000, result_msg='fail', data=None))
+
+        db.session.delete(room)
+        db.session.commit()
+
         return jsonify(Resp(result_code=2000, result_msg='success', data=None))
+
+
+# 为每篇post添加评论、点赞
+def process_posts(posts, user_id):
+    for post in posts:
+        comments = PostComment.query.filter_by(post_id=post.id).all()
+        post['comments'] = comments
+        likes = PostLike.query.filter_by(post_id=post.id).all()
+        post['likes'] = len(likes)
+
+        # 判断是否已点过赞
+        like = PostLike.query.filter_by(post_id=post.id, user_id=user_id).first()
+        if like is None:
+            post['liked'] = False
+        else:
+            post['liked'] = True
 
 
 api.add_resource(
@@ -127,21 +165,29 @@ api.add_resource(
 
 
 class RoomPrototypeApi(Resource):
-    @swag_from('../swagger/room/prototype/create.yaml')
-    def get(self, id):
-        return json.jsonify(Resp(result_code=2000, result_msg='', data=None))
-
     @swag_from('../swagger/room/prototype/retrieve.yaml')
+    def get(self, id):
+        prototype = RoomPrototype.query.filter_by(id=id).first()
+        if prototype is None:
+            return jsonify(Resp(result_code=2000, result_msg='prototype not found', data=None).__dict__)
+
+        return json.jsonify(Resp(
+            result_code=2000,
+            result_msg='success',
+            data=Serializer.serialize(prototype)
+        ).__dict__)
+
+    @swag_from('../swagger/room/prototype/create.yaml')
     def post(self):
-        return jsonify(Resp(result_code=2000, result_msg='success', data=None))
+        return jsonify(Resp(result_code=2000, result_msg='success', data=None).__dict__)
 
     @swag_from('../swagger/room/prototype/update.yaml')
     def put(self):
-        return jsonify(Resp(result_code=2000, result_msg='success', data=None))
+        return jsonify(Resp(result_code=2000, result_msg='success', data=None).__dict__)
 
     @swag_from('../swagger/room/prototype/delete.yaml')
     def delete(self):
-        return jsonify(Resp(result_code=2000, result_msg='success', data=None))
+        return jsonify(Resp(result_code=2000, result_msg='success', data=None).__dict__)
 
 
 api.add_resource(
@@ -166,36 +212,57 @@ api.add_resource(
     endpoint='prototype/delete')
 
 
+class RoomPrototypeListApi(Resource):
+    @swag_from('../swagger/room/prototype/list_retrieve.yaml')
+    def get(self):
+        prototypes = RoomPrototype.query.all()
+        return json.jsonify(Resp(
+            result_code=2000,
+            result_msg='success',
+            data=Serializer.serialize_list(prototypes)
+        ).__dict__)
+
+
+api.add_resource(
+    RoomPrototypeListApi,
+    '/prototype',
+    methods=['GET'],
+    endpoint='prototype/list_retrieve')
+
+
 class RoomMemberApi(Resource):
-    @swag_from('../swagger/room/member/create.yaml')
+    @swag_from('../swagger/room/member/retrieve.yaml')
     def get(self, id):
         return json.jsonify(Resp(result_code=2000, result_msg='', data=None).__dict__)
 
-    @swag_from('../swagger/room/member/retrieve.yaml')
+    @swag_from('../swagger/room/member/create.yaml')
     def post(self):
-        users = request.get_json()
-        if len(users) == 0:
-            return jsonify(Resp(result_code=4000, result_msg='no user', data=None).__dict__)
-        for user in users:
-            try:
-                room_id = user['room_id']
-                user_id = user['user_id']
-                seat_no = user['seat_no']
-            except KeyError:
-                return jsonify(Resp(result_code=4000, result_msg='key error', data=None).__dict__)
-
-            member = RoomMember(room_id=room_id, user_id=user_id, seat_no=seat_no)
-            db.session.add(member)
-            db.session.commit()
+        user = request.get_json()
+        try:
+            room_id = user['room_id']
+            user_id = user['user_id']
+            seat_no = user['seat_no']
+        except KeyError:
+            return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
+        except TypeError:
+            return jsonify(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
+        create_member(room_id=room_id, user_id=user_id, seat_no=seat_no)
 
         return jsonify(Resp(result_code=2000, result_msg='success', data=None).__dict__)
 
     @swag_from('../swagger/room/member/update.yaml')
-    def put(self):
+    def put(self, id):
         return jsonify(Resp(result_code=2000, result_msg='success', data=None).__dict__)
 
     @swag_from('../swagger/room/member/delete.yaml')
-    def delete(self):
+    def delete(self, id):
+        member = RoomMember.query.filter_by(id=id).first()
+        if member is None:
+            return jsonify(Resp(result_code=4000, result_msg='fail', data=None).__dict__)
+
+        db.session.delete(member)
+        db.session.commit()
+
         return jsonify(Resp(result_code=2000, result_msg='success', data=None).__dict__)
 
 
@@ -219,3 +286,41 @@ api.add_resource(
     '/member/<int:id>',
     methods=['DELETE'],
     endpoint='member/delete')
+
+
+class RoomMemberListApi(Resource):
+    @swag_from('../swagger/room/member/list_create.yaml')
+    def post(self):
+        users = request.get_json()
+        if len(users) == 0:
+            return jsonify(Resp(result_code=4000, result_msg='empty params', data=None).__dict__)
+        for user in users:
+            try:
+                room_id = user['room_id']
+                user_id = user['user_id']
+                seat_no = user['seat_no']
+            except KeyError:
+                return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
+            except TypeError:
+                return jsonify(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
+            create_member(room_id=room_id, user_id=user_id, seat_no=seat_no)
+
+        return jsonify(Resp(result_code=2000, result_msg='success', data=None).__dict__)
+
+
+def create_member(room_id, user_id, seat_no):
+    member = RoomMember(room_id=room_id, user_id=user_id, seat_no=seat_no)
+    db.session.add(member)
+    db.session.commit()
+
+    # 创建timeline private
+    timeline_pri = Timeline(room_id=room_id, user_id=user_id, timeline_type=1)
+    db.session.add(timeline_pri)
+    db.session.commit()
+
+
+api.add_resource(
+    RoomMemberListApi,
+    '/members',
+    methods=['POST'],
+    endpoint='member/list_create')
