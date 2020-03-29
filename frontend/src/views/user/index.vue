@@ -1,49 +1,41 @@
 <template>
-  <div class="app-container">
-    <FilenameOption v-model="filename" />
-    <br>
-    <el-button :loading="downloadLoading" style="margin: 20px;" type="primary" icon="el-icon-document" @click="handleDownload">Export Excel</el-button>
-    <el-table
-      v-loading="loading"
-      :data="userList"
-      border
-    >
-      <el-table-column prop="id" label="ID" />
-      <el-table-column prop="username" label="Username" />
-      <el-table-column prop="nickname" label="Nickname" />
-    </el-table>
-    <el-pagination
-      class="paging"
-      background
-      :current-page="params.page"
-      :page-size="params.size"
-      layout="prev, pager, next"
-      :total="total"
-      @current-change="handleCurrentChange"
-    />
+  <div class="user-content">
+    <el-row class="user-content-head">
+      <span>28号房间</span>
+    </el-row>
+    <el-row :gutter="20">
+      <el-col :span="7">
+        <navigation :list="list" />
+        <priTimeline />
+      </el-col>
+      <el-col :span="9">
+        <pubTimeline />
+      </el-col>
+      <el-col :span="8">
+        <portrait />
+        <chatroom />
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script>
-import { getUserList } from '@/api/user.js'
-import FilenameOption from './components/FilenameOption'
-
+import chatroom from './components/chatroom'
+import navigation from './components/navigation'
+import portrait from './components/portrait'
+import priTimeline from './components/privateTimeline'
+import pubTimeline from './components/publicTimeline'
+import { getRoomInf } from '@/api/chatroom'
 export default {
   components: {
-    FilenameOption
+    chatroom,
+    navigation,
+    portrait,
+    priTimeline,
+    pubTimeline
   },
   data() {
     return {
-      userList: [],
-      totalUserList: [],
-      loading: false,
-      total: null,
-      downloadLoading: false,
-      filename: '',
-      params: {
-        page: 1,
-        size: 10
-      }
     }
   },
   created() {
@@ -51,56 +43,27 @@ export default {
   },
   methods: {
     init() {
-      this.loading = true
-      getUserList(this.params).then(res => {
-        this.loading = false
-        if (res.code === 2000) {
-          this.userList = res.data.lists
-          this.total = res.data.total
-        } else {
-          this.$message.error(res.msg)
-        }
-      })
-    },
-    handleDownload() {
-      getUserList({ page: 0, size: 0 }).then(res => {
-        if (res.code === 2000) {
-          this.totalUserList = res.data.lists
-          this.downloadLoading = true
-          import('@/vendor/Export2Excel').then(excel => {
-            const tHeader = ['Id', 'Username', 'Nickname']
-            const filterVal = ['id', 'username', 'nickname']
-            const list = this.totalUserList
-            const data = this.formatJson(filterVal, list)
-            excel.export_json_to_excel({
-              header: tHeader,
-              data,
-              filename: this.filename,
-              bookType: 'csv'
-            })
-            this.downloadLoading = false
-          })
-        } else {
-          this.$message.error(res.msg)
-        }
-      })
-    },
-    formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => {
-        return v[j]
-      }))
-    },
-    handleCurrentChange(value) {
-      this.params.page = value
-      this.init()
+      // getRoomInf(28).then(() => {
+      // })
     }
   }
 }
 </script>
 
-<style scoped>
-.paging{
-  float: right;
-  margin: 15px 5px;
+<style lang="scss" scoped>
+.user-content{
+  width: 100%;
+  height: 100%;
+  .user-content-head{
+    width: 100%;
+    height: 8vh;
+    background-color: cadetblue;
+    display: table;
+    span{
+      display: table-cell;
+      vertical-align: middle;
+      text-align: center;
+    }
+  }
 }
 </style>
