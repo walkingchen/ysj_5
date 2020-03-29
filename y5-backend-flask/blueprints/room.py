@@ -5,7 +5,6 @@ from flasgger import swag_from
 from flask import Blueprint, request, json, jsonify
 from flask_restful import Api, Resource
 
-from config import MSG_SIZE_INIT
 from entity.Resp import Resp
 from entity.RoomResp import RoomResp
 from extensions import db
@@ -26,22 +25,14 @@ class RoomApi(Resource):
                 'resultCode': 4000,
                 'resultMsg': ''
             })
-        # timeline
-        timeline_pub = Timeline.query.filter_by(room_id=room.id, timeline_type=0).first()
-        timeline_pri = Timeline.query.filter_by(room_id=room.id, timeline_type=1, user_id=user_id).first()
-        if timeline_pri is None:
-            pass
-        # post
-        posts_pub = Post.query.filter_by(timeline_id=timeline_pub.id).limit(MSG_SIZE_INIT).all()
-        posts_pri = Post.query.filter_by(timeline_id=timeline_pri.id).limit(MSG_SIZE_INIT).all()
-
-        process_posts(posts=posts_pub, user_id=user_id)
-        process_posts(posts=posts_pri, user_id=user_id)
+        # room members
+        members = RoomMember.query.filter_by(room_id=id).all()
 
         room_resp = RoomResp(
             room=Serializer.serialize(room),
-            posts_pub=Serializer.serialize_list(posts_pub),
-            posts_pri=Serializer.serialize_list(posts_pri)
+            room_members=Serializer.serialize_list(members)
+            # posts_pub=Serializer.serialize_list(posts_pub),
+            # posts_pri=Serializer.serialize_list(posts_pri)
         )
         return jsonify(Resp(result_code=2000, result_msg='success', data=room_resp.__dict__).__dict__)
 
@@ -124,22 +115,6 @@ class RoomApi(Resource):
         db.session.commit()
 
         return jsonify(Resp(result_code=2000, result_msg='success', data=None))
-
-
-# 为每篇post添加评论、点赞
-def process_posts(posts, user_id):
-    for post in posts:
-        comments = PostComment.query.filter_by(post_id=post.id).all()
-        post['comments'] = comments
-        likes = PostLike.query.filter_by(post_id=post.id).all()
-        post['likes'] = len(likes)
-
-        # 判断是否已点过赞
-        like = PostLike.query.filter_by(post_id=post.id, user_id=user_id).first()
-        if like is None:
-            post['liked'] = False
-        else:
-            post['liked'] = True
 
 
 api.add_resource(
