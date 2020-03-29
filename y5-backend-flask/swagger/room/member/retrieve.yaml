@@ -11,17 +11,9 @@ responses:
   200:
     description: return room with details
     schema:
-      id: room id
+      id: Response
       properties:
         id:
           type: string
-          description: room id
+          description: Response
           default: null
-        room_name:
-          type: string
-        room_desc:
-            type: string
-        room_type:
-            type: string
-        people_limit:
-            type: string

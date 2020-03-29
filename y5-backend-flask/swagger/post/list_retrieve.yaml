@@ -2,26 +2,27 @@
 tags:
   - Post
 parameters:
-  - name: id
-    in: path
+  - name: room_id
+    in: body
     type: string
     required: true
-    description: get room by ID
+    description: room id
+  - name: timeline_type
+    in: body
+    type: string
+    required: true
+    description: timeline type
+
 responses:
   200:
-    description: return room with details
+    description: return timeline
     schema:
-      id: room id
+      id: Response
       properties:
-        id:
+        result_code:
           type: string
-          description: room id
-          default: null
-        room_name:
+        result_msg:
           type: string
-        room_desc:
-            type: string
-        room_type:
-            type: string
-        people_limit:
-            type: string
+        data:
+          type: string
+

@@ -37,6 +37,7 @@ login_manager.login_view = 'login'
 login_manager.init_app(app)
 
 admin = Admin(app=app, name=config.ADMIN_TITLE, template_mode='bootstrap3')
+admin.add_view(ModelView(User, db.session, name=u'User'))
 admin.add_view(ModelView(Room, db.session, name=u'Room', category='Room'))
 admin.add_view(ModelView(RoomPrototype, db.session, name=u'Room Prototype', category='Room'))
 admin.add_view(ModelView(RoomMember, db.session, name=u'Room Member', category='Room'))
