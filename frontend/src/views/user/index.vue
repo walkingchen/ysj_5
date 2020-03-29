@@ -25,7 +25,7 @@ import navigation from './components/navigation'
 import portrait from './components/portrait'
 import priTimeline from './components/privateTimeline'
 import pubTimeline from './components/publicTimeline'
-import { getRoomInf } from '@/api/chatroom'
+// import { getRoomInf } from '@/api/chatroom'
 export default {
   components: {
     chatroom,
