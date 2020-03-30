@@ -3,6 +3,7 @@ import string
 
 from flasgger import swag_from
 from flask import Blueprint, request, json, jsonify
+from flask_login import current_user
 from flask_restful import Api, Resource
 
 from entity.Resp import Resp
@@ -10,15 +11,13 @@ from entity.RoomResp import RoomResp
 from extensions import db
 from models import Room, Timeline, Post, RoomMember, RoomPrototype, Serializer, PostComment, PostLike
 
-bp_room = Blueprint('/room', __name__)
-api = Api(bp_room, '/room')
+bp_room = Blueprint('/api/room', __name__)
+api = Api(bp_room, '/api/room')
 
 
 class RoomApi(Resource):
     @swag_from('../swagger/room/retrieve.yaml')
     def get(self, id):
-        # user_id = request.user.id
-        user_id = 15
         room = Room.query.filter_by(id=id).first()
         if room is None:
             return json.jsonify({

@@ -1,16 +1,17 @@
 from flasgger import swag_from
 from flask import Blueprint, request, json, jsonify
+from flask_login import current_user
 from flask_restful import Api, Resource
 
 from entity.Resp import Resp
 from extensions import db
 from models import Post, PostComment, PostLike, Serializer, Timeline
 
-bp_post = Blueprint('/post', __name__)
-api = Api(bp_post, '/post')
+bp_post = Blueprint('/api/post', __name__)
+api = Api(bp_post, '/api/post')
 
 TIMELINE_PUB = 0
-TIMELINE_PRI = 0
+TIMELINE_PRI = 1
 MSG_SIZE_INIT = 50
 
 
@@ -98,24 +99,35 @@ class PostApi(Resource):
     @swag_from('../swagger/post/list_retrieve.yaml')
     def get(self):
         data = request.get_json()
-        room_id = data['room_id']
-        timeline_type = data['timeline_type']
-        user_id = request.user.id   # fixme
+        try:
+            room_id = data['room_id']
+            timeline_type = data['timeline_type']
+        except KeyError:
+            return json.dumps(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
+        except TypeError:
+            return json.dumps(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
+
+        user_id = current_user.id
+        if user_id is None:
+            return json.dumps(Resp(result_code=4000, result_msg='user id is none', data=None).__dict__)
 
         # timeline
         if timeline_type == TIMELINE_PUB:
             timeline = Timeline.query.filter_by(room_id=room_id, timeline_type=timeline_type).first()
         elif timeline_type == TIMELINE_PRI:
             timeline = Timeline.query.filter_by(room_id=room_id, timeline_type=timeline_type, user_id=user_id).first()
+        else:
+            return json.dumps(Resp(result_code=4000, result_msg='timeline_type wrong', data=None).__dict__)
 
         posts = Post.query.filter_by(timeline_id=timeline.id).limit(MSG_SIZE_INIT).all()
         # 为每篇post添加评论、点赞
-        process_posts(posts=posts, user_id=user_id)
+        posts_serialized = Serializer.serialize_list(posts)
+        process_posts(posts=posts_serialized, user_id=user_id)
 
         return jsonify(Resp(
             result_code=2000,
             result_msg='success',
-            data=posts
+            data=posts_serialized
         ).__dict__)
 
 
@@ -129,13 +141,13 @@ api.add_resource(
 # 为每篇post添加评论、点赞
 def process_posts(posts, user_id):
     for post in posts:
-        comments = PostComment.query.filter_by(post_id=post.id).all()
-        post['comments'] = comments
-        likes = PostLike.query.filter_by(post_id=post.id).all()
+        comments = PostComment.query.filter_by(post_id=post['id']).all()
+        post['comments'] = Serializer.serialize_list(comments)
+        likes = PostLike.query.filter_by(post_id=post['id']).all()
         post['likes'] = len(likes)
 
         # 判断是否已点过赞
-        like = PostLike.query.filter_by(post_id=post.id, user_id=user_id).first()
+        like = PostLike.query.filter_by(post_id=post['id'], user_id=user_id).first()
         if like is None:
             post['liked'] = False
         else:

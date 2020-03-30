@@ -14,6 +14,7 @@ from flask_login import LoginManager
 from flask_mail import Mail
 
 import config
+from blueprints.auth import bp_auth
 from blueprints.post import bp_post
 from blueprints.room import bp_room
 from extensions import db
@@ -55,6 +56,7 @@ scheduler.init_app(app)
 
 app.register_blueprint(bp_room)
 app.register_blueprint(bp_post)
+app.register_blueprint(bp_auth)
 
 
 @login_manager.user_loader
