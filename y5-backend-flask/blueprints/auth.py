@@ -1,3 +1,4 @@
+from flasgger import swag_from
 from flask import Blueprint, app, request, render_template, redirect, current_app, flash, json
 from flask.json import jsonify
 from flask_login import login_required, logout_user, login_user
@@ -10,6 +11,7 @@ from models import User
 bp_auth = Blueprint('api/auth', __name__, url_prefix='/api/auth')
 
 
+@swag_from('../swagger/auth/register.yaml')
 @bp_auth.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -37,6 +39,7 @@ def register():
     return json.dumps(Resp(result_code=2000, result_msg='register success', data=None).__dict__)
 
 
+@swag_from('../swagger/auth/login.yaml')
 @bp_auth.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -64,6 +67,7 @@ def login():
 
 
 @login_required
+@swag_from('../swagger/auth/logout.yaml')
 @bp_auth.route('/logout')
 def logout():
     logout_user()

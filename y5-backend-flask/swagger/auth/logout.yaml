@@ -1,0 +1,15 @@
+---
+tags:
+  - Auth
+responses:
+  200:
+    description: return room with details
+    schema:
+      id: Response
+      properties:
+        result_code:
+          type: string
+        result_msg:
+          type: string
+        data:
+          type: string
