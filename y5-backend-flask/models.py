@@ -29,9 +29,10 @@ class Message(db.Model):
 
     id = Column(Integer, primary_key=True)
     message = Column(String(255))
+    message_type = Column(Integer)
     room_id = Column(Integer)
-    _from = Column('from', Integer)
-    to = Column(Integer)
+    user_id_from = Column(Integer)
+    user_id_to = Column(Integer)
     created_at = Column(DateTime, server_default=FetchedValue())
     updated_at = Column(DateTime)
 

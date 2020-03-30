@@ -2,10 +2,12 @@ from flasgger import swag_from
 from flask import Blueprint, request, json, jsonify
 from flask_login import current_user
 from flask_restful import Api, Resource
+from sqlalchemy.orm import load_only
 
 from entity.Resp import Resp
 from extensions import db
-from models import Post, PostComment, PostLike, Serializer, Timeline
+from models import Post, PostComment, PostLike, Serializer, Timeline, User
+from utils import object_as_dict
 
 bp_post = Blueprint('/api/post', __name__)
 api = Api(bp_post, '/api/post')
@@ -142,7 +144,14 @@ api.add_resource(
 def process_posts(posts, user_id):
     for post in posts:
         comments = PostComment.query.filter_by(post_id=post['id']).all()
-        post['comments'] = Serializer.serialize_list(comments)
+        comments_serialized = Serializer.serialize_list(comments)
+        for comment in comments_serialized:
+            user = User.query.filter_by(id=comment['user_id'])\
+                .with_entities(User.id, User.username, User.email, User.created_at).first()
+            if user is not None:
+                comment['user'] = user._asdict()
+        post['comments'] = comments_serialized
+
         likes = PostLike.query.filter_by(post_id=post['id']).all()
         post['likes'] = len(likes)
 

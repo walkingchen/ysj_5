@@ -1,6 +1,5 @@
 from flasgger import swag_from
-from flask import Blueprint, app, request, render_template, redirect, current_app, flash, json
-from flask.json import jsonify
+from flask import Blueprint, request, redirect, current_app, flash, json
 from flask_login import login_required, logout_user, login_user
 from flask_principal import identity_changed, Identity
 
@@ -60,7 +59,6 @@ def login():
     login_user(user)
     # Tell Flask-Principal the identity changed
     identity_changed.send(current_app._get_current_object(), identity=Identity(user.id))
-    flash('Login success')
     # fixme 判断是否管理员
     # return redirect('/admin/')
     return json.dumps(Resp(result_code=2000, result_msg='success', data=None).__dict__)
@@ -71,4 +69,4 @@ def login():
 @bp_auth.route('/logout')
 def logout():
     logout_user()
-    return redirect('/login')
+    return json.dumps(Resp(result_code=2000, result_msg='success', data=None).__dict__)
