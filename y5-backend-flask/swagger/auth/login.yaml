@@ -1,0 +1,24 @@
+---
+tags:
+  - Auth
+parameters:
+    - name: username
+      in: body
+      type: string
+      required: true
+    - name: password
+      in: body
+      type: string
+      required: true
+responses:
+  200:
+    description: return room with details
+    schema:
+      id: Response
+      properties:
+        result_code:
+          type: string
+        result_msg:
+          type: string
+        data:
+          type: string

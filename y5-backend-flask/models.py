@@ -29,9 +29,10 @@ class Message(db.Model):
 
     id = Column(Integer, primary_key=True)
     message = Column(String(255))
+    message_type = Column(Integer)
     room_id = Column(Integer)
-    _from = Column('from', Integer)
-    to = Column(Integer)
+    user_id_from = Column(Integer)
+    user_id_to = Column(Integer)
     created_at = Column(DateTime, server_default=FetchedValue())
     updated_at = Column(DateTime)
 
@@ -58,6 +59,10 @@ class Post(db.Model):
     created_at = Column(DateTime, server_default=FetchedValue())
     updated_at = Column(DateTime)
 
+    def serialize(self):
+        d = Serializer.serialize(self)
+        return d
+
 
 class PostComment(db.Model):
     __tablename__ = 'tb_post_comment'
@@ -68,6 +73,10 @@ class PostComment(db.Model):
     comment_content = Column(String(140))
     created_at = Column(DateTime, server_default=FetchedValue())
     updated_at = Column(DateTime)
+
+    def serialize(self):
+        d = Serializer.serialize(self)
+        return d
 
 
 class PostLike(db.Model):
@@ -122,6 +131,10 @@ class RoomMember(db.Model):
     room_id = Column(Integer)
     created_at = Column(DateTime, server_default=FetchedValue())
     updated_at = Column(DateTime)
+
+    def serialize(self):
+        d = Serializer.serialize(self)
+        return d
 
 
 class RoomPrototype(db.Model):
