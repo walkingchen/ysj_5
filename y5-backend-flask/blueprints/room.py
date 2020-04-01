@@ -22,7 +22,7 @@ class RoomApi(Resource):
         if room is None:
             return json.jsonify({
                 'resultCode': 4000,
-                'resultMsg': ''
+                'resultMsg': 'room not exists'
             })
         # room members
         members = RoomMember.query.filter_by(room_id=id).all()

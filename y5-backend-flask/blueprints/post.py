@@ -2,12 +2,11 @@ from flasgger import swag_from
 from flask import Blueprint, request, json, jsonify
 from flask_login import current_user
 from flask_restful import Api, Resource
-from sqlalchemy.orm import load_only
+from flask_socketio import emit
 
 from entity.Resp import Resp
 from extensions import db
 from models import Post, PostComment, PostLike, Serializer, Timeline, User
-from utils import object_as_dict
 
 bp_post = Blueprint('/api/post', __name__)
 api = Api(bp_post, '/api/post')
@@ -55,6 +54,9 @@ class PostApi(Resource):
         )
         db.session.add(post)
         db.session.commit()
+
+        # 通知好友刷新timeline
+        emit('', room='')
 
         return jsonify(Resp(
             result_code=2000,

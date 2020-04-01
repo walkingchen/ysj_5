@@ -6,11 +6,13 @@
     <script type="text/javascript" charset="utf-8">
         var socket = io();
         socket.on('connect', function() {
-            socket.emit( 'my_event', {
-              username : "user",
-              message : "msg"
+            socket.emit( 'join', {
+              "room" : "123456"
             });
             socket.on('connected', function (msg, cb) {
+                console.log(msg);
+            });
+            socket.on('broadcast_msg', function (msg, cb) {
                 console.log(msg);
             })
         });

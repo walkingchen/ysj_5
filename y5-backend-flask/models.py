@@ -110,6 +110,7 @@ class Room(db.Model):
     __tablename__ = 'tb_room'
 
     id = Column(Integer, primary_key=True)
+    room_id = Column(String(255))
     room_name = Column(String(255))
     room_desc = Column(String(255))
     room_type = Column(Integer)
