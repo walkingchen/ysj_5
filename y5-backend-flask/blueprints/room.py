@@ -29,7 +29,7 @@ class RoomApi(Resource):
 
         room_resp = RoomResp(
             room=Serializer.serialize(room),
-            room_members=Serializer.serialize_list(members)
+            members=Serializer.serialize_list(members)
             # posts_pub=Serializer.serialize_list(posts_pub),
             # posts_pri=Serializer.serialize_list(posts_pri)
         )
