@@ -1,5 +1,4 @@
 flask
-flask-appconfig
 flask-bootstrap
 flask-nav
 flask-sqlalchemy
@@ -23,3 +22,4 @@ flask-restful
 flasgger
 pymysql
 requests
+werkzeug==0.16.0
