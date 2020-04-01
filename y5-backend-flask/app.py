@@ -16,7 +16,7 @@ import config
 from blueprints.auth import bp_auth
 from blueprints.post import bp_post
 from blueprints.room import bp_room
-from chat import ChatRoomNamespace
+from room_socketio import RoomNamespace
 from extensions import db
 from models import User, Room, RoomPrototype, RoomMember, Timeline, Post, PostComment, PostLike, Message
 
@@ -32,7 +32,7 @@ ckeditor = CKEditor(app)
 cache = Cache(config={'CACHE_TYPE': 'simple'})
 cache.init_app(app)
 socketio = SocketIO()
-socketio.on_namespace(ChatRoomNamespace('/'))
+socketio.on_namespace(RoomNamespace('/'))
 socketio.init_app(app, engineio_logger=False)
 
 login_manager = LoginManager()
