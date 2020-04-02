@@ -2,25 +2,28 @@
 tags:
   - Room Prototype
 parameters:
-    - name: room_type
+    - name: body
       in: body
-      type: string
       required: true
-    - name: people_limit
-      in: body
-      type: string
-      required: true
-    - name: room_count
-      in: body
-      type: string
-      required: true
-    - name: room_desc
-      in: body
-      type: string
-      required: false
+      schema:
+        id: room_prototype_create
+        required:
+          - prototype_name
+          - people_limit
+          - friendship
+        properties:
+          prototype_name:
+            type: string
+            description: prototype名称
+          people_limit:
+            type: string
+            description: 成员数量
+          friendship:
+            type: string
+            description: 成员关系
 responses:
   200:
-    description: return room array created
+    description: return prototype created
     schema:
       result_code: 2000
       result_msg: ''

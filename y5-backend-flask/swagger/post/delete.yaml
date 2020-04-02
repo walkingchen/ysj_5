@@ -2,25 +2,14 @@
 tags:
   - Post
 parameters:
-    - name: room_type
-      in: body
-      type: string
-      required: true
-    - name: people_limit
-      in: body
-      type: string
-      required: true
-    - name: room_count
-      in: body
-      type: string
-      required: true
-    - name: room_desc
-      in: body
-      type: string
-      required: false
+  - name: id
+    in: path
+    type: string
+    required: true
+    description: delete post by ID
 responses:
   200:
-    description: return room array created
+    description: return message
     schema:
       properties:
         result_code:

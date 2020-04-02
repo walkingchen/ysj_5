@@ -2,22 +2,29 @@
 tags:
   - Room
 parameters:
-    - name: room_type
-      in: body
-      type: string
-      required: true
-    - name: people_limit
-      in: body
-      type: string
-      required: true
-    - name: room_count
-      in: body
-      type: string
-      required: true
-    - name: room_desc
-      in: body
-      type: string
-      required: false
+  - name: id
+    in: path
+    type: string
+    required: true
+    description: update room with room id
+  - name: body
+    in: body
+    required: true
+    schema:
+      id: room_update
+      properties:
+        room_name:
+          type: string
+          description: room name
+        room_type:
+          type: string
+          description: room type
+        people_limit:
+          type: string
+          description: people limit
+        room_desc:
+          type: string
+          description: room desc
 responses:
   200:
     description: return room with details

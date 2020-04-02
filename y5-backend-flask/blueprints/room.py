@@ -138,6 +138,29 @@ api.add_resource(
     endpoint='delete')
 
 
+class RoomListApi(Resource):
+    @swag_from('../swagger/room/list_retrieve.yaml')
+    def get(self):
+        try:
+            if 'room_type' in request.args:
+                room_type = int(request.args['room_type'])
+                rooms = Room.query.filter_by(room_type=room_type).all()
+            else:
+                rooms = Room.query.all()
+            rooms_serialized = Serializer.serialize_list(rooms)
+
+            return jsonify(Resp(result_code=2000, result_msg='success', data=rooms_serialized).__dict__)
+        except TypeError:
+            return json.dumps(Resp(result_code=4000, result_msg='type error', data=None).__dict__)
+
+
+api.add_resource(
+    RoomListApi,
+    '',
+    methods=['GET'],
+    endpoint='list_retrieve')
+
+
 class RoomPrototypeApi(Resource):
     @swag_from('../swagger/room/prototype/retrieve.yaml')
     def get(self, id):
@@ -153,6 +176,19 @@ class RoomPrototypeApi(Resource):
 
     @swag_from('../swagger/room/prototype/create.yaml')
     def post(self):
+        data = request.get_json()
+        try:
+            room_type = data['room_type']
+            people_limit = int(data['people_limit'])
+            friends = data['friends']
+            prototype = RoomPrototype(room_type=room_type, people_limit=people_limit, friends=friends)
+            db.session.add(prototype)
+            db.session.commit()
+        except KeyError:
+            return json.dumps(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
+        except TypeError:
+            return json.dumps(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
+
         return jsonify(Resp(result_code=2000, result_msg='success', data=None).__dict__)
 
     @swag_from('../swagger/room/prototype/update.yaml')

@@ -102,7 +102,7 @@ api.add_resource(
 class PostApi(Resource):
     @swag_from('../swagger/post/list_retrieve.yaml')
     def get(self):
-        data = request.get_json()
+        data = request.args
         try:
             room_id = data['room_id']
             timeline_type = data['timeline_type']
@@ -167,22 +167,36 @@ def process_posts(posts, user_id):
 
 class CommentApi(Resource):
     @swag_from('../swagger/post/comment/retrieve.yaml')
-    def get(self):
-        pass
+    def get(self, id):
+        comment = PostComment.query.filter_by(id=id).first()
+        comment_serialized = Serializer.serialize(comment)
+        return Resp(result_code=2000, result_msg="success", data=comment_serialized)
 
     @swag_from('../swagger/post/comment/create.yaml')
     def post(self):
+        if current_user is None:
+            return Resp(result_code=2000, result_msg="user is none", data=None)
+
+        user_id = current_user.id
         data = request.get_json()
         post_id = data['post_id']
+        comment_content = data['comment_content']
+        comment = PostComment(post_id=post_id, comment_content=comment_content, user_id=user_id)
+        db.session.add(comment)
+        db.session.commit()
+
+        return Resp(result_code=2000, result_msg="success", data=Serializer.serialize(comment))
 
     @swag_from('../swagger/post/comment/delete.yaml')
-    def delete(self):
-        if 'id' not in request.args:
-            pass
-        id = request.args['id']
+    def delete(self, id):
         comment = PostComment.query.filter_by(id=id).first()
+        if comment is None:
+            return Resp(result_code=2000, result_msg="comment not found", data=None)
+
         db.session.delete(comment)
         db.session.commit()
+
+        return Resp(result_code=2000, result_msg="success", data=Serializer.serialize(comment))
 
 
 api.add_resource(
@@ -209,22 +223,32 @@ api.add_resource(
 
 class LikeApi(Resource):
     @swag_from('../swagger/post/like/retrieve.yaml')
-    def get(self):
-        pass
+    def get(self, id):
+        like = PostLike.query.filter_by(id=id).first()
+        like_serialized = Serializer.serialize(like)
+        return Resp(result_code=2000, result_msg="success", data=like_serialized)
 
     @swag_from('../swagger/post/like/create.yaml')
     def post(self):
+        if current_user is None:
+            return Resp(result_code=2000, result_msg="user is none", data=None)
+
+        user_id = current_user.id
         data = request.get_json()
         post_id = data['post_id']
+        like = PostLike(post_id=post_id, user_id=user_id)
+        db.session.add(like)
+        db.session.commit()
+
+        return Resp(result_code=2000, result_msg="success", data=Serializer.serialize(like))
 
     @swag_from('../swagger/post/like/delete.yaml')
-    def delete(self):
-        if 'id' not in request.args:
-            pass
-        id = request.args['id']
+    def delete(self, id):
         like = PostLike.query.filter_by(id=id).first()
         db.session.delete(like)
         db.session.commit()
+
+        return Resp(result_code=2000, result_msg="disliked", data=None)
 
 
 api.add_resource(
@@ -237,11 +261,6 @@ api.add_resource(
     '/like',
     methods=['POST'],
     endpoint='post/like/create')
-# api.add_resource(
-#     LikeApi,
-#     '/like/<int:id>',
-#     methods=['PUT'],
-#     endpoint='post/like/update')
 api.add_resource(
     LikeApi,
     '/like/<int:id>',

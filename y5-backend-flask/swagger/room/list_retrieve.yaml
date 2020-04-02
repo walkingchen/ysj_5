@@ -1,21 +1,14 @@
 ---
 tags:
-  - Post
+  - Room
 parameters:
-  - name: room_id
+  - name: room_type
     in: query
     type: string
-    required: true
-    description: room id
-  - name: timeline_type
-    in: query
-    type: string
-    required: true
-    description: timeline type
-
+    required: false
 responses:
   200:
-    description: return timeline
+    description: return room with details
     schema:
       id: Response
       properties:
@@ -25,4 +18,3 @@ responses:
           type: string
         data:
           type: string
-

@@ -2,22 +2,28 @@
 tags:
   - Room
 parameters:
-    - name: room_type
-      in: body
-      type: string
-      required: true
-    - name: people_limit
-      in: body
-      type: string
-      required: true
-    - name: room_count
-      in: body
-      type: string
-      required: true
-    - name: room_desc
-      in: body
-      type: string
-      required: false
+  - name: body
+    in: body
+    required: true
+    schema:
+      id: room_create
+      required:
+        - room_type
+        - people_limit
+        - room_count
+      properties:
+        room_type:
+          type: string
+          description: 类型
+        people_limit:
+          type: string
+          description: 成员数量
+        room_count:
+          type: string
+          description: 聊天室数量
+        room_desc:
+          type: string
+          description: 描述
 responses:
   200:
     description: return room with details

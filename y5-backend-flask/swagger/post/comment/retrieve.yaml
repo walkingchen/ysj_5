@@ -6,10 +6,10 @@ parameters:
     in: path
     type: string
     required: true
-    description: get room by ID
+    description: get comment by ID
 responses:
   200:
-    description: return room with details
+    description: return comment with details
     schema:
       id: Response
       properties:
