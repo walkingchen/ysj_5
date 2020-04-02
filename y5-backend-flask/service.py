@@ -4,6 +4,7 @@ from sqlalchemy import inspect
 from models import RoomPrototype, RoomMember, PostComment, Serializer, User, PostLike
 
 
+# 查询好友网络
 def get_friends(room, user_id):
     prototype = RoomPrototype.query.filter_by(prototype_id=room.room_type).first()
     friendship = json.loads(prototype.friendship)
@@ -14,6 +15,7 @@ def get_friends(room, user_id):
     return friends
 
 
+# 获取座位号
 def query_membership(room_id, user_id):
     return User.query.join(RoomMember, RoomMember.user_id == User.id) \
         .filter(RoomMember.room_id == room_id, User.id == user_id) \
