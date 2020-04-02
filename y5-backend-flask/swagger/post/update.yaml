@@ -11,17 +11,17 @@ parameters:
     in: body
     required: true
     schema:
-      id: post_create
+      id: post_update
       properties:
         timeline_id:
           type: string
           description: timeline id
         post_content:
           type: string
-          description: post正文
+          description: post content
         post_title:
           type: string
-          description: post标题
+          description: post title
         type_id:
           type: string
           description: post type

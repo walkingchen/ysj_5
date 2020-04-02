@@ -6,7 +6,7 @@ parameters:
     in: body
     required: true
     schema:
-      id: post_update_create
+      id: post_comment_update
       properties:
         post_id:
           type: string
