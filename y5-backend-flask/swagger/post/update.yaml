@@ -2,22 +2,32 @@
 tags:
   - Post
 parameters:
-    - name: room_type
-      in: body
-      type: string
-      required: true
-    - name: people_limit
-      in: body
-      type: string
-      required: true
-    - name: room_count
-      in: body
-      type: string
-      required: true
-    - name: room_desc
-      in: body
-      type: string
-      required: false
+  - name: id
+    in: path
+    type: string
+    required: true
+    description: update post by ID
+  - name: body
+    in: body
+    required: true
+    schema:
+      id: post_update
+      properties:
+        timeline_id:
+          type: string
+          description: timeline id
+        post_content:
+          type: string
+          description: post content
+        post_title:
+          type: string
+          description: post title
+        type_id:
+          type: string
+          description: post type
+        user_id:
+          type: string
+          description: user id
 responses:
   200:
     description: return room array created

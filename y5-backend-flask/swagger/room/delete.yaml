@@ -2,25 +2,14 @@
 tags:
   - Room
 parameters:
-    - name: room_type
-      in: body
-      type: string
-      required: true
-    - name: people_limit
-      in: body
-      type: string
-      required: true
-    - name: room_count
-      in: body
-      type: string
-      required: true
-    - name: room_desc
-      in: body
-      type: string
-      required: false
+  - name: id
+    in: path
+    type: string
+    required: true
+    description: delete room with room id
 responses:
   200:
-    description: return room with details
+    description: delete room with id
     schema:
       id: Response
       properties:

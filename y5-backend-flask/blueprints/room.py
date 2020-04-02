@@ -5,11 +5,12 @@ from flasgger import swag_from
 from flask import Blueprint, request, json, jsonify
 from flask_login import current_user
 from flask_restful import Api, Resource
+from sqlalchemy.sql.elements import and_
 
 from entity.Resp import Resp
 from entity.RoomResp import RoomResp
 from extensions import db
-from models import Room, Timeline, Post, RoomMember, RoomPrototype, Serializer, PostComment, PostLike
+from models import Room, Timeline, Post, RoomMember, RoomPrototype, Serializer, PostComment, PostLike, User
 
 bp_room = Blueprint('/api/room', __name__)
 api = Api(bp_room, '/api/room')
@@ -20,18 +21,34 @@ class RoomApi(Resource):
     def get(self, id):
         room = Room.query.filter_by(id=id).first()
         if room is None:
-            return json.jsonify({
-                'resultCode': 4000,
-                'resultMsg': 'room not exists'
-            })
-        # room members
-        members = RoomMember.query.filter_by(room_id=id).all()
+            return jsonify(Resp(result_code=2000, result_msg='room not exists', data=None).__dict__)
+
+        if current_user is None:
+            return jsonify(Resp(result_code=2000, result_msg='need to login', data=None).__dict__)
+
+        member = RoomMember.query.filter_by(room_id=id, user_id=current_user.id).first()
+
+        prototype = RoomPrototype.query.filter_by(prototype_id=room.room_type).first()
+        friendship = json.loads(prototype.friendship)
+        friend_seats = friendship[str(member.seat_no)]
+        friends = RoomMember.query.filter_by(room_id=id).filter(RoomMember.seat_no.in_(friend_seats)).all()
+
+        members = {'user': None, 'friends': []}
+        u = User.query.join(RoomMember, RoomMember.user_id == User.id)\
+            .filter(RoomMember.room_id == id, User.id == member.user_id) \
+            .with_entities(User.id, User.nickname, User.username, User.email, RoomMember.seat_no, User.created_at).first()
+        if u is not None:
+            members['user'] = u._asdict()
+        for friend in friends:
+            m = User.query.join(RoomMember, RoomMember.user_id == User.id)\
+                .filter(RoomMember.room_id == id, User.id == friend.user_id) \
+                .with_entities(User.id, User.username, User.email, RoomMember.seat_no, User.created_at).first()
+            if m is not None:
+                members['friends'].append(m._asdict())
 
         room_resp = RoomResp(
             room=Serializer.serialize(room),
-            members=Serializer.serialize_list(members)
-            # posts_pub=Serializer.serialize_list(posts_pub),
-            # posts_pri=Serializer.serialize_list(posts_pri)
+            members=members
         )
         return jsonify(Resp(result_code=2000, result_msg='success', data=room_resp.__dict__).__dict__)
 
@@ -44,9 +61,9 @@ class RoomApi(Resource):
             people_limit = int(data['people_limit'])
             room_count = int(data['room_count'])
         except KeyError:
-            return json.dumps(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
+            return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
         except TypeError:
-            return json.dumps(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
+            return jsonify(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
 
         if 'room_desc' in data:
             room_desc = data['room_desc']
@@ -56,7 +73,7 @@ class RoomApi(Resource):
         # 检查prototype是否存在
         prototype = RoomPrototype.query.filter_by(prototype_id=room_type).first()
         if prototype is None:
-            return json.dumps(Resp(result_code=4000, result_msg='prototype not exist', data=None).__dict__)
+            return jsonify(Resp(result_code=4000, result_msg='prototype not exist', data=None).__dict__)
 
         while room_count > 0:
             room_name = ''.join(random.sample(string.ascii_letters + string.digits, 8))
@@ -138,6 +155,29 @@ api.add_resource(
     endpoint='delete')
 
 
+class RoomListApi(Resource):
+    @swag_from('../swagger/room/list_retrieve.yaml')
+    def get(self):
+        try:
+            if 'room_type' in request.args:
+                room_type = int(request.args['room_type'])
+                rooms = Room.query.filter_by(room_type=room_type).all()
+            else:
+                rooms = Room.query.all()
+            rooms_serialized = Serializer.serialize_list(rooms)
+
+            return jsonify(Resp(result_code=2000, result_msg='success', data=rooms_serialized).__dict__)
+        except TypeError:
+            return json.dumps(Resp(result_code=4000, result_msg='type error', data=None).__dict__)
+
+
+api.add_resource(
+    RoomListApi,
+    '',
+    methods=['GET'],
+    endpoint='list_retrieve')
+
+
 class RoomPrototypeApi(Resource):
     @swag_from('../swagger/room/prototype/retrieve.yaml')
     def get(self, id):
@@ -153,6 +193,19 @@ class RoomPrototypeApi(Resource):
 
     @swag_from('../swagger/room/prototype/create.yaml')
     def post(self):
+        data = request.get_json()
+        try:
+            room_type = data['room_type']
+            people_limit = int(data['people_limit'])
+            friends = data['friends']
+            prototype = RoomPrototype(room_type=room_type, people_limit=people_limit, friends=friends)
+            db.session.add(prototype)
+            db.session.commit()
+        except KeyError:
+            return json.dumps(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
+        except TypeError:
+            return json.dumps(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
+
         return jsonify(Resp(result_code=2000, result_msg='success', data=None).__dict__)
 
     @swag_from('../swagger/room/prototype/update.yaml')
