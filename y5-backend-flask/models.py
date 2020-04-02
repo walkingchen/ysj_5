@@ -53,8 +53,10 @@ class Post(db.Model):
     id = Column(Integer, primary_key=True)
     post_title = Column(String(256))
     post_content = Column(Text)
-    type_id = Column(Integer)
+    post_type = Column(Integer)
     user_id = Column(Integer)
+    timeline_type = Column(Integer)
+    room_id = Column(Integer)
     created_at = Column(DateTime, server_default=FetchedValue())
     updated_at = Column(DateTime)
 

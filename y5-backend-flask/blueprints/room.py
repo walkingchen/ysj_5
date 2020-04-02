@@ -5,12 +5,12 @@ from flasgger import swag_from
 from flask import Blueprint, request, json, jsonify
 from flask_login import current_user
 from flask_restful import Api, Resource
-from sqlalchemy.sql.elements import and_
 
 from entity.Resp import Resp
 from entity.RoomResp import RoomResp
 from extensions import db
-from models import Room, Timeline, Post, RoomMember, RoomPrototype, Serializer, PostComment, PostLike, User
+from models import Room, Timeline, RoomMember, RoomPrototype, Serializer, User
+from service import get_friends, query_membership
 
 bp_room = Blueprint('/api/room', __name__)
 api = Api(bp_room, '/api/room')
@@ -26,23 +26,14 @@ class RoomApi(Resource):
         if current_user is None:
             return jsonify(Resp(result_code=2000, result_msg='need to login', data=None).__dict__)
 
-        member = RoomMember.query.filter_by(room_id=id, user_id=current_user.id).first()
-
-        prototype = RoomPrototype.query.filter_by(prototype_id=room.room_type).first()
-        friendship = json.loads(prototype.friendship)
-        friend_seats = friendship[str(member.seat_no)]
-        friends = RoomMember.query.filter_by(room_id=id).filter(RoomMember.seat_no.in_(friend_seats)).all()
+        friends = get_friends(room=room, user_id=current_user.id)
 
         members = {'user': None, 'friends': []}
-        u = User.query.join(RoomMember, RoomMember.user_id == User.id)\
-            .filter(RoomMember.room_id == id, User.id == member.user_id) \
-            .with_entities(User.id, User.nickname, User.username, User.email, RoomMember.seat_no, User.created_at).first()
+        u = query_membership(room_id=id, member=current_user.id)
         if u is not None:
             members['user'] = u._asdict()
         for friend in friends:
-            m = User.query.join(RoomMember, RoomMember.user_id == User.id)\
-                .filter(RoomMember.room_id == id, User.id == friend.user_id) \
-                .with_entities(User.id, User.username, User.email, RoomMember.seat_no, User.created_at).first()
+            m = query_membership(room_id=id, member=friend)
             if m is not None:
                 members['friends'].append(m._asdict())
 
@@ -84,11 +75,6 @@ class RoomApi(Resource):
                 room_desc=room_desc
             )
             db.session.add(room)
-            db.session.commit()
-
-            # 添加timeline
-            timeline_pub = Timeline(room_id=room.id, timeline_type=0)
-            db.session.add(timeline_pub)
             db.session.commit()
 
             room_count -= 1
@@ -338,11 +324,6 @@ class RoomMemberListApi(Resource):
 def create_member(room_id, user_id, seat_no):
     member = RoomMember(room_id=room_id, user_id=user_id, seat_no=seat_no)
     db.session.add(member)
-    db.session.commit()
-
-    # 创建timeline private
-    timeline_pri = Timeline(room_id=room_id, user_id=user_id, timeline_type=1)
-    db.session.add(timeline_pri)
     db.session.commit()
 
 
