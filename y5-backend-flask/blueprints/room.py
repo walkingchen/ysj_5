@@ -36,7 +36,7 @@ class RoomApi(Resource):
         members = {'user': None, 'friends': []}
         u = User.query.join(RoomMember, RoomMember.user_id == User.id)\
             .filter(RoomMember.room_id == id, User.id == member.user_id) \
-            .with_entities(User.id, User.username, User.email, RoomMember.seat_no, User.created_at).first()
+            .with_entities(User.id, User.nickname, User.username, User.email, RoomMember.seat_no, User.created_at).first()
         if u is not None:
             members['user'] = u._asdict()
         for friend in friends:

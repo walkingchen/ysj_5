@@ -169,6 +169,7 @@ class User(db.Model, UserMixin):
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer)
+    avatar = Column(String(2048))
     username = Column(String(32))
     password = Column(String(128))
     email = Column(String(128))
