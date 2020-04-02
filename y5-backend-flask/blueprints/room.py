@@ -5,6 +5,7 @@ from flasgger import swag_from
 from flask import Blueprint, request, json, jsonify
 from flask_login import current_user
 from flask_restful import Api, Resource
+from sqlalchemy.sql.elements import and_
 
 from entity.Resp import Resp
 from entity.RoomResp import RoomResp
@@ -25,21 +26,23 @@ class RoomApi(Resource):
         if current_user is None:
             return jsonify(Resp(result_code=2000, result_msg='need to login', data=None).__dict__)
 
-        # room members
-        user = RoomMember.query.filter_by(room_id=id, user_id=current_user.id).first()
+        member = RoomMember.query.filter_by(room_id=id, user_id=current_user.id).first()
+
         prototype = RoomPrototype.query.filter_by(prototype_id=room.room_type).first()
         friendship = json.loads(prototype.friendship)
-        friend_seats = friendship[str(user.seat_no)]
-        friends = RoomMember.query.filter_by(room_id=id).filter(RoomMember.user_id.in_(friend_seats)).all()
+        friend_seats = friendship[str(member.seat_no)]
+        friends = RoomMember.query.filter_by(room_id=id).filter(RoomMember.seat_no.in_(friend_seats)).all()
 
         members = {'user': None, 'friends': []}
-        u = User.query.filter_by(id=user.id)\
-            .with_entities(User.id, User.username, User.email, User.created_at).first()
+        u = User.query.join(RoomMember, RoomMember.user_id == User.id)\
+            .filter(RoomMember.room_id == id, User.id == member.user_id) \
+            .with_entities(User.id, User.username, User.email, RoomMember.seat_no, User.created_at).first()
         if u is not None:
             members['user'] = u._asdict()
         for friend in friends:
-            m = User.query.filter_by(id=friend.id) \
-                .with_entities(User.id, User.username, User.email, User.created_at).first()
+            m = User.query.join(RoomMember, RoomMember.user_id == User.id)\
+                .filter(RoomMember.room_id == id, User.id == friend.user_id) \
+                .with_entities(User.id, User.username, User.email, RoomMember.seat_no, User.created_at).first()
             if m is not None:
                 members['friends'].append(m._asdict())
 

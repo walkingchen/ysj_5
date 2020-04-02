@@ -32,6 +32,7 @@ class PostApi(Resource):
     def post(self):
         user_id = request.user.id
         data = request.get_json()
+
         try:
             timeline_id = data['timeline_id']
             post_content = data['post_content']
@@ -62,6 +63,19 @@ class PostApi(Resource):
             result_code=2000,
             result_msg='success',
             data=Serializer.serialize(post)
+        ).__dict__)
+
+    @swag_from('../swagger/post/update.yaml')
+    def put(self, id):
+        post = Post.query.filter_by(id=id).first()
+        Post()
+        db.session.delete(post)
+        db.session.commit()
+
+        return jsonify(Resp(
+            result_code=2000,
+            result_msg='success',
+            data=None
         ).__dict__)
 
     @swag_from('../swagger/post/delete.yaml')

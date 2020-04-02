@@ -51,7 +51,6 @@ class Post(db.Model):
     __tablename__ = 'tb_post'
 
     id = Column(Integer, primary_key=True)
-    timeline_id = Column(Integer)
     post_title = Column(String(256))
     post_content = Column(Text)
     type_id = Column(Integer)
