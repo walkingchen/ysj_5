@@ -8,12 +8,11 @@ from flask_bootstrap import Bootstrap
 from flask_cache import Cache
 from flask_ckeditor import CKEditor
 from flask_cors import CORS
-from flask_login import LoginManager
 from flask_mail import Mail
 from flask_socketio import SocketIO
 
 import config
-from blueprints.auth import bp_auth
+from blueprints.auth import bp_auth, login_manager
 from blueprints.post import bp_post
 from blueprints.room import bp_room
 from room_socketio import RoomNamespace
@@ -34,9 +33,6 @@ cache.init_app(app)
 socketio = SocketIO()
 socketio.on_namespace(RoomNamespace('/'))
 socketio.init_app(app, engineio_logger=False)
-
-login_manager = LoginManager()
-login_manager.login_view = 'login'
 login_manager.init_app(app)
 
 admin = Admin(app=app, name=config.ADMIN_TITLE, template_mode='bootstrap3')
@@ -59,11 +55,6 @@ scheduler.init_app(app)
 app.register_blueprint(bp_room)
 app.register_blueprint(bp_post)
 app.register_blueprint(bp_auth)
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.filter_by(id=user_id).first()
 
 
 @app.route('/chat', methods=['GET'])
