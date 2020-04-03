@@ -8,17 +8,17 @@ import Layout from '@/layout'
 
 export const constantRoutes = [
 
-  // {
-  //   path: '/register',
-  //   component: () => import('@/views/register/index'),
-  //   hidden: true
-  // },
+  {
+    path: '/register',
+    component: () => import('@/views/admin/register/index'),
+    hidden: true
+  },
 
-  // {
-  //   path: '/login',
-  //   component: () => import('@/views/login/index'),
-  //   hidden: true
-  // },
+  {
+    path: '/login',
+    component: () => import('@/views/admin/login/index'),
+    hidden: true
+  },
 
   // {
   //   path: '/404',
@@ -100,22 +100,22 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: '/userList',
-    component: Layout,
-    children: [{
-      path: '',
-      component: () => import('@/views/admin/userList/index'),
-      meta: { title: 'User', icon: 'user' }
-    }]
+  // {
+  //   path: '/userList',
+  //   component: Layout,
+  //   children: [{
+  //     path: '/userList',
+  //     component: () => import('@/views/admin/userList/index'),
+  //     meta: { title: 'User', icon: 'user' }
+  //   }]
 
-  },
+  // },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
 
 const createRouter = () => new Router({
-  // mode: 'history', // require service support
+  mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })

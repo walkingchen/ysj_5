@@ -81,12 +81,14 @@ CREATE TABLE `tb_post` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `post_title` varchar(256) DEFAULT NULL,
   `post_content` text DEFAULT NULL,
-  `type_id` int(11) DEFAULT NULL,
+  `post_type` int(11) DEFAULT NULL,
   `user_id` int(11) DEFAULT NULL,
+  `room_id` int(11) DEFAULT NULL,
+  `timeline_type` int(11) DEFAULT NULL COMMENT '0: public\n1: private\n2: both',
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -95,7 +97,7 @@ CREATE TABLE `tb_post` (
 
 LOCK TABLES `tb_post` WRITE;
 /*!40000 ALTER TABLE `tb_post` DISABLE KEYS */;
-INSERT INTO `tb_post` VALUES (1,'测试标题','测试内容',1,1,'2020-03-29 14:03:00','2020-03-29 06:03:00');
+INSERT INTO `tb_post` VALUES (1,'测试标题','测试内容',1,1,NULL,NULL,'2020-03-29 14:03:00','2020-03-29 06:03:00'),(2,'test1','cccccc',0,2,28,NULL,'2020-04-02 22:58:06','2020-04-02 14:58:06'),(3,'test2','cccccc',0,3,28,NULL,'2020-04-02 22:58:06','2020-04-02 14:58:06'),(4,'test3','cccccc',0,4,28,NULL,'2020-04-02 22:58:06','2020-04-02 14:58:06');
 /*!40000 ALTER TABLE `tb_post` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -123,7 +125,7 @@ CREATE TABLE `tb_post_comment` (
 
 LOCK TABLES `tb_post_comment` WRITE;
 /*!40000 ALTER TABLE `tb_post_comment` DISABLE KEYS */;
-INSERT INTO `tb_post_comment` VALUES (1,1,17,'测试评论','2020-03-30 16:59:33','2020-04-02 05:23:44'),(2,1,18,'测试评论2','2020-03-30 16:59:00','2020-03-30 08:59:00');
+INSERT INTO `tb_post_comment` VALUES (1,2,17,'测试评论','2020-03-30 16:59:33','2020-04-02 15:07:17'),(2,3,18,'测试评论2','2020-03-30 16:59:00','2020-04-02 15:07:17');
 /*!40000 ALTER TABLE `tb_post_comment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -151,7 +153,7 @@ CREATE TABLE `tb_post_like` (
 
 LOCK TABLES `tb_post_like` WRITE;
 /*!40000 ALTER TABLE `tb_post_like` DISABLE KEYS */;
-INSERT INTO `tb_post_like` VALUES (1,1,18,1,'2020-03-30 09:00:28','2020-03-30 09:00:28');
+INSERT INTO `tb_post_like` VALUES (1,4,18,1,'2020-03-30 09:00:28','2020-04-02 15:07:07');
 /*!40000 ALTER TABLE `tb_post_like` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -385,4 +387,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-02 16:37:46
+-- Dump completed on 2020-04-02 23:24:39

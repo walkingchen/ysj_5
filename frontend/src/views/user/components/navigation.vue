@@ -1,17 +1,9 @@
 <template>
-  <div class="nav-content">
-    <div></div>
-  </div>
+  <div class="nav-content"></div>
 </template>
 
 <script>
 export default {
-  props: {
-    list: {
-      type: Array,
-      default: () => []
-    }
-  },
   data() {
     return {}
   },

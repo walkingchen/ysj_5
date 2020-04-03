@@ -5,7 +5,7 @@
     </el-row>
     <el-row :gutter="20">
       <el-col :span="7">
-        <navigation :list="list" />
+        <navigation />
         <priTimeline />
       </el-col>
       <el-col :span="9">
@@ -39,13 +39,8 @@ export default {
     }
   },
   created() {
-    this.init()
   },
   methods: {
-    init() {
-      // getRoomInf(28).then(() => {
-      // })
-    }
   }
 }
 </script>
@@ -57,7 +52,7 @@ export default {
   .user-content-head{
     width: 100%;
     height: 8vh;
-    background-color: cadetblue;
+    background-color: white;
     display: table;
     span{
       display: table-cell;

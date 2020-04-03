@@ -6,7 +6,8 @@ from flask_socketio import emit
 
 from entity.Resp import Resp
 from extensions import db
-from models import Post, PostComment, PostLike, Serializer, Timeline, User
+from models import Post, PostComment, PostLike, Serializer, Timeline, User, Room, RoomPrototype, RoomMember
+from service import get_friends, process_posts
 
 bp_post = Blueprint('/api/post', __name__)
 api = Api(bp_post, '/api/post')
@@ -34,9 +35,9 @@ class PostApi(Resource):
         data = request.get_json()
 
         try:
-            timeline_id = data['timeline_id']
+            timeline_type = data['timeline_type']
             post_content = data['post_content']
-            type_id = data['type_id']
+            post_type = data['post_type']
         except TypeError:
             return json.dumps(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
         except KeyError:
@@ -47,10 +48,10 @@ class PostApi(Resource):
             post_title = None
 
         post = Post(
-            timeline_id=timeline_id,
+            timeline_type=timeline_type,
             post_title=post_title,
             post_content=post_content,
-            type_id=type_id,
+            post_type=post_type,
             user_id=user_id
         )
         db.session.add(post)
@@ -116,6 +117,9 @@ api.add_resource(
 class PostApi(Resource):
     @swag_from('../swagger/post/list_retrieve.yaml')
     def get(self):
+        if current_user is None:
+            return json.dumps(Resp(result_code=4000, result_msg='need to login', data=None).__dict__)
+
         data = request.args
         try:
             room_id = data['room_id']
@@ -129,15 +133,14 @@ class PostApi(Resource):
         if user_id is None:
             return json.dumps(Resp(result_code=4000, result_msg='user id is none', data=None).__dict__)
 
-        # timeline
-        if timeline_type == TIMELINE_PUB:
-            timeline = Timeline.query.filter_by(room_id=room_id, timeline_type=timeline_type).first()
-        elif timeline_type == TIMELINE_PRI:
-            timeline = Timeline.query.filter_by(room_id=room_id, timeline_type=timeline_type, user_id=user_id).first()
-        else:
-            return json.dumps(Resp(result_code=4000, result_msg='timeline_type wrong', data=None).__dict__)
+        room = Room.query.filter_by(id=room_id).first()
+        friends = get_friends(room=room, user_id=current_user.id)
 
-        posts = Post.query.filter_by(timeline_id=timeline.id).limit(MSG_SIZE_INIT).all()
+        friend_ids = []
+        for friend in friends:
+            friend_ids.append(friend.user_id)
+
+        posts = Post.query.filter(Post.room_id == room_id, Post.user_id.in_(friend_ids)).limit(MSG_SIZE_INIT).all()
         # 为每篇post添加评论、点赞
         posts_serialized = Serializer.serialize_list(posts)
         process_posts(posts=posts_serialized, user_id=user_id)
@@ -154,29 +157,6 @@ api.add_resource(
     '/',
     methods=['GET'],
     endpoint='post/list_retrieve')
-
-
-# 为每篇post添加评论、点赞
-def process_posts(posts, user_id):
-    for post in posts:
-        comments = PostComment.query.filter_by(post_id=post['id']).all()
-        comments_serialized = Serializer.serialize_list(comments)
-        for comment in comments_serialized:
-            user = User.query.filter_by(id=comment['user_id'])\
-                .with_entities(User.id, User.username, User.email, User.created_at).first()
-            if user is not None:
-                comment['user'] = user._asdict()
-        post['comments'] = comments_serialized
-
-        likes = PostLike.query.filter_by(post_id=post['id']).all()
-        post['likes'] = len(likes)
-
-        # 判断是否已点过赞
-        like = PostLike.query.filter_by(post_id=post['id'], user_id=user_id).first()
-        if like is None:
-            post['liked'] = False
-        else:
-            post['liked'] = True
 
 
 class CommentApi(Resource):

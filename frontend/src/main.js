@@ -16,7 +16,7 @@ import router from './router'
 // Vue.prototype.$echarts = echarts
 
 import '@/icons' // icon
-import '@/permission' // permission control
+// import '@/permission' // permission control
 
 /**
  * If you don't want to use mock-server
