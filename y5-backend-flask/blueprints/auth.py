@@ -1,6 +1,6 @@
 from flasgger import swag_from
 from flask import Blueprint, request, redirect, current_app, flash, json
-from flask_login import login_required, logout_user, login_user
+from flask_login import login_required, logout_user, login_user, LoginManager
 from flask_principal import identity_changed, Identity
 
 from entity.Resp import Resp
@@ -8,6 +8,9 @@ from extensions import db
 from models import User
 
 bp_auth = Blueprint('api/auth', __name__, url_prefix='/api/auth')
+
+login_manager = LoginManager()
+login_manager.login_view = 'login'
 
 
 @swag_from('../swagger/auth/register.yaml')
@@ -62,6 +65,11 @@ def login():
     # fixme 判断是否管理员
     # return redirect('/admin/')
     return json.dumps(Resp(result_code=2000, result_msg='success', data=None).__dict__)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.filter_by(id=user_id).first()
 
 
 @login_required

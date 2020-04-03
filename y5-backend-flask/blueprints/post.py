@@ -14,6 +14,7 @@ api = Api(bp_post, '/api/post')
 
 TIMELINE_PUB = 0
 TIMELINE_PRI = 1
+TIMELINE_ALL = 2
 MSG_SIZE_INIT = 50
 
 
@@ -38,6 +39,7 @@ class PostApi(Resource):
             timeline_type = data['timeline_type']
             post_content = data['post_content']
             post_type = data['post_type']
+            room_id = data['room_id']
         except TypeError:
             return json.dumps(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
         except KeyError:
@@ -52,13 +54,14 @@ class PostApi(Resource):
             post_title=post_title,
             post_content=post_content,
             post_type=post_type,
-            user_id=user_id
+            user_id=user_id,
+            room_id=room_id
         )
         db.session.add(post)
         db.session.commit()
 
         # 通知好友刷新timeline
-        emit('', room='')
+        emit('pull', room=room_id)
 
         return jsonify(Resp(
             result_code=2000,
@@ -69,9 +72,10 @@ class PostApi(Resource):
     @swag_from('../swagger/post/update.yaml')
     def put(self, id):
         post = Post.query.filter_by(id=id).first()
-        Post()
-        db.session.delete(post)
+        post.timeline_type = 2  # 0: public; 1: private; 2: both
         db.session.commit()
+
+        emit('pull', room=post.room_id)  # fixme
 
         return jsonify(Resp(
             result_code=2000,
@@ -140,7 +144,15 @@ class PostApi(Resource):
         for friend in friends:
             friend_ids.append(friend.user_id)
 
-        posts = Post.query.filter(Post.room_id == room_id, Post.user_id.in_(friend_ids)).limit(MSG_SIZE_INIT).all()
+        if timeline_type == TIMELINE_ALL:
+            timeline_types = [0, 1]
+        else:
+            timeline_types = [timeline_type]
+        posts = Post.query.filter(
+            Post.room_id == room_id,
+            Post.user_id.in_(friend_ids),
+            Post.timeline_type.in_(timeline_types)
+        ).limit(MSG_SIZE_INIT).all()
         # 为每篇post添加评论、点赞
         posts_serialized = Serializer.serialize_list(posts)
         process_posts(posts=posts_serialized, user_id=user_id)

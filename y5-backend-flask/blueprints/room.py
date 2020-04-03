@@ -28,12 +28,12 @@ class RoomApi(Resource):
 
         friends = get_friends(room=room, user_id=current_user.id)
 
-        members = {'user': None, 'friends': []}
-        u = query_membership(room_id=id, member=current_user.id)
+        members = {'me': None, 'friends': []}
+        u = query_membership(room_id=id, user_id=current_user.id)
         if u is not None:
-            members['user'] = u._asdict()
+            members['me'] = u._asdict()
         for friend in friends:
-            m = query_membership(room_id=id, member=friend)
+            m = query_membership(room_id=id, user_id=friend.id)
             if m is not None:
                 members['friends'].append(m._asdict())
 
@@ -67,9 +67,10 @@ class RoomApi(Resource):
             return jsonify(Resp(result_code=4000, result_msg='prototype not exist', data=None).__dict__)
 
         while room_count > 0:
-            room_name = ''.join(random.sample(string.ascii_letters + string.digits, 8))
+            room_id = ''.join(random.sample(string.ascii_letters + string.digits, 8))
             room = Room(
-                room_name=room_name,
+                room_id=room_id,
+                room_name=room_id,
                 room_type=room_type,
                 people_limit=people_limit,
                 room_desc=room_desc
