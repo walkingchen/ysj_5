@@ -39,6 +39,7 @@ class PostApi(Resource):
             timeline_type = data['timeline_type']
             post_content = data['post_content']
             post_type = data['post_type']
+            keywords = data['keywords']
             room_id = data['room_id']
         except TypeError:
             return json.dumps(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
@@ -53,6 +54,7 @@ class PostApi(Resource):
             timeline_type=timeline_type,
             post_title=post_title,
             post_content=post_content,
+            keywords=keywords,
             post_type=post_type,
             user_id=user_id,
             room_id=room_id
@@ -133,12 +135,13 @@ class PostApi(Resource):
         except TypeError:
             return json.dumps(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
 
-        user_id = current_user.id
+        # user_id = current_user.id
+        user_id = 18
         if user_id is None:
             return json.dumps(Resp(result_code=4000, result_msg='user id is none', data=None).__dict__)
 
         room = Room.query.filter_by(id=room_id).first()
-        friends = get_friends(room=room, user_id=current_user.id)
+        friends = get_friends(room=room, user_id=user_id)
 
         friend_ids = []
         for friend in friends:
@@ -157,11 +160,7 @@ class PostApi(Resource):
         posts_serialized = Serializer.serialize_list(posts)
         process_posts(posts=posts_serialized, user_id=user_id)
 
-        return jsonify(Resp(
-            result_code=2000,
-            result_msg='success',
-            data=posts_serialized
-        ).__dict__)
+        return jsonify(Resp(result_code=2000, result_msg='success', data=posts_serialized).__dict__)
 
 
 api.add_resource(
