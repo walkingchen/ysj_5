@@ -135,8 +135,7 @@ class PostApi(Resource):
         except TypeError:
             return json.dumps(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
 
-        # user_id = current_user.id
-        user_id = 18
+        user_id = current_user.id
         if user_id is None:
             return json.dumps(Resp(result_code=4000, result_msg='user id is none', data=None).__dict__)
 
