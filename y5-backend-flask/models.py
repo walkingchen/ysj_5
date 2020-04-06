@@ -54,6 +54,7 @@ class Post(db.Model):
     post_title = Column(String(256))
     post_content = Column(Text)
     post_type = Column(Integer)
+    keywords = Column(String(256))
     user_id = Column(Integer)
     timeline_type = Column(Integer)
     room_id = Column(Integer)
@@ -170,7 +171,7 @@ class User(db.Model, UserMixin):
     __tablename__ = 'tb_user'
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer)
+    # user_id = Column(Integer)
     avatar = Column(String(2048))
     username = Column(String(32))
     password = Column(String(128))
