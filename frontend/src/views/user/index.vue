@@ -1,7 +1,7 @@
 <template>
   <div class="user-content">
     <el-row class="user-content-head">
-      <span>28号房间</span>
+      <span>{{ roomInfor.room_name }}</span>
     </el-row>
     <el-row :gutter="20">
       <el-col :span="7">
@@ -9,10 +9,10 @@
         <priTimeline />
       </el-col>
       <el-col :span="9">
-        <pubTimeline />
+        <pubTimeline :id="roomInfor.id" />
       </el-col>
       <el-col :span="8">
-        <portrait />
+        <portrait :members="members" />
         <chatroom />
       </el-col>
     </el-row>
@@ -25,7 +25,7 @@ import navigation from './components/navigation'
 import portrait from './components/portrait'
 import priTimeline from './components/privateTimeline'
 import pubTimeline from './components/publicTimeline'
-// import { getRoomInf } from '@/api/chatroom'
+import { chatLogin, getRoomInf } from '@/api/chatroom'
 export default {
   components: {
     chatroom,
@@ -36,11 +36,28 @@ export default {
   },
   data() {
     return {
+      members: [],
+      roomInfor: []
     }
   },
   created() {
+    this.login()
   },
   methods: {
+    login() {
+      const params = { username: 'user14', password: '123456' }
+      chatLogin(params).then(res => {
+        getRoomInf(28).then(res => {
+          if (res.result_code === 2000) {
+            const friends = res.data.members.friends
+            const me = res.data.members.me
+            friends.unshift(me)
+            this.members = friends
+            this.roomInfor = res.data.room[0]
+          }
+        })
+      })
+    }
   }
 }
 </script>

@@ -5,7 +5,7 @@
         <div class="item-user"></div>
         <div class="item-text">
           <div class="item-name">sdv</div>
-          <div>技术部是长江索道VB讲哈上班从v将并不具备上档次 艾斯比从v和当贝市场</div>
+          <div>技术部是长江索道VB讲哈上将并不具备上档次 艾斯比从v和当贝市场</div>
         </div>
         <div class="item-comment">
           <div style="display: inline-block; float:right">
@@ -22,9 +22,32 @@
 </template>
 
 <script>
+import { getPubTimeLine } from '@/api/chatroom'
 export default {
+  props: {
+    id: {
+      type: Number,
+      default: 0
+    }
+  },
   data() {
     return {}
+  },
+  watch: {
+    id: function(val) {
+      this.$nextTick(() => {
+        this.init()
+      })
+    }
+  },
+  created() {
+  },
+  methods: {
+    init() {
+      let params = { room_id: String(this.id), timeline_type: '1' }
+      getPubTimeLine(params).then(res => {
+      })
+    }
   }
 }
 </script>
@@ -72,4 +95,8 @@ export default {
     }
   }
 }
+.pub-content >>> .el-scrollbar__bar{
+  z-index: -2;
+}
+
 </style>
