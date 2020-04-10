@@ -5,7 +5,7 @@ from flask_principal import identity_changed, Identity
 
 from entity.Resp import Resp
 from extensions import db
-from models import User
+from models import User, RoomMember, Room, Serializer
 
 bp_auth = Blueprint('api/auth', __name__, url_prefix='/api/auth')
 
@@ -64,7 +64,15 @@ def login():
     identity_changed.send(current_app._get_current_object(), identity=Identity(user.id))
     # fixme 判断是否管理员
     # return redirect('/admin/')
-    return json.dumps(Resp(result_code=2000, result_msg='success', data=None).__dict__)
+
+    member = RoomMember.query.filter_by(user_id=user.id).first()
+    room = Room.query.filter_by(id=member.room_id).first()
+
+    return json.dumps(Resp(
+        result_code=2000,
+        result_msg='success',
+        data=Serializer.serialize(room)
+    ).__dict__)
 
 
 @login_manager.user_loader
