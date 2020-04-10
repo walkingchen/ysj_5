@@ -1,1 +1,5 @@
-// post api
+export const getPosts = params => axios.get('/post', { params })
+export const likePost = params => axios.post('/post/like', params)
+export const unlikePost = id => axios.delete('/post/like/' + id)
+export const commentPost = params => axios.post('/post/comment', params)
+export const deleteComment = id => axios.delete('/post/comment/' + id)

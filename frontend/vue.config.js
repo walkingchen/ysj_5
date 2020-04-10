@@ -10,7 +10,7 @@ module.exports = {
     port: 9099,
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'http://ysj_5.soulfar.com',
         changeOrigin: true
       }
     }

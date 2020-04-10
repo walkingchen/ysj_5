@@ -2,13 +2,11 @@
   <div class="login-container">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
-      <div class="title-container">
-        <h3 class="title">Login Form</h3>
-      </div>
+      <h3 class="title">Login</h3>
 
       <el-form-item prop="username">
         <span class="svg-container">
-          <svg-icon icon-class="user" />
+          <v-icon name="user" />
         </span>
         <el-input
           ref="username"
@@ -23,7 +21,7 @@
 
       <el-form-item prop="password">
         <span class="svg-container">
-          <svg-icon icon-class="password" />
+          <v-icon name="lock" />
         </span>
         <el-input
           :key="passwordType"
@@ -37,65 +35,40 @@
           @keyup.enter.native="handleLogin"
         />
         <span class="show-pwd" @click="showPwd">
-          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+          <v-icon :name="passwordType === 'password' ? 'eye' : 'eye-slash'" />
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
+      <el-button :loading="loading" type="primary" class="login-btn" @click.native.prevent="handleLogin">Login</el-button>
 
-      <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
-      </div>
+      <el-alert v-show="error_show" title="登录失败，请重试" type="error" show-icon :closable="false" />
 
     </el-form>
   </div>
 </template>
 
 <script>
-function validUsername(str) {
-  const valid_map = ['admin', 'editor']
-  return valid_map.indexOf(str.trim()) >= 0
-}
+import 'vue-awesome/icons/user'
+import 'vue-awesome/icons/lock'
+import 'vue-awesome/icons/eye'
+import 'vue-awesome/icons/eye-slash'
+import { login } from '@api/auth'
 
 export default {
   name: 'Login',
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
-      } else {
-        callback()
-      }
-    }
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
-      } else {
-        callback()
-      }
-    }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        username: 'user14',
+        password: '123456'
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        username: [{ required: true, trigger: 'blur', message: '请输入用户名' }],
+        password: [{ required: true, trigger: 'blur', message: '请输入密码' }]
       },
       loading: false,
       passwordType: 'password',
-      redirect: undefined
-    }
-  },
-  watch: {
-    $route: {
-      handler: function(route) {
-        this.redirect = route.query && route.query.redirect
-        console.log(this.redirect)
-      },
-      immediate: true
+      error_show: false
     }
   },
   methods: {
@@ -110,18 +83,22 @@ export default {
       })
     },
     handleLogin() {
+      this.error_show = false
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
-            this.loading = false
+          login(this.loginForm).then(res => {
+            if (res.data.result_code === 2000) {
+              localStorage.setItem('roomid', res.data.data.id)
+              this.$router.push('/')
+            } else {
+              this.loading = false
+              this.error_show = true
+            }
           }).catch(() => {
             this.loading = false
+            this.error_show = true
           })
-        } else {
-          console.log('error submit!!')
-          return false
         }
       })
     }
@@ -135,43 +112,36 @@ $bg = #283443
 $light_gray = #fff
 $cursor =  #fff
 
-@supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
-  .login-container .el-input input {
-    color: $cursor;
-  }
-}
+@supports (-webkit-mask: none) and (not (cater-color: $cursor))
+  .login-container .el-input input
+    color: $cursor
 
 /* reset element-ui css */
-.login-container {
-  .el-input {
-    display: inline-block;
-    height: 47px;
-    width: 85%;
+.login-container
+  .el-input
+    display inline-block
+    height 47px
+    width 85%
 
-    input {
-      background: transparent;
-      border: 0px;
-      -webkit-appearance: none;
-      border-radius: 0px;
-      padding: 12px 5px 12px 15px;
-      color: $light_gray;
-      height: 47px;
-      caret-color: $cursor;
+    input
+      background transparent
+      border 0px
+      -webkit-appearance none
+      border-radius 0px
+      padding 12px 5px 12px 15px
+      color $light_gray
+      height 47px
+      caret-color $cursor
 
-      &:-webkit-autofill {
-        box-shadow: 0 0 0px 1000px $bg inset !important;
-        -webkit-text-fill-color: $cursor !important;
-      }
-    }
-  }
+      &:-webkit-autofill
+        box-shadow 0 0 0px 1000px $bg inset !important
+        -webkit-text-fill-color $cursor !important
 
-  .el-form-item {
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-    color: #454545;
-  }
-}
+  .el-form-item
+    border 1px solid rgba(255, 255, 255, 0.1)
+    background rgba(0, 0, 0, 0.1)
+    border-radius 5px
+    color #454545
 </style>
 
 <style lang="stylus" scoped>
@@ -179,61 +149,42 @@ $bg = #2d3a4b
 $dark_gray = #889aa4
 $light_gray = #eee
 
-.login-container {
-  min-height: 100%;
-  width: 100%;
-  background-color: $bg;
-  overflow: hidden;
+.login-container
+  height 100vh
+  background-color $bg
+  overflow hidden
+  display flex
+  justify-content center
+  align-items center
 
-  .login-form {
-    position: relative;
-    width: 520px;
-    max-width: 100%;
-    padding: 160px 35px 0;
-    margin: 0 auto;
-    overflow: hidden;
-  }
+  .login-form
+    width 520px
+    max-width 100%
+    height 316px
 
-  .tips {
-    font-size: 14px;
-    color: #fff;
-    margin-bottom: 10px;
+  .title
+    text-align center
+    color $light_gray
+    margin-bottom 40px
+    font-weight bold
 
-    span {
-      &:first-of-type {
-        margin-right: 16px;
-      }
-    }
-  }
+  .svg-container
+    padding 6px 5px 6px 15px
+    color $dark_gray
+    vertical-align middle
+    width 30px
+    display inline-block
 
-  .svg-container {
-    padding: 6px 5px 6px 15px;
-    color: $dark_gray;
-    vertical-align: middle;
-    width: 30px;
-    display: inline-block;
-  }
+  .show-pwd
+    position absolute
+    right 10px
+    top 7px
+    font-size 16px
+    color $dark_gray
+    cursor pointer
+    user-select none
 
-  .title-container {
-    position: relative;
-
-    .title {
-      font-size: 26px;
-      color: $light_gray;
-      margin: 0px auto 40px auto;
-      text-align: center;
-      font-weight: bold;
-    }
-  }
-
-  .show-pwd {
-    position: absolute;
-    right: 10px;
-    top: 7px;
-    font-size: 16px;
-    color: $dark_gray;
-    cursor: pointer;
-    user-select: none;
-  }
-}
+  .login-btn
+    width 100%
+    margin-bottom 22px
 </style>
