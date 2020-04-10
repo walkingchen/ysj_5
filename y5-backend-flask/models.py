@@ -91,6 +91,10 @@ class PostLike(db.Model):
     created_at = Column(DateTime, server_default=FetchedValue())
     updated_at = Column(DateTime, server_default=FetchedValue())
 
+    def serialize(self):
+        d = Serializer.serialize(self)
+        return d
+
 
 class PostFactcheck(db.Model):
     __tablename__ = 'tb_post_factcheck'

@@ -42,9 +42,9 @@ class PostApi(Resource):
             keywords = data['keywords']
             room_id = data['room_id']
         except TypeError:
-            return json.dumps(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
+            return jsonify(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
         except KeyError:
-            return json.dumps(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
+            return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
         if 'post_title' in data:
             post_title = data['post_title']
         else:
@@ -124,20 +124,20 @@ class PostApi(Resource):
     @swag_from('../swagger/post/list_retrieve.yaml')
     def get(self):
         if current_user is None:
-            return json.dumps(Resp(result_code=4000, result_msg='need to login', data=None).__dict__)
+            return jsonify(Resp(result_code=4000, result_msg='need to login', data=None).__dict__)
 
         data = request.args
         try:
             room_id = data['room_id']
             timeline_type = data['timeline_type']
         except KeyError:
-            return json.dumps(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
+            return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
         except TypeError:
-            return json.dumps(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
+            return jsonify(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
 
         user_id = current_user.id
         if user_id is None:
-            return json.dumps(Resp(result_code=4000, result_msg='user id is none', data=None).__dict__)
+            return jsonify(Resp(result_code=4000, result_msg='user id is none', data=None).__dict__)
 
         room = Room.query.filter_by(id=room_id).first()
         friends = get_friends(room=room, user_id=user_id)
@@ -174,12 +174,12 @@ class CommentApi(Resource):
     def get(self, id):
         comment = PostComment.query.filter_by(id=id).first()
         comment_serialized = Serializer.serialize(comment)
-        return Resp(result_code=2000, result_msg="success", data=comment_serialized)
+        return jsonify(Resp(result_code=2000, result_msg="success", data=comment_serialized).__dict__)
 
     @swag_from('../swagger/post/comment/create.yaml')
     def post(self):
         if current_user is None:
-            return Resp(result_code=2000, result_msg="user is none", data=None)
+            return jsonify(Resp(result_code=2000, result_msg="user is none", data=None).__dict__)
 
         user_id = current_user.id
         data = request.get_json()
@@ -189,18 +189,18 @@ class CommentApi(Resource):
         db.session.add(comment)
         db.session.commit()
 
-        return Resp(result_code=2000, result_msg="success", data=Serializer.serialize(comment))
+        return jsonify(Resp(result_code=2000, result_msg="success", data=Serializer.serialize(comment)).__dict__)
 
     @swag_from('../swagger/post/comment/delete.yaml')
     def delete(self, id):
         comment = PostComment.query.filter_by(id=id).first()
         if comment is None:
-            return Resp(result_code=2000, result_msg="comment not found", data=None)
+            return jsonify(Resp(result_code=2000, result_msg="comment not found", data=None).__dict__)
 
         db.session.delete(comment)
         db.session.commit()
 
-        return Resp(result_code=2000, result_msg="success", data=Serializer.serialize(comment))
+        return jsonify(Resp(result_code=2000, result_msg="success", data=Serializer.serialize(comment)).__dict__)
 
 
 api.add_resource(
@@ -230,12 +230,12 @@ class LikeApi(Resource):
     def get(self, id):
         like = PostLike.query.filter_by(id=id).first()
         like_serialized = Serializer.serialize(like)
-        return Resp(result_code=2000, result_msg="success", data=like_serialized)
+        return jsonify(Resp(result_code=2000, result_msg="success", data=like_serialized).__dict__)
 
     @swag_from('../swagger/post/like/create.yaml')
     def post(self):
         if current_user is None:
-            return Resp(result_code=2000, result_msg="user is none", data=None)
+            return jsonify(Resp(result_code=2000, result_msg="user is none", data=None).__dict__)
 
         user_id = current_user.id
         data = request.get_json()
@@ -244,7 +244,7 @@ class LikeApi(Resource):
         db.session.add(like)
         db.session.commit()
 
-        return Resp(result_code=2000, result_msg="success", data=Serializer.serialize(like))
+        return jsonify(Resp(result_code=2000, result_msg="success", data=Serializer.serialize(like)).__dict__)
 
     @swag_from('../swagger/post/like/delete.yaml')
     def delete(self, id):
@@ -252,7 +252,7 @@ class LikeApi(Resource):
         db.session.delete(like)
         db.session.commit()
 
-        return Resp(result_code=2000, result_msg="disliked", data=None)
+        return jsonify(Resp(result_code=2000, result_msg="disliked", data=None).__dict__)
 
 
 api.add_resource(
