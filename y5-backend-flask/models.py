@@ -92,6 +92,16 @@ class PostLike(db.Model):
     updated_at = Column(DateTime, server_default=FetchedValue())
 
 
+class PostFactcheck(db.Model):
+    __tablename__ = 'tb_post_factcheck'
+
+    id = Column(Integer, primary_key=True)
+    room_id = Column(Integer)
+    post_id = Column(Integer, nullable=False)
+    user_id = Column(Integer, nullable=False)
+    created_at = Column(DateTime, server_default=FetchedValue())
+
+
 class PostType(db.Model):
     __tablename__ = 'tb_post_type'
 

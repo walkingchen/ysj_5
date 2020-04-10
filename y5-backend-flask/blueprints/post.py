@@ -164,7 +164,7 @@ class PostApi(Resource):
 
 api.add_resource(
     PostApi,
-    '/',
+    '',
     methods=['GET'],
     endpoint='post/list_retrieve')
 
@@ -270,3 +270,11 @@ api.add_resource(
     '/like/<int:id>',
     methods=['DELETE'],
     endpoint='post/like/delete')
+
+
+class FactcheckApi(Resource):
+    def get(self, id):
+        pass
+
+    def post(self):
+        pass
