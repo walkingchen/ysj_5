@@ -12,7 +12,11 @@ parameters:
     type: string
     required: true
     description: timeline type
-
+  - name: last_update
+    in: query
+    type: string
+    required: true
+    description: datetime format
 responses:
   200:
     description: return timeline

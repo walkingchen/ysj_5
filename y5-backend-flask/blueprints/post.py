@@ -131,6 +131,7 @@ class PostApi(Resource):
         try:
             room_id = data['room_id']
             timeline_type = data['timeline_type']
+            last_update = data['last_update']
         except KeyError:
             return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
         except TypeError:
@@ -151,11 +152,14 @@ class PostApi(Resource):
             timeline_types = [0, 1]
         else:
             timeline_types = [timeline_type]
+
         posts = Post.query.filter(
             Post.room_id == room_id,
             Post.user_id.in_(friend_ids),
-            Post.timeline_type.in_(timeline_types)
+            Post.timeline_type.in_(timeline_types),
+            Post.created_at <= last_update
         ).limit(MSG_SIZE_INIT).all()
+
         # 为每篇post添加评论、点赞
         posts_serialized = Serializer.serialize_list(posts)
         process_posts(posts=posts_serialized, user_id=user_id)
