@@ -1,16 +1,17 @@
 ---
 tags:
-  - Post Like
+  - Post Factcheck
 parameters:
   - name: id
     in: path
     type: string
     required: true
-    description: delete like by ID
+    description: delete factcheck by ID
 responses:
   200:
     description: return messsage
     schema:
+      id: Response
       properties:
         result_code:
           type: string

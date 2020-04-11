@@ -1,15 +1,16 @@
 ---
 tags:
-  - Post Like
+  - Post Factcheck
 parameters:
   - name: body
     in: body
     required: true
     schema:
-      id: post_like_create
+      id: post_factcheck_create
       required:
         - post_id
         - user_id
+        - room_id
       properties:
         post_id:
           type: string
@@ -17,10 +18,14 @@ parameters:
         user_id:
           type: string
           description: user id
+        room_id:
+          type: string
+          description: room id
 responses:
   200:
-    description: return post like created
+    description: return post factcheck created
     schema:
+      id: Response
       properties:
         result_code:
           type: string

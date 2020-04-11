@@ -2,26 +2,23 @@
 tags:
   - Room Member
 parameters:
-    - name: room_type
+    - name: room_id
       in: body
       type: string
       required: true
-    - name: people_limit
+    - name: users
       in: body
       type: string
       required: true
-    - name: room_count
-      in: body
-      type: string
-      required: true
-    - name: room_desc
-      in: body
-      type: string
-      required: false
 responses:
   200:
-    description: return room array created
+    description: return room members created
     schema:
-      result_code: 2000
-      result_msg: ''
-      result_data: ''
+      id: Response
+      properties:
+        result_code:
+          type: string
+        result_msg:
+          type: string
+        data:
+          type: string

@@ -6,7 +6,8 @@ from flask_socketio import emit
 
 from entity.Resp import Resp
 from extensions import db
-from models import Post, PostComment, PostLike, Serializer, Timeline, User, Room, RoomPrototype, RoomMember
+from models import Post, PostComment, PostLike, Serializer, Timeline, User, Room, RoomPrototype, RoomMember, \
+    PostFactcheck
 from service import get_friends, process_posts
 
 bp_post = Blueprint('/api/post', __name__)
@@ -273,8 +274,48 @@ api.add_resource(
 
 
 class FactcheckApi(Resource):
+    @swag_from('../swagger/post/factcheck/retrieve.yaml')
     def get(self, id):
-        pass
+        check = PostFactcheck.query.filter_by(id=id).first()
+        check_serialized = Serializer.serialize(check)
+        return jsonify(Resp(result_code=2000, result_msg="success", data=check_serialized).__dict__)
 
+    @swag_from('../swagger/post/factcheck/create.yaml')
     def post(self):
-        pass
+        if current_user is None:
+            return jsonify(Resp(result_code=2000, result_msg="user is none", data=None).__dict__)
+
+        user_id = current_user.id
+        data = request.get_json()
+        post_id = data['post_id']
+        room_id = data['room_id']
+        check = PostFactcheck(post_id=post_id, user_id=user_id, room_id=room_id)
+        db.session.add(check)
+        db.session.commit()
+
+        return jsonify(Resp(result_code=2000, result_msg="success", data=Serializer.serialize(check)).__dict__)
+
+    @swag_from('../swagger/post/factcheck/delete.yaml')
+    def delete(self, id):
+        check = PostFactcheck.query.filter_by(id=id).first()
+        db.session.delete(check)
+        db.session.commit()
+
+        return jsonify(Resp(result_code=2000, result_msg="submitted", data=None).__dict__)
+
+
+api.add_resource(
+    FactcheckApi,
+    '/factcheck/<int:id>',
+    methods=['GET'],
+    endpoint='post/factcheck/retrieve')
+api.add_resource(
+    FactcheckApi,
+    '/factcheck',
+    methods=['POST'],
+    endpoint='post/factcheck/create')
+api.add_resource(
+    FactcheckApi,
+    '/factcheck/<int:id>',
+    methods=['DELETE'],
+    endpoint='post/factcheck/delete')

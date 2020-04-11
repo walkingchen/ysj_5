@@ -21,6 +21,11 @@ responses:
   200:
     description: return comment array update
     schema:
-      result_code: 2000
-      result_msg: ''
-      result_data: ''
+      id: Response
+      properties:
+        result_code:
+          type: string
+        result_msg:
+          type: string
+        data:
+          type: string

@@ -305,7 +305,8 @@ api.add_resource(
 class RoomMemberListApi(Resource):
     @swag_from('../swagger/room/member/list_create.yaml')
     def post(self):
-        users = request.get_json()
+        data = request.get_json()
+        users = data['users']
         if len(users) == 0:
             return jsonify(Resp(result_code=4000, result_msg='empty params', data=None).__dict__)
         for user in users:
