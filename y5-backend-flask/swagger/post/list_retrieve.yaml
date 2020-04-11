@@ -17,6 +17,7 @@ parameters:
     type: string
     required: true
     description: datetime format
+    example: 2020-04-11T22:58:06
 responses:
   200:
     description: return timeline
