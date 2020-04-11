@@ -2,21 +2,36 @@
 tags:
   - Auth
 parameters:
-    - name: username
-      in: body
-      type: string
-      required: true
-    - name: password
-      in: body
-      type: string
-      required: true
-    - name: email
-      in: body
-      type: string
-      required: true
+  - name: body
+    in: body
+    required: true
+    schema:
+      id: auth_register
+      required:
+        - username
+        - nickname
+        - avatar
+        - password
+      properties:
+        username:
+          type: string
+          description: email
+          required: true
+        nickname:
+          type: string
+          description: nickname
+          required: true
+        avatar:
+          type: string
+          description: avatar
+          required: true
+        password:
+          type: string
+          description: password
+          required: true
 responses:
   200:
-    description: return room with details
+    description: return result
     schema:
       id: Response
       properties:

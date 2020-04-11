@@ -18,14 +18,17 @@ login_manager.login_view = 'login'
 def register():
     data = request.get_json()
     try:
-        email = data['email']
+        # email = data['email']
         username = data['username']
+        nickname = data['nickname']
+        avatar = data['avatar']
         password = data['password']
     except KeyError:
         return json.dumps(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
     except TypeError:
         return json.dumps(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
 
+    email = username
     user = User.query.filter_by(email=email).first()
     if user is not None:
         return json.dumps(Resp(result_code=4000, result_msg='user exists', data=None).__dict__)
@@ -33,6 +36,8 @@ def register():
     user = User(
         email=email,
         username=username,
+        nickname=nickname,
+        avatar=avatar,
         password=password
     )
     db.session.add(user)
