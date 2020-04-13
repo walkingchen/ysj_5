@@ -1,6 +1,6 @@
 <template>
   <el-card shadow="hover" class="members-content">
-    <title-com title="房间成员" />
+    <title-com title="Connections" />
     <ul>
       <li v-for="(item, index) in members" :key="item.id" class="members-item">
         <el-avatar :size="81" :src="item.avatar ? item.avatar : ''" shape="square" class="user-portrait">

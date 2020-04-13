@@ -8,14 +8,14 @@
       <div>
         <el-row :gutter="20">
           <el-col :span="5">
-            <keywords />
+            <navigation />
           </el-col>
           <el-col :span="11">
-            <moments />
+            <billboard />
           </el-col>
           <el-col :span="8">
-            <members />
-            <system-messages />
+            <connections />
+            <messages />
           </el-col>
         </el-row>
       </div>
@@ -26,19 +26,19 @@
 
 <script>
 import 'vue-awesome/icons/sign-out-alt'
-import keywords from './keywords'
-import moments from './moments'
-import members from './members'
-import systemMessages from './systemMessages'
+import navigation from './navigation'
+import billboard from './billboard'
+import connections from './connections'
+import messages from './messages'
 import { getRoomInfo } from '@api/room'
 import { logout } from '@api/auth'
 
 export default {
   components: {
-    keywords,
-    moments,
-    members,
-    systemMessages
+    navigation,
+    billboard,
+    connections,
+    messages
   },
   data() {
     return {
@@ -50,10 +50,16 @@ export default {
     if (roomid) {
       getRoomInfo(roomid).then(res => {
         const resdata = res.data
-        if (resdata.result_code === 2000) {
-          const { friends, me } = resdata.data.members
-          this.$store.commit('setRoomMembers', [...[me], ...friends])
-          this.roomInfo = resdata.data.room[0]
+        switch (resdata.result_code) {
+          case 2000: {
+            const { friends, me } = resdata.data.members
+            this.$store.commit('setRoomMembers', [...[me], ...friends])
+            this.roomInfo = resdata.data.room[0]
+            break
+          }
+          case 4001:
+            this.$router.push({ name: 'Login' })
+            break
         }
       })
     } else {

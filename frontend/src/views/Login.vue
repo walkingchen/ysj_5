@@ -1,21 +1,18 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
+    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" label-position="left">
 
       <h3 class="title">Login</h3>
 
       <el-form-item prop="username">
         <span class="svg-container">
-          <v-icon name="user" />
+          <v-icon name="envelope" />
         </span>
         <el-input
-          ref="username"
           v-model="loginForm.username"
-          placeholder="Username"
-          name="username"
+          placeholder="E-mail"
           type="text"
-          tabindex="1"
-          auto-complete="on"
+          @keyup.enter.native="handleLogin"
         />
       </el-form-item>
 
@@ -24,14 +21,10 @@
           <v-icon name="lock" />
         </span>
         <el-input
-          :key="passwordType"
           ref="password"
           v-model="loginForm.password"
           :type="passwordType"
           placeholder="Password"
-          name="password"
-          tabindex="2"
-          auto-complete="on"
           @keyup.enter.native="handleLogin"
         />
         <span class="show-pwd" @click="showPwd">
@@ -41,14 +34,14 @@
 
       <el-button :loading="loading" type="primary" class="login-btn" @click.native.prevent="handleLogin">Login</el-button>
 
-      <el-alert v-show="error_show" title="登录失败，请重试" type="error" show-icon :closable="false" />
+      <el-alert v-show="error_show" title="Login failed, please try again." type="error" show-icon :closable="false" />
 
     </el-form>
   </div>
 </template>
 
 <script>
-import 'vue-awesome/icons/user'
+import 'vue-awesome/icons/envelope'
 import 'vue-awesome/icons/lock'
 import 'vue-awesome/icons/eye'
 import 'vue-awesome/icons/eye-slash'
@@ -63,8 +56,8 @@ export default {
         password: '123456'
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', message: '请输入用户名' }],
-        password: [{ required: true, trigger: 'blur', message: '请输入密码' }]
+        username: [{ required: true, trigger: 'blur', message: 'Please enter the username.' }],
+        password: [{ required: true, trigger: 'blur', message: 'Please enter the password.' }]
       },
       loading: false,
       passwordType: 'password',
@@ -74,7 +67,7 @@ export default {
   methods: {
     showPwd() {
       if (this.passwordType === 'password') {
-        this.passwordType = ''
+        this.passwordType = 'text'
       } else {
         this.passwordType = 'password'
       }

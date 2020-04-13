@@ -1,8 +1,8 @@
 <template>
-  <el-card shadow="hover" class="moments-layout">
-    <title-com title="全部动态" />
+  <div class="moments-layout">
+    <title-com title="Public Billboard" class="moments-title" />
     <ul class="moments-ul">
-      <li v-if="moment_list.length === 0" class="moments-item">暂无动态</li>
+      <li v-if="moment_list.length === 0" class="moments-item">No data.</li>
       <li class="moments-item" v-for="item in moment_list" :key="item.id">
         <div class="moments-item-content">
           <el-avatar :size="50" :src="item.user.avatar ? item.user.avatar : ''" shape="square" class="user-portrait">
@@ -50,7 +50,7 @@
         </ul>
       </li>
     </ul>
-  </el-card>
+  </div>
 </template>
 
 <script>
@@ -109,7 +109,8 @@ export default {
     getMomentList() {
       getPosts({
         room_id: localStorage.getItem('roomid'),
-        timeline_type: '0'
+        timeline_type: '0',
+        last_update: ''
       }).then(res => {
         this.moments = res.data.data
         res.data.data.forEach(item => {
@@ -155,11 +156,11 @@ export default {
 
 <style lang="stylus">
 .moments-layout
-  border 0
+  .moments-title
+    background-color #fff
 
   .moments-ul
     padding 20px 0
-    background-color #fffaf0
 
   .moments-item
     padding 10px

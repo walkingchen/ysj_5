@@ -1,6 +1,6 @@
 <template>
   <el-card shadow="hover" class="keywords-layout">
-    <title-com title="分类" />
+    <title-com title="Navigation" />
     <ul>
       <li v-for="(i, item) in 15" :key="item">keyword{{i}}</li>
     </ul>

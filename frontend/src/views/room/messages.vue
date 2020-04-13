@@ -1,7 +1,8 @@
 <template>
   <el-card shadow="hover" class="systemMessages-layout">
-    <title-com title="系统消息" />
+    <title-com title="Personalized Message Stream" />
     <ul>
+      <li v-if="messages.length === 0">No messages.</li>
       <li v-for="item in messages" :key="item.id">
         <p>{{ item.post_content }}</p>
         <div>
@@ -31,7 +32,8 @@ export default {
   created() {
     getPosts({
       room_id: localStorage.getItem('roomid'),
-      timeline_type: '1'
+      timeline_type: '1',
+      last_update: ''
     }).then(res => {
       this.messages = res.data.data.map(item => {
         item.created_at = formatDate(item.created_at)
