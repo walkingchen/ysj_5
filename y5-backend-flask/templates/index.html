@@ -10,33 +10,59 @@
         /**
          * 初始化连接
          */
-        socket.on('connect', function() {
+        socket.on("connect", function() {
             /**
              * socket加入聊天室
              */
-            socket.emit( 'room_join', {
-                'room_id': '123456',
-                'username': 'user14'
+            socket.emit("room_join", {
+                "room_id": "123456",
+                "username": "user14"
             });
+
             /**
              * 退出聊天室
              */
-            socket.emit( 'room_quit', {
-                'room_id': '123456',
-                'username': 'user14'
+            socket.emit("room_leave", {
+                "room_id": "123456",
+                "username": "user14"
             });
+
             /**
              * 注册timeline更新事件 post_pull
+             * return:
+             * data: {
+             *     "timeline_type": 1，  // 0:public, 1:private
+             *     "posts_number": 10
+             * }
              */
-            socket.on('post_pull', function (msg, cb) {
+            socket.on("post_pull", function (data, cb) {
+                console.log(data);
+            });
+
+            /**
+             * 发送即时聊天消息
+             */
+            socket.emit("chat_msg", {
+                "room_id": "",
+                "user_from": "",
+                "user_to": "",
+                "message_content": "",
+                "message_timestamp": ""
+            });
+
+            /**
+             * 接收即时聊天消息
+             */
+            socket.on("chat_msg", function (data, cb) {
+                console.log(data);  // data内容参考发送即时消息json
+            });
+
+            /**
+             * 通用广播（备用）
+             */
+            socket.on("broadcast_msg", function (msg, cb) {
                 console.log(msg);
             });
-            /**
-             * 通用广播
-             */
-            socket.on('broadcast_msg', function (msg, cb) {
-                console.log(msg);
-            })
         });
     </script>
     <title>Title</title>

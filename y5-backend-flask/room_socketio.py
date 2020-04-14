@@ -13,7 +13,7 @@ class RoomNamespace(Namespace):
         print('socket connected')
         emit('connected', request.sid)
 
-    def on_join(self, json):
+    def on_room_join(self, json):
         try:
             room_id = json['room_id']
             print("room_id = " + room_id)
@@ -34,7 +34,7 @@ class RoomNamespace(Namespace):
     #     except TypeError:
     #         pass
 
-    def on_leave(self, message):
+    def on_room_leave(self, message):
         room_id = message['room_id']
         leave_room(room_id)
 

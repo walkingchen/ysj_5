@@ -2,13 +2,11 @@ from flasgger import swag_from
 from flask import Blueprint, request, json, jsonify
 from flask_login import current_user
 from flask_restful import Api, Resource
-from flask_socketio import emit
 
 from entity.Resp import Resp
-from extensions import db
+from extensions import db, socketio
 from models import Post, PostComment, PostLike, Serializer, Timeline, User, Room, RoomPrototype, RoomMember, \
     PostFactcheck
-from room_socketio import RoomNamespace
 from service import get_friends, process_posts
 
 bp_post = Blueprint('/api/post', __name__)
@@ -65,7 +63,10 @@ class PostApi(Resource):
         db.session.commit()
 
         # 通知好友刷新timeline
-        emit('post_pull', {}, room=room_id)
+        socketio.emit('post_pull', {
+            "timeline_type": timeline_type,
+            "posts_number": 1   # fixme
+        }, room=room_id)
 
         return jsonify(Resp(
             result_code=2000,
@@ -79,7 +80,7 @@ class PostApi(Resource):
         post.timeline_type = 2  # 0: public; 1: private; 2: both
         db.session.commit()
 
-        emit('post_pull', namespace=RoomNamespace, room=post.room_id)  # fixme
+        # emit('post_pull', namespace=RoomNamespace, room=post.room_id)  # fixme
 
         return jsonify(Resp(
             result_code=2000,

@@ -5,32 +5,28 @@ from flask_admin.contrib.sqla import ModelView
 from flask_apscheduler import APScheduler
 from flask_babelex import Babel
 from flask_bootstrap import Bootstrap
-from flask_cache import Cache
 from flask_ckeditor import CKEditor
 from flask_cors import CORS
 from flask_mail import Mail
-from flask_socketio import SocketIO
 
 import config
 from blueprints.auth import bp_auth, login_manager
 from blueprints.post import bp_post
 from blueprints.room import bp_room
 from room_socketio import RoomNamespace
-from extensions import db
+from extensions import db, cache, socketio
 from models import User, Room, RoomPrototype, RoomMember, Timeline, Post, PostComment, PostLike, Message
 
 app = Flask(__name__)
 
 app.config.from_object('config')
-cors = CORS(app)
-mail = Mail(app)
-Bootstrap(app)
 Swagger(app)
 babel = Babel(app)
 ckeditor = CKEditor(app)
-cache = Cache(config={'CACHE_TYPE': 'simple'})
+cors = CORS(app)
+mail = Mail(app)
+Bootstrap(app)
 cache.init_app(app)
-socketio = SocketIO()
 socketio.on_namespace(RoomNamespace('/'))
 socketio.init_app(app, engineio_logger=False)
 login_manager.init_app(app)
