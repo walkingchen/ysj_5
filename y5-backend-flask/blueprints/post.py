@@ -8,6 +8,7 @@ from entity.Resp import Resp
 from extensions import db
 from models import Post, PostComment, PostLike, Serializer, Timeline, User, Room, RoomPrototype, RoomMember, \
     PostFactcheck
+from room_socketio import RoomNamespace
 from service import get_friends, process_posts
 
 bp_post = Blueprint('/api/post', __name__)
@@ -33,7 +34,7 @@ class PostApi(Resource):
 
     @swag_from('../swagger/post/create.yaml')
     def post(self):
-        user_id = request.user.id
+        user_id = current_user.id
         data = request.get_json()
 
         try:
@@ -64,7 +65,7 @@ class PostApi(Resource):
         db.session.commit()
 
         # 通知好友刷新timeline
-        emit('pull', room=room_id)
+        emit('post_pull', {}, room=room_id)
 
         return jsonify(Resp(
             result_code=2000,
@@ -78,7 +79,7 @@ class PostApi(Resource):
         post.timeline_type = 2  # 0: public; 1: private; 2: both
         db.session.commit()
 
-        emit('pull', room=post.room_id)  # fixme
+        emit('post_pull', namespace=RoomNamespace, room=post.room_id)  # fixme
 
         return jsonify(Resp(
             result_code=2000,

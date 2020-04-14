@@ -2,16 +2,38 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
+            integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I="
+            crossorigin="anonymous"></script>
     <script type="text/javascript" charset="utf-8">
         var socket = io();
+        /**
+         * 初始化连接
+         */
         socket.on('connect', function() {
-            socket.emit( 'join', {
-              "room" : "123456"
+            /**
+             * socket加入聊天室
+             */
+            socket.emit( 'room_join', {
+                'room_id': '123456',
+                'username': 'user14'
             });
-            socket.on('connected', function (msg, cb) {
+            /**
+             * 退出聊天室
+             */
+            socket.emit( 'room_quit', {
+                'room_id': '123456',
+                'username': 'user14'
+            });
+            /**
+             * 注册timeline更新事件 post_pull
+             */
+            socket.on('post_pull', function (msg, cb) {
                 console.log(msg);
             });
+            /**
+             * 通用广播
+             */
             socket.on('broadcast_msg', function (msg, cb) {
                 console.log(msg);
             })
