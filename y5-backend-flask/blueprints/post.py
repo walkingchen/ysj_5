@@ -181,7 +181,12 @@ class CommentApi(Resource):
     def get(self, id):
         comment = PostComment.query.filter_by(id=id).first()
         comment_serialized = Serializer.serialize(comment)
-        return jsonify(Resp(result_code=2000, result_msg="success", data=comment_serialized).__dict__)
+        resp = Resp(
+            result_code=2000,
+            result_msg="success",
+            data=comment_serialized
+        )
+        return jsonify(resp.__dict__)
 
     @swag_from('../swagger/post/comment/create.yaml')
     def post(self):
