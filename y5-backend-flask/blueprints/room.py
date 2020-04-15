@@ -37,11 +37,17 @@ class RoomApi(Resource):
             if m is not None:
                 members['friends'].append(m._asdict())
 
-        room_resp = RoomResp(
-            room=Serializer.serialize(room),
-            members=members
-        )
-        return jsonify(Resp(result_code=2000, result_msg='success', data=room_resp.__dict__).__dict__)
+        room_serialized = room.serialize()
+        # fixme dict -> tuple ?
+        # room_resp = RoomResp(
+        #     room_serialized=room_serialized,
+        #     room_members=members
+        # )
+        room_resp = {
+            'room': room_serialized,
+            'members': members
+        }
+        return jsonify(Resp(result_code=2000, result_msg='success', data=room_resp).__dict__)
 
     @swag_from('../swagger/room/create.yaml')
     def post(self):
