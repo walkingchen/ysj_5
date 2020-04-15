@@ -1,7 +1,7 @@
 from flask import json
 from sqlalchemy import inspect
 
-from models import RoomPrototype, RoomMember, PostComment, Serializer, User, PostLike
+from models import RoomPrototype, RoomMember, PostComment, Serializer, User, PostLike, PostFactcheck
 
 
 # 查询好友网络
@@ -57,7 +57,7 @@ def process_posts(posts, user_id):
             comments_serialized.append(comment_serialized)
         post['comments'] = comments_serialized
 
-        likes = PostLike.query.filter_by(post_id=post['id']).all()
+        likes = PostLike.query.filter(PostLike.post_id == post['id'] and PostLike.post_like == 1).all()
         likes_serialized = []
         for like in likes:
             like_serialized = Serializer.serialize(like)
@@ -69,12 +69,30 @@ def process_posts(posts, user_id):
             'details': likes_serialized
         }
 
+        dislikes = PostLike.query.filter(PostLike.post_id == post['id'] and PostLike.post_like == 0).all()
+        dislikes_serialized = []
+        for dislike in dislikes:
+            dislike_serialized = Serializer.serialize(dislike)
+            user = query_user(user_id=dislike.user_id)
+            dislike_serialized['user'] = user._asdict()
+            dislikes_serialized.append(dislike_serialized)
+        post['dislikes'] = {
+            'count': len(dislikes),
+            'details': dislikes_serialized
+        }
+
         # 判断是否已点过赞
         like = PostLike.query.filter_by(post_id=post['id'], user_id=user_id).first()
         if like is None:
-            post['liked'] = False
+            post['liked'] = None
         else:
-            post['liked'] = True
+            post['liked'] = like.post_like
+
+        check = PostFactcheck.query.filter_by(post_id=post['id'], user_id=user_id).first()
+        if check is not None:
+            post['factcheck'] = 1
+        else:
+            post['factcheck'] = 0
 
 
 def object_as_dict(obj):
