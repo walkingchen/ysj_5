@@ -10,6 +10,7 @@ parameters:
       required:
         - post_id
         - user_id
+        - like_or_not
       properties:
         post_id:
           type: string
@@ -17,6 +18,9 @@ parameters:
         user_id:
           type: string
           description: user id
+        like_or_not:
+          type: string
+          description: 1 = like;  2 = dislike
 responses:
   200:
     description: return post like created

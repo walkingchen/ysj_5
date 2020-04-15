@@ -276,7 +276,8 @@ class LikeApi(Resource):
         user_id = current_user.id
         data = request.get_json()
         post_id = data['post_id']
-        like = PostLike(post_id=post_id, user_id=user_id)
+        like_or_not = data['like_or_not']
+        like = PostLike(post_id=post_id, user_id=user_id, post_like=like_or_not)
         db.session.add(like)
         db.session.commit()
 
