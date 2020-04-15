@@ -15,7 +15,7 @@ api = Api(bp_post, '/api/post')
 TIMELINE_PUB = 0
 TIMELINE_PRI = 1
 TIMELINE_ALL = 2
-MSG_SIZE_INIT = 50
+MSG_SIZE_INIT = 5
 
 
 class PostApi(Resource):
@@ -133,11 +133,20 @@ class PostApi(Resource):
         try:
             room_id = data['room_id']
             timeline_type = data['timeline_type']
-            last_update = data['last_update']
+            pull_new = int(data['pull_new'])     # 1: 新posts 0: last_update前的posts
         except KeyError:
             return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
         except TypeError:
             return jsonify(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
+
+        if 'last_update' in data:
+            last_update = data['last_update']
+        else:
+            last_update = None
+
+        # fixme
+        if 'page_size' in data:
+            page_size = data['page_size']
 
         user_id = current_user.id
         if user_id is None:
@@ -146,7 +155,7 @@ class PostApi(Resource):
         room = Room.query.filter_by(id=room_id).first()
         friends = get_friends(room=room, user_id=user_id)
 
-        friend_ids = []
+        friend_ids = [user_id]  # 用于timeline显示添加用户自己的posts
         for friend in friends:
             friend_ids.append(friend.user_id)
 
@@ -155,12 +164,27 @@ class PostApi(Resource):
         else:
             timeline_types = [timeline_type]
 
-        posts = Post.query.filter(
-            Post.room_id == room_id,
-            Post.user_id.in_(friend_ids),
-            Post.timeline_type.in_(timeline_types),
-            Post.created_at <= last_update
-        ).limit(MSG_SIZE_INIT).all()
+        if last_update is not None:
+            if pull_new == 1:
+                posts = Post.query.filter(
+                    Post.room_id == room_id,
+                    Post.user_id.in_(friend_ids),
+                    Post.timeline_type.in_(timeline_types),
+                    Post.created_at > last_update
+                ).order_by(Post.created_at.desc()).limit(MSG_SIZE_INIT).all()
+            else:
+                posts = Post.query.filter(
+                    Post.room_id == room_id,
+                    Post.user_id.in_(friend_ids),
+                    Post.timeline_type.in_(timeline_types),
+                    Post.created_at < last_update
+                ).order_by(Post.created_at.desc()).limit(MSG_SIZE_INIT).all()
+        else:
+            posts = Post.query.filter(
+                Post.room_id == room_id,
+                Post.user_id.in_(friend_ids),
+                Post.timeline_type.in_(timeline_types)
+            ).order_by(Post.created_at.desc()).limit(MSG_SIZE_INIT).all()
 
         # 为每篇post添加评论、点赞
         posts_serialized = Serializer.serialize_list(posts)

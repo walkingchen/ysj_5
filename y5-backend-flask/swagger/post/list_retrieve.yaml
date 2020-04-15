@@ -15,8 +15,13 @@ parameters:
   - name: last_update
     in: query
     type: string
+    required: false
+    description: datetime format, 2020-04-11T22:58:06, null = pull newest posts
+  - name: pull_new
+    in: query
+    type: string
     required: true
-    description: datetime format, 2020-04-11T22:58:06
+    description: 1 = pull new posts, 0 = pull old posts
 responses:
   200:
     description: return timeline
