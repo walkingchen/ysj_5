@@ -48,51 +48,55 @@ def query_membership(room_id, user_id):
 # 为每篇post添加评论、点赞
 def process_posts(posts, user_id):
     for post in posts:
-        comments = PostComment.query.filter_by(post_id=post['id']).all()
-        comments_serialized = []
-        for comment in comments:
-            comment_serialized = Serializer.serialize(comment)
-            user = query_user(user_id=comment.user_id)
-            comment_serialized['user'] = user._asdict()
-            comments_serialized.append(comment_serialized)
-        post['comments'] = comments_serialized
+        process_post(post, user_id)
 
-        likes = PostLike.query.filter(PostLike.post_id == post['id'] and PostLike.post_like == 1).all()
-        likes_serialized = []
-        for like in likes:
-            like_serialized = Serializer.serialize(like)
-            user = query_user(user_id=like.user_id)
-            like_serialized['user'] = user._asdict()
-            likes_serialized.append(like_serialized)
-        post['likes'] = {
-            'count': len(likes),
-            'details': likes_serialized
-        }
 
-        dislikes = PostLike.query.filter(PostLike.post_id == post['id'] and PostLike.post_like == 0).all()
-        dislikes_serialized = []
-        for dislike in dislikes:
-            dislike_serialized = Serializer.serialize(dislike)
-            user = query_user(user_id=dislike.user_id)
-            dislike_serialized['user'] = user._asdict()
-            dislikes_serialized.append(dislike_serialized)
-        post['dislikes'] = {
-            'count': len(dislikes),
-            'details': dislikes_serialized
-        }
+def process_post(post, user_id):
+    comments = PostComment.query.filter_by(post_id=post['id']).all()
+    comments_serialized = []
+    for comment in comments:
+        comment_serialized = Serializer.serialize(comment)
+        user = query_user(user_id=comment.user_id)
+        comment_serialized['user'] = user._asdict()
+        comments_serialized.append(comment_serialized)
+    post['comments'] = comments_serialized
 
-        # 判断是否已点过赞
-        like = PostLike.query.filter_by(post_id=post['id'], user_id=user_id).first()
-        if like is None:
-            post['liked'] = None
-        else:
-            post['liked'] = like.post_like
+    likes = PostLike.query.filter(PostLike.post_id == post['id'] and PostLike.post_like == 1).all()
+    likes_serialized = []
+    for like in likes:
+        like_serialized = Serializer.serialize(like)
+        user = query_user(user_id=like.user_id)
+        like_serialized['user'] = user._asdict()
+        likes_serialized.append(like_serialized)
+    post['likes'] = {
+        'count': len(likes),
+        'details': likes_serialized
+    }
 
-        check = PostFactcheck.query.filter_by(post_id=post['id'], user_id=user_id).first()
-        if check is not None:
-            post['factcheck'] = 1
-        else:
-            post['factcheck'] = 0
+    dislikes = PostLike.query.filter(PostLike.post_id == post['id'] and PostLike.post_like == 0).all()
+    dislikes_serialized = []
+    for dislike in dislikes:
+        dislike_serialized = Serializer.serialize(dislike)
+        user = query_user(user_id=dislike.user_id)
+        dislike_serialized['user'] = user._asdict()
+        dislikes_serialized.append(dislike_serialized)
+    post['dislikes'] = {
+        'count': len(dislikes),
+        'details': dislikes_serialized
+    }
+
+    # 判断是否已点过赞
+    like = PostLike.query.filter_by(post_id=post['id'], user_id=user_id).first()
+    if like is None:
+        post['liked'] = None
+    else:
+        post['liked'] = like.post_like
+
+    check = PostFactcheck.query.filter_by(post_id=post['id'], user_id=user_id).first()
+    if check is not None:
+        post['factcheck'] = 1
+    else:
+        post['factcheck'] = 0
 
 
 def object_as_dict(obj):

@@ -7,7 +7,7 @@ from entity.Resp import Resp
 from extensions import db, socketio
 from models import Post, PostComment, PostLike, Serializer, Timeline, User, Room, RoomPrototype, RoomMember, \
     PostFactcheck
-from service import get_friends, process_posts
+from service import get_friends, process_posts, process_post
 
 bp_post = Blueprint('/api/post', __name__)
 api = Api(bp_post, '/api/post')
@@ -21,13 +21,23 @@ MSG_SIZE_INIT = 5
 class PostApi(Resource):
     @swag_from('../swagger/post/retrieve.yaml')
     def get(self, id):
-        data = request.get_json()
-        timeline_id = data['timeline_id']
+        user_id = current_user.id
+
+        post = Post.query.filter_by(id=id).first()
+        if post is None:
+            return jsonify(Resp(
+                result_code=4000,
+                result_msg='post not found',
+                data=None
+            ).__dict__)
+
+        post_serialized = Serializer.serialize(post)
+        process_post(post_serialized, user_id)
 
         return jsonify(Resp(
             result_code=2000,
             result_msg='success',
-            data=None
+            data=post_serialized
         ).__dict__)
 
     @swag_from('../swagger/post/create.yaml')
