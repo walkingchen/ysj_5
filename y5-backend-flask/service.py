@@ -73,6 +73,13 @@ def process_post(post, user_id):
         'details': likes_serialized
     }
 
+    # 判断是否已点过赞
+    like = PostLike.query.filter_by(post_id=post['id'], user_id=user_id, post_like=1).first()
+    if like is None:
+        post['liked'] = None
+    else:
+        post['liked'] = Serializer.serialize(like)
+
     dislikes = PostLike.query.filter(PostLike.post_id == post['id'] and PostLike.post_like == 0).all()
     dislikes_serialized = []
     for dislike in dislikes:
@@ -85,18 +92,18 @@ def process_post(post, user_id):
         'details': dislikes_serialized
     }
 
-    # 判断是否已点过赞
-    like = PostLike.query.filter_by(post_id=post['id'], user_id=user_id).first()
-    if like is None:
-        post['liked'] = None
+    # 判断是否已点过踩
+    dislike = PostLike.query.filter_by(post_id=post['id'], user_id=user_id, post_like=0).first()
+    if dislike is None:
+        post['disliked'] = None
     else:
-        post['liked'] = like.post_like
+        post['disliked'] = Serializer.serialize(dislike)
 
     check = PostFactcheck.query.filter_by(post_id=post['id'], user_id=user_id).first()
     if check is not None:
-        post['factcheck'] = 1
+        post['factcheck'] = Serializer.serialize(check)
     else:
-        post['factcheck'] = 0
+        post['factcheck'] = None
 
 
 def object_as_dict(obj):
