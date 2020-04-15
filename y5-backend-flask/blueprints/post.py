@@ -283,6 +283,20 @@ class LikeApi(Resource):
 
         return jsonify(Resp(result_code=2000, result_msg="success", data=Serializer.serialize(like)).__dict__)
 
+    @swag_from('../swagger/post/like/update.yaml')
+    def put(self, id):
+        if current_user is None:
+            return jsonify(Resp(result_code=2000, result_msg="user is none", data=None).__dict__)
+
+        user_id = current_user.id
+        data = request.get_json()
+        like_or_not = data['like_or_not']
+        like = PostLike.query.filter_by(id=id, user_id=user_id).first()
+        like.post_like = like_or_not
+        db.session.commit()
+
+        return jsonify(Resp(result_code=2000, result_msg="success", data=Serializer.serialize(like)).__dict__)
+
     @swag_from('../swagger/post/like/delete.yaml')
     def delete(self, id):
         like = PostLike.query.filter_by(id=id).first()
@@ -302,6 +316,11 @@ api.add_resource(
     '/like',
     methods=['POST'],
     endpoint='post/like/create')
+api.add_resource(
+    LikeApi,
+    '/like/<int:id>',
+    methods=['PUT'],
+    endpoint='post/like/update')
 api.add_resource(
     LikeApi,
     '/like/<int:id>',

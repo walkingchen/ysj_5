@@ -87,7 +87,7 @@ class PostLike(db.Model):
     id = Column(Integer, primary_key=True)
     post_id = Column(Integer)
     user_id = Column(Integer)
-    post_like = Column(Integer, info='0: none; 1: like; 2: dislike; 3: ...')
+    post_like = Column(Integer, info='1: like; 0: dislike')
     created_at = Column(DateTime, server_default=FetchedValue())
     updated_at = Column(DateTime, server_default=FetchedValue())
 
