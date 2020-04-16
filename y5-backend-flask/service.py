@@ -61,7 +61,7 @@ def process_post(post, user_id):
         comments_serialized.append(comment_serialized)
     post['comments'] = comments_serialized
 
-    likes = PostLike.query.filter(PostLike.post_id == post['id'] and PostLike.post_like == 1).all()
+    likes = PostLike.query.filter(PostLike.post_id == post['id'], PostLike.post_like == 1).all()
     likes_serialized = []
     for like in likes:
         like_serialized = Serializer.serialize(like)
@@ -80,7 +80,7 @@ def process_post(post, user_id):
     else:
         post['liked'] = Serializer.serialize(like)
 
-    dislikes = PostLike.query.filter(PostLike.post_id == post['id'] and PostLike.post_like == 0).all()
+    dislikes = PostLike.query.filter(PostLike.post_id == post['id'], PostLike.post_like == 0).all()
     dislikes_serialized = []
     for dislike in dislikes:
         dislike_serialized = Serializer.serialize(dislike)
