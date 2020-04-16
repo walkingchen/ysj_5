@@ -5,6 +5,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 
 cache = Cache(config={'CACHE_TYPE': 'simple'})
-socketio = SocketIO()
+socketio = SocketIO(cors_allowed_origins="*")
 db = SQLAlchemy()
 scheduler = APScheduler()

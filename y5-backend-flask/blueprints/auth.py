@@ -1,6 +1,6 @@
 from flasgger import swag_from
 from flask import Blueprint, request, redirect, current_app, flash, json
-from flask_login import login_required, logout_user, login_user, LoginManager
+from flask_login import login_required, logout_user, login_user, LoginManager, current_user
 from flask_principal import identity_changed, Identity
 
 from entity.Resp import Resp
@@ -90,4 +90,5 @@ def load_user(user_id):
 @bp_auth.route('/logout')
 def logout():
     logout_user()
+
     return json.dumps(Resp(result_code=2000, result_msg='success', data=None).__dict__)
