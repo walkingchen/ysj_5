@@ -115,7 +115,7 @@ api.add_resource(
     endpoint='post/retrieve')
 api.add_resource(
     PostApi,
-    '/',
+    '',
     methods=['POST'],
     endpoint='post/create')
 api.add_resource(
