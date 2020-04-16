@@ -15,7 +15,7 @@
              * socket加入聊天室
              */
             socket.emit("room_join", {
-                "room_id": "123456",
+                "room_id": "28",
                 "username": "user14"
             });
 
@@ -23,8 +23,19 @@
              * 退出聊天室
              */
             socket.emit("room_leave", {
-                "room_id": "123456",
+                "room_id": "28",
                 "username": "user14"
+            });
+
+            /**
+             * 好友上线
+             * return:
+             * data: {
+             *  user_id: 18
+             * }
+             */
+            socket.on("friend_online", function (data, cb) {
+                console.log(data);
             });
 
             /**

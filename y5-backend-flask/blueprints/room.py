@@ -8,7 +8,7 @@ from flask_restful import Api, Resource
 
 from entity.Resp import Resp
 from entity.RoomResp import RoomResp
-from extensions import db
+from extensions import db, socketio
 from models import Room, Timeline, RoomMember, RoomPrototype, Serializer, User
 from service import get_friends, query_membership
 
@@ -45,6 +45,9 @@ class RoomApi(Resource):
             room=room_serialized,
             members=members
         )
+
+        socketio.emit('friend_online', {'user_id': current_user.id}, room_id=id)
+
         return jsonify(Resp(result_code=2000, result_msg='success', data=room_resp.__dict__).__dict__)
 
     @swag_from('../swagger/room/create.yaml')
