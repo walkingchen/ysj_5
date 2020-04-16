@@ -15,7 +15,7 @@ parameters:
       properties:
         timeline_type:
           type: integer
-          description: timeline type
+          description: timeline type, to share post to public timeline, set type = 2
 #        post_content:
 #          type: string
 #          description: post content

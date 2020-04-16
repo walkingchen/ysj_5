@@ -74,6 +74,8 @@ class PostApi(Resource):
         db.session.add(post)
         db.session.commit()
 
+        socketio.emit('post_pull', {'timeline_type': timeline_type, 'posts_number': 1}, room_id=post.room_id)
+
         # 通知好友刷新timeline
         socketio.emit('post_pull', {
             "timeline_type": timeline_type,
@@ -95,7 +97,7 @@ class PostApi(Resource):
         post.timeline_type = 2  # 0: public; 1: private; 2: both
         db.session.commit()
 
-        socketio.emit('post_pull', {'timeline_type': 0, 'posts_number': 10}, room_id=post.room_id)
+        socketio.emit('post_pull', {'timeline_type': 0, 'posts_number': 1}, room_id=post.room_id)
 
         return jsonify(Resp(
             result_code=2000,
