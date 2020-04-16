@@ -3,7 +3,7 @@ import string
 
 from flasgger import swag_from
 from flask import Blueprint, request, json, jsonify
-from flask_login import current_user
+from flask_login import current_user, login_required
 from flask_restful import Api, Resource
 
 from entity.Resp import Resp
@@ -11,6 +11,9 @@ from entity.RoomResp import RoomResp
 from extensions import db
 from models import Room, Timeline, RoomMember, RoomPrototype, Serializer, User
 from service import get_friends, query_membership
+
+# error code: 401x
+
 
 bp_room = Blueprint('/api/room', __name__)
 api = Api(bp_room, '/api/room')
@@ -21,10 +24,10 @@ class RoomApi(Resource):
     def get(self, id):
         room = Room.query.filter_by(id=id).first()
         if room is None:
-            return jsonify(Resp(result_code=2000, result_msg='room not exists', data=None).__dict__)
+            return jsonify(Resp(result_code=4011, result_msg='room not exists', data=None).__dict__)
 
-        if current_user is None:
-            return jsonify(Resp(result_code=2000, result_msg='need to login', data=None).__dict__)
+        if not current_user.is_authenticated:
+            return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
 
         friends = get_friends(room=room, user_id=current_user.id)
 
@@ -186,13 +189,14 @@ class RoomPrototypeApi(Resource):
             room_type = data['room_type']
             people_limit = int(data['people_limit'])
             friends = data['friends']
-            prototype = RoomPrototype(room_type=room_type, people_limit=people_limit, friends=friends)
-            db.session.add(prototype)
-            db.session.commit()
         except KeyError:
             return json.dumps(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
         except TypeError:
             return json.dumps(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
+
+        prototype = RoomPrototype(room_type=room_type, people_limit=people_limit, friends=friends)
+        db.session.add(prototype)
+        db.session.commit()
 
         return jsonify(Resp(result_code=2000, result_msg='success', data=None).__dict__)
 

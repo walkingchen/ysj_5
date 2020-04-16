@@ -1,6 +1,6 @@
 from flasgger import swag_from
 from flask import Blueprint, request, json, jsonify
-from flask_login import current_user
+from flask_login import current_user, login_required
 from flask_restful import Api, Resource
 
 from entity.Resp import Resp
@@ -21,6 +21,9 @@ MSG_SIZE_INIT = 5
 class PostApi(Resource):
     @swag_from('../swagger/post/retrieve.yaml')
     def get(self, id):
+        if not current_user.is_authenticated:
+            return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
+
         user_id = current_user.id
 
         post = Post.query.filter_by(id=id).first()
@@ -42,6 +45,9 @@ class PostApi(Resource):
 
     @swag_from('../swagger/post/create.yaml')
     def post(self):
+        if not current_user.is_authenticated:
+            return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
+
         user_id = current_user.id
         data = request.get_json()
 
@@ -83,6 +89,9 @@ class PostApi(Resource):
 
     @swag_from('../swagger/post/update.yaml')
     def put(self, id):
+        if not current_user.is_authenticated:
+            return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
+
         post = Post.query.filter_by(id=id).first()
         post.timeline_type = 2  # 0: public; 1: private; 2: both
         db.session.commit()
@@ -97,6 +106,9 @@ class PostApi(Resource):
 
     @swag_from('../swagger/post/delete.yaml')
     def delete(self, id):
+        if not current_user.is_authenticated:
+            return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
+
         post = Post.query.filter_by(id=id).first()
         db.session.delete(post)
         db.session.commit()
@@ -133,8 +145,8 @@ api.add_resource(
 class PostApi(Resource):
     @swag_from('../swagger/post/list_retrieve.yaml')
     def get(self):
-        if current_user is None:
-            return jsonify(Resp(result_code=4000, result_msg='need to login', data=None).__dict__)
+        if not current_user.is_authenticated:
+            return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
 
         data = request.args
         try:
@@ -221,8 +233,8 @@ class CommentApi(Resource):
 
     @swag_from('../swagger/post/comment/create.yaml')
     def post(self):
-        if current_user is None:
-            return jsonify(Resp(result_code=2000, result_msg="user is none", data=None).__dict__)
+        if not current_user.is_authenticated:
+            return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
 
         user_id = current_user.id
         data = request.get_json()
@@ -281,8 +293,8 @@ class LikeApi(Resource):
 
     @swag_from('../swagger/post/like/create.yaml')
     def post(self):
-        if current_user is None:
-            return jsonify(Resp(result_code=2000, result_msg="user is none", data=None).__dict__)
+        if not current_user.is_authenticated:
+            return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
 
         user_id = current_user.id
         data = request.get_json()
@@ -302,8 +314,8 @@ class LikeApi(Resource):
 
     @swag_from('../swagger/post/like/update.yaml')
     def put(self, id):
-        if current_user is None:
-            return jsonify(Resp(result_code=2000, result_msg="user is none", data=None).__dict__)
+        if not current_user.is_authenticated:
+            return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
 
         user_id = current_user.id
         data = request.get_json()
@@ -354,8 +366,8 @@ class FactcheckApi(Resource):
 
     @swag_from('../swagger/post/factcheck/create.yaml')
     def post(self):
-        if current_user is None:
-            return jsonify(Resp(result_code=2000, result_msg="user is none", data=None).__dict__)
+        if not current_user.is_authenticated:
+            return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
 
         user_id = current_user.id
         data = request.get_json()
