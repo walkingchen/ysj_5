@@ -11,7 +11,7 @@ parameters:
     in: query
     type: string
     required: true
-    description: timeline type
+    description: timeline type, 0 = public, 1 = private
   - name: last_update
     in: query
     type: string

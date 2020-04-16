@@ -50,7 +50,6 @@ class PostApi(Resource):
 
         user_id = current_user.id
         data = request.get_json()
-
         try:
             timeline_type = int(data['timeline_type'])
             post_content = data['post_content']
@@ -96,7 +95,7 @@ class PostApi(Resource):
         post.timeline_type = 2  # 0: public; 1: private; 2: both
         db.session.commit()
 
-        # emit('post_pull', namespace=RoomNamespace, room=post.room_id)  # fixme
+        socketio.emit('post_pull', {'timeline_type': 0, 'posts_number': 10}, room_id=post.room_id)
 
         return jsonify(Resp(
             result_code=2000,
@@ -178,31 +177,26 @@ class PostApi(Resource):
         for friend in friends:
             friend_ids.append(friend.user_id)
 
-        if timeline_type == TIMELINE_ALL:
-            timeline_types = [0, 1]
-        else:
-            timeline_types = [timeline_type]
-
         if last_update is not None:
             if pull_new == 1:
                 posts = Post.query.filter(
                     Post.room_id == room_id,
                     Post.user_id.in_(friend_ids),
-                    Post.timeline_type.in_(timeline_types),
+                    Post.timeline_type.in_([timeline_type, 2]),
                     Post.created_at > last_update
                 ).order_by(Post.created_at.desc()).limit(MSG_SIZE_INIT).all()
             else:
                 posts = Post.query.filter(
                     Post.room_id == room_id,
                     Post.user_id.in_(friend_ids),
-                    Post.timeline_type.in_(timeline_types),
+                    Post.timeline_type.in_([timeline_type, 2]),
                     Post.created_at < last_update
                 ).order_by(Post.created_at.desc()).limit(MSG_SIZE_INIT).all()
         else:
             posts = Post.query.filter(
                 Post.room_id == room_id,
                 Post.user_id.in_(friend_ids),
-                Post.timeline_type.in_(timeline_types)
+                Post.timeline_type.in_([timeline_type, 2])
             ).order_by(Post.created_at.desc()).limit(MSG_SIZE_INIT).all()
 
         # 为每篇post添加评论、点赞
