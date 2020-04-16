@@ -13,24 +13,21 @@ parameters:
     schema:
       id: post_update
       properties:
-        timeline_id:
-          type: string
-          description: timeline id
-        post_content:
-          type: string
-          description: post content
-        post_title:
-          type: string
-          description: post title
-        type_id:
-          type: string
-          description: post type
-        user_id:
-          type: string
-          description: user id
+        timeline_type:
+          type: integer
+          description: timeline type
+#        post_content:
+#          type: string
+#          description: post content
+#        post_title:
+#          type: string
+#          description: post title
+#        post_type:
+#          type: integer
+#          description: post type
 responses:
   200:
-    description: return room array created
+    description: return post updated
     schema:
       properties:
         result_code:
