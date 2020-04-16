@@ -5,12 +5,12 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    userid: null,
+    user: {},
     room_members: []
   },
   mutations: {
     setRoomMembers(state, data) {
-      state.userid = data[0].id
+      state.user = data[0]
       state.room_members = data
     }
   },

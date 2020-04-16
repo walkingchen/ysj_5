@@ -12,6 +12,11 @@ module.exports = {
       '/api': {
         target: 'http://ysj_5.soulfar.com',
         changeOrigin: true
+      },
+      '/socket.io': {
+        target: 'http://ysj_5.soulfar.com',
+        ws: true,
+        changeOrigin: true
       }
     }
   },

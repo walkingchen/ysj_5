@@ -1,70 +1,114 @@
 <template>
   <div class="moments-layout">
+
     <title-com title="Public Billboard" class="moments-title" />
+
+    <el-card shadow="hover" class="post-create-layout">
+      <input type="text" class="post-create-title" placeholder="Title" v-model="postTitle" />
+      <textarea rows="3" class="post-create-content" placeholder="Content" v-model="postContent" />
+      <textarea rows="2" class="post-create-content" placeholder="Keywords" v-model="postKeywords" />
+      <el-button class="post-create-btn" type="primary" size="mini" :loading="submitPostLoading" @click="submitPost">Submit</el-button>
+    </el-card>
+
     <ul class="moments-ul">
-      <li v-if="moment_list.length === 0" class="moments-item">No data.</li>
-      <li class="moments-item" v-for="item in moment_list" :key="item.id">
-        <div class="moments-item-content">
-          <el-avatar :size="50" :src="item.user.avatar ? item.user.avatar : ''" shape="square" class="user-portrait">
-            {{ item.user.avatar ? '' : item.user.nickname }}
-          </el-avatar>
-          <div class="moment-text">
-            <div>
-              <span class="user-name">{{ item.user.nickname }}</span>
-              <span class="moment-time">{{ item.created_at }}</span>
-            </div>
-            <p>{{ item.content }}</p>
-          </div>
-        </div>
-        <div class="moment-actions">
-          <el-popover
-            placement="bottom-end"
-            width="350"
-            trigger="click"
-            v-model="comment_visible[item.id]">
-            <el-input class="comment_input" type="textarea" :rows="3" placeholder="请输入评论内容" v-model="comment_content" />
-            <el-button class="comment_btn" type="primary" size="mini" @click="comment(item.id)">确定</el-button>
-            <button slot="reference"><v-icon name="comment-dots" /></button>
-          </el-popover>
-          <span>{{ item.likeCount }}</span>
-          <button @click="like(item)" :class="{ liked: item.liked }"><v-icon :name="item.liked ? 'thumbs-up' : 'regular/thumbs-up'" /></button>
-        </div>
-        <ul v-if="item.comments.length > 0" class="moment-comments">
-          <li class="comment-item" v-for="comment in item.comments" :key="comment.id">
-            <div class="comment-item-content">
-              <el-avatar :size="35" :src="comment.user.avatar ? comment.user.avatar : ''" shape="square" class="user-portrait">
-                {{ comment.user.avatar ? '' : comment.user.nickname }}
-              </el-avatar>
-              <div class="comment-text">
-                <div>
-                  <span class="user-name">{{ comment.user.nickname }}</span>
-                  <span class="comment-time">{{ comment.created_at }}</span>
-                  <button v-if="comment.user_id === userid || item.user_id === userid" class="comment-delete-btn" @click="deleteComment(comment.id)">
-                    <i class="el-icon-delete"></i>
-                  </button>
-                </div>
-                <p>{{ comment.comment_content }}</p>
+      <li v-for="item in moment_list" :key="item.id">
+        <el-card shadow="hover" class="moments-item">
+          <div class="moments-item-content">
+            <el-avatar :size="50" :src="item.user.avatar ? item.user.avatar : ''" shape="square" class="user-portrait">
+              {{ item.user.avatar ? '' : item.user.nickname }}
+            </el-avatar>
+            <div class="moment-text">
+              <div>
+                <span class="user-name">{{ item.user.nickname }}</span>
+                <span class="moment-time">{{ item.created_at }}</span>
               </div>
+              <p>{{ item.title }}</p>
+              <p>{{ item.content }}</p>
             </div>
-          </li>
-        </ul>
+          </div>
+          <div class="moment-actions">
+            <button @click="factcheck(item)" :class="{ done: item.factcheck }"><v-icon name="exclamation-circle" /></button>
+            <el-popover
+              placement="bottom-end"
+              width="350"
+              trigger="click"
+              v-model="comment_visible[item.id]">
+              <el-input class="comment_input" type="textarea" :rows="3" placeholder="Comment Content" v-model="comment_content" />
+              <el-button class="comment_btn" type="primary" size="mini" @click="comment(item.id)">Submit</el-button>
+              <button slot="reference"><v-icon name="comment-dots" /></button>
+            </el-popover>
+            <span class="count">{{ item.dislikeCount }}</span>
+            <button @click="like(item, 0)" :class="{ done: item.disliked }">
+              <v-icon :name="item.disliked ? 'thumbs-down' : 'regular/thumbs-down'" />
+            </button>
+            <span class="count">{{ item.likeCount }}</span>
+            <button @click="like(item, 1)" :class="{ done: item.liked }">
+              <v-icon :name="item.liked ? 'thumbs-up' : 'regular/thumbs-up'" />
+            </button>
+          </div>
+          <ul v-if="item.comments.length > 0" class="moment-comments">
+            <li class="comment-item" v-for="comment in item.comments" :key="comment.id">
+              <div class="comment-item-content">
+                <el-avatar :size="35" :src="comment.user.avatar ? comment.user.avatar : ''" shape="square" class="user-portrait">
+                  {{ comment.user.avatar ? '' : comment.user.nickname }}
+                </el-avatar>
+                <div class="comment-text">
+                  <div>
+                    <span class="user-name">{{ comment.user.nickname }}</span>
+                    <span class="comment-time">{{ comment.created_at }}</span>
+                    <button
+                      v-if="comment.user_id === userid || item.user_id === userid"
+                      class="comment-delete-btn"
+                      @click="deleteComment(item.id, comment.id)">
+                      <i class="el-icon-delete"></i>
+                    </button>
+                  </div>
+                  <p>{{ comment.comment_content }}</p>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </el-card>
       </li>
+      <div class="loading-layout" v-show="getPostLoading"><i class="el-icon-loading"></i></div>
+      <div class="nomore-layout" v-show="noMoreData">No more~</div>
     </ul>
+
   </div>
 </template>
 
 <script>
-import 'vue-awesome/icons/comment-dots'
 import 'vue-awesome/icons/thumbs-up'
 import 'vue-awesome/icons/regular/thumbs-up'
-import { getPosts, likePost, unlikePost, commentPost, deleteComment } from '@api/post'
+import 'vue-awesome/icons/thumbs-down'
+import 'vue-awesome/icons/regular/thumbs-down'
+import 'vue-awesome/icons/comment-dots'
+import 'vue-awesome/icons/exclamation-circle'
+import {
+  getPosts,
+  getPost,
+  likePost,
+  deleteLike,
+  changeLike,
+  commentPost,
+  deleteComment,
+  checkPost,
+  deleteCheck,
+  createPost
+} from '@api/post'
 import titleCom from '@components/title'
 import { formatDate } from '@assets/utils.js'
 
 export default {
   data() {
     return {
+      getPostLoading: true,
       moments: [],
+      noMoreData: false,
+      postTitle: '',
+      postContent: '',
+      postKeywords: '',
+      submitPostLoading: false,
       comment_content: '',
       comment_visible: {}
     }
@@ -73,15 +117,22 @@ export default {
     titleCom
   },
   computed: {
+    stopLoadMoments() {
+      return this.getPostLoading || this.noMoreData
+    },
     moment_list() {
       const members = this.$store.state.room_members
       return this.moments.map(item => {
         const user = members.find(ele => ele.id === item.user_id)
         const _item = {
           id: item.id,
+          title: item.post_title,
           content: item.post_content,
           liked: item.liked,
+          disliked: item.disliked,
           likeCount: item.likes.count,
+          dislikeCount: item.dislikes.count,
+          factcheck: item.factcheck,
           created_at: formatDate(item.created_at),
           user: user ? {
             avatar: user.avatar,
@@ -99,54 +150,114 @@ export default {
       })
     },
     userid() {
-      return this.$store.state.userid
+      return this.$store.state.user.id
     }
   },
   created() {
-    this.getMomentList()
+    this.getMomentList(0)
   },
   methods: {
-    getMomentList() {
-      getPosts({
+    async getMomentList(pull_new) {
+      this.getPostLoading = true
+      await getPosts({
         room_id: localStorage.getItem('roomid'),
-        timeline_type: '0',
-        last_update: ''
+        timeline_type: 0,
+        pull_new,
+        last_update: this.moments.length === 0 ? null : this.moments[this.moments.length - 1].created_at
       }).then(res => {
-        this.moments = res.data.data
-        res.data.data.forEach(item => {
+        if (res.data.data.length === 0) {
+          this.noMoreData = true
+        }
+
+        if (pull_new === 1) {
+          this.moments.unshift(...res.data.data)
+        } else {
+          this.moments.push(...res.data.data)
+        }
+        this.moments.forEach(item => {
           this.comment_visible[item.id] = false
         })
       })
+      this.getPostLoading = false
+    },
+    async like(item, type) {
+      if (item.liked === null && item.disliked === null) { // 初次赞或踩
+        await likePost({
+          like_or_not: type,
+          post_id: item.id
+        })
+      } else {
+        if (type === 1) { // 赞
+          if (item.liked) { // 如果已经赞了
+            await deleteLike(item.liked.id)
+          } else if (item.disliked) { // 如果已经踩了
+            await changeLike(item.disliked.id, { like_or_not: type })
+          }
+        } else { // 踩
+          if (item.liked) { // 如果已经赞了
+            await changeLike(item.liked.id, { like_or_not: type })
+          } else if (item.disliked) { // 如果已经踩了
+            await deleteLike(item.disliked.id)
+          }
+        }
+      }
+      this.updateMoment(item.id)
     },
     comment(id) {
       commentPost({
         comment_content: this.comment_content,
-        post_id: id,
-        user_id: this.userid
+        post_id: id
       }).then(() => {
-        this.getMomentList()
+        this.updateMoment(id)
         this.comment_visible[id] = false
         this.comment_content = ''
       })
     },
-    deleteComment(id) {
-      deleteComment(id).then(() => {
-        this.getMomentList()
+    deleteComment(momentid, commentid) {
+      deleteComment(commentid).then(() => {
+        this.updateMoment(momentid)
       })
     },
-    like(item) {
-      if (item.liked) {
-        const likes = this.moments.find(ele => ele.id === item.id).likes.details
-        const like_id = likes.find(ele => ele.user_id === this.userid).id
-        unlikePost(like_id).then(() => {
-          this.moments.find(ele => ele.id === item.id).liked = false
-        })
+    async factcheck(item) {
+      if (item.factcheck) {
+        await deleteCheck(item.factcheck.id)
       } else {
-        likePost({
-          post_id: item.id,
-          user_id: this.userid
-        }).then(() => {
-          this.moments.find(ele => ele.id === item.id).liked = true
+        await checkPost({ post_id: item.id })
+      }
+      this.updateMoment(item.id)
+    },
+    updateMoment(id, type = 1) {
+      getPost(id).then(res => {
+        if (type) {
+          const momentIndex = this.moments.findIndex(ele => ele.id === id)
+          this.moments.splice(momentIndex, 1, res.data.data)
+        } else {
+          this.moments.unshift(res.data.data)
+        }
+      })
+    },
+    async submitPost() {
+      if (this.postTitle && this.postContent) {
+        this.submitPostLoading = true
+        await createPost({
+          post_content: this.postContent,
+          post_title: this.postTitle,
+          keywords: this.postKeywords,
+          timeline_type: 0,
+          post_type: 1,
+          room_id: Number(localStorage.getItem('roomid'))
+        }).then(res => {
+          this.postTitle = ''
+          this.postContent = ''
+          this.postKeywords = ''
+
+          this.updateMoment(res.data.data.id, 0)
+        })
+        this.submitPostLoading = false
+      } else {
+        this.$message({
+          message: 'Please enter the title and content.',
+          type: 'warning'
         })
       }
     }
@@ -159,16 +270,35 @@ export default {
   .moments-title
     background-color #fff
 
-  .moments-ul
-    padding 20px 0
+  .post-create-layout
+    border 0
+    margin-top 20px
+    padding 10px
+
+    .post-create-title
+      width calc(100% - 20px)
+      border 0
+      height 30px
+      padding 0 10px
+      outline none
+
+    .post-create-content
+      width calc(100% - 20px)
+      border 0
+      border-top 1px solid #e4e7ed
+      padding 10px
+      resize none
+      outline none
+
+    .post-create-btn
+      float right
+
+  .moments-ul > li
+    margin-top 20px
 
   .moments-item
     padding 10px
-    background-color #fff
-    margin-bottom 20px
-
-    &:last-child
-      margin-bottom 0
+    border 0
 
     .moments-item-content
       display flex
@@ -181,6 +311,8 @@ export default {
       flex 1
 
       .user-name
+        display inline-block
+        height 24px
         font-size 18px
         line-height 24px
 
@@ -191,7 +323,7 @@ export default {
         line-height 24px
 
       p
-        margin-top 8px
+        margin-top 3px
         line-height 1.5
 
     .moment-actions
@@ -200,7 +332,6 @@ export default {
       flex-direction row-reverse
 
       button
-        margin-left 10px
         padding 0 8px
         height 24px
         color #909399
@@ -208,8 +339,11 @@ export default {
         &:hover
           color #409eff
 
-        &.liked
+        &.done
           color #409eff
+
+      .count
+        margin-right 8px
 
     .moment-comments
       border-top 1px solid #e4e7ed
@@ -257,4 +391,15 @@ export default {
 
 .comment_btn
   float right
+
+.loading-layout
+  text-align center
+  padding-top 20px
+  font-size 20px
+  color #409eff
+
+.nomore-layout
+  text-align center
+  padding-top 20px
+  color #999
 </style>
