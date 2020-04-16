@@ -9,15 +9,11 @@ parameters:
       id: post_factcheck_create
       required:
         - post_id
-        - user_id
         - room_id
       properties:
         post_id:
           type: string
           description: post id
-        user_id:
-          type: string
-          description: user id
         room_id:
           type: string
           description: room id

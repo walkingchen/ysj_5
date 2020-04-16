@@ -29,7 +29,7 @@ parameters:
             description: post keywords
           post_type:
             type: integer
-            description: post type
+            description: post type, default set to 1
           room_id:
             type: integer
             description: room id

@@ -10,7 +10,6 @@ parameters:
       required:
         - post_id
         - comment_content
-        - user_id
       properties:
         post_id:
           type: string
@@ -18,9 +17,6 @@ parameters:
         comment_content:
           type: string
           description: comment content
-        user_id:
-          type: string
-          description: user id
 responses:
   200:
     description: return comment array created
