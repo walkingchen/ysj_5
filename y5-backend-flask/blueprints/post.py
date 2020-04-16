@@ -229,8 +229,12 @@ class CommentApi(Resource):
 
         user_id = current_user.id
         data = request.get_json()
-        post_id = data['post_id']
-        comment_content = data['comment_content']
+        try:
+            post_id = data['post_id']
+            comment_content = data['comment_content']
+        except KeyError:
+            return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
+
         comment = PostComment(post_id=post_id, comment_content=comment_content, user_id=user_id)
         db.session.add(comment)
         db.session.commit()
@@ -285,8 +289,14 @@ class LikeApi(Resource):
 
         user_id = current_user.id
         data = request.get_json()
-        post_id = data['post_id']
-        like_or_not = data['like_or_not']
+        try:
+            post_id = data['post_id']
+            like_or_not = int(data['like_or_not'])
+        except KeyError:
+            return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
+        except TypeError:
+            return jsonify(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
+
         like = PostLike(post_id=post_id, user_id=user_id, post_like=like_or_not)
         db.session.add(like)
         db.session.commit()
@@ -352,9 +362,11 @@ class FactcheckApi(Resource):
 
         user_id = current_user.id
         data = request.get_json()
-        post_id = data['post_id']
-        room_id = data['room_id']
-        check = PostFactcheck(post_id=post_id, user_id=user_id, room_id=room_id)
+        try:
+            post_id = data['post_id']
+        except KeyError:
+            return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
+        check = PostFactcheck(post_id=post_id, user_id=user_id)
         db.session.add(check)
         db.session.commit()
 
