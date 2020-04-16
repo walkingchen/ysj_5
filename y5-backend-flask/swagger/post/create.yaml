@@ -8,26 +8,31 @@ parameters:
       schema:
         id: post_create
         required:
-          - timeline_id
+          - timeline_type
           - post_content
-          - type_id
-          - user_id
+          - post_title
+          - post_type
+          - keywords
+          - room_id
         properties:
-          timeline_id:
-            type: string
-            description: timeline id
+          timeline_type:
+            type: integer
+            description: timeline type
           post_content:
             type: string
-            description: post正文
+            description: post content
           post_title:
             type: string
-            description: post标题
-          type_id:
+            description: post title
+          keywords:
             type: string
+            description: post keywords
+          post_type:
+            type: integer
             description: post type
-          user_id:
-            type: string
-            description: user id
+          room_id:
+            type: integer
+            description: room id
 responses:
   200:
     description: return room array created

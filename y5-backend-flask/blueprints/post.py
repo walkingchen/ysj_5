@@ -46,19 +46,16 @@ class PostApi(Resource):
         data = request.get_json()
 
         try:
-            timeline_type = data['timeline_type']
+            timeline_type = int(data['timeline_type'])
             post_content = data['post_content']
-            post_type = data['post_type']
+            post_title = data['post_title']
+            post_type = int(data['post_type'])
             keywords = data['keywords']
             room_id = data['room_id']
         except TypeError:
             return jsonify(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
         except KeyError:
             return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
-        if 'post_title' in data:
-            post_title = data['post_title']
-        else:
-            post_title = None
 
         post = Post(
             timeline_type=timeline_type,
