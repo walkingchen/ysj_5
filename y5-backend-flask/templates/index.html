@@ -74,6 +74,10 @@
             socket.on("broadcast_msg", function (msg, cb) {
                 console.log(msg);
             });
+
+            socket.on("disconnect", function () {
+                console.log("disconnect")
+            })
         });
     </script>
     <title>Title</title>
