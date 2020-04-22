@@ -36,7 +36,7 @@ class RoomApi(Resource):
         if u is not None:
             members['me'] = u._asdict()
         for friend in friends:
-            m = query_membership(room_id=id, user_id=friend.id)
+            m = query_membership(room_id=id, user_id=friend.user_id)
             if m is not None:
                 members['friends'].append(m._asdict())
 
