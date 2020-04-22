@@ -3,4 +3,5 @@ venv/*
 __pycache__/*
 _models.py
 node_modules/*
+logs/*
 *.DS_Store

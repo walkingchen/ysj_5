@@ -26,3 +26,5 @@ ADMIN_TITLE = 'Admin'
 
 # room init
 MSG_SIZE_INIT = 50
+
+DEBUG = True
