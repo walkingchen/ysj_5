@@ -80,7 +80,7 @@ class PostApi(Resource):
                           'posts_number': 1
                       },
                       room_id=post.room_id,
-                      include_self=False)
+                      broadcast=True)
 
         return jsonify(Resp(
             result_code=2000,

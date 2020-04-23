@@ -72,7 +72,7 @@ export default {
         this.roomInfo = resdata.data.room
 
         this.socket = io({ reconnection: false })
-        this.socket.on('open', () => {
+        this.socket.on('connect', () => {
           this.socket.emit('room_join', {
             room_id: this.roomInfo.id,
             username: me.username
