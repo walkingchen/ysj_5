@@ -19,13 +19,13 @@ def get_friends(room, user_id):
 def query_user(user_id):
     return User.query.filter(User.id == user_id) \
         .with_entities(
-        User.id,
-        User.nickname,
-        User.realname,
-        User.username,
-        User.avatar,
-        User.email,
-        User.created_at
+            User.id,
+            User.nickname,
+            User.realname,
+            User.username,
+            User.avatar,
+            User.email,
+            User.created_at
         ).first()
 
 
@@ -34,14 +34,14 @@ def query_membership(room_id, user_id):
     return User.query.join(RoomMember, RoomMember.user_id == User.id) \
         .filter(RoomMember.room_id == room_id, User.id == user_id) \
         .with_entities(
-        User.id,
-        User.nickname,
-        User.realname,
-        User.username,
-        User.avatar,
-        User.email,
-        RoomMember.seat_no,
-        User.created_at
+            User.id,
+            User.nickname,
+            User.realname,
+            User.username,
+            User.avatar,
+            User.email,
+            RoomMember.seat_no,
+            User.created_at
         ).first()
 
 
