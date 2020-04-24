@@ -10,6 +10,12 @@
       <el-button class="post-create-btn" type="primary" size="mini" :loading="submitPostLoading" @click="submitPost">Submit</el-button>
     </el-card>
 
+    <div class="new-tip" v-show="newCount > 0">
+      {{ newCount }} new messages, click <a href="javascript:;" @click="getNews">here</a> to update.
+    </div>
+
+    <div class="loading-layout" v-show="getNewPostLoading"><i class="el-icon-loading"></i></div>
+
     <ul class="moments-ul">
       <li v-for="item in moment_list" :key="item.id">
         <el-card shadow="hover" class="moments-item">
@@ -100,6 +106,7 @@ import titleCom from '@components/title'
 import { formatDate } from '@assets/utils.js'
 
 export default {
+  props: ['sid'],
   data() {
     return {
       getPostLoading: true,
@@ -110,7 +117,10 @@ export default {
       postKeywords: '',
       submitPostLoading: false,
       comment_content: '',
-      comment_visible: {}
+      comment_visible: {},
+      me_post_moments: [],
+      newCount: 0,
+      getNewPostLoading: false
     }
   },
   components: {
@@ -122,7 +132,8 @@ export default {
     },
     moment_list() {
       const members = this.$store.state.room_members
-      return this.moments.map(item => {
+      const moments = [...this.me_post_moments, ...this.moments]
+      return moments.map(item => {
         const user = members.find(ele => ele.id === item.user_id)
         const _item = {
           id: item.id,
@@ -154,31 +165,38 @@ export default {
     }
   },
   created() {
-    this.getMomentList(0)
+    this.getMomentList()
   },
   methods: {
-    async getMomentList(pull_new) {
+    async getMomentList() {
       this.getPostLoading = true
       await getPosts({
         room_id: localStorage.getItem('roomid'),
         timeline_type: 0,
-        pull_new,
+        pull_new: 0,
         last_update: this.moments.length === 0 ? null : this.moments[this.moments.length - 1].created_at
       }).then(res => {
         if (res.data.data.length === 0) {
           this.noMoreData = true
         }
 
-        if (pull_new === 1) {
-          this.moments.unshift(...res.data.data)
-        } else {
-          this.moments.push(...res.data.data)
-        }
-        this.moments.forEach(item => {
-          this.comment_visible[item.id] = false
-        })
+        this.moments.push(...res.data.data)
       })
       this.getPostLoading = false
+    },
+    async getNews() {
+      this.getNewPostLoading = true
+      this.newCount = 0
+      await getPosts({
+        room_id: localStorage.getItem('roomid'),
+        timeline_type: 0,
+        pull_new: 1,
+        last_update: this.moments.length === 0 ? null : this.moments[0].created_at
+      }).then(res => {
+        this.me_post_moments = []
+        this.moments.unshift(...res.data.data)
+      })
+      this.getNewPostLoading = false
     },
     async like(item, type) {
       if (item.liked === null && item.disliked === null) { // 初次赞或踩
@@ -227,12 +245,16 @@ export default {
       this.updateMoment(item.id)
     },
     updateMoment(id, type = 1) {
+      /*
+      * type = 1 更新已经获取过的timeline，用来进行了like/dislike/comment/fackcheck操作后对当前单条timeline进行刷新
+      * type = 0 用来分享了private timeline或新增了一条timeline后将这条timeline直接显示在最上方而不用获取所有新的post
+      */
       getPost(id).then(res => {
         if (type) {
           const momentIndex = this.moments.findIndex(ele => ele.id === id)
           this.moments.splice(momentIndex, 1, res.data.data)
         } else {
-          this.moments.unshift(res.data.data)
+          this.me_post_moments.unshift(res.data.data)
         }
       })
     },
@@ -245,6 +267,7 @@ export default {
           keywords: this.postKeywords,
           timeline_type: 0,
           post_type: 1,
+          sid: this.sid,
           room_id: Number(localStorage.getItem('roomid'))
         }).then(res => {
           this.postTitle = ''
@@ -260,6 +283,13 @@ export default {
           type: 'warning'
         })
       }
+    }
+  },
+  watch: {
+    moment_list(val) {
+      val.forEach(item => {
+        this.comment_visible[item.id] = false
+      })
     }
   }
 }
@@ -292,6 +322,19 @@ export default {
 
     .post-create-btn
       float right
+
+  .new-tip
+    background-color #fff
+    margin-top 20px
+    text-align center
+    padding 10px 0
+
+    a
+      color #409eff
+      text-decoration none
+
+      &:hover
+        text-decoration underline
 
   .moments-ul > li
     margin-top 20px
@@ -386,20 +429,20 @@ export default {
         .comment-delete-btn
           display block
 
-.comment_input
-  margin-bottom 8px
+  .comment_input
+    margin-bottom 8px
 
-.comment_btn
-  float right
+  .comment_btn
+    float right
 
-.loading-layout
-  text-align center
-  padding-top 20px
-  font-size 20px
-  color #409eff
+  .loading-layout
+    text-align center
+    padding-top 20px
+    font-size 20px
+    color #409eff
 
-.nomore-layout
-  text-align center
-  padding-top 20px
-  color #999
+  .nomore-layout
+    text-align center
+    padding-top 20px
+    color #999
 </style>

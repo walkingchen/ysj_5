@@ -17,11 +17,11 @@
             <navigation />
           </el-col>
           <el-col :span="11">
-            <billboard ref="billboard" />
+            <billboard ref="billboard" :sid="sid" />
           </el-col>
           <el-col :span="8">
             <connections />
-            <messages @share-success="handleShareSuccess" />
+            <messages ref="messages" :sid="sid" @share-success="handleShareSuccess" />
           </el-col>
         </el-row>
       </div>
@@ -50,7 +50,8 @@ export default {
   data() {
     return {
       roomInfo: [],
-      socket: null
+      socket: null,
+      sid: ''
     }
   },
   computed: {
@@ -73,23 +74,20 @@ export default {
 
         this.socket = io({ reconnection: false })
         this.socket.on('connect', () => {
-          this.socket.emit('room_join', {
+          this.sid = this.socket.io.engine.id
+
+          this.socket.emit('room_join', { // 加入房间
             room_id: this.roomInfo.id,
             username: me.username
-          }, () => {
-            console.log('ok')
           })
 
-          /**
-           * 注册timeline更新事件 post_pull
-           * return:
-           * data: {
-           *     'timeline_type': 1，  // 0:public, 1:private
-           *     'posts_number': 10
-           * }
-           */
           this.socket.on('post_pull', data => {
             console.log(data)
+            if (data.timeline_type === 0) { // 有新的public timeline
+              this.$refs.billboard.newCount = data.posts_number
+            } else { // 有新的private timeline
+              this.$refs.messages.newCount = data.posts_number
+            }
           })
 
           // 接收即时聊天消息
@@ -115,7 +113,7 @@ export default {
       this.$router.push({ name: 'Login' })
     },
     updateMoments() {
-      this.$refs.billboard.getMomentList(0)
+      this.$refs.billboard.getMomentList()
     },
     handleShareSuccess(id) {
       this.$refs.billboard.updateMoment(id, 0)
@@ -173,5 +171,4 @@ export default {
   &:hover
     &::-webkit-scrollbar-thumb
       background-color #ccc
-
 </style>
