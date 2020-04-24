@@ -57,6 +57,7 @@ class PostApi(Resource):
             post_type = int(data['post_type'])
             keywords = data['keywords']
             room_id = data['room_id']
+            sid = data['sid']
         except TypeError:
             return jsonify(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
         except KeyError:
@@ -80,7 +81,7 @@ class PostApi(Resource):
                           'posts_number': 1
                       },
                       room_id=post.room_id,
-                      broadcast=True)
+                      skip_sid=sid)
 
         return jsonify(Resp(
             result_code=2000,

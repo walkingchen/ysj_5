@@ -14,7 +14,11 @@ parameters:
           - post_type
           - keywords
           - room_id
+          - sid
         properties:
+          sid:
+            type: string
+            description: socket id
           timeline_type:
             type: integer
             description: timeline type

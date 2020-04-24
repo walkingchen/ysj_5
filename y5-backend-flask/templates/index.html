@@ -11,6 +11,11 @@
          * 初始化连接
          */
         socket.on("connect", function() {
+            console.log(socket.io.engine.id);
+
+            socket.on("connected", function (data) {
+                console.log(data);
+            });
             /**
              * socket加入聊天室
              */

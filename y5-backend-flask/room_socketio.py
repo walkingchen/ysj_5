@@ -11,7 +11,7 @@ ROOM_PRIVATE_CHAT = 1
 class RoomNamespace(Namespace):
     def on_connect(self):
         print('socket connected')
-        emit('connected', request.sid)
+        emit('connected', {'data': {'sid': request.sid}})
 
     def on_room_join(self, json):
         try:
@@ -41,7 +41,7 @@ class RoomNamespace(Namespace):
 
 class ChatNamespace(Namespace):
     def on_connect(self):
-        emit('connected', request.sid)
+        emit('connected', {'data': {'sid': request.sid}})
 
     def on_join(self, message):
         print(message)
