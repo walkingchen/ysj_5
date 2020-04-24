@@ -16,6 +16,9 @@ parameters:
         timeline_type:
           type: integer
           description: timeline type, to share post to public timeline, set type = 2
+        sid:
+          type: string
+          description: socket id
 #        post_content:
 #          type: string
 #          description: post content

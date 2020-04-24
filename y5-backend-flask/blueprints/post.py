@@ -94,11 +94,25 @@ class PostApi(Resource):
         if not current_user.is_authenticated:
             return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
 
+        data = request.get_json()
+        try:
+            sid = data['sid']
+        except KeyError:
+            return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
+
         post = Post.query.filter_by(id=id).first()
         post.timeline_type = 2  # 0: public; 1: private; 2: both
         db.session.commit()
 
-        socketio.emit('post_pull', {'timeline_type': 0, 'posts_number': 1}, room_id=post.room_id)
+        socketio.emit(
+            'post_pull',
+            {
+                'timeline_type': 0,
+                'posts_number': 1
+            },
+            room_id=post.room_id,
+            skip_sid=sid
+        )
 
         return jsonify(Resp(
             result_code=2000,
