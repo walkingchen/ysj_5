@@ -1,12 +1,6 @@
 ---
 tags:
   - Room Prototype
-parameters:
-  - name: id
-    in: path
-    type: string
-    required: true
-    description: get room by ID
 responses:
   200:
     description: return room with details
