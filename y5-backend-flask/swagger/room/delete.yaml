@@ -4,7 +4,7 @@ tags:
 parameters:
   - name: id
     in: path
-    type: string
+    type: integer
     required: true
     description: delete room with room id
 responses:

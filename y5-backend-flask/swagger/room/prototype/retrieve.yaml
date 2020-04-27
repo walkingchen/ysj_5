@@ -6,7 +6,7 @@ parameters:
     in: path
     type: string
     required: true
-    description: get room by ID
+    description: get room prototype by ID
 responses:
   200:
     description: return room with details
