@@ -209,7 +209,7 @@ class RoomPrototypeApi(Resource):
 
     @swag_from('../swagger/room/prototype/delete.yaml')
     def delete(self, id):
-        prototype = RoomPrototype.query.filter_by(id=id)
+        prototype = RoomPrototype.query.filter_by(id=id).first()
         db.session.delete(prototype)
         db.session.commit()
 
