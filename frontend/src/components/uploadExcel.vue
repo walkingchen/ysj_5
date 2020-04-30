@@ -13,7 +13,8 @@
           {{ fileName }}
         </el-tag>
         <el-button v-if="fileName !== null" type="success" size="mini" style="margin-left:15px;" @click="$emit('upload')">Upload</el-button>
-        <el-button :loading="loading" size="mini" type="primary" @click="handleUpload">Browse</el-button>
+        <el-button :loading="loading" size="mini" type="primary" style="margin-left:15px;" @click="handleUpload">Browse</el-button>
+        <el-button :loading="loading" size="mini" type="warning" @click="downloadTemplate">Download Template</el-button>
       </div>
     </div>
   </div>
@@ -31,6 +32,11 @@ export default {
     }
   },
   methods: {
+    downloadTemplate() {
+      const a = document.createElement('a')
+      a.href = 'http://ysj_5.soulfar.com/static/prototype_demo.csv'
+      a.click()
+    },
     generateData(data) {
       this.$emit('on-success', data)
     },
