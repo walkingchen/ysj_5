@@ -191,13 +191,13 @@ class RoomPrototypeApi(Resource):
         try:
             room_type = data['room_type']
             people_limit = int(data['people_limit'])
-            friends = data['friends']
+            friendship = data['friendship']
         except KeyError:
             return json.dumps(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
         except TypeError:
             return json.dumps(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
 
-        prototype = RoomPrototype(room_type=room_type, people_limit=people_limit, friends=friends)
+        prototype = RoomPrototype(room_type=room_type, people_limit=people_limit, friendship=friendship)
         db.session.add(prototype)
         db.session.commit()
 
