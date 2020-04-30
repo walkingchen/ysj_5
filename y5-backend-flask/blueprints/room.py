@@ -210,6 +210,9 @@ class RoomPrototypeApi(Resource):
     @swag_from('../swagger/room/prototype/delete.yaml')
     def delete(self, id):
         prototype = RoomPrototype.query.filter_by(id=id).first()
+        if prototype is None:
+            return jsonify(Resp(result_code=4000, result_msg='can not find prototype', data=None).__dict__)
+
         db.session.delete(prototype)
         db.session.commit()
 
