@@ -97,7 +97,7 @@ class RoomApi(Resource):
             room_type = data['room_type']
             people_limit = data['people_limit']
         except KeyError:
-            return json.dumps(Resp(result_code=4000, result_msg='key error', data=None).__dict__)
+            return jsonify(Resp(result_code=4000, result_msg='key error', data=None).__dict__)
         if 'room_desc' in data:
             room_desc = data['room_desc']
         else:
@@ -162,7 +162,7 @@ class RoomListApi(Resource):
 
             return jsonify(Resp(result_code=2000, result_msg='success', data=rooms_serialized).__dict__)
         except TypeError:
-            return json.dumps(Resp(result_code=4000, result_msg='type error', data=None).__dict__)
+            return jsonify(Resp(result_code=4000, result_msg='type error', data=None).__dict__)
 
 
 api.add_resource(
@@ -193,9 +193,9 @@ class RoomPrototypeApi(Resource):
             people_limit = int(data['people_limit'])
             friendship = data['friendship']
         except KeyError:
-            return json.dumps(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
+            return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
         except TypeError:
-            return json.dumps(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
+            return jsonify(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
 
         prototype = RoomPrototype(prototype_name=prototype_name, people_limit=people_limit, friendship=friendship)
         db.session.add(prototype)
@@ -204,11 +204,15 @@ class RoomPrototypeApi(Resource):
         return jsonify(Resp(result_code=2000, result_msg='success', data=None).__dict__)
 
     @swag_from('../swagger/room/prototype/update.yaml')
-    def put(self):
+    def put(self, id):
         return jsonify(Resp(result_code=2000, result_msg='success', data=None).__dict__)
 
     @swag_from('../swagger/room/prototype/delete.yaml')
-    def delete(self):
+    def delete(self, id):
+        prototype = RoomPrototype.query.filter_by(id=id)
+        db.session.delete(prototype)
+        db.session.commit()
+
         return jsonify(Resp(result_code=2000, result_msg='success', data=None).__dict__)
 
 
