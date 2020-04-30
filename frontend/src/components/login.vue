@@ -48,7 +48,7 @@ import 'vue-awesome/icons/eye-slash'
 import { login } from '@api/auth'
 
 export default {
-  name: 'Login',
+  props: ['toRouter'],
   data() {
     return {
       loginForm: {
@@ -83,7 +83,7 @@ export default {
           login(this.loginForm).then(res => {
             if (res.data.result_code === 2000) {
               localStorage.setItem('roomid', res.data.data.id)
-              this.$router.push('/')
+              this.$router.push(this.toRouter)
             } else {
               this.loading = false
               this.error_show = true
