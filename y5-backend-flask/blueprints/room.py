@@ -113,18 +113,18 @@ class RoomApi(Resource):
         db.session.add(room)
         db.session.commit()
 
-        return jsonify(Resp(result_code=2000, result_msg='success', data=None))
+        return jsonify(Resp(result_code=2000, result_msg='success', data=None).__dict__)
 
     @swag_from('../swagger/room/delete.yaml')
     def delete(self, id):
         room = Room.query.filter_by(id=id).first()
         if room is None:
-            return jsonify(Resp(result_code=4000, result_msg='fail', data=None))
+            return jsonify(Resp(result_code=4000, result_msg='fail', data=None).__dict__)
 
         db.session.delete(room)
         db.session.commit()
 
-        return jsonify(Resp(result_code=2000, result_msg='success', data=None))
+        return jsonify(Resp(result_code=2000, result_msg='success', data=None).__dict__)
 
 
 api.add_resource(
