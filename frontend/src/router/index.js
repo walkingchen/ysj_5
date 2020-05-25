@@ -17,7 +17,35 @@ const router = new VueRouter({
     {
       path: '/login',
       name: 'Login',
-      component: () => import('@views/Login')
+      component: () => import('@views/Login_user')
+    },
+    {
+      path: '/admin_login',
+      name: 'AdminLogin',
+      component: () => import('@views/Login_admin')
+    },
+    {
+      path: '/admin',
+      name: 'Admin',
+      component: () => import('@views/admin/Index'),
+      redirect: '/admin/dashboard',
+      children: [{
+        path: 'dashboard',
+        name: 'Dashboard',
+        component: () => import('@views/admin/Dashboard')
+      }, {
+        path: 'roomPrototype',
+        name: 'RoomPrototype',
+        component: () => import('@views/admin/RoomPrototype')
+      }, {
+        path: 'roomPrototype/:id',
+        name: 'RoomPrototypeDetail',
+        component: () => import('@views/admin/RoomPrototypeDetail')
+      }, {
+        path: 'rooms',
+        name: 'Rooms',
+        component: () => import('@views/admin/Rooms')
+      }]
     }
   ]
 })

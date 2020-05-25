@@ -1,1 +1,5 @@
 export const getRoomInfo = id => axios.get('/room/' + id)
+export const addPrototype = params => axios.post('/room/prototype', params)
+export const getPrototypeList = () => axios.get('/room/prototype')
+export const deletePrototype = id => axios.delete('/room/prototype/' + id)
+export const getPrototypeDetail = id => axios.get('/room/prototype/' + id)
