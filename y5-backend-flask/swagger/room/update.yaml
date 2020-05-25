@@ -1,6 +1,6 @@
 ---
 tags:
-  - Post Comment
+  - Room
 parameters:
   - name: id
     in: path
