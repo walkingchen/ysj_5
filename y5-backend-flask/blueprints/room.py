@@ -69,7 +69,7 @@ class RoomApi(Resource):
             room_desc = None
 
         # 检查prototype是否存在
-        prototype = RoomPrototype.query.filter_by(prototype_id=room_type).first()
+        prototype = RoomPrototype.query.filter_by(id=room_type).first()
         if prototype is None:
             return jsonify(Resp(result_code=4000, result_msg='prototype not exist', data=None).__dict__)
 
