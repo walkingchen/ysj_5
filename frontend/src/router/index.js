@@ -27,7 +27,7 @@ const router = new VueRouter({
     {
       path: '/admin',
       name: 'Admin',
-      component: () => import('@views/admin/Index'),
+      component: () => import('@views/admin/main/Main'),
       redirect: '/admin/dashboard',
       children: [{
         path: 'dashboard',
@@ -44,7 +44,7 @@ const router = new VueRouter({
       }, {
         path: 'rooms',
         name: 'Rooms',
-        component: () => import('@views/admin/Rooms')
+        component: () => import('@views/admin/room/Rooms')
       }]
     }
   ]

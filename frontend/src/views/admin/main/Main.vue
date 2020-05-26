@@ -48,12 +48,14 @@ export default {
 .admin-layout
   height 100vh
   display flex
+  overflow hidden
 
   .main-container
     flex 1
     height 100%
     display flex
     flex-direction column
+    overflow hidden
 
     header
       height 50px

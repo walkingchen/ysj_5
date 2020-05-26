@@ -2,7 +2,7 @@
   <div>
     <upload-excel-component @on-success="handleSuccess" @upload="handleUpload" />
     <el-table :data="prototypeList" border style="width:100%;margin-top:20px;">
-      <el-table-column type="index" label="No." align="center" width="50" />
+      <el-table-column label="ID" prop="id" align="center" width="50" />
       <el-table-column prop="prototype_name" label="Prototype Name" align="center" />
       <el-table-column prop="people_limit" label="People Limit" align="center" />
       <el-table-column label="Operate" align="center" width="160">
