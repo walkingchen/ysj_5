@@ -104,12 +104,11 @@ class RoomApi(Resource):
             room_desc = None
 
         room = Room.query.filter_by(id=id).first()
-        room(
-            room_name=room_name,
-            room_type=room_type,
-            people_limit=people_limit,
-            room_desc=room_desc
-        )
+        room.room_name = room_name
+        room.room_type = room_type
+        room.people_limit = people_limit
+        room.room_desc = room_desc
+
         db.session.add(room)
         db.session.commit()
 
