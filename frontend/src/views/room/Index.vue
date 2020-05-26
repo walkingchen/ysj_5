@@ -20,13 +20,21 @@
             <billboard ref="billboard" :sid="sid" />
           </el-col>
           <el-col :span="8">
-            <connections />
+            <connections @start-chat="startChart" />
             <messages ref="messages" :sid="sid" @share-success="handleShareSuccess" />
           </el-col>
         </el-row>
       </div>
     </div>
-    <el-backtop target=".room-content" />
+
+    <el-backtop target=".room-content" :bottom="chatShow ? 420 : 40" />
+
+    <instant-chat
+      ref="instantChat"
+      :show="chatShow"
+      :start-chat-user="startChatUser"
+      @on-close="chatShow = false"
+      @send-chat-message="sendChatMsg" />
   </div>
 </template>
 
@@ -37,6 +45,8 @@ import navigation from './navigation'
 import billboard from './billboard'
 import connections from './connections'
 import messages from './messages'
+import instantChat from './instantChat'
+import { formatDate } from '@assets/utils.js'
 import { getRoomInfo } from '@api/room'
 import { logout } from '@api/auth'
 
@@ -45,13 +55,16 @@ export default {
     navigation,
     billboard,
     connections,
-    messages
+    messages,
+    instantChat
   },
   data() {
     return {
       roomInfo: [],
       socket: null,
-      sid: ''
+      sid: '',
+      chatShow: false,
+      startChatUser: {}
     }
   },
   computed: {
@@ -60,6 +73,9 @@ export default {
     },
     stopLoadMoments() {
       return this.$refs.billboard.stopLoadMoments
+    },
+    members() {
+      return this.$store.state.room_members
     }
   },
   async created() {
@@ -82,7 +98,6 @@ export default {
           })
 
           this.socket.on('post_pull', data => {
-            console.log(data)
             if (data.timeline_type === 0) { // 有新的public timeline
               this.$refs.billboard.newCount = data.posts_number
             } else { // 有新的private timeline
@@ -93,6 +108,15 @@ export default {
           // 接收即时聊天消息
           this.socket.on('chat_msg', data => {
             console.log(data)
+            const username = this.members.find(ele => ele.id === data.user_from).nickname
+            this.$notify.info({
+              message: `【${username}】${data.message_content}`,
+              customClass: 'new-message',
+              onClick: () => {
+                this.startChart(data.user_from)
+              }
+            })
+            this.refs.instantChat.addMessage(data.user_from, data.user_from, data.message_content, data.message_timestamp)
           })
         })
       }
@@ -117,6 +141,19 @@ export default {
     },
     handleShareSuccess(id) {
       this.$refs.billboard.updateMoment(id, 0)
+    },
+    startChart(user) {
+      this.chatShow = true
+      this.startChatUser = user
+    },
+    sendChatMsg({ to, content }) {
+      this.socket.emit('chat_msg', {
+        room_id: this.roomInfo.id,
+        user_from: this.user.id,
+        user_to: to,
+        message_content: content,
+        message_timestamp: formatDate(new Date(), 'yyyy-MM-ddThh:mm:ss')
+      })
     }
   }
 }
@@ -171,4 +208,21 @@ export default {
   &:hover
     &::-webkit-scrollbar-thumb
       background-color #ccc
+</style>
+<style lang="stylus">
+.new-message
+  cursor pointer
+
+  &:hover .el-icon-info
+    color #409eff
+
+  .el-notification__content
+    margin-top 0
+
+  p
+    width 244px
+    line-height 24px
+    overflow hidden
+    text-overflow ellipsis
+    white-space nowrap
 </style>

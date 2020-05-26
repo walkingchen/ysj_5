@@ -6,7 +6,7 @@
         <el-avatar :size="81" :src="item.avatar ? item.avatar : ''" shape="square" class="user-portrait">
           {{ item.avatar ? '' : item.nickname }}
         </el-avatar>
-        <button v-if="index > 0"><v-icon name="comments" /></button>
+        <button v-if="index > 0" @click="$emit('start-chat', item)"><v-icon name="comments" /></button>
         <div class="user-name">{{ item.nickname }}</div>
       </li>
     </ul>
