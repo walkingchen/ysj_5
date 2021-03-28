@@ -42,7 +42,8 @@ class Notice(db.Model):
 
     id = Column(Integer, primary_key=True)
     notice_type = Column(Integer, info='公告类型：0全局，1room')
-    message = Column(String(2048))
+    message = Column(Text)
+    images = Column(Text)
     created_at = Column(DateTime, server_default=FetchedValue())
     updated_at = Column(DateTime)
 

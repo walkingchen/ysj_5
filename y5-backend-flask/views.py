@@ -2,12 +2,11 @@ import ast
 from PIL import Image
 from flask import url_for
 from flask_admin.contrib.sqla import ModelView
-from flask_wtf import form
 from markupsafe import Markup
 from wtforms.widgets import html_params, HTMLString
 from wtforms.utils import unset_value
 from flask_admin.helpers import get_url
-from flask_admin.form.upload import ImageUploadField
+from flask_admin.form.upload import ImageUploadField, thumbgen_filename
 from flask_admin._compat import string_types, urljoin
 
 from extensions import db
@@ -27,8 +26,8 @@ class MultipleImageUploadInput(object):
         for item in ast.literal_eval(field.data):
             filename = item
 
-            if field.thumbnail_size:
-                filename = field.thumbnail_size(filename)
+            # if field.thumbnail_size:
+            #     filename = field.thumbnail_size(filename)
 
             if field.url_relative_path:
                 filename = urljoin(field.url_relative_path, filename)
@@ -108,17 +107,17 @@ class ModelHasMultipleImages(db.Model):
 class ModelViewHasMultipleImages(ModelView):
 
     def _list_thumbnail(view, context, model, name):
-        if not model.image:
+        if not model.images:
             return ''
 
         def gen_img(filename):
             return '<img src="{}">'.format(url_for('static',
-                                                   filename="images/uploads/" + form.thumbgen_filename(filename)))
+                                                   filename="images/uploads/" + thumbgen_filename(filename)))
 
-        return Markup("<br />".join([gen_img(image) for image in ast.literal_eval(model.image)]))
+        return Markup("<br />".join([gen_img(image) for image in ast.literal_eval(model.images)]))
 
-    column_formatters = {'image': _list_thumbnail}
-    form_extra_fields = {'image': MultipleImageUploadField("Images",
+    column_formatters = {'images': _list_thumbnail}
+    form_extra_fields = {'images': MultipleImageUploadField("Images",
                                                            base_path="static/images/uploads/",
                                                            url_relative_path="images/uploads/",
-                                                           thumbnail_size=(400, 300, 1))}
+                                                           thumbnail_size=(60, 60, True))}
