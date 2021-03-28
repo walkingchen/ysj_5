@@ -26,6 +26,7 @@ class MultipleImageUploadInput(object):
         for item in ast.literal_eval(field.data):
             filename = item
 
+            # FIXME not work
             # if field.thumbnail_size:
             #     filename = field.thumbnail_size(filename)
 
@@ -114,7 +115,7 @@ class ModelViewHasMultipleImages(ModelView):
             return '<img src="{}">'.format(url_for('static',
                                                    filename="images/uploads/" + thumbgen_filename(filename)))
 
-        return Markup("<br />".join([gen_img(image) for image in ast.literal_eval(model.images)]))
+        return Markup(" ".join([gen_img(image) for image in ast.literal_eval(model.images)]))
 
     column_formatters = {'images': _list_thumbnail}
     form_extra_fields = {'images': MultipleImageUploadField("Images",
