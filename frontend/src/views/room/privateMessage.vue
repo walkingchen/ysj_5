@@ -1,6 +1,6 @@
 <template>
   <el-card shadow="hover" class="systemMessages-layout">
-    <title-com title="Personalized Message Stream" />
+    <title-com title="Private Message Feed" />
 
     <el-alert v-show="newCount > 0" type="info" center :closable="false" class="new-tip">
       <span slot="title">{{ newCount }} new messages, click <a href="javascript:;" @click="getNews">here</a> to update.</span>

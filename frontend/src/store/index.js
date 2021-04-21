@@ -6,12 +6,14 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     user: {},
-    room_members: []
+    friends: []
   },
   mutations: {
-    setRoomMembers(state, data) {
-      state.user = data[0]
-      state.room_members = data
+    setUser(state, data) {
+      state.user = data
+    },
+    setFriends(state, data) {
+      state.friends = data
     }
   },
   actions: {

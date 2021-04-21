@@ -1,13 +1,15 @@
 <template>
   <div class="moments-layout">
-
-    <title-com title="Public Billboard" class="moments-title" />
-
     <el-card shadow="hover" class="post-create-layout">
       <input type="text" class="post-create-title" placeholder="Title" v-model="postTitle" />
       <textarea rows="3" class="post-create-content" placeholder="Content" v-model="postContent" />
       <textarea rows="2" class="post-create-content" placeholder="Keywords" v-model="postKeywords" />
-      <el-button class="post-create-btn" type="primary" size="mini" :loading="submitPostLoading" @click="submitPost">Submit</el-button>
+      <el-button class="post-create-btn" type="primary" size="mini" :loading="submitPostLoading" @click="submitPost">Post</el-button>
+    </el-card>
+
+    <el-card shadow="hover" class="topic-layout">
+      <title-com title="Topic of The Day" />
+      <div class="img-box"><img src="@assets/test2.png" /></div>
     </el-card>
 
     <div class="new-tip" v-show="newCount > 0">
@@ -20,9 +22,12 @@
       <li v-for="item in moment_list" :key="item.id">
         <el-card shadow="hover" class="moments-item">
           <div class="moments-item-content">
-            <el-avatar :size="50" :src="item.user.avatar ? item.user.avatar : ''" shape="square" class="user-portrait">
-              {{ item.user.avatar ? '' : item.user.nickname }}
-            </el-avatar>
+            <el-avatar
+              shape="square"
+              :size="50"
+              :src="item.user.avatar ? item.user.avatar : ''"
+              :icon="item.user.avatar ? '' : 'el-icon-user-solid'"
+              class="user-portrait" />
             <div class="moment-text">
               <div>
                 <span class="user-name">{{ item.user.nickname }}</span>
@@ -55,9 +60,12 @@
           <ul v-if="item.comments.length > 0" class="moment-comments">
             <li class="comment-item" v-for="comment in item.comments" :key="comment.id">
               <div class="comment-item-content">
-                <el-avatar :size="35" :src="comment.user.avatar ? comment.user.avatar : ''" shape="square" class="user-portrait">
-                  {{ comment.user.avatar ? '' : comment.user.nickname }}
-                </el-avatar>
+                <el-avatar
+                  :size="35"
+                  :src="comment.user.avatar ? comment.user.avatar : ''"
+                  :icon="comment.user.avatar ? '' : 'el-icon-user-solid'"
+                  shape="square"
+                  class="user-portrait" />
                 <div class="comment-text">
                   <div>
                     <span class="user-name">{{ comment.user.nickname }}</span>
@@ -131,7 +139,7 @@ export default {
       return this.getPostLoading || this.noMoreData
     },
     moment_list() {
-      const members = this.$store.state.room_members
+      const members = [this.$store.state.user, ...[this.$store.state.friends]]
       const moments = [...this.me_post_moments, ...this.moments]
       return moments.map(item => {
         const user = members.find(ele => ele.id === item.user_id)
@@ -297,12 +305,8 @@ export default {
 
 <style lang="stylus">
 .moments-layout
-  .moments-title
-    background-color #fff
-
   .post-create-layout
     border 0
-    margin-top 20px
     padding 10px
 
     .post-create-title
@@ -322,6 +326,17 @@ export default {
 
     .post-create-btn
       float right
+
+  .topic-layout
+    border 0
+    margin-top 20px
+
+    .img-box
+      padding 10px
+
+    img
+      max-width 100%
+      max-height 100%
 
   .new-tip
     background-color #fff
@@ -348,7 +363,6 @@ export default {
 
     .user-portrait
       margin-right 12px
-      font-size 20px
 
     .moment-text
       flex 1
