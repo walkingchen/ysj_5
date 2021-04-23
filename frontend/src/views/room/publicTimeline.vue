@@ -39,49 +39,52 @@
           </div>
           <div class="moment-actions">
             <button @click="factcheck(item)" :class="{ done: item.factcheck }"><v-icon name="exclamation-circle" /></button>
-            <el-popover
-              placement="bottom-end"
-              width="350"
-              trigger="click"
-              v-model="comment_visible[item.id]">
-              <el-input class="comment_input" type="textarea" :rows="3" placeholder="Comment Content" v-model="comment_content" />
-              <el-button class="comment_btn" type="primary" size="mini" @click="comment(item.id)">Submit</el-button>
-              <button slot="reference"><v-icon name="comment-dots" /></button>
-            </el-popover>
-            <span class="count">{{ item.dislikeCount }}</span>
+            <span class="count" v-if="item.comments.length > 0">{{ item.comments.length }}</span>
+            <button @click="changeCommentVisible(item.id)"><v-icon name="comment-dots" /></button>
+            <!-- <span class="count">{{ item.dislikeCount }}</span>
             <button @click="like(item, 0)" :class="{ done: item.disliked }">
               <v-icon :name="item.disliked ? 'thumbs-down' : 'regular/thumbs-down'" />
+            </button> -->
+            <button @click="flag(item.id)" :class="{ done: flagIdList.includes(item.id) }">
+              <v-icon :name="flagIdList.includes(item.id) ? 'flag' : 'regular/flag'" />
             </button>
             <span class="count">{{ item.likeCount }}</span>
             <button @click="like(item, 1)" :class="{ done: item.liked }">
               <v-icon :name="item.liked ? 'thumbs-up' : 'regular/thumbs-up'" />
             </button>
           </div>
-          <ul v-if="item.comments.length > 0" class="moment-comments">
-            <li class="comment-item" v-for="comment in item.comments" :key="comment.id">
-              <div class="comment-item-content">
-                <el-avatar
-                  :size="35"
-                  :src="comment.user.avatar ? comment.user.avatar : ''"
-                  :icon="comment.user.avatar ? '' : 'el-icon-user-solid'"
-                  shape="square"
-                  class="user-portrait" />
-                <div class="comment-text">
-                  <div>
-                    <span class="user-name">{{ comment.user.nickname }}</span>
-                    <span class="comment-time">{{ comment.created_at }}</span>
-                    <button
-                      v-if="comment.user_id === userid || item.user_id === userid"
-                      class="comment-delete-btn"
-                      @click="deleteComment(item.id, comment.id)">
-                      <i class="el-icon-delete"></i>
-                    </button>
+          <div v-show="commentsVisibleIds.includes(item.id)" class="comments-box">
+            <el-input type="textarea" :rows="3" placeholder="Comment Content" v-model="comment_content" />
+            <div class="commentSubmitBtn-box">
+              <el-button type="primary" size="mini" @click="comment(item.id)">Submit</el-button>
+            </div>
+
+            <ul>
+              <li class="comment-item" v-for="comment in item.comments" :key="comment.id">
+                <div class="comment-item-content">
+                  <el-avatar
+                    :size="35"
+                    :src="comment.user.avatar ? comment.user.avatar : ''"
+                    :icon="comment.user.avatar ? '' : 'el-icon-user-solid'"
+                    shape="square"
+                    class="user-portrait" />
+                  <div class="comment-text">
+                    <div>
+                      <span class="user-name">{{ comment.user.nickname }}</span>
+                      <span class="comment-time">{{ comment.created_at }}</span>
+                      <button
+                        v-if="comment.user_id === userid || item.user_id === userid"
+                        class="comment-delete-btn"
+                        @click="deleteComment(item.id, comment.id)">
+                        <i class="el-icon-delete"></i>
+                      </button>
+                    </div>
+                    <p>{{ comment.comment_content }}</p>
                   </div>
-                  <p>{{ comment.comment_content }}</p>
                 </div>
-              </div>
-            </li>
-          </ul>
+              </li>
+            </ul>
+          </div>
         </el-card>
       </li>
       <div class="loading-layout" v-show="getPostLoading"><i class="el-icon-loading"></i></div>
@@ -96,6 +99,8 @@ import 'vue-awesome/icons/thumbs-up'
 import 'vue-awesome/icons/regular/thumbs-up'
 import 'vue-awesome/icons/thumbs-down'
 import 'vue-awesome/icons/regular/thumbs-down'
+import 'vue-awesome/icons/flag'
+import 'vue-awesome/icons/regular/flag'
 import 'vue-awesome/icons/comment-dots'
 import 'vue-awesome/icons/exclamation-circle'
 import {
@@ -124,11 +129,12 @@ export default {
       postContent: '',
       postKeywords: '',
       submitPostLoading: false,
+      commentsVisibleIds: [],
       comment_content: '',
-      comment_visible: {},
       me_post_moments: [],
       newCount: 0,
-      getNewPostLoading: false
+      getNewPostLoading: false,
+      flagIdList: []
     }
   },
   components: {
@@ -229,13 +235,28 @@ export default {
       }
       this.updateMoment(item.id)
     },
+    flag(id) {
+      const index = this.flagIdList.findIndex(ele => ele === id)
+      if (index > -1) {
+        this.flagIdList.splice(index, 1)
+      } else {
+        this.flagIdList.push(id)
+      }
+    },
+    changeCommentVisible(id) {
+      const index = this.commentsVisibleIds.findIndex(ele => ele === id)
+      if (index > -1) {
+        this.commentsVisibleIds.splice(index, 1)
+      } else {
+        this.commentsVisibleIds.push(id)
+      }
+    },
     comment(id) {
       commentPost({
         comment_content: this.comment_content,
         post_id: id
       }).then(() => {
         this.updateMoment(id)
-        this.comment_visible[id] = false
         this.comment_content = ''
       })
     },
@@ -291,13 +312,6 @@ export default {
           type: 'warning'
         })
       }
-    }
-  },
-  watch: {
-    moment_list(val) {
-      val.forEach(item => {
-        this.comment_visible[item.id] = false
-      })
     }
   }
 }
@@ -402,8 +416,12 @@ export default {
       .count
         margin-right 8px
 
-    .moment-comments
+    .comments-box
       border-top 1px solid #e4e7ed
+      padding 8px
+
+      & > ul
+        margin-top 10px
 
     .comment-item
       padding 8px 0
@@ -443,11 +461,12 @@ export default {
         .comment-delete-btn
           display block
 
-  .comment_input
-    margin-bottom 8px
+  .commentSubmitBtn-box
+    margin-top 8px
+    height 28px
 
-  .comment_btn
-    float right
+    button
+      float right
 
   .loading-layout
     text-align center
