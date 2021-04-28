@@ -1,0 +1,21 @@
+---
+tags:
+  - Post Flag
+parameters:
+  - name: id
+    in: path
+    type: string
+    required: true
+    description: delete glag by ID
+responses:
+  200:
+    description: return messsage
+    schema:
+      id: Response
+      properties:
+        result_code:
+          type: string
+        result_msg:
+          type: string
+        data:
+          type: string

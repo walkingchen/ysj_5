@@ -107,6 +107,17 @@ class PostFactcheck(db.Model):
     created_at = Column(DateTime, server_default=FetchedValue())
 
 
+class PostFlag(db.Model):
+    __tablename__ = 'tb_post_flag'
+
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, nullable=False)
+    flag = db.Column(db.Integer, server_default=db.FetchedValue())
+    created_at = db.Column(db.DateTime, server_default=db.FetchedValue())
+    updated_at = db.Column(db.DateTime, server_default=db.FetchedValue())
+
+
 class PostType(db.Model):
     __tablename__ = 'tb_post_type'
 

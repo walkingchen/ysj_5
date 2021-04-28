@@ -6,7 +6,7 @@ from flask_restful import Api, Resource
 from entity.Resp import Resp
 from extensions import db, socketio
 from models import Post, PostComment, PostLike, Serializer, Timeline, User, Room, RoomPrototype, RoomMember, \
-    PostFactcheck
+    PostFactcheck, PostFlag
 from service import get_friends, process_posts, process_post
 
 bp_post = Blueprint('/api/post', __name__)
@@ -416,3 +416,53 @@ api.add_resource(
     '/factcheck/<int:id>',
     methods=['DELETE'],
     endpoint='post/factcheck/delete')
+
+
+class FlagApi(Resource):
+    @swag_from('../swagger/post/flag/retrieve.yaml')
+    def get(self, id):
+        flag = PostFlag.query.filter_by(id=id).first()
+        flag_serialized = Serializer.serialize(flag)
+        return jsonify(Resp(result_code=2000, result_msg="success", data=flag_serialized).__dict__)
+
+    @swag_from('../swagger/post/flag/create.yaml')
+    def post(self):
+        if not current_user.is_authenticated:
+            return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
+
+        user_id = current_user.id
+        data = request.get_json()
+        try:
+            post_id = data['post_id']
+        except KeyError:
+            return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
+        flag = PostFlag(post_id=post_id, user_id=user_id)
+        db.session.add(flag)
+        db.session.commit()
+
+        return jsonify(Resp(result_code=2000, result_msg="success", data=Serializer.serialize(flag)).__dict__)
+
+    @swag_from('../swagger/post/flag/delete.yaml')
+    def delete(self, id):
+        flag = PostFlag.query.filter_by(id=id).first()
+        db.session.delete(flag)
+        db.session.commit()
+
+        return jsonify(Resp(result_code=2000, result_msg="submitted", data=None).__dict__)
+
+
+api.add_resource(
+    FlagApi,
+    '/flag/<int:id>',
+    methods=['GET'],
+    endpoint='post/flag/retrieve')
+api.add_resource(
+    FlagApi,
+    '/flag',
+    methods=['POST'],
+    endpoint='post/flag/create')
+api.add_resource(
+    FlagApi,
+    '/flag/<int:id>',
+    methods=['DELETE'],
+    endpoint='post/flag/delete')
