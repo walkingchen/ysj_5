@@ -1,5 +1,5 @@
 <template>
-  <el-card shadow="hover" class="systemMessages-layout">
+  <el-card shadow="hover" class="privateMessage-layout">
     <title-com title="Private Message Feed" />
 
     <el-alert v-show="newCount > 0" type="info" center :closable="false" class="new-tip">
@@ -8,17 +8,17 @@
 
     <div class="loading-layout" v-show="getNewPostLoading"><i class="el-icon-loading"></i></div>
 
-    <ul>
-      <li v-if="messages.length === 0">No messages.</li>
-      <li v-for="item in messages" :key="item.id">
+    <div class="messages">
+      <div class="privateMessageItem" v-if="messages.length === 0">No messages.</div>
+      <div v-for="(item, index) in messages" :key="item.id" class="privateMessageItem" ref="messageItem">
         <p class="title">{{ item.post_title }}</p>
         <p>{{ item.post_content }}</p>
         <div>
           <span class="message-time">{{ item.created_at }}</span>
-          <button class="share-btn" @click="share(item.id)"><v-icon name="share" /></button>
+          <button class="share-btn" @click="share(item.id, index)"><v-icon name="share" /></button>
         </div>
-      </li>
-    </ul>
+      </div>
+    </div>
 
     <div class="get-more-btn" v-show="!getPostLoading && !noMoreData">
       <el-button type="text" @click="getMessageList">see more</el-button>
@@ -75,9 +75,28 @@ export default {
       })
       this.getPostLoading = false
     },
-    share(id) {
+    share(id, index) {
+      const ele = this.$refs.messageItem[index]
+      const cloneEle = ele.cloneNode(true)
+      cloneEle.classList.add('movingMessage')
+      cloneEle.style.top = ele.getBoundingClientRect().top + 'px'
+      cloneEle.style.left = ele.getBoundingClientRect().left + 'px'
+      document.body.appendChild(cloneEle)
+
       sharePost(id, this.sid).then(() => {
-        this.$emit('share-success', id)
+        this.$bus.$emit('share-success', id)
+        const targetTop = document.getElementById('moments-ul').getBoundingClientRect().top
+        const targetLeft = document.getElementById('moments-ul').getBoundingClientRect().left
+        cloneEle.style.top = targetTop + 'px'
+        cloneEle.style.left = targetLeft + 'px'
+
+        this.$bus.$on('share-success-refresh', _id => {
+          if (_id === id) {
+            setTimeout(() => {
+              cloneEle.remove()
+            }, 1000)
+          }
+        })
       })
     },
     async getNews() {
@@ -98,7 +117,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.systemMessages-layout
+.privateMessage-layout
   border 0
 
   .new-tip
@@ -111,27 +130,8 @@ export default {
       &:hover
         text-decoration underline
 
-  ul
+  .messages
     padding 10px
-
-  li
-    padding 10px
-    border-bottom 1px solid #e4e7ed
-
-    &:last-child
-      border-bottom 0
-
-  p
-    line-height 1.5
-
-    &.title
-      font-size 16px
-
-  .message-time
-    color #999
-    font-size 14px
-    line-height 24px
-    display inline-block
 
   .share-btn
     float right
@@ -155,4 +155,35 @@ export default {
     text-align center
     padding-bottom 10px
     color #999
+</style>
+<style lang="stylus">
+.privateMessageItem
+  padding 10px
+  border-bottom 1px solid #e4e7ed
+
+  &:last-child
+    border-bottom 0
+
+  p
+    line-height 1.5
+
+    &.title
+      font-size 16px
+
+  .message-time
+    color #999
+    font-size 14px
+    line-height 24px
+    display inline-block
+
+.movingMessage
+  position absolute
+  z-index 10
+  background-color #fff
+  width 345px
+  border-radius 4px
+  transition top 1s, left 1s
+
+  .share-btn
+    display none
 </style>

@@ -16,6 +16,8 @@ Vue.use(ElementUI)
 
 Vue.component('v-icon', Icon)
 
+Vue.prototype.$bus = new Vue()
+
 axios.defaults.baseURL = '/api'
 axios.interceptors.response.use(res => {
   if (res.data.result_code === 4001) {

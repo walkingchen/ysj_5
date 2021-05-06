@@ -9,7 +9,7 @@
         <el-row :gutter="20">
           <el-col :span="8">
             <daily-digest />
-            <private-message ref="privateMessage" :sid="sid" @share-success="handleShareSuccess" />
+            <private-message ref="privateMessage" :sid="sid" />
           </el-col>
           <el-col :span="11">
             <public-timeline ref="publicTimeline" :sid="sid" />
@@ -122,9 +122,6 @@ export default {
   methods: {
     updateMoments() {
       this.$refs.publicTimeline.getMomentList()
-    },
-    handleShareSuccess(id) {
-      this.$refs.publicTimeline.updateMoment(id, 0)
     },
     startChart(user) {
       this.chatShow = true

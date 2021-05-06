@@ -18,7 +18,7 @@
 
     <div class="loading-layout" v-show="getNewPostLoading"><i class="el-icon-loading"></i></div>
 
-    <ul class="moments-ul">
+    <ul id="moments-ul">
       <li v-for="item in moment_list" :key="item.id">
         <el-card shadow="hover" class="moments-item">
           <div class="moments-item-content">
@@ -145,7 +145,7 @@ export default {
       return this.getPostLoading || this.noMoreData
     },
     moment_list() {
-      const members = [this.$store.state.user, ...[this.$store.state.friends]]
+      const members = [this.$store.state.user, ...this.$store.state.friends]
       const moments = [...this.me_post_moments, ...this.moments]
       return moments.map(item => {
         const user = members.find(ele => ele.id === item.user_id)
@@ -180,6 +180,10 @@ export default {
   },
   created() {
     this.getMomentList()
+
+    this.$bus.$on('share-success', id => {
+      this.updateMoment(id, 0)
+    })
   },
   methods: {
     async getMomentList() {
@@ -283,7 +287,10 @@ export default {
           const momentIndex = this.moments.findIndex(ele => ele.id === id)
           this.moments.splice(momentIndex, 1, res.data.data)
         } else {
-          this.me_post_moments.unshift(res.data.data)
+          this.$bus.$emit('share-success-refresh', id)
+          setTimeout(() => {
+            this.me_post_moments.unshift(res.data.data)
+          }, 1000)
         }
       })
     },
@@ -365,7 +372,7 @@ export default {
       &:hover
         text-decoration underline
 
-  .moments-ul > li
+  #moments-ul > li
     margin-top 20px
 
   .moments-item
