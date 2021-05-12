@@ -1,7 +1,7 @@
 from flask import json
 from sqlalchemy import inspect
 
-from models import RoomPrototype, RoomMember, PostComment, Serializer, User, PostLike, PostFactcheck
+from models import RoomPrototype, RoomMember, PostComment, Serializer, User, PostLike, PostFactcheck, Post
 
 
 # 查询好友网络
@@ -104,6 +104,9 @@ def process_post(post, user_id):
         post['factcheck'] = Serializer.serialize(check)
     else:
         post['factcheck'] = None
+
+    post_shared = Post.query.filter_by(id=post['post_shared_id']).first()
+    post['post_shared'] = Serializer.serialize(post_shared)
 
 
 def object_as_dict(obj):

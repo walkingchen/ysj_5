@@ -61,7 +61,7 @@ def login():
     user = User.query.filter_by(username=username).first()
 
     if user is None or password is None or password != user.password:
-        return json.dumps(Resp(result_code=4000, result_msg='fail', data=None).__dict__)
+        return json.dumps(Resp(result_code=4000, result_msg='username or password wrong', data=None).__dict__)
 
     # Keep the user info in the session using Flask-Login
     login_user(user)
