@@ -106,7 +106,10 @@ def process_post(post, user_id):
         post['factcheck'] = None
 
     post_shared = Post.query.filter_by(id=post['post_shared_id']).first()
-    post['post_shared'] = Serializer.serialize(post_shared)
+    if post_shared is not None:
+        post['post_shared'] = Serializer.serialize(post_shared)
+    else:
+        post['post_shared'] = None
 
 
 def object_as_dict(obj):
