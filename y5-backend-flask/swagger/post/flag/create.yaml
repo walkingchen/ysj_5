@@ -9,15 +9,11 @@ parameters:
       id: post_flag_create
       required:
         - post_id
-        - room_id
         - user_id
       properties:
         post_id:
           type: string
           description: post id
-        room_id:
-          type: string
-          description: room id
 responses:
   200:
     description: return post flag created

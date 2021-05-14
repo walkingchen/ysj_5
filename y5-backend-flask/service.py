@@ -1,7 +1,7 @@
 from flask import json
 from sqlalchemy import inspect
 
-from models import RoomPrototype, RoomMember, PostComment, Serializer, User, PostLike, PostFactcheck
+from models import RoomPrototype, RoomMember, PostComment, Serializer, User, PostLike, PostFactcheck, Post, PostFlag
 
 
 # 查询好友网络
@@ -99,11 +99,25 @@ def process_post(post, user_id):
     else:
         post['disliked'] = Serializer.serialize(dislike)
 
+    # 判断是否已点过factcheck
     check = PostFactcheck.query.filter_by(post_id=post['id'], user_id=user_id).first()
     if check is not None:
         post['factcheck'] = Serializer.serialize(check)
     else:
         post['factcheck'] = None
+
+    # 判断是否已点过flag
+    flag = PostFlag.query.filter_by(post_id=post['id'], user_id=user_id).first()
+    if flag is None:
+        post['flag'] = None
+    else:
+        post['flag'] = Serializer.serialize(flag)
+
+    post_shared = Post.query.filter_by(id=post['post_shared_id']).first()
+    if post_shared is not None:
+        post['post_shared'] = Serializer.serialize(post_shared)
+    else:
+        post['post_shared'] = None
 
 
 def object_as_dict(obj):

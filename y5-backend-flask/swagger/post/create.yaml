@@ -15,6 +15,7 @@ parameters:
           - keywords
           - room_id
           - sid
+          - post_shared_id
         properties:
           sid:
             type: string
@@ -37,6 +38,9 @@ parameters:
           room_id:
             type: integer
             description: room id
+          post_shared_id:
+            type: integer
+            description: post shared
 responses:
   200:
     description: return room array created
