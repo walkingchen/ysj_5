@@ -31,10 +31,30 @@
             <div class="moment-text">
               <div>
                 <span class="user-name">{{ item.user.nickname }}</span>
-                <span class="moment-time">{{ item.created_at }}</span>
+                <span class="moment-time">{{ item.time }}</span>
               </div>
-              <p>{{ item.title }}</p>
-              <p>{{ item.content }}</p>
+              <div v-if="item.isShared" class="moments-item-content shared-box">
+                <el-avatar
+                  shape="square"
+                  :size="30"
+                  :src="item.postSource.user.avatar ? item.postSource.user.avatar : ''"
+                  :icon="item.postSource.user.avatar ? '' : 'el-icon-user-solid'"
+                  class="user-portrait" />
+                <div class="moment-text">
+                  <div>
+                    <span class="user-name">{{ item.postSource.user.nickname }}</span>
+                    <span class="moment-time">{{ item.postSource.time }}</span>
+                  </div>
+                  <div>
+                    <p>{{ item.postSource.title }}</p>
+                    <p>{{ item.postSource.content }}</p>
+                  </div>
+                </div>
+              </div>
+              <div v-else>
+                <p>{{ item.title }}</p>
+                <p>{{ item.content }}</p>
+              </div>
             </div>
           </div>
           <div class="moment-actions">
@@ -45,8 +65,8 @@
             <button @click="like(item, 0)" :class="{ done: item.disliked }">
               <v-icon :name="item.disliked ? 'thumbs-down' : 'regular/thumbs-down'" />
             </button> -->
-            <button @click="flag(item.id)" :class="{ done: flagIdList.includes(item.id) }">
-              <v-icon :name="flagIdList.includes(item.id) ? 'flag' : 'regular/flag'" />
+            <button @click="flag(item)" :class="{ done: item.flag }">
+              <v-icon :name="item.flag ? 'flag' : 'regular/flag'" />
             </button>
             <span class="count">{{ item.likeCount }}</span>
             <button @click="like(item, 1)" :class="{ done: item.liked }">
@@ -71,7 +91,7 @@
                   <div class="comment-text">
                     <div>
                       <span class="user-name">{{ comment.user.nickname }}</span>
-                      <span class="comment-time">{{ comment.created_at }}</span>
+                      <span class="comment-time">{{ comment.time }}</span>
                       <button
                         v-if="comment.user_id === userid || item.user_id === userid"
                         class="comment-delete-btn"
@@ -109,6 +129,8 @@ import {
   likePost,
   deleteLike,
   changeLike,
+  flagPost,
+  deleteFlag,
   commentPost,
   deleteComment,
   checkPost,
@@ -133,8 +155,7 @@ export default {
       comment_content: '',
       me_post_moments: [],
       newCount: 0,
-      getNewPostLoading: false,
-      flagIdList: []
+      getNewPostLoading: false
     }
   },
   components: {
@@ -151,14 +172,16 @@ export default {
         const user = members.find(ele => ele.id === item.user_id)
         const _item = {
           id: item.id,
+          isShared: item.timeline_type === 2,
           title: item.post_title,
           content: item.post_content,
+          flag: item.flag,
           liked: item.liked,
           disliked: item.disliked,
           likeCount: item.likes.count,
           dislikeCount: item.dislikes.count,
           factcheck: item.factcheck,
-          created_at: formatDate(item.created_at),
+          time: formatDate(item.created_at),
           user: user ? {
             avatar: user.avatar,
             nickname: user.nickname
@@ -170,6 +193,23 @@ export default {
             ele.created_at = formatDate(ele.created_at)
             return ele
           })
+        }
+
+        if (_item.isShared) {
+          const postUser = members.find(ele => ele.id === item.post_shared.user_id)
+          _item.time = formatDate(item.updated_at)
+          _item.postSource = {
+            user: postUser ? {
+              avatar: postUser.avatar,
+              nickname: postUser.nickname
+            } : {
+              avatar: null,
+              nickname: ''
+            },
+            time: formatDate(item.post_shared.created_at),
+            title: item.post_shared.post_title,
+            content: item.post_shared.post_content
+          }
         }
         return _item
       })
@@ -239,13 +279,13 @@ export default {
       }
       this.updateMoment(item.id)
     },
-    flag(id) {
-      const index = this.flagIdList.findIndex(ele => ele === id)
-      if (index > -1) {
-        this.flagIdList.splice(index, 1)
+    async flag(item) {
+      if (item.flag) {
+        await deleteFlag(item.flag.id)
       } else {
-        this.flagIdList.push(id)
+        await flagPost(item.id)
       }
+      this.updateMoment(item.id)
     },
     changeCommentVisible(id) {
       const index = this.commentsVisibleIds.findIndex(ele => ele === id)
@@ -467,6 +507,12 @@ export default {
       &:hover
         .comment-delete-btn
           display block
+
+  .shared-box
+    border 1px solid #e4e7ed
+    border-radius 4px
+    padding 5px
+    margin 5px 0
 
   .commentSubmitBtn-box
     margin-top 8px
