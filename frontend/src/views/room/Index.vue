@@ -154,6 +154,7 @@ export default {
   overflow hidden
 
 .room-content
+  position relative
   background-color #fffaf0
   padding 20px 0
   height calc(100vh - 100px)

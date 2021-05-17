@@ -15,7 +15,7 @@
         <p>{{ item.post_content }}</p>
         <div>
           <span class="message-time">{{ item.created_at }}</span>
-          <button class="share-btn" @click="share(item.id, index)"><v-icon name="share" /></button>
+          <button v-if="item.timeline_type !== 2" class="share-btn" @click="share(item.id, index)"><v-icon name="share" /></button>
         </div>
       </div>
     </div>
@@ -79,13 +79,13 @@ export default {
       const ele = this.$refs.messageItem[index]
       const cloneEle = ele.cloneNode(true)
       cloneEle.classList.add('movingMessage')
-      cloneEle.style.top = ele.getBoundingClientRect().top + 'px'
+      cloneEle.style.top = ele.getBoundingClientRect().top - 60 + 'px'
       cloneEle.style.left = ele.getBoundingClientRect().left + 'px'
-      document.body.appendChild(cloneEle)
+      document.getElementsByClassName('room-content')[0].appendChild(cloneEle)
 
       sharePost(id, this.sid).then(() => {
         this.$bus.$emit('share-success', id)
-        const targetTop = document.getElementById('moments-ul').getBoundingClientRect().top
+        const targetTop = document.getElementById('moments-ul').getBoundingClientRect().top - 60
         const targetLeft = document.getElementById('moments-ul').getBoundingClientRect().left
         cloneEle.style.top = targetTop + 'px'
         cloneEle.style.left = targetLeft + 'px'
