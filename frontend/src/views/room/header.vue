@@ -46,12 +46,7 @@ export default {
     handleLogout() {
       logout()
       localStorage.removeItem('roomid')
-      this.socket.emit('room_leave', {
-        room_id: this.roomInfo.id,
-        username: this.user.username
-      }, () => {
-        this.socket.close()
-      })
+      this.$emit('logout')
       this.$router.push({ name: 'Login' })
     }
   }

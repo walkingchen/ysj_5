@@ -1,6 +1,6 @@
 <template>
   <div class="room-layout">
-    <header-com />
+    <header-com @logout="logout" />
     <div
       class="room-content"
       v-infinite-scroll="updateMoments"
@@ -134,6 +134,14 @@ export default {
         user_to: to,
         message_content: content,
         message_timestamp: formatDate(new Date(), 'yyyy-MM-ddThh:mm:ss')
+      })
+    },
+    logout() {
+      this.socket.emit('room_leave', {
+        room_id: this.roomInfo.id,
+        username: this.user.username
+      }, () => {
+        this.socket.close()
       })
     }
   }
