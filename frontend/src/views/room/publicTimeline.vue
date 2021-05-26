@@ -1,5 +1,5 @@
 <template>
-  <div class="moments-layout">
+  <div class="publicTlimeline-layout">
     <el-card shadow="hover" class="post-create-layout">
       <input type="text" class="post-create-title" placeholder="Title" v-model="postTitle" />
       <textarea rows="3" class="post-create-content" placeholder="Content" v-model="postContent" />
@@ -12,109 +12,120 @@
       <div class="img-box"><img src="@assets/test2.png" /></div>
     </el-card>
 
-    <div class="new-tip" v-show="newCount > 0">
-      {{ newCount }} new messages, click <a href="javascript:;" @click="getNews">here</a> to update.
+    <div @click="showMoments = !showMoments">
+      <el-card shadow="hover" class="toggle">
+        <v-icon name="angle-right" :style="{transform: `rotate(${showMoments ? 90 : 0}deg)`}" />
+      </el-card>
     </div>
 
-    <div class="loading-layout" v-show="getNewPostLoading"><i class="el-icon-loading"></i></div>
+    <div class="moments-layout" :style="{ height: showMoments ? momentsLayoutHeight + 'px' : 0 }">
+      <div ref="momentsLayout">
+        <div class="new-tip" v-show="newCount > 0">
+          {{ newCount }} new messages, click <a href="javascript:;" @click="getNews">here</a> to update.
+        </div>
 
-    <ul id="moments-ul">
-      <li v-for="item in moment_list" :key="item.id">
-        <el-card shadow="hover" class="moments-item">
-          <div class="moments-item-content">
-            <el-avatar
-              shape="square"
-              :size="50"
-              :src="item.user.avatar ? item.user.avatar : ''"
-              :icon="item.user.avatar ? '' : 'el-icon-user-solid'"
-              class="user-portrait" />
-            <div class="moment-text">
-              <div>
-                <span class="user-name">{{ item.user.nickname }}</span>
-                <span class="moment-time">{{ item.time }}</span>
-              </div>
-              <div v-if="item.isShared" class="moments-item-content shared-box">
+        <div class="loading-layout" v-show="getNewPostLoading"><i class="el-icon-loading"></i></div>
+
+        <ul id="moments-ul">
+          <li v-for="item in moment_list" :key="item.id">
+            <el-card shadow="hover" class="moments-item">
+              <div class="moments-item-content">
                 <el-avatar
                   shape="square"
-                  :size="30"
-                  :src="item.postSource.user.avatar ? item.postSource.user.avatar : ''"
-                  :icon="item.postSource.user.avatar ? '' : 'el-icon-user-solid'"
+                  :size="50"
+                  :src="item.user.avatar ? item.user.avatar : ''"
+                  :icon="item.user.avatar ? '' : 'el-icon-user-solid'"
                   class="user-portrait" />
                 <div class="moment-text">
                   <div>
-                    <span class="user-name">{{ item.postSource.user.nickname }}</span>
-                    <span class="moment-time">{{ item.postSource.time }}</span>
+                    <span class="user-name">{{ item.user.nickname }}</span>
+                    <span class="moment-time">{{ item.time }}</span>
                   </div>
-                  <div>
-                    <p>{{ item.postSource.title }}</p>
-                    <p>{{ item.postSource.content }}</p>
-                  </div>
-                </div>
-              </div>
-              <div v-else>
-                <p>{{ item.title }}</p>
-                <p>{{ item.content }}</p>
-              </div>
-            </div>
-          </div>
-          <div class="moment-actions">
-            <button @click="factcheck(item)" :class="{ done: item.factcheck }"><v-icon name="exclamation-circle" /></button>
-            <span class="count" v-if="item.comments.length > 0">{{ item.comments.length }}</span>
-            <button @click="changeCommentVisible(item.id)"><v-icon name="comment-dots" /></button>
-            <!-- <span class="count">{{ item.dislikeCount }}</span>
-            <button @click="like(item, 0)" :class="{ done: item.disliked }">
-              <v-icon :name="item.disliked ? 'thumbs-down' : 'regular/thumbs-down'" />
-            </button> -->
-            <button @click="flag(item)" :class="{ done: item.flag }">
-              <v-icon :name="item.flag ? 'flag' : 'regular/flag'" />
-            </button>
-            <span class="count">{{ item.likeCount }}</span>
-            <button @click="like(item, 1)" :class="{ done: item.liked }">
-              <v-icon :name="item.liked ? 'thumbs-up' : 'regular/thumbs-up'" />
-            </button>
-          </div>
-          <div v-show="commentsVisibleIds.includes(item.id)" class="comments-box">
-            <el-input type="textarea" :rows="3" placeholder="Comment Content" v-model="comment_content" />
-            <div class="commentSubmitBtn-box">
-              <el-button type="primary" size="mini" @click="comment(item.id)">Submit</el-button>
-            </div>
-
-            <ul>
-              <li class="comment-item" v-for="comment in item.comments" :key="comment.id">
-                <div class="comment-item-content">
-                  <el-avatar
-                    :size="35"
-                    :src="comment.user.avatar ? comment.user.avatar : ''"
-                    :icon="comment.user.avatar ? '' : 'el-icon-user-solid'"
-                    shape="square"
-                    class="user-portrait" />
-                  <div class="comment-text">
-                    <div>
-                      <span class="user-name">{{ comment.user.nickname }}</span>
-                      <span class="comment-time">{{ comment.time }}</span>
-                      <button
-                        v-if="comment.user_id === userid || item.user_id === userid"
-                        class="comment-delete-btn"
-                        @click="deleteComment(item.id, comment.id)">
-                        <i class="el-icon-delete"></i>
-                      </button>
+                  <div v-if="item.isShared" class="moments-item-content shared-box">
+                    <el-avatar
+                      shape="square"
+                      :size="30"
+                      :src="item.postSource.user.avatar ? item.postSource.user.avatar : ''"
+                      :icon="item.postSource.user.avatar ? '' : 'el-icon-user-solid'"
+                      class="user-portrait" />
+                    <div class="moment-text">
+                      <div>
+                        <span class="user-name">{{ item.postSource.user.nickname }}</span>
+                        <span class="moment-time">{{ item.postSource.time }}</span>
+                      </div>
+                      <div>
+                        <p>{{ item.postSource.title }}</p>
+                        <p>{{ item.postSource.content }}</p>
+                      </div>
                     </div>
-                    <p>{{ comment.comment_content }}</p>
+                  </div>
+                  <div v-else>
+                    <p>{{ item.title }}</p>
+                    <p>{{ item.content }}</p>
                   </div>
                 </div>
-              </li>
-            </ul>
-          </div>
-        </el-card>
-      </li>
-      <div class="loading-layout" v-show="getPostLoading"><i class="el-icon-loading"></i></div>
-      <div class="nomore-layout" v-show="noMoreData">No more~</div>
-    </ul>
+              </div>
+              <div class="moment-actions">
+                <!-- <button @click="factcheck(item)" :class="{ done: item.factcheck }"><v-icon name="exclamation-circle" /></button> -->
+                <span class="count" v-if="item.comments.length > 0">{{ item.comments.length }}</span>
+                <button @click="changeCommentVisible(item.id)"><v-icon name="comment-dots" /></button>
+                <!-- <span class="count">{{ item.dislikeCount }}</span>
+                <button @click="like(item, 0)" :class="{ done: item.disliked }">
+                  <v-icon :name="item.disliked ? 'thumbs-down' : 'regular/thumbs-down'" />
+                </button> -->
+                <button @click="flag(item)" :class="{ done: item.flag }">
+                  <v-icon :name="item.flag ? 'flag' : 'regular/flag'" />
+                </button>
+                <span class="count">{{ item.likeCount }}</span>
+                <button @click="like(item, 1)" :class="{ done: item.liked }">
+                  <v-icon :name="item.liked ? 'thumbs-up' : 'regular/thumbs-up'" />
+                </button>
+              </div>
+              <div v-show="commentsVisibleIds.includes(item.id)" class="comments-box">
+                <el-input type="textarea" :rows="3" placeholder="Comment Content" v-model="comment_content" />
+                <div class="commentSubmitBtn-box">
+                  <el-button type="primary" size="mini" @click="comment(item.id)">Submit</el-button>
+                </div>
+
+                <ul>
+                  <li class="comment-item" v-for="comment in item.comments" :key="comment.id">
+                    <div class="comment-item-content">
+                      <el-avatar
+                        :size="35"
+                        :src="comment.user.avatar ? comment.user.avatar : ''"
+                        :icon="comment.user.avatar ? '' : 'el-icon-user-solid'"
+                        shape="square"
+                        class="user-portrait" />
+                      <div class="comment-text">
+                        <div>
+                          <span class="user-name">{{ comment.user.nickname }}</span>
+                          <span class="comment-time">{{ comment.time }}</span>
+                          <button
+                            v-if="comment.user_id === userid || item.user_id === userid"
+                            class="comment-delete-btn"
+                            @click="deleteComment(item.id, comment.id)">
+                            <i class="el-icon-delete"></i>
+                          </button>
+                        </div>
+                        <p>{{ comment.comment_content }}</p>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </el-card>
+          </li>
+          <div class="loading-layout" v-show="getPostLoading"><i class="el-icon-loading"></i></div>
+          <div class="nomore-layout" v-show="noMoreData">No more~</div>
+        </ul>
+      </div>
+    </div>
 
   </div>
 </template>
 
 <script>
+import 'vue-awesome/icons/angle-right'
 import 'vue-awesome/icons/thumbs-up'
 import 'vue-awesome/icons/regular/thumbs-up'
 import 'vue-awesome/icons/thumbs-down'
@@ -139,12 +150,15 @@ import {
 } from '@api/post'
 import titleCom from '@components/title'
 import { formatDate } from '@assets/utils.js'
+const elementResizeDetectorMaker = require('element-resize-detector')
 
 export default {
   props: ['sid'],
   data() {
     return {
       getPostLoading: true,
+      showMoments: true,
+      momentsLayoutHeight: 0,
       moments: [],
       noMoreData: false,
       postTitle: '',
@@ -223,6 +237,11 @@ export default {
 
     this.$bus.$on('share-success', id => {
       this.updateMoment(id, 0)
+    })
+  },
+  mounted() {
+    elementResizeDetectorMaker().listenTo(this.$refs.momentsLayout, element => {
+      this.momentsLayoutHeight = element.offsetHeight + 20
     })
   },
   methods: {
@@ -365,7 +384,7 @@ export default {
 </script>
 
 <style lang="stylus">
-.moments-layout
+.publicTlimeline-layout
   .post-create-layout
     border 0
     padding 10px
@@ -388,6 +407,16 @@ export default {
     .post-create-btn
       float right
 
+  .toggle
+    margin-top 20px
+    text-align center
+    border 0
+    padding 5px 0
+    cursor pointer
+
+    .fa-icon
+      transition transform .5s
+
   .topic-layout
     border 0
     margin-top 20px
@@ -398,6 +427,10 @@ export default {
     img
       max-width 100%
       max-height 100%
+
+  .moments-layout
+    overflow hidden
+    transition height .5s
 
   .new-tip
     background-color #fff

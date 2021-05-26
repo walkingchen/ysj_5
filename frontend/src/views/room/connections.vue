@@ -17,9 +17,9 @@
             :icon="item.avatar ? '' : 'el-icon-user-solid'"
             class="user-portrait" />
           <span class="username">{{ item.nickname }}</span>
-          <button class="chat-btn" @click="$emit('start-chat', item)">
+          <!-- <button class="chat-btn" @click="$emit('start-chat', item)">
             <v-icon name="comments" scale="1.5" />
-          </button>
+          </button> -->
         </li>
       </ul>
     </el-card>
@@ -75,18 +75,18 @@ export default {
       text-overflow ellipsis
       white-space nowrap
 
-    .chat-btn
-      display none
-      position absolute
-      top 0
-      left 0
-      width 100%
-      height 100%
-      background-color rgba(0, 0, 0, .2)
-      justify-content center
-      align-items center
-      color #409eff
+    // .chat-btn
+    //   display none
+    //   position absolute
+    //   top 0
+    //   left 0
+    //   width 100%
+    //   height 100%
+    //   background-color rgba(0, 0, 0, .2)
+    //   justify-content center
+    //   align-items center
+    //   color #409eff
 
-    &:hover .chat-btn
-      display flex
+    // &:hover .chat-btn
+    //   display flex
 </style>
