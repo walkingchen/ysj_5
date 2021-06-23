@@ -54,9 +54,9 @@ def login():
         username = str(data['username']).strip()
         password = str(data['password']).strip()
     except KeyError:
-        return json.dumps(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
+        return json.dumps(Resp(result_code=4000, result_msg='login, KeyError', data=None).__dict__)
     except TypeError:
-        return json.dumps(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
+        return json.dumps(Resp(result_code=4000, result_msg='login, TypeError', data=None).__dict__)
 
     user = User.query.filter_by(username=username).first()
 

@@ -20,9 +20,9 @@ class RoomNamespace(Namespace):
             join_room(room_id)
             emit('broadcast_msg', request.sid + " join in room " + room_id, room=room_id)
         except KeyError:
-            print('KeyError')
+            print('room socketio: KeyError')
         except TypeError:
-            print('TypeError')
+            print('room socketio: TypeError')
 
     # def on_message(self, message):
     #     try:
