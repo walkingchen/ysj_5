@@ -17,13 +17,13 @@ class RoomNamespace(Namespace):
         try:
             print(json)
             room_id = json['room_id']
-            print(room_id)
-            join_room(room_id)
-            emit('broadcast_msg', request.sid + " join in room " + room_id, room=room_id)
         except KeyError:
             print('room socketio: KeyError')
         except TypeError:
             print('room socketio: TypeError')
+
+        join_room(room_id)
+        emit('broadcast_msg', request.sid + " join in room " + room_id, room=room_id)
 
     # def on_message(self, message):
     #     try:
