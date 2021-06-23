@@ -23,7 +23,7 @@ class RoomNamespace(Namespace):
             print('room socketio: TypeError')
 
         join_room(room_id)
-        emit('broadcast_msg', request.sid + " join in room " + room_id, room=room_id)
+        emit('broadcast_msg', request.sid + " join in room " + str(room_id), room=room_id)
 
     # def on_message(self, message):
     #     try:
