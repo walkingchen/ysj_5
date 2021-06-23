@@ -15,6 +15,7 @@ class RoomNamespace(Namespace):
 
     def on_room_join(self, json):
         try:
+            print(json)
             room_id = json['room_id']
             # print("room_id = " + room_id)
             join_room(room_id)
