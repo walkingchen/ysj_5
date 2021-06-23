@@ -17,7 +17,7 @@ class RoomNamespace(Namespace):
         try:
             print(json)
             room_id = json['room_id']
-            # print("room_id = " + room_id)
+            print(room_id)
             join_room(room_id)
             emit('broadcast_msg', request.sid + " join in room " + room_id, room=room_id)
         except KeyError:
