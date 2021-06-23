@@ -68,6 +68,16 @@ class Post(db.Model):
         return d
 
 
+class PostDaily(db.Model):
+    __tablename__ = 'tb_post_daily'
+
+    id = db.Column(db.Integer, primary_key=True)
+    room_id = db.Column(db.Integer)
+    post_id = db.Column(db.Integer)
+    updated_at = db.Column(db.DateTime, nullable=False, server_default=db.FetchedValue())
+    created_at = db.Column(db.DateTime, server_default=db.FetchedValue())
+
+
 class PostComment(db.Model):
     __tablename__ = 'tb_post_comment'
 

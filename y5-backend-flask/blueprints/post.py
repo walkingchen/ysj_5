@@ -230,6 +230,31 @@ api.add_resource(
     endpoint='post/list_retrieve')
 
 
+class PostDaily(Resource):
+    @swag_from('../swagger/post/post_daily/retrieve.yaml')
+    def get(self, id):
+        post_daily = PostDaily.query.filter_by(id=id).first()
+        if post_daily is None:
+            return Resp(
+                result_code=4000,
+                result_msg="no post daily",
+                data=None
+            )
+
+        post_daily = Post.query.filter_by(id=post_daily.post_id).first()
+        post_daily_serialized = Serializer.serialize(post_daily)
+
+        resp = Resp(
+            result_code=2000,
+            result_msg="success",
+            data=post_daily_serialized
+        )
+
+        return resp
+
+    # fixme CRUD
+
+
 class CommentApi(Resource):
     @swag_from('../swagger/post/comment/retrieve.yaml')
     def get(self, id):

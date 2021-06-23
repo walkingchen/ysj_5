@@ -109,9 +109,14 @@ def process_post(post, user_id):
     # 判断是否已点过flag
     flag = PostFlag.query.filter_by(post_id=post['id'], user_id=user_id).first()
     if flag is None:
-        post['flag'] = None
+        post['flagged'] = None
     else:
-        post['flag'] = Serializer.serialize(flag)
+        post['flagged'] = Serializer.serialize(flag)
+
+    flag_count = PostFlag.query.filter_by(post_id=post['id']).count()
+    post['flags'] = {
+        'count': flag_count
+    }
 
     post_shared = Post.query.filter_by(id=post['post_shared_id']).first()
     if post_shared is not None:

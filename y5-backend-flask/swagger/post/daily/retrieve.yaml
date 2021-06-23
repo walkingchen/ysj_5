@@ -1,0 +1,21 @@
+---
+tags:
+  - Post Daily
+parameters:
+  - name: id
+    in: path
+    type: string
+    required: true
+    description: get post daily by ID
+responses:
+  200:
+    description: return post daily with details
+    schema:
+      id: Response
+      properties:
+        result_code:
+          type: string
+        result_msg:
+          type: string
+        data:
+          type: string

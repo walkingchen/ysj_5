@@ -51,8 +51,8 @@ def register():
 def login():
     data = request.get_json()
     try:
-        username = data['username']
-        password = data['password']
+        username = str(data['username']).strip()
+        password = str(data['password']).strip()
     except KeyError:
         return json.dumps(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
     except TypeError:
