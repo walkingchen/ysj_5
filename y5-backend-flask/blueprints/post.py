@@ -6,7 +6,7 @@ from flask_restful import Api, Resource
 from entity.Resp import Resp
 from extensions import db, socketio
 from models import Post, PostComment, PostLike, Serializer, Timeline, User, Room, RoomPrototype, RoomMember, \
-    PostFactcheck, PostFlag
+    PostFactcheck, PostFlag, PostDaily
 from service import get_friends, process_posts, process_post
 
 bp_post = Blueprint('/api/post', __name__)
@@ -233,7 +233,7 @@ api.add_resource(
 class PostDailyApi(Resource):
     @swag_from('../swagger/post/daily/retrieve.yaml')
     def get(self, room_id):
-        post_daily = PostDailyApi.query.filter_by(room_id=room_id).first()
+        post_daily = PostDaily.query.filter_by(room_id=room_id).first()
         if post_daily is None:
             return Resp(
                 result_code=4000,
@@ -243,6 +243,7 @@ class PostDailyApi(Resource):
 
         post_daily = Post.query.filter_by(id=post_daily.post_id).first()
         post_daily_serialized = Serializer.serialize(post_daily)
+        process_post(post_daily_serialized, current_user.id)
 
         resp = Resp(
             result_code=2000,
@@ -250,14 +251,14 @@ class PostDailyApi(Resource):
             data=post_daily_serialized
         )
 
-        return resp
+        return jsonify(resp.__dict__)
 
     # fixme CRUD
 
 
 api.add_resource(
     PostDailyApi,
-    '',
+    '/daily/<int:room_id>',
     methods=['GET'],
     endpoint='post/daily/retrieve')
 
