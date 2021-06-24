@@ -231,7 +231,7 @@ api.add_resource(
 
 
 class PostDaily(Resource):
-    @swag_from('../swagger/post/post_daily/retrieve.yaml')
+    @swag_from('../swagger/post/daily/retrieve.yaml')
     def get(self, id):
         post_daily = PostDaily.query.filter_by(id=id).first()
         if post_daily is None:
