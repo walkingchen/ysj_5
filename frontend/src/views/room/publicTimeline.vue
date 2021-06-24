@@ -9,7 +9,7 @@
 
     <el-card shadow="hover" class="topic-layout">
       <title-com title="Topic of The Day" />
-      <div class="img-box"><img src="@assets/test2.png" /></div>
+      <public-post-item v-if="showTopic" :item="_topicData" @action-success="updateMoment" />
     </el-card>
 
     <div @click="showMoments = !showMoments">
@@ -28,92 +28,7 @@
 
         <ul id="moments-ul">
           <li v-for="item in moment_list" :key="item.id">
-            <el-card shadow="hover" class="moments-item">
-              <div class="moments-item-content">
-                <el-avatar
-                  shape="square"
-                  :size="50"
-                  :src="item.user.avatar ? item.user.avatar : ''"
-                  :icon="item.user.avatar ? '' : 'el-icon-user-solid'"
-                  class="user-portrait" />
-                <div class="moment-text">
-                  <div>
-                    <span class="user-name">{{ item.user.nickname }}</span>
-                    <span class="moment-time">{{ item.time }}</span>
-                  </div>
-                  <div v-if="item.isShared" class="moments-item-content shared-box">
-                    <el-avatar
-                      shape="square"
-                      :size="30"
-                      :src="item.postSource.user.avatar ? item.postSource.user.avatar : ''"
-                      :icon="item.postSource.user.avatar ? '' : 'el-icon-user-solid'"
-                      class="user-portrait" />
-                    <div class="moment-text">
-                      <div>
-                        <span class="user-name">{{ item.postSource.user.nickname }}</span>
-                        <span class="moment-time">{{ item.postSource.time }}</span>
-                      </div>
-                      <div>
-                        <p>{{ item.postSource.title }}</p>
-                        <p>{{ item.postSource.content }}</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div v-else>
-                    <p>{{ item.title }}</p>
-                    <p>{{ item.content }}</p>
-                  </div>
-                </div>
-              </div>
-              <div class="moment-actions">
-                <!-- <button @click="factcheck(item)" :class="{ done: item.factcheck }"><v-icon name="exclamation-circle" /></button> -->
-                <span class="count" v-if="item.comments.length > 0">{{ item.comments.length }}</span>
-                <button @click="changeCommentVisible(item.id)"><v-icon name="comment-dots" /></button>
-                <!-- <span class="count">{{ item.dislikeCount }}</span>
-                <button @click="like(item, 0)" :class="{ done: item.disliked }">
-                  <v-icon :name="item.disliked ? 'thumbs-down' : 'regular/thumbs-down'" />
-                </button> -->
-                <button @click="flag(item)" :class="{ done: item.flag }">
-                  <v-icon :name="item.flag ? 'flag' : 'regular/flag'" />
-                </button>
-                <span class="count">{{ item.likeCount }}</span>
-                <button @click="like(item, 1)" :class="{ done: item.liked }">
-                  <v-icon :name="item.liked ? 'thumbs-up' : 'regular/thumbs-up'" />
-                </button>
-              </div>
-              <div v-show="commentsVisibleIds.includes(item.id)" class="comments-box">
-                <el-input type="textarea" :rows="3" placeholder="Comment Content" v-model="comment_content" />
-                <div class="commentSubmitBtn-box">
-                  <el-button type="primary" size="mini" @click="comment(item.id)">Submit</el-button>
-                </div>
-
-                <ul>
-                  <li class="comment-item" v-for="comment in item.comments" :key="comment.id">
-                    <div class="comment-item-content">
-                      <el-avatar
-                        :size="35"
-                        :src="comment.user.avatar ? comment.user.avatar : ''"
-                        :icon="comment.user.avatar ? '' : 'el-icon-user-solid'"
-                        shape="square"
-                        class="user-portrait" />
-                      <div class="comment-text">
-                        <div>
-                          <span class="user-name">{{ comment.user.nickname }}</span>
-                          <span class="comment-time">{{ comment.time }}</span>
-                          <button
-                            v-if="comment.user_id === userid || item.user_id === userid"
-                            class="comment-delete-btn"
-                            @click="deleteComment(item.id, comment.id)">
-                            <i class="el-icon-delete"></i>
-                          </button>
-                        </div>
-                        <p>{{ comment.comment_content }}</p>
-                      </div>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-            </el-card>
+            <public-post-item :item="item" @action-success="updateMoment" />
           </li>
           <div class="loading-layout" v-show="getPostLoading"><i class="el-icon-loading"></i></div>
           <div class="nomore-layout" v-show="noMoreData">No more~</div>
@@ -126,29 +41,14 @@
 
 <script>
 import 'vue-awesome/icons/angle-right'
-import 'vue-awesome/icons/thumbs-up'
-import 'vue-awesome/icons/regular/thumbs-up'
-import 'vue-awesome/icons/thumbs-down'
-import 'vue-awesome/icons/regular/thumbs-down'
-import 'vue-awesome/icons/flag'
-import 'vue-awesome/icons/regular/flag'
-import 'vue-awesome/icons/comment-dots'
-import 'vue-awesome/icons/exclamation-circle'
 import {
+  getTopic,
   getPosts,
   getPost,
-  likePost,
-  deleteLike,
-  changeLike,
-  flagPost,
-  deleteFlag,
-  commentPost,
-  deleteComment,
-  checkPost,
-  deleteCheck,
   createPost
 } from '@api/post'
 import titleCom from '@components/title'
+import publicPostItem from '@components/publicPostItem'
 import { formatDate } from '@assets/utils.js'
 const elementResizeDetectorMaker = require('element-resize-detector')
 
@@ -156,6 +56,8 @@ export default {
   props: ['sid'],
   data() {
     return {
+      showTopic: false,
+      topicData: {},
       getPostLoading: true,
       showMoments: true,
       momentsLayoutHeight: 0,
@@ -165,74 +67,36 @@ export default {
       postContent: '',
       postKeywords: '',
       submitPostLoading: false,
-      commentsVisibleIds: [],
-      comment_content: '',
       me_post_moments: [],
       newCount: 0,
       getNewPostLoading: false
     }
   },
   components: {
-    titleCom
+    titleCom,
+    publicPostItem
   },
   computed: {
     stopLoadMoments() {
       return this.getPostLoading || this.noMoreData
     },
-    moment_list() {
-      const members = [this.$store.state.user, ...this.$store.state.friends]
-      const moments = [...this.me_post_moments, ...this.moments]
-      return moments.map(item => {
-        const user = members.find(ele => ele.id === item.user_id)
-        const _item = {
-          id: item.id,
-          isShared: item.timeline_type === 2,
-          title: item.post_title,
-          content: item.post_content,
-          flag: item.flag,
-          liked: item.liked,
-          disliked: item.disliked,
-          likeCount: item.likes.count,
-          dislikeCount: item.dislikes.count,
-          factcheck: item.factcheck,
-          time: formatDate(item.created_at),
-          user: user ? {
-            avatar: user.avatar,
-            nickname: user.nickname
-          } : {
-            avatar: null,
-            nickname: ''
-          },
-          comments: item.comments.map(ele => {
-            ele.created_at = formatDate(ele.created_at)
-            return ele
-          })
-        }
-
-        if (_item.isShared) {
-          const postUser = members.find(ele => ele.id === item.post_shared.user_id)
-          _item.time = formatDate(item.updated_at)
-          _item.postSource = {
-            user: postUser ? {
-              avatar: postUser.avatar,
-              nickname: postUser.nickname
-            } : {
-              avatar: null,
-              nickname: ''
-            },
-            time: formatDate(item.post_shared.created_at),
-            title: item.post_shared.post_title,
-            content: item.post_shared.post_content
-          }
-        }
-        return _item
-      })
+    members () {
+      return [this.$store.state.user, ...this.$store.state.friends]
     },
-    userid() {
-      return this.$store.state.user.id
+    moment_list() {
+      const moments = [...this.me_post_moments, ...this.moments]
+      return moments.map(item => this.formatPostData(item))
+    },
+    _topicData () {
+      return this.formatPostData(this.topicData, false)
     }
   },
   created() {
+    getTopic(localStorage.getItem('roomid')).then(({ data }) => {
+      this.showTopic = true
+      this.topicData = data.data
+    })
+
     this.getMomentList()
 
     this.$bus.$on('share-success', id => {
@@ -245,6 +109,52 @@ export default {
     })
   },
   methods: {
+    formatPostData (item, showShared = true) {
+      const user = this.members.find(ele => ele.id === item.user_id)
+      const _item = {
+        id: item.id,
+        isShared: showShared && item.timeline_type === 2,
+        title: item.post_title,
+        content: item.post_content,
+        flagged: item.flagged,
+        flagCount: item.flags.count,
+        liked: item.liked,
+        likeCount: item.likes.count,
+        disliked: item.disliked,
+        dislikeCount: item.dislikes.count,
+        factcheck: item.factcheck,
+        time: formatDate(item.created_at),
+        user: user ? {
+          avatar: user.avatar,
+          nickname: user.nickname
+        } : {
+          avatar: null,
+          nickname: ''
+        },
+        comments: item.comments.map(ele => {
+          ele.created_at = formatDate(ele.created_at)
+          return ele
+        })
+      }
+
+      if (_item.isShared) {
+        const postUser = this.members.find(ele => ele.id === item.post_shared.user_id)
+        _item.time = formatDate(item.updated_at)
+        _item.postSource = {
+          user: postUser ? {
+            avatar: postUser.avatar,
+            nickname: postUser.nickname
+          } : {
+            avatar: null,
+            nickname: ''
+          },
+          time: formatDate(item.post_shared.created_at),
+          title: item.post_shared.post_title,
+          content: item.post_shared.post_content
+        }
+      }
+      return _item
+    },
     async getMomentList() {
       this.getPostLoading = true
       await getPosts({
@@ -274,67 +184,6 @@ export default {
         this.moments.unshift(...res.data.data)
       })
       this.getNewPostLoading = false
-    },
-    async like(item, type) {
-      if (item.liked === null && item.disliked === null) { // 初次赞或踩
-        await likePost({
-          like_or_not: type,
-          post_id: item.id
-        })
-      } else {
-        if (type === 1) { // 赞
-          if (item.liked) { // 如果已经赞了
-            await deleteLike(item.liked.id)
-          } else if (item.disliked) { // 如果已经踩了
-            await changeLike(item.disliked.id, { like_or_not: type })
-          }
-        } else { // 踩
-          if (item.liked) { // 如果已经赞了
-            await changeLike(item.liked.id, { like_or_not: type })
-          } else if (item.disliked) { // 如果已经踩了
-            await deleteLike(item.disliked.id)
-          }
-        }
-      }
-      this.updateMoment(item.id)
-    },
-    async flag(item) {
-      if (item.flag) {
-        await deleteFlag(item.flag.id)
-      } else {
-        await flagPost(item.id)
-      }
-      this.updateMoment(item.id)
-    },
-    changeCommentVisible(id) {
-      const index = this.commentsVisibleIds.findIndex(ele => ele === id)
-      if (index > -1) {
-        this.commentsVisibleIds.splice(index, 1)
-      } else {
-        this.commentsVisibleIds.push(id)
-      }
-    },
-    comment(id) {
-      commentPost({
-        comment_content: this.comment_content,
-        post_id: id
-      }).then(() => {
-        this.updateMoment(id)
-        this.comment_content = ''
-      })
-    },
-    deleteComment(momentid, commentid) {
-      deleteComment(commentid).then(() => {
-        this.updateMoment(momentid)
-      })
-    },
-    async factcheck(item) {
-      if (item.factcheck) {
-        await deleteCheck(item.factcheck.id)
-      } else {
-        await checkPost({ post_id: item.id })
-      }
-      this.updateMoment(item.id)
     },
     updateMoment(id, type = 1) {
       /*
@@ -421,13 +270,6 @@ export default {
     border 0
     margin-top 20px
 
-    .img-box
-      padding 10px
-
-    img
-      max-width 100%
-      max-height 100%
-
   .moments-layout
     overflow hidden
     transition height .5s
@@ -447,112 +289,6 @@ export default {
 
   #moments-ul > li
     margin-top 20px
-
-  .moments-item
-    padding 10px
-    border 0
-
-    .moments-item-content
-      display flex
-
-    .user-portrait
-      margin-right 12px
-
-    .moment-text
-      flex 1
-
-      .user-name
-        display inline-block
-        height 24px
-        font-size 18px
-        line-height 24px
-
-      .moment-time
-        float right
-        color #666
-        font-size 14px
-        line-height 24px
-
-      p
-        margin-top 3px
-        line-height 1.5
-
-    .moment-actions
-      height 30px
-      display flex
-      flex-direction row-reverse
-
-      button
-        padding 0 8px
-        height 24px
-        color #909399
-
-        &:hover
-          color #409eff
-
-        &.done
-          color #409eff
-
-      .count
-        margin-right 8px
-
-    .comments-box
-      border-top 1px solid #e4e7ed
-      padding 8px
-
-      & > ul
-        margin-top 10px
-
-    .comment-item
-      padding 8px 0
-
-      .comment-item-content
-        display flex
-
-      .comment-text
-        flex 1
-
-        .user-name
-          font-size 16px
-          line-height 22px
-
-        .comment-time
-          float right
-          color #666
-          font-size 12px
-          line-height 22px
-
-        p
-          line-height 1.5
-          font-size 14px
-
-        .comment-delete-btn
-          float right
-          margin-right 5px
-          padding 0 8px
-          height 22px
-          color #909399
-          display none
-
-          &:hover
-            color #409eff
-
-      &:hover
-        .comment-delete-btn
-          display block
-
-  .shared-box
-    border 1px solid #e4e7ed
-    border-radius 4px
-    padding 5px
-    margin 5px 0
-
-  .commentSubmitBtn-box
-    margin-top 8px
-    height 28px
-
-    button
-      float right
 
   .loading-layout
     text-align center

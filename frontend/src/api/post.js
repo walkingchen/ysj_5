@@ -1,3 +1,4 @@
+export const getTopic = rid => axios.get('/post/daily/' + rid)
 export const getPosts = params => axios.get('/post', { params })
 export const createPost = params => axios.post('/post', params)
 export const getPost = id => axios.get('/post/' + id)
