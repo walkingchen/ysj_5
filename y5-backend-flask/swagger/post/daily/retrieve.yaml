@@ -2,11 +2,11 @@
 tags:
   - Post Daily
 parameters:
-  - name: id
+  - name: room_id
     in: path
     type: string
     required: true
-    description: get post daily by ID
+    description: get post daily by room ID
 responses:
   200:
     description: return post daily with details

@@ -230,10 +230,10 @@ api.add_resource(
     endpoint='post/list_retrieve')
 
 
-class PostDaily(Resource):
+class PostDailyApi(Resource):
     @swag_from('../swagger/post/daily/retrieve.yaml')
-    def get(self, id):
-        post_daily = PostDaily.query.filter_by(id=id).first()
+    def get(self, room_id):
+        post_daily = PostDailyApi.query.filter_by(room_id=room_id).first()
         if post_daily is None:
             return Resp(
                 result_code=4000,
@@ -253,6 +253,13 @@ class PostDaily(Resource):
         return resp
 
     # fixme CRUD
+
+
+api.add_resource(
+    PostDailyApi,
+    '',
+    methods=['GET'],
+    endpoint='post/daily/retrieve')
 
 
 class CommentApi(Resource):
