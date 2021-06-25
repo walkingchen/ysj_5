@@ -1,5 +1,5 @@
 <template>
-  <el-card shadow="hover" class="moments-item">
+  <div class="moments-item">
     <div class="moments-item-content">
       <el-avatar
         shape="square"
@@ -85,7 +85,7 @@
         </li>
       </ul>
     </div>
-  </el-card>
+  </div>
 </template>
 
 <script>
@@ -183,7 +183,6 @@ export default {
 <style lang="stylus">
 .moments-item
   padding 10px
-  border 0
 
   &-content
     display flex

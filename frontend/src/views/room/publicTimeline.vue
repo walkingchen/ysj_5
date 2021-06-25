@@ -28,7 +28,9 @@
 
         <ul id="moments-ul">
           <li v-for="item in moment_list" :key="item.id">
-            <public-post-item :item="item" @action-success="updateMoment" />
+            <el-card shadow="hover">
+              <public-post-item :item="item" @action-success="updateMoment" />
+            </el-card>
           </li>
           <div class="loading-layout" v-show="getPostLoading"><i class="el-icon-loading"></i></div>
           <div class="nomore-layout" v-show="noMoreData">No more~</div>
