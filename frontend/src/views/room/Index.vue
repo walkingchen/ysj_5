@@ -155,7 +155,7 @@ export default {
 
 .room-content
   position relative
-  background-color #fffaf0
+  background-color #f0f2f5
   padding 20px 0
   height calc(100vh - 100px)
   width 100%

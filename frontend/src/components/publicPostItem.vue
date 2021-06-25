@@ -2,8 +2,7 @@
   <div class="moments-item">
     <div class="moments-item-content">
       <el-avatar
-        shape="square"
-        :size="50"
+        :size="40"
         :src="item.user.avatar ? item.user.avatar : ''"
         :icon="item.user.avatar ? '' : 'el-icon-user-solid'"
         class="user-portrait" />
@@ -14,8 +13,7 @@
         </div>
         <div v-if="item.isShared" class="moments-item-content shared-box">
           <el-avatar
-            shape="square"
-            :size="30"
+            :size="40"
             :src="item.postSource.user.avatar ? item.postSource.user.avatar : ''"
             :icon="item.postSource.user.avatar ? '' : 'el-icon-user-solid'"
             class="user-portrait" />
@@ -63,10 +61,9 @@
         <li class="comment-item" v-for="comment in item.comments" :key="comment.id">
           <div class="comment-item-content">
             <el-avatar
-              :size="35"
+              :size="32"
               :src="comment.user.avatar ? comment.user.avatar : ''"
               :icon="comment.user.avatar ? '' : 'el-icon-user-solid'"
-              shape="square"
               class="user-portrait" />
             <div class="comment-text">
               <div>

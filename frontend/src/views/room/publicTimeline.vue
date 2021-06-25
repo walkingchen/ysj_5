@@ -1,19 +1,19 @@
 <template>
   <div class="publicTlimeline-layout">
-    <el-card shadow="hover" class="post-create-layout">
+    <el-card class="post-create-layout">
       <input type="text" class="post-create-title" placeholder="Title" v-model="postTitle" />
       <textarea rows="3" class="post-create-content" placeholder="Content" v-model="postContent" />
       <textarea rows="2" class="post-create-content" placeholder="Keywords" v-model="postKeywords" />
       <el-button class="post-create-btn" type="primary" size="mini" :loading="submitPostLoading" @click="submitPost">Post</el-button>
     </el-card>
 
-    <el-card shadow="hover" class="topic-layout">
+    <el-card class="topic-layout">
       <title-com title="Topic of The Day" />
       <public-post-item v-if="showTopic" :item="_topicData" @action-success="updateMoment" />
     </el-card>
 
     <div @click="showMoments = !showMoments">
-      <el-card shadow="hover" class="toggle">
+      <el-card class="toggle">
         <v-icon name="angle-right" :style="{transform: `rotate(${showMoments ? 90 : 0}deg)`}" />
       </el-card>
     </div>
@@ -28,7 +28,7 @@
 
         <ul id="moments-ul">
           <li v-for="item in moment_list" :key="item.id">
-            <el-card shadow="hover">
+            <el-card>
               <public-post-item :item="item" @action-success="updateMoment" />
             </el-card>
           </li>

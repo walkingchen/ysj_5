@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-card shadow="hover" class="myself-box">
+    <el-card class="myself-box">
       <el-avatar
         :size="80"
         :src="user.avatar ? user.avatar : ''"
@@ -8,7 +8,7 @@
       <p>{{ user.nickname }}</p>
     </el-card>
 
-    <el-card shadow="hover" class="members-content">
+    <el-card class="members-content">
       <title-com title="Friends" />
       <ul>
         <li v-for="item in friends" :key="item.id" class="members-item">

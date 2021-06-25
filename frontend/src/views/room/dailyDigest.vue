@@ -1,5 +1,5 @@
 <template>
-  <el-card shadow="hover" class="dailyDigest-layout">
+  <el-card class="dailyDigest-layout">
     <title-com title="Daily poll results" />
     <div class="img-box">
       <img src="@assets/test1.png" />

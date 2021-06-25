@@ -1,5 +1,5 @@
 <template>
-  <el-card shadow="hover" class="privateMessage-layout">
+  <el-card class="privateMessage-layout">
     <title-com title="Private Message Feed" />
 
     <el-alert v-show="newCount > 0" type="info" center :closable="false" class="new-tip">

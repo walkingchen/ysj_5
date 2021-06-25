@@ -55,8 +55,11 @@ export default {
 
 <style lang="stylus" scoped>
 header
-  background-color #f0fdda
+  background-color #fff
   height 60px
+  box-shadow 0 2px 3px rgba(0,0,0,.08)
+  position relative
+  z-index 1
 
   & > div
     width 1000px
