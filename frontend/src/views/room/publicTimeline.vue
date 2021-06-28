@@ -205,7 +205,7 @@ export default {
       })
     },
     async submitPost() {
-      if (this.postTitle && this.postContent) {
+      if (this.postContent) {
         this.submitPostLoading = true
         await createPost({
           post_content: this.postContent,
@@ -225,7 +225,7 @@ export default {
         this.submitPostLoading = false
       } else {
         this.$message({
-          message: 'Please enter the title and content.',
+          message: 'Please enter the content.',
           type: 'warning'
         })
       }
