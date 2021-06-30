@@ -58,6 +58,7 @@ class PostApi(Resource):
             keywords = data['keywords']
             room_id = data['room_id']
             sid = data['sid']
+            post_shared_id = data['post_shared_id']
         except TypeError:
             return jsonify(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
         except KeyError:
@@ -70,9 +71,15 @@ class PostApi(Resource):
             keywords=keywords,
             post_type=post_type,
             user_id=user_id,
-            room_id=room_id
+            room_id=room_id,
+            post_shared_id=post_shared_id
         )
         db.session.add(post)
+        db.session.commit()
+
+        post_shared = Post.query.filter_by(id=post_shared_id).first()
+        post_shared.timeline_type = 2
+        db.session.add(post_shared)
         db.session.commit()
 
         socketio.emit('post_pull',
@@ -91,29 +98,6 @@ class PostApi(Resource):
 
     @swag_from('../swagger/post/update.yaml')
     def put(self, id):
-        if not current_user.is_authenticated:
-            return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
-
-        data = request.get_json()
-        try:
-            sid = data['sid']
-        except KeyError:
-            return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
-
-        post = Post.query.filter_by(id=id).first()
-        post.timeline_type = 2  # 0: public; 1: private; 2: both
-        db.session.commit()
-
-        socketio.emit(
-            'post_pull',
-            {
-                'timeline_type': 0,
-                'posts_number': 1
-            },
-            room_id=post.room_id,
-            skip_sid=sid
-        )
-
         return jsonify(Resp(
             result_code=2000,
             result_msg='success',
