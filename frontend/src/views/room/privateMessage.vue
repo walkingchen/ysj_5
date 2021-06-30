@@ -131,7 +131,7 @@ export default {
         text-decoration underline
 
   .messages
-    padding 10px
+    padding 0 10px
 
   .share-btn
     float right
@@ -169,6 +169,7 @@ export default {
 
     &.title
       font-size 16px
+      font-weight 600
 
   .message-time
     color #999

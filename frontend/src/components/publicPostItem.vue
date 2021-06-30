@@ -9,6 +9,7 @@
       <div class="moment-text">
         <div>
           <span class="user-name">{{ item.user.nickname }}</span>
+          <span v-if="item.isShared" class="shared-tip">shared:</span>
           <span class="moment-time">{{ item.time }}</span>
         </div>
         <div v-if="item.isShared" class="moments-item-content shared-box">
@@ -23,14 +24,14 @@
               <span class="moment-time">{{ item.postSource.time }}</span>
             </div>
             <div>
-              <p>{{ item.postSource.title }}</p>
-              <p>{{ item.postSource.content }}</p>
+              <p class="post-title">{{ item.postSource.title }}</p>
+              <p class="post-content">{{ item.postSource.content }}</p>
             </div>
           </div>
         </div>
         <div v-else>
-          <p>{{ item.title }}</p>
-          <p>{{ item.content }}</p>
+          <p class="post-title">{{ item.title }}</p>
+          <p class="post-content">{{ item.content }}</p>
         </div>
       </div>
     </div>
@@ -52,11 +53,6 @@
       </button>
     </div>
     <div v-show="showComments" class="comments-box">
-      <el-input type="textarea" :rows="3" placeholder="Comment Content" v-model="comment_content" />
-      <div class="commentSubmitBtn-box">
-        <el-button type="primary" size="mini" @click="comment(item.id)">Submit</el-button>
-      </div>
-
       <ul>
         <li class="comment-item" v-for="comment in item.comments" :key="comment.id">
           <div class="comment-item-content">
@@ -68,9 +64,9 @@
             <div class="comment-text">
               <div>
                 <span class="user-name">{{ comment.user.nickname }}</span>
-                <span class="comment-time">{{ comment.time }}</span>
+                <span class="comment-time">{{ comment.created_at }}</span>
                 <button
-                  v-if="comment.user_id === userid || item.user_id === userid"
+                  v-if="comment.user_id === user.id || item.user_id === user.id"
                   class="comment-delete-btn"
                   @click="deleteComment(item.id, comment.id)">
                   <i class="el-icon-delete"></i>
@@ -81,11 +77,28 @@
           </div>
         </li>
       </ul>
+
+      <div class="post-comment">
+        <el-avatar
+          :size="32"
+          :src="user.avatar ? user.avatar : ''"
+          :icon="user.avatar ? '' : 'el-icon-user-solid'"
+          class="user-portrait" />
+        <div class="post-comment-input-box">
+          <input
+            v-model="comment_content"
+            placeholder="Write a comment..."
+            class="post-comment-input"
+            @keyup.enter="postComment(item.id)" />
+          <p>Press Enter to post.</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import 'vue-awesome/icons/flag'
 import 'vue-awesome/icons/regular/flag'
 import 'vue-awesome/icons/thumbs-up'
@@ -95,8 +108,8 @@ import 'vue-awesome/icons/regular/thumbs-down'
 import 'vue-awesome/icons/comment-dots'
 import 'vue-awesome/icons/exclamation-circle'
 import {
-  flagPost,
-  deleteFlag,
+  // flagPost,
+  // deleteFlag,
   likePost,
   deleteLike,
   changeLike,
@@ -107,26 +120,36 @@ import {
 } from '@api/post'
 
 export default {
-  props: ['item'],
+  props: {
+    item: {
+      type: Object,
+      required: true
+    },
+    isTopic: {
+      type: Boolean,
+      default: false
+    }
+  },
   data () {
     return {
       showComments: false,
       comment_content: ''
     }
   },
-  computed: {
-    userid() {
-      return this.$store.state.user.id
-    }
-  },
+  computed: mapState(['user']),
   methods: {
     async flag(item) {
-      if (item.flagged) {
-        await deleteFlag(item.flagged.id)
-      } else {
-        await flagPost(item.id)
-      }
-      this.$emit('action-success', item.id)
+      this.item.flagged = item.flagged ? null : {}
+      this.item.flagCount--
+      // if (item.flagged) {
+      //   await deleteFlag(item.flagged.id)
+      // } else {
+      //   await flagPost(item.id)
+      // }
+      // this.$emit('action-success', {
+      //   id: item.id,
+      //   isTopic: this.isTopic
+      // })
     },
     async like(item, type) {
       if (item.liked === null && item.disliked === null) { // 初次赞或踩
@@ -149,29 +172,42 @@ export default {
           }
         }
       }
-      this.$emit('action-success', item.id)
+      this.$emit('action-success', {
+        id: item.id,
+        isTopic: this.isTopic
+      })
     },
-    comment(id) {
+    postComment (id) {
       commentPost({
         comment_content: this.comment_content,
         post_id: id
       }).then(() => {
-        this.$emit('action-success', item.id)
+        this.$emit('action-success', {
+          id,
+          isTopic: this.isTopic
+        })
         this.comment_content = ''
       })
     },
     deleteComment(momentid, commentid) {
       deleteComment(commentid).then(() => {
-        this.$emit('action-success', item.id)
+        this.$emit('action-success', {
+          id: momentid,
+          isTopic: this.isTopic
+        })
       })
     },
     async factcheck(item) {
+      item.factcheck = item.factcheck ? null : {}
       if (item.factcheck) {
         await deleteCheck(item.factcheck.id)
       } else {
         await checkPost({ post_id: item.id })
       }
-      this.updateMoment(item.id)
+      this.$emit('action-success', {
+        id: item.id,
+        isTopic: this.isTopic
+      })
     }
   }
 }
@@ -196,6 +232,11 @@ export default {
       font-size 18px
       line-height 24px
 
+    .shared-tip
+      font-weight 900
+      margin-left 12px
+      font-size 18px
+
     .moment-time
       float right
       color #666
@@ -205,6 +246,12 @@ export default {
     p
       margin-top 3px
       line-height 1.5
+
+    .post-title
+      font-weight 600
+
+    .post-content
+      font-size 14px
 
   .moment-actions
     height 30px
@@ -229,9 +276,6 @@ export default {
     border-top 1px solid #e4e7ed
     padding 8px
 
-    & > ul
-      margin-top 10px
-
   .comment-item
     padding 8px 0
 
@@ -240,6 +284,9 @@ export default {
 
     .comment-text
       flex 1
+      padding 10px
+      background-color #f0f2f5
+      border-radius 8px
 
       .user-name
         font-size 16px
@@ -276,10 +323,21 @@ export default {
   padding 5px
   margin 5px 0
 
-.commentSubmitBtn-box
-  margin-top 8px
-  height 28px
+.post-comment
+  display flex
 
-  button
-    float right
+  &-input-box
+    flex 1
+
+    p
+      font-size 12px
+
+  &-input
+    width calc(100% - 24px)
+    height 36px
+    background-color #f0f2f5
+    border-radius 18px
+    border 0
+    padding 0 12px
+    outline none
 </style>

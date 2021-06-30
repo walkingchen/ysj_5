@@ -9,7 +9,7 @@
 
     <el-card class="topic-layout">
       <title-com title="Topic of The Day" />
-      <public-post-item v-if="showTopic" :item="_topicData" @action-success="updateMoment" />
+      <public-post-item v-if="showTopic" :item="_topicData" :is-topic="true" @action-success="updatePost" />
     </el-card>
 
     <div @click="showMoments = !showMoments">
@@ -29,7 +29,7 @@
         <ul id="moments-ul">
           <li v-for="item in moment_list" :key="item.id">
             <el-card>
-              <public-post-item :item="item" @action-success="updateMoment" />
+              <public-post-item :item="item" @action-success="updatePost" />
             </el-card>
           </li>
           <div class="loading-layout" v-show="getPostLoading"><i class="el-icon-loading"></i></div>
@@ -94,15 +94,14 @@ export default {
     }
   },
   created() {
-    getTopic(localStorage.getItem('roomid')).then(({ data }) => {
-      this.showTopic = true
-      this.topicData = data.data
-    })
-
+    this.updateTopic()
     this.getMomentList()
 
     this.$bus.$on('share-success', id => {
-      this.updateMoment(id, 0)
+      this.updatePost({
+        id,
+        type: 0
+      })
     })
   },
   mounted() {
@@ -157,6 +156,12 @@ export default {
       }
       return _item
     },
+    updateTopic () {
+      getTopic(localStorage.getItem('roomid')).then(({ data }) => {
+        this.showTopic = true
+        this.topicData = data.data
+      })
+    },
     async getMomentList() {
       this.getPostLoading = true
       await getPosts({
@@ -187,22 +192,26 @@ export default {
       })
       this.getNewPostLoading = false
     },
-    updateMoment(id, type = 1) {
+    updatePost ({ id, type = 1, isTopic = false }) {
       /*
       * type = 1 更新已经获取过的timeline，用来进行了like/dislike/comment/fackcheck操作后对当前单条timeline进行刷新
       * type = 0 用来分享了private timeline或新增了一条timeline后将这条timeline直接显示在最上方而不用获取所有新的post
       */
-      getPost(id).then(res => {
-        if (type) {
-          const momentIndex = this.moments.findIndex(ele => ele.id === id)
-          this.moments.splice(momentIndex, 1, res.data.data)
-        } else {
-          this.$bus.$emit('share-success-refresh', id)
-          setTimeout(() => {
-            this.me_post_moments.unshift(res.data.data)
-          }, 1000)
-        }
-      })
+      if (type && isTopic) {
+        this.updateTopic()
+      } else {
+        getPost(id).then(res => {
+          if (type) {
+            const momentIndex = this.moments.findIndex(ele => ele.id === id)
+            this.moments.splice(momentIndex, 1, res.data.data)
+          } else {
+            this.$bus.$emit('share-success-refresh', id)
+            setTimeout(() => {
+              this.me_post_moments.unshift(res.data.data)
+            }, 1000)
+          }
+        })
+      }
     },
     async submitPost() {
       if (this.postContent) {
@@ -220,7 +229,10 @@ export default {
           this.postContent = ''
           this.postKeywords = ''
 
-          this.updateMoment(res.data.data.id, 0)
+          this.updatePost({
+            id: res.data.data.id,
+            type: 0
+          })
         })
         this.submitPostLoading = false
       } else {
