@@ -188,26 +188,31 @@ class PostApi(Resource):
         for friend in friends:
             friend_ids.append(friend.user_id)
 
+        if timeline_type == 1:
+            types = [1, 2]
+        else:
+            types = [0]
+
         if last_update is not None:
             if pull_new == 1:
                 posts = Post.query.filter(
                     Post.room_id == room_id,
                     Post.user_id.in_(friend_ids),
-                    Post.timeline_type.in_([timeline_type, 2]),
+                    Post.timeline_type.in_(types),
                     Post.created_at > last_update
                 ).order_by(Post.created_at.desc()).limit(MSG_SIZE_INIT).all()
             else:
                 posts = Post.query.filter(
                     Post.room_id == room_id,
                     Post.user_id.in_(friend_ids),
-                    Post.timeline_type.in_([timeline_type, 2]),
+                    Post.timeline_type.in_(types),
                     Post.created_at < last_update
                 ).order_by(Post.created_at.desc()).limit(MSG_SIZE_INIT).all()
         else:
             posts = Post.query.filter(
                 Post.room_id == room_id,
                 Post.user_id.in_(friend_ids),
-                Post.timeline_type.in_([timeline_type, 2])
+                Post.timeline_type.in_(types)
             ).order_by(Post.created_at.desc()).limit(MSG_SIZE_INIT).all()
 
         # 为每篇post添加评论、点赞
