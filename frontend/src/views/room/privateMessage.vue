@@ -10,7 +10,7 @@
 
     <div class="messages">
       <div class="privateMessageItem" v-if="messages.length === 0">No messages.</div>
-      <div v-for="(item, index) in messages" :key="item.id" class="privateMessageItem" ref="messageItem">
+      <div v-for="(item, index) in messages" :key="item.id" class="privateMessageItem" :class="{shared: item.timeline_type === 2}" ref="messageItem">
         <p class="title">{{ item.post_title }}</p>
         <p>{{ item.post_content }}</p>
         <div>
@@ -33,7 +33,7 @@
 <script>
 import 'vue-awesome/icons/share'
 import titleCom from '@components/title'
-import { getPosts, sharePost } from '@api/post'
+import { getPosts, createPost } from '@api/post'
 import { formatDate } from '@assets/utils.js'
 
 export default {
@@ -59,7 +59,7 @@ export default {
       getPosts({
         room_id: localStorage.getItem('roomid'),
         timeline_type: 1,
-        pull_new: 1,
+        pull_new: 0,
         last_update: this.messages.length === 0 ? null : this.messages[this.messages.length - 1].created_at
       }).then(res => {
         if (res.data.data.length === 0) {
@@ -76,28 +76,48 @@ export default {
       this.getPostLoading = false
     },
     share(id, index) {
-      const ele = this.$refs.messageItem[index]
-      const cloneEle = ele.cloneNode(true)
-      cloneEle.classList.add('movingMessage')
-      cloneEle.style.top = ele.getBoundingClientRect().top - 60 + 'px'
-      cloneEle.style.left = ele.getBoundingClientRect().left + 'px'
-      document.getElementsByClassName('room-content')[0].appendChild(cloneEle)
+      this.$prompt('Say something...', '', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel'
+      }).then(({ value }) => {
+        const parentEle = document.getElementsByClassName('room-content')[0]
+        const ele = this.$refs.messageItem[index]
+        const cloneEle = ele.cloneNode(true)
+        cloneEle.classList.add('movingMessage')
+        cloneEle.style.top = ele.getBoundingClientRect().top - 60 + 'px'
+        cloneEle.style.left = ele.getBoundingClientRect().left + 'px'
+        parentEle.appendChild(cloneEle)
 
-      sharePost(id, this.sid).then(() => {
-        this.$bus.$emit('share-success', id)
-        const targetTop = document.getElementById('moments-ul').getBoundingClientRect().top - 60
-        const targetLeft = document.getElementById('moments-ul').getBoundingClientRect().left
-        cloneEle.style.top = targetTop + 'px'
-        cloneEle.style.left = targetLeft + 'px'
+        createPost({
+          sid: this.sid,
+          room_id: Number(localStorage.getItem('roomid')),
+          timeline_type: 0,
+          post_type: 1,
+          post_shared_id: id,
+          post_content: value
+        }).then(({ data }) => {
+          if (data.result_code === 2000) {
+            const newPostId = data.data.id
+            this.$bus.$emit('share-success', newPostId)
 
-        this.$bus.$on('share-success-refresh', _id => {
-          if (_id === id) {
-            setTimeout(() => {
-              cloneEle.remove()
-            }, 1000)
+            const targetTop = document.getElementById('moments-ul').getBoundingClientRect().top - parentEle.scrollTop - 60
+            const targetLeft = document.getElementById('moments-ul').getBoundingClientRect().left
+            cloneEle.style.top = targetTop + 'px'
+            cloneEle.style.left = targetLeft + 'px'
+
+            this.$bus.$on('share-success-refresh', _id => {
+              if (_id === newPostId) {
+                setTimeout(() => {
+                  cloneEle.remove()
+                }, 1000)
+              }
+            })
+          } else {
+            cloneEle.remove()
+            this.$message.error('Failed!')
           }
         })
-      })
+      }).catch(_ => {})
     },
     async getNews() {
       this.getNewPostLoading = true
@@ -163,6 +183,9 @@ export default {
 
   &:last-child
     border-bottom 0
+
+  &.shared
+    opacity .6
 
   p
     line-height 1.5

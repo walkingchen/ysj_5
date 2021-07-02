@@ -12,26 +12,26 @@
           <span v-if="item.isShared" class="shared-tip">shared:</span>
           <span class="moment-time">{{ item.time }}</span>
         </div>
-        <div v-if="item.isShared" class="moments-item-content shared-box">
-          <el-avatar
-            :size="40"
-            :src="item.postSource.user.avatar ? item.postSource.user.avatar : ''"
-            :icon="item.postSource.user.avatar ? '' : 'el-icon-user-solid'"
-            class="user-portrait" />
-          <div class="moment-text">
-            <div>
-              <span class="user-name">{{ item.postSource.user.nickname }}</span>
-              <span class="moment-time">{{ item.postSource.time }}</span>
-            </div>
-            <div>
-              <p class="post-title">{{ item.postSource.title }}</p>
-              <p class="post-content">{{ item.postSource.content }}</p>
-            </div>
-          </div>
-        </div>
-        <div v-else>
+        <div>
           <p class="post-title">{{ item.title }}</p>
           <p class="post-content">{{ item.content }}</p>
+          <div v-if="item.isShared" class="moments-item-content shared-box">
+            <el-avatar
+              :size="40"
+              :src="item.postSource.user.avatar ? item.postSource.user.avatar : ''"
+              :icon="item.postSource.user.avatar ? '' : 'el-icon-user-solid'"
+              class="user-portrait" />
+            <div class="moment-text">
+              <div>
+                <span class="user-name">{{ item.postSource.user.nickname }}</span>
+                <span class="moment-time">{{ item.postSource.time }}</span>
+              </div>
+              <div>
+                <p class="post-title">{{ item.postSource.title }}</p>
+                <p class="post-content">{{ item.postSource.content }}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -139,17 +139,17 @@ export default {
   computed: mapState(['user']),
   methods: {
     async flag(item) {
-      this.item.flagged = item.flagged ? null : {}
-      this.item.flagCount--
-      // if (item.flagged) {
-      //   await deleteFlag(item.flagged.id)
-      // } else {
-      //   await flagPost(item.id)
-      // }
-      // this.$emit('action-success', {
-      //   id: item.id,
-      //   isTopic: this.isTopic
-      // })
+      // this.item.flagged = item.flagged ? null : {}
+      // this.item.flagCount--
+      if (item.flagged) {
+        await deleteFlag(item.flagged.id)
+      } else {
+        await flagPost(item.id)
+      }
+      this.$emit('action-success', {
+        id: item.id,
+        isTopic: this.isTopic
+      })
     },
     async like(item, type) {
       if (item.liked === null && item.disliked === null) { // 初次赞或踩
