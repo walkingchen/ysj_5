@@ -65,12 +65,6 @@
               <div>
                 <span class="user-name">{{ comment.user.nickname }}</span>
                 <span class="comment-time">{{ comment.created_at }}</span>
-                <button
-                  v-if="comment.user_id === user.id || item.user_id === user.id"
-                  class="comment-delete-btn"
-                  @click="deleteComment(item.id, comment.id)">
-                  <i class="el-icon-delete"></i>
-                </button>
               </div>
               <p>{{ comment.comment_content }}</p>
             </div>
@@ -139,8 +133,6 @@ export default {
   computed: mapState(['user']),
   methods: {
     async flag(item) {
-      // this.item.flagged = item.flagged ? null : {}
-      // this.item.flagCount--
       if (item.flagged) {
         await deleteFlag(item.flagged.id)
       } else {
@@ -301,21 +293,6 @@ export default {
       p
         line-height 1.5
         font-size 14px
-
-      .comment-delete-btn
-        float right
-        margin-right 5px
-        padding 0 8px
-        height 22px
-        color #909399
-        display none
-
-        &:hover
-          color #409eff
-
-    &:hover
-      .comment-delete-btn
-        display block
 
 .shared-box
   border 1px solid #e4e7ed
