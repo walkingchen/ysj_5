@@ -23,4 +23,9 @@ button
 
 ul, li
   list-style none
+
+.layout
+  width 90%
+  min-width 1200px
+  margin 0 auto
 </style>
