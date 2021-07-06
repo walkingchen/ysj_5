@@ -192,9 +192,9 @@ class PostApi(Resource):
             friend_ids.append(friend.user_id)
 
         if timeline_type == 0:
-            types = [0, 2]
+            types = [0]
         else:
-            types = [1]
+            types = [1, 2]
 
         if last_update is not None:
             if pull_new == 1:
