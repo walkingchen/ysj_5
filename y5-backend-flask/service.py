@@ -73,6 +73,12 @@ def process_post(post, user_id):
         'details': likes_serialized
     }
 
+    if post['photo_uri'] is not None:
+        post['photo_uri'] = {
+            'small': '/photo/' + post['photo_uri'] + '_s.jpg',
+            'medium': '/photo/' + post['photo_uri'] + '_m.jpg'
+        }
+
     # 判断是否已点过赞
     like = PostLike.query.filter_by(post_id=post['id'], user_id=user_id, post_like=1).first()
     if like is None:
