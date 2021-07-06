@@ -75,8 +75,8 @@ def process_post(post, user_id):
 
     if post['photo_uri'] is not None:
         post['photo_uri'] = {
-            'small': '/photo/' + post['photo_uri'] + '_s.jpg',
-            'medium': '/photo/' + post['photo_uri'] + '_m.jpg'
+            'small': '/uploads/' + post['photo_uri'] + '_s.jpg',
+            'medium': '/uploads/' + post['photo_uri'] + '_m.jpg'
         }
 
     # 判断是否已点过赞
