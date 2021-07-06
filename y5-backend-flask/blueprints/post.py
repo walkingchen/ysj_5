@@ -90,10 +90,11 @@ class PostApi(Resource):
         db.session.add(post)
         db.session.commit()
 
-        post_shared = Post.query.filter_by(id=post_shared_id).first()
-        post_shared.timeline_type = 2
-        db.session.add(post_shared)
-        db.session.commit()
+        if post_shared_id is not None:
+            post_shared = Post.query.filter_by(id=post_shared_id).first()
+            post_shared.timeline_type = 2
+            db.session.add(post_shared)
+            db.session.commit()
 
         socketio.emit('post_pull',
                       {
@@ -166,6 +167,7 @@ class PostApi(Resource):
             room_id = int(data['room_id'])
             timeline_type = int(data['timeline_type'])
             pull_new = int(data['pull_new'])     # 1: 新posts 0: last_update前的posts
+            topic = int(data['topic'])
         except KeyError:
             return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
         except TypeError:
@@ -202,20 +204,23 @@ class PostApi(Resource):
                     Post.room_id == room_id,
                     Post.user_id.in_(friend_ids),
                     Post.timeline_type.in_(types),
-                    Post.created_at > last_update
+                    Post.created_at > last_update,
+                    Post.topic == topic
                 ).order_by(Post.created_at.desc()).limit(MSG_SIZE_INIT).all()
             else:
                 posts = Post.query.filter(
                     Post.room_id == room_id,
                     Post.user_id.in_(friend_ids),
                     Post.timeline_type.in_(types),
-                    Post.created_at < last_update
+                    Post.created_at < last_update,
+                    Post.topic == topic
                 ).order_by(Post.created_at.desc()).limit(MSG_SIZE_INIT).all()
         else:
             posts = Post.query.filter(
                 Post.room_id == room_id,
                 Post.user_id.in_(friend_ids),
-                Post.timeline_type.in_(types)
+                Post.timeline_type.in_(types),
+                Post.topic == topic
             ).order_by(Post.created_at.desc()).limit(MSG_SIZE_INIT).all()
 
         # 为每篇post添加评论、点赞
