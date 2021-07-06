@@ -163,8 +163,8 @@ class PostApi(Resource):
 
         data = request.args
         try:
-            room_id = data['room_id']
-            timeline_type = data['timeline_type']
+            room_id = int(data['room_id'])
+            timeline_type = int(data['timeline_type'])
             pull_new = int(data['pull_new'])     # 1: 新posts 0: last_update前的posts
         except KeyError:
             return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
