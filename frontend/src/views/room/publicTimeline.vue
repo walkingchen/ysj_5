@@ -12,31 +12,21 @@
       <public-post-item v-if="showTopic" :item="_topicData" :is-topic="true" @action-success="updatePost" />
     </el-card>
 
-    <div @click="showMoments = !showMoments">
-      <el-card class="toggle">
-        <v-icon name="angle-right" :style="{transform: `rotate(${showMoments ? 90 : 0}deg)`}" />
-      </el-card>
+    <div class="new-tip" v-show="newCount > 0">
+      {{ newCount }} new messages, click <a href="javascript:;" @click="getNews">here</a> to update.
     </div>
 
-    <div class="moments-layout" :style="{ height: showMoments ? momentsLayoutHeight + 'px' : 0 }">
-      <div ref="momentsLayout">
-        <div class="new-tip" v-show="newCount > 0">
-          {{ newCount }} new messages, click <a href="javascript:;" @click="getNews">here</a> to update.
-        </div>
+    <div class="loading-layout" v-show="getNewPostLoading"><i class="el-icon-loading"></i></div>
 
-        <div class="loading-layout" v-show="getNewPostLoading"><i class="el-icon-loading"></i></div>
-
-        <ul id="moments-ul">
-          <li v-for="item in moment_list" :key="item.id">
-            <el-card>
-              <public-post-item :item="item" @action-success="updatePost" />
-            </el-card>
-          </li>
-          <div class="loading-layout" v-show="getPostLoading"><i class="el-icon-loading"></i></div>
-          <div class="nomore-layout" v-show="noMoreData">No more~</div>
-        </ul>
-      </div>
-    </div>
+    <ul id="moments-ul">
+      <li v-for="item in moment_list" :key="item.id">
+        <el-card>
+          <public-post-item :item="item" @action-success="updatePost" />
+        </el-card>
+      </li>
+      <div class="loading-layout" v-show="getPostLoading"><i class="el-icon-loading"></i></div>
+      <div class="nomore-layout" v-show="noMoreData">No more~</div>
+    </ul>
 
   </div>
 </template>
@@ -52,7 +42,6 @@ import {
 import titleCom from '@components/title'
 import publicPostItem from '@components/publicPostItem'
 import { formatDate } from '@assets/utils.js'
-const elementResizeDetectorMaker = require('element-resize-detector')
 
 export default {
   props: ['sid'],
@@ -61,8 +50,6 @@ export default {
       showTopic: false,
       topicData: {},
       getPostLoading: true,
-      showMoments: true,
-      momentsLayoutHeight: 0,
       moments: [],
       noMoreData: false,
       postTitle: '',
@@ -102,11 +89,6 @@ export default {
         id,
         type: 0
       })
-    })
-  },
-  mounted() {
-    elementResizeDetectorMaker().listenTo(this.$refs.momentsLayout, element => {
-      this.momentsLayoutHeight = element.offsetHeight + 20
     })
   },
   methods: {
@@ -270,23 +252,9 @@ export default {
     .post-create-btn
       float right
 
-  .toggle
-    margin-top 20px
-    text-align center
-    border 0
-    padding 5px 0
-    cursor pointer
-
-    .fa-icon
-      transition transform .5s
-
   .topic-layout
     border 0
     margin-top 20px
-
-  .moments-layout
-    overflow hidden
-    transition height .5s
 
   .new-tip
     background-color #fff
