@@ -102,8 +102,8 @@ import 'vue-awesome/icons/regular/thumbs-down'
 import 'vue-awesome/icons/comment-dots'
 import 'vue-awesome/icons/exclamation-circle'
 import {
-  // flagPost,
-  // deleteFlag,
+  flagPost,
+  deleteFlag,
   likePost,
   deleteLike,
   changeLike,
