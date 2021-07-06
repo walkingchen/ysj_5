@@ -21,7 +21,12 @@ parameters:
     in: query
     type: string
     required: true
-    description: 1 = pull new posts, 0 = pull old posts
+    description: 1 = pull new posts, 0 = pull old posts, 2 = shared
+  - name: topic
+    in: query
+    type: integer
+    required: true
+    description: topic day
 responses:
   200:
     description: return timeline

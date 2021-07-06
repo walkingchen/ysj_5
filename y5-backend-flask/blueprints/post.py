@@ -59,6 +59,7 @@ class PostApi(Resource):
             post_type = int(data['post_type'])
             room_id = data['room_id']
             sid = data['sid']
+            topic = int(data['topic'])
         except TypeError:
             return jsonify(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
         except KeyError:
@@ -85,7 +86,8 @@ class PostApi(Resource):
             post_type=post_type,
             user_id=user_id,
             room_id=room_id,
-            post_shared_id=post_shared_id
+            post_shared_id=post_shared_id,
+            topic=topic
         )
         db.session.add(post)
         db.session.commit()

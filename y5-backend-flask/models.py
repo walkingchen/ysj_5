@@ -58,6 +58,7 @@ class Post(db.Model):
     photo_uri = Column(String(128))
     keywords = Column(String(256))
     user_id = Column(Integer)
+    topic = Column(Integer)
     timeline_type = Column(Integer)
     room_id = Column(Integer)
     post_shared_id = db.Column(db.Integer)

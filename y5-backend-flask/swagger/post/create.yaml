@@ -10,12 +10,11 @@ parameters:
       required:
         - timeline_type
         - post_content
-        - post_title
         - post_type
-        - keywords
         - room_id
         - sid
         - post_shared_id
+        - topic
       properties:
         sid:
           type: string
@@ -41,6 +40,9 @@ parameters:
         post_shared_id:
           type: integer
           description: post shared
+        topic:
+          type: integer
+          description: topic
 responses:
   200:
     description: return room array created
