@@ -5,3 +5,5 @@ _models.py
 node_modules/*
 logs/*
 *.DS_Store
+uploads/
+*dist.tar

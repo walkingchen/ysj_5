@@ -55,6 +55,7 @@ class Post(db.Model):
     post_title = Column(String(256))
     post_content = Column(Text)
     post_type = Column(Integer)
+    photo_uri = Column(String(128))
     keywords = Column(String(256))
     user_id = Column(Integer)
     timeline_type = Column(Integer)
@@ -66,6 +67,18 @@ class Post(db.Model):
     def serialize(self):
         d = Serializer.serialize(self)
         return d
+
+
+class Photo(db.Model):
+    __tablename__ = 'tb_post_photo'
+
+    id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.String(500))
+    filename = db.Column(db.String(64))
+    filename_s = db.Column(db.String(64))
+    filename_m = db.Column(db.String(64))
+    author_id = db.Column(db.Integer)
+    created_at = db.Column(db.DateTime, server_default=db.FetchedValue())
 
 
 class PostDaily(db.Model):

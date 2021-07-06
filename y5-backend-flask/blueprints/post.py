@@ -1,13 +1,16 @@
+import os
+
 from flasgger import swag_from
-from flask import Blueprint, request, json, jsonify
+from flask import Blueprint, request, json, jsonify, current_app
 from flask_login import current_user, login_required
 from flask_restful import Api, Resource
 
 from entity.Resp import Resp
 from extensions import db, socketio
 from models import Post, PostComment, PostLike, Serializer, Timeline, User, Room, RoomPrototype, RoomMember, \
-    PostFactcheck, PostFlag, PostDaily
+    PostFactcheck, PostFlag, PostDaily, Photo
 from service import get_friends, process_posts, process_post
+from utils import rename_image, resize_image
 
 bp_post = Blueprint('/api/post', __name__)
 api = Api(bp_post, '/api/post')
@@ -260,6 +263,36 @@ api.add_resource(
     '/daily/<int:room_id>',
     methods=['GET'],
     endpoint='post/daily/retrieve')
+
+
+class UploadApi(Resource):
+    @swag_from('../swagger/post/photo/create.yaml')
+    def post(self):
+        if request.method == 'POST' and 'file' in request.files:
+            f = request.files.get('file')
+            filename = rename_image(f.filename)
+            f.save(os.path.join(current_app.config['UPLOAD_PATH'], filename))
+            filename_s = resize_image(f, filename, current_app.config['PHOTO_SIZE']['small'])
+            filename_m = resize_image(f, filename, current_app.config['PHOTO_SIZE']['medium'])
+            photo = Photo(
+                filename=filename,
+                filename_s=filename_s,
+                filename_m=filename_m,
+                author_id=current_user.id
+            )
+            db.session.add(photo)
+            db.session.commit()
+
+            return jsonify(Resp(result_code=2000, result_msg="success", data=Serializer.serialize(photo)).__dict__)
+
+        return jsonify(Resp(result_code=4000, result_msg="param error?", data=None).__dict__)
+
+
+api.add_resource(
+    UploadApi,
+    '/photo',
+    methods=['POST'],
+    endpoint='post/photo/create')
 
 
 class CommentApi(Resource):

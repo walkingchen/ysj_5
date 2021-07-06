@@ -1,0 +1,20 @@
+---
+tags:
+- Post Photo
+
+parameters:
+  - name: file
+    required: false
+    in: formData
+    type: file
+responses:
+  200:
+    description: return photo uploaded
+    schema:
+      properties:
+        result_code:
+          type: string
+        result_msg:
+          type: string
+        data:
+          type: string
