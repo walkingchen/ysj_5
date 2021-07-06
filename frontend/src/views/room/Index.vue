@@ -5,7 +5,7 @@
       class="room-content"
       v-infinite-scroll="updateMoments"
       infinite-scroll-disabled="stopLoadMoments">
-      <div>
+      <div class="layout">
         <el-row :gutter="20">
           <el-col :span="8">
             <daily-digest />
@@ -160,10 +160,6 @@ export default {
   height calc(100vh - 100px)
   width 100%
   overflow auto
-
-  & > div
-    width 1200px
-    margin 0 auto
 
   &::-webkit-scrollbar
     width 6px

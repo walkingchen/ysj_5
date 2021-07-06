@@ -114,7 +114,7 @@ export default {
       const user = this.members.find(ele => ele.id === item.user_id)
       const _item = {
         id: item.id,
-        isShared: showShared && item.timeline_type === 2,
+        isShared: showShared && item.post_shared_id,
         title: item.post_title,
         content: item.post_content,
         flagged: item.flagged,
