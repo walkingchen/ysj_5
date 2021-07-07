@@ -74,7 +74,7 @@ def reload():
 
 
 def git_pull():
-    repo = Repo("./")  # git文件的路径
+    repo = Repo(config.BASE_DIR)
     git = repo.git
 
     print("当前未跟踪文件:", repo.untracked_files)
