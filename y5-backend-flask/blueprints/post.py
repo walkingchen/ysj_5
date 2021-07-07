@@ -274,7 +274,7 @@ api.add_resource(
 
 class UploadApi(Resource):
     @swag_from('../swagger/post/photo/create.yaml')
-    def get(self):
+    def post(self):
         if request.method == 'POST' and 'file' in request.files:
             f = request.files.get('file')
             filename = rename_image(f.filename)
