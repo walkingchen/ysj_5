@@ -18,7 +18,7 @@
       >
         <el-tag v-if="item.timeline_type === 2" type="info" size="small" class="shared-tag">shared</el-tag>
         <p class="title">{{ item.post_title }}</p>
-        <post-content :content="item.post_content" :id="item.id" @share="share(item.id, index)" />
+        <post-content :content="item.post_content" :id="item.id" :is-private="true" @share="share(item.id, index)" />
         <img v-if="item.photo_uri" :src="item.photo_uri.small" />
         <span class="message-time">{{ item.created_at }}</span>
       </div>
