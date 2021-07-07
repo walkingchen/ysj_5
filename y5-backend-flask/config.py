@@ -20,9 +20,6 @@ SESSION_TYPE = 'redis'
 # cache
 CACHE_TYPE = 'redis'
 
-# flask-admin config
-# BABEL_DEFAULT_LOCALE = 'zh_CN'
-
 # encoding
 JSON_AS_ASCII = False
 
