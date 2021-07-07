@@ -2,11 +2,11 @@
   <div>
     <p>
       {{ _content }}
-      <span v-if="long" class="seeMore" @click="showDetail">See More</span>
+      <span v-if="showSeeMore" class="seeMore" @click="showDetail">See More</span>
     </p>
 
     <el-dialog
-      v-if="long"
+      v-if="showSeeMore"
       :visible.sync="showDetailDialog"
       center
       width="70%"
@@ -37,6 +37,10 @@ export default {
       required: true
     },
     id: Number,
+    isPrivate: {
+      type: Boolean,
+      default: false
+    },
     isTopic: {
       type: Boolean,
       default: false
@@ -55,6 +59,9 @@ export default {
     },
     _content () {
       return this.long ? this.content.substring(0, 130) + '...' : this.content
+    },
+    showSeeMore () {
+      return this.long || this.isPrivate
     }
   },
   methods: {
