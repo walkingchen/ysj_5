@@ -77,6 +77,10 @@ class PostApi(Resource):
             post_shared_id = data['post_shared_id']
         else:
             post_shared_id = None
+        if 'photo_uri' in data:
+            photo_uri = data['photo_uri']
+        else:
+            photo_uri = None
 
         post = Post(
             timeline_type=timeline_type,
@@ -87,7 +91,8 @@ class PostApi(Resource):
             user_id=user_id,
             room_id=room_id,
             post_shared_id=post_shared_id,
-            topic=topic
+            topic=topic,
+            photo_uri=photo_uri
         )
         db.session.add(post)
         db.session.commit()
