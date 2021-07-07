@@ -1,5 +1,7 @@
+import datetime
+
 from flasgger import Swagger
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_apscheduler import APScheduler
@@ -8,6 +10,7 @@ from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
 from flask_cors import CORS
 from flask_mail import Mail
+from git import Repo
 
 import config
 from blueprints.auth import bp_auth, login_manager
@@ -60,6 +63,30 @@ app.register_blueprint(bp_auth)
 @app.route('/chat', methods=['GET'])
 def index():
     return render_template('index.html')
+
+
+@app.route('/reload', methods=['POST'])
+def reload():
+    if request.method == 'POST':
+        git_pull()
+        print("reload success", str(datetime.datetime.now())[:19])
+        return "reload success"
+
+
+def git_pull():
+    repo = Repo("./")  # git文件的路径
+    git = repo.git
+
+    print("当前未跟踪文件:", repo.untracked_files)
+    print("当前本地git仓库状态:", git.status())
+    print("当前本地git仓库是否有文件更新:", repo.is_dirty())
+    print("当前本地分支:", git.branch())
+    print("当前远程仓库:", git.remote())
+
+    remote_name = "origin"
+    print("正在 git pull {0} master".format(remote_name))
+    git.pull(remote_name, "master")
+    print("拉取修改 {0} 成功！".format(remote_name))
 
 
 if __name__ == '__main__':
