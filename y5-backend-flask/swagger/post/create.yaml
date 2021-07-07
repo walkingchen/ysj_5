@@ -43,6 +43,9 @@ parameters:
         topic:
           type: integer
           description: topic
+        photo_uri:
+          type: string
+          description: photo_uri
 responses:
   200:
     description: return room array created
