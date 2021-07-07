@@ -1,9 +1,7 @@
 <template>
   <div class="publicTlimeline-layout">
     <el-card class="post-create-layout">
-      <input type="text" class="post-create-title" placeholder="Title" v-model="postTitle" />
-      <textarea rows="3" class="post-create-content" placeholder="Content" v-model="postContent" />
-      <textarea rows="2" class="post-create-content" placeholder="Keywords" v-model="postKeywords" />
+      <textarea rows="3" class="post-create-content" placeholder="What's on your mind?" v-model="postContent" />
       <el-button class="post-create-btn" type="primary" size="mini" :loading="submitPostLoading" @click="submitPost">Post</el-button>
     </el-card>
 
@@ -52,9 +50,7 @@ export default {
       getPostLoading: true,
       moments: [],
       noMoreData: false,
-      postTitle: '',
       postContent: '',
-      postKeywords: '',
       submitPostLoading: false,
       me_post_moments: [],
       newCount: 0,
@@ -99,6 +95,7 @@ export default {
         isShared: showShared && item.post_shared_id,
         title: item.post_title,
         content: item.post_content,
+        photo_uri: item.photo_uri,
         flagged: item.flagged,
         flagCount: item.flags.count,
         liked: item.liked,
@@ -121,19 +118,12 @@ export default {
       }
 
       if (_item.isShared) {
-        const postUser = this.members.find(ele => ele.id === item.post_shared.user_id)
-        _item.time = formatDate(item.updated_at)
         _item.postSource = {
-          user: postUser ? {
-            avatar: postUser.avatar,
-            nickname: postUser.nickname
-          } : {
-            avatar: null,
-            nickname: ''
-          },
+          id: item.post_shared_id,
           time: formatDate(item.post_shared.created_at),
           title: item.post_shared.post_title,
-          content: item.post_shared.post_content
+          content: item.post_shared.post_content,
+          photo_uri: item.post_shared.photo_uri
         }
       }
       return _item
@@ -150,6 +140,7 @@ export default {
         room_id: localStorage.getItem('roomid'),
         timeline_type: 0,
         pull_new: 0,
+        topic: 1,
         last_update: this.moments.length === 0 ? null : this.moments[this.moments.length - 1].created_at
       }).then(res => {
         if (res.data.data.length === 0) {
@@ -167,6 +158,7 @@ export default {
         room_id: localStorage.getItem('roomid'),
         timeline_type: 0,
         pull_new: 1,
+        topic: 1,
         last_update: this.moments.length === 0 ? null : this.moments[0].created_at
       }).then(res => {
         this.me_post_moments = []
@@ -200,16 +192,13 @@ export default {
         this.submitPostLoading = true
         await createPost({
           post_content: this.postContent,
-          post_title: this.postTitle,
-          keywords: this.postKeywords,
           timeline_type: 0,
           post_type: 1,
+          topic: 1,
           sid: this.sid,
           room_id: Number(localStorage.getItem('roomid'))
         }).then(res => {
-          this.postTitle = ''
           this.postContent = ''
-          this.postKeywords = ''
 
           this.updatePost({
             id: res.data.data.id,
@@ -244,7 +233,6 @@ export default {
     .post-create-content
       width calc(100% - 20px)
       border 0
-      border-top 1px solid #e4e7ed
       padding 10px
       resize none
       outline none

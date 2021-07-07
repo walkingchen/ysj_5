@@ -13,23 +13,14 @@
           <span class="moment-time">{{ item.time }}</span>
         </div>
         <div>
-          <p class="post-title">{{ item.title }}</p>
-          <p class="post-content">{{ item.content }}</p>
-          <div v-if="item.isShared" class="moments-item-content shared-box">
-            <el-avatar
-              :size="40"
-              :src="item.postSource.user.avatar ? item.postSource.user.avatar : ''"
-              :icon="item.postSource.user.avatar ? '' : 'el-icon-user-solid'"
-              class="user-portrait" />
-            <div class="moment-text">
-              <div>
-                <span class="user-name">{{ item.postSource.user.nickname }}</span>
-                <span class="moment-time">{{ item.postSource.time }}</span>
-              </div>
-              <div>
-                <p class="post-title">{{ item.postSource.title }}</p>
-                <p class="post-content">{{ item.postSource.content }}</p>
-              </div>
+          <img v-if="item.photo_uri" :src="item.photo_uri.small" />
+          <post-content :content="item.content" :id="item.id" :is-topic="isTopic" />
+          <div v-if="item.isShared" class="shared-box">
+            <div class="privateMessageItem">
+              <p class="title">{{ item.postSource.title }}</p>
+              <post-content :content="item.postSource.content" :id="item.postSource.id" />
+              <img v-if="item.postSource.photo_uri" :src="item.postSource.photo_uri.small" />
+              <span class="message-time">{{ item.postSource.time }}</span>
             </div>
           </div>
         </div>
@@ -112,6 +103,7 @@ import {
   checkPost,
   deleteCheck
 } from '@api/post'
+import postContent from '@components/postContent'
 
 export default {
   props: {
@@ -129,6 +121,9 @@ export default {
       showComments: false,
       comment_content: ''
     }
+  },
+  components: {
+    postContent
   },
   computed: mapState(['user']),
   methods: {
@@ -207,7 +202,7 @@ export default {
 
 <style lang="stylus">
 .moments-item
-  padding 10px
+  padding 12px 16px
 
   &-content
     display flex
@@ -217,6 +212,7 @@ export default {
 
   .moment-text
     flex 1
+    width 0
 
     .user-name
       display inline-block
@@ -235,15 +231,10 @@ export default {
       font-size 14px
       line-height 24px
 
-    p
-      margin-top 3px
-      line-height 1.5
-
-    .post-title
-      font-weight 600
-
-    .post-content
-      font-size 14px
+    img
+      display block
+      max-width 100%
+      max-height 300px
 
   .moment-actions
     height 30px
@@ -297,7 +288,6 @@ export default {
 .shared-box
   border 1px solid #e4e7ed
   border-radius 4px
-  padding 5px
   margin 5px 0
 
 .post-comment

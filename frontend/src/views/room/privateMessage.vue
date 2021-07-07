@@ -10,13 +10,17 @@
 
     <div class="messages">
       <div class="privateMessageItem" v-if="messages.length === 0">No messages.</div>
-      <div v-for="(item, index) in messages" :key="item.id" class="privateMessageItem" :class="{shared: item.timeline_type === 2}" ref="messageItem">
+      <div
+        v-for="(item, index) in messages"
+        :key="item.id"
+        ref="messageItem"
+        class="privateMessageItem"
+      >
+        <el-tag v-if="item.timeline_type === 2" type="info" size="small" class="shared-tag">shared</el-tag>
         <p class="title">{{ item.post_title }}</p>
-        <p>{{ item.post_content }}</p>
-        <div>
-          <span class="message-time">{{ item.created_at }}</span>
-          <button v-if="item.timeline_type !== 2" class="share-btn" @click="share(item.id, index)"><v-icon name="share" /></button>
-        </div>
+        <post-content :content="item.post_content" :id="item.id" @share="share(item.id, index)" />
+        <img v-if="item.photo_uri" :src="item.photo_uri.small" />
+        <span class="message-time">{{ item.created_at }}</span>
       </div>
     </div>
 
@@ -33,6 +37,7 @@
 <script>
 import 'vue-awesome/icons/share'
 import titleCom from '@components/title'
+import postContent from '@components/postContent'
 import { getPosts, createPost } from '@api/post'
 import { formatDate } from '@assets/utils.js'
 
@@ -48,7 +53,8 @@ export default {
     }
   },
   components: {
-    titleCom
+    titleCom,
+    postContent
   },
   created() {
     this.getMessageList()
@@ -60,6 +66,7 @@ export default {
         room_id: localStorage.getItem('roomid'),
         timeline_type: 1,
         pull_new: 0,
+        topic: 1,
         last_update: this.messages.length === 0 ? null : this.messages[this.messages.length - 1].created_at
       }).then(res => {
         if (res.data.data.length === 0) {
@@ -87,6 +94,8 @@ export default {
         cloneEle.style.top = ele.getBoundingClientRect().top - 60 + 'px'
         cloneEle.style.left = ele.getBoundingClientRect().left + 'px'
         parentEle.appendChild(cloneEle)
+
+        this.showDetailDialog = false
 
         createPost({
           sid: this.sid,
@@ -126,6 +135,7 @@ export default {
         room_id: localStorage.getItem('roomid'),
         timeline_type: 1,
         pull_new: 1,
+        topic: 1,
         last_update: this.messages.length === 0 ? null : this.messages[0].created_at
       }).then(res => {
         this.messages.unshift(...res.data.data)
@@ -153,15 +163,13 @@ export default {
   .messages
     padding 0 10px
 
-  .share-btn
-    float right
-    margin-left 10px
-    padding 0 8px
-    height 24px
-    color #909399
+    .privateMessageItem
+      position relative
 
-    &:hover
-      color #409eff
+      .shared-tag
+        position absolute
+        top 10px
+        right 10px
 
   .loading-layout
     text-align center
@@ -184,15 +192,17 @@ export default {
   &:last-child
     border-bottom 0
 
-  &.shared
-    opacity .6
-
   p
     line-height 1.5
 
     &.title
       font-size 16px
       font-weight 600
+
+  img
+    max-width 100%
+    max-height 300px
+    display block
 
   .message-time
     color #999
@@ -207,7 +217,4 @@ export default {
   width 345px
   border-radius 4px
   transition top 1s, left 1s
-
-  .share-btn
-    display none
 </style>
