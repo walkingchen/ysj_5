@@ -195,10 +195,10 @@ class PostApi(Resource):
         for friend in friends:
             friend_ids.append(friend.user_id)
 
-        if timeline_type == 0:
-            types = [0]
+        if timeline_type == TIMELINE_PUB:
+            types = [TIMELINE_PUB]
         else:
-            types = [1, 2]
+            types = [TIMELINE_PRI, TIMELINE_ALL]
 
         if last_update is not None:
             if pull_new == 1:
@@ -274,7 +274,7 @@ api.add_resource(
 
 class UploadApi(Resource):
     @swag_from('../swagger/post/photo/create.yaml')
-    def post(self):
+    def get(self):
         if request.method == 'POST' and 'file' in request.files:
             f = request.files.get('file')
             filename = rename_image(f.filename)
@@ -300,6 +300,21 @@ api.add_resource(
     '/photo',
     methods=['POST'],
     endpoint='post/photo/create')
+
+
+class TopicApi(Resource):
+    @swag_from('../swagger/post/topic/list_retrieve.yaml')
+    def get(self):
+        topics = [1, 2, 3, 4, 5, 6, 7, 8]
+
+        return jsonify(Resp(result_code=2000, result_msg="success", data=topics).__dict__)
+
+
+api.add_resource(
+    TopicApi,
+    '/topic',
+    methods=['GET'],
+    endpoint='post/topic/list_retrieve')
 
 
 class CommentApi(Resource):

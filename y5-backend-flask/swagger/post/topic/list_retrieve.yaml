@@ -1,0 +1,22 @@
+---
+tags:
+  - Post Topic
+parameters:
+  - name: room_id
+    in: query
+    type: string
+    required: true
+    description: room id
+responses:
+  200:
+    description: return topics
+    schema:
+      id: Response
+      properties:
+        result_code:
+          type: string
+        result_msg:
+          type: string
+        data:
+          type: string
+
