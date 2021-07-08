@@ -33,7 +33,7 @@ import { getPost } from '@api/post'
 export default {
   props: {
     content: {
-      type: Object,
+      type: String,
       required: true
     },
     id: Number,
