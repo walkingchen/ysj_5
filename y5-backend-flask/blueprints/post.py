@@ -248,21 +248,25 @@ api.add_resource(
 
 class PostDailyApi(Resource):
     @swag_from('../swagger/post/daily/retrieve.yaml')
-    def get(self, room_id, topic):
+    def get(self):
+        data = request.args
+        try:
+            room_id = data['room_id']
+            topic = data['topic']
+        except TypeError:
+            return jsonify(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
+        except KeyError:
+            return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
+
         post_dailys = PostDaily.query.filter_by(room_id=room_id, topic=topic).all()
-        if post_dailys is None:
-            return Resp(
-                result_code=4000,
-                result_msg="no post daily",
-                data=None
-            )
 
         post_dailys_serialized = []
-        for post in post_dailys:
-            post_daily = Post.query.filter_by(id=post.post_id).first()
-            post_daily_serialized = Serializer.serialize(post_daily)
-            process_post(post_daily_serialized, current_user.id)
-            post_dailys_serialized.append(post_daily_serialized)
+        if len(post_dailys) > 0:
+            for post in post_dailys:
+                post_daily = Post.query.filter_by(id=post.post_id).first()
+                post_daily_serialized = Serializer.serialize(post_daily)
+                process_post(post_daily_serialized, current_user.id)
+                post_dailys_serialized.append(post_daily_serialized)
 
         resp = Resp(
             result_code=2000,
@@ -271,8 +275,6 @@ class PostDailyApi(Resource):
         )
 
         return jsonify(resp.__dict__)
-
-    # fixme CRUD
 
 
 api.add_resource(
