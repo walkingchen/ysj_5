@@ -3,12 +3,12 @@ tags:
   - Post Daily
 parameters:
   - name: room_id
-    in: path
+    in: query
     type: integer
     required: true
     description: room ID
   - name: topic
-    in: path
+    in: query
     type: integer
     required: true
     description: topic
