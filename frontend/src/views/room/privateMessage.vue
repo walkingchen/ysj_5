@@ -102,6 +102,7 @@ export default {
           room_id: Number(localStorage.getItem('roomid')),
           timeline_type: 0,
           post_type: 1,
+          topic: 1,
           post_shared_id: id,
           post_content: value
         }).then(({ data }) => {
