@@ -34,7 +34,6 @@
 
 <script>
 import { mapState } from 'vuex'
-import 'vue-awesome/icons/sign-out-alt'
 import io from 'socket.io-client'
 import headerCom from './header'
 import dailyDigest from './dailyDigest'

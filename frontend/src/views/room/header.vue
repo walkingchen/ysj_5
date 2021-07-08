@@ -16,26 +16,16 @@
           v-model="searchKey">
         </el-input>
 
-        <div>
-          <el-dropdown trigger="click" placement="bottom">
-            <el-badge :value="12" :hidden="false">
-              <span class="el-icon-message-solid"></span>
-            </el-badge>
-            <el-dropdown-menu slot="dropdown">
-              <div class="notification-box">
-                Notification
-              </div>
-            </el-dropdown-menu>
-          </el-dropdown>
-          <span class="separator">|</span>
-          <el-button type="text" @click="handleLogout"><v-icon name="sign-out-alt" /></el-button>
-        </div>
+        <el-button type="text" @click="handleLogout">
+          <v-icon name="sign-out-alt" />
+        </el-button>
       </div>
     </div>
   </header>
 </template>
 
 <script>
+import 'vue-awesome/icons/sign-out-alt'
 import { logout } from '@api/auth'
 
 export default {
@@ -80,27 +70,4 @@ header
 
 .el-input
   width 200px
-
-.el-badge
-  color #409eff
-  cursor pointer
-  font-size 16px
-
-  &:hover
-    color #66b1ff
-
-  & >>> span
-    position relative
-    top -1px
-
-.separator
-  margin 0 20px
-  color #999
-
-.el-button >>> span
-  position relative
-  top 3px
-
-.notification-box
-  width 320px
 </style>
