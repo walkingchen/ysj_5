@@ -279,7 +279,7 @@ class PostDailyApi(Resource):
 
 api.add_resource(
     PostDailyApi,
-    '/daily/<int:room_id>&<int:topic>',
+    '/daily',
     methods=['GET'],
     endpoint='post/daily/retrieve')
 
