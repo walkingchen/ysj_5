@@ -32,6 +32,7 @@ MSG_SIZE_INIT = 50
 DEBUG = True
 
 UPLOAD_PATH = os.path.join(PROJECT_ROOT, 'uploads')
+
 PHOTO_SIZE = {
     'small': 400,
     'medium': 800

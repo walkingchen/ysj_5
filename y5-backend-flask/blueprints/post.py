@@ -5,6 +5,7 @@ from flask import Blueprint, request, json, jsonify, current_app
 from flask_login import current_user, login_required
 from flask_restful import Api, Resource
 
+import config
 from entity.Resp import Resp
 from extensions import db, socketio
 from models import Post, PostComment, PostLike, Serializer, Timeline, User, Room, RoomPrototype, RoomMember, \
@@ -295,7 +296,10 @@ class UploadApi(Resource):
             db.session.add(photo)
             db.session.commit()
 
-            return jsonify(Resp(result_code=2000, result_msg="success", data=Serializer.serialize(photo)).__dict__)
+            photo_serialized = Serializer.serialize(photo)
+            photo_serialized['upload_path'] = '/uploads/'
+
+            return jsonify(Resp(result_code=2000, result_msg="success", data=photo_serialized).__dict__)
 
         return jsonify(Resp(result_code=4000, result_msg="param error?", data=None).__dict__)
 
