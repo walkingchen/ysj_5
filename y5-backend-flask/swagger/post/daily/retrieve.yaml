@@ -4,9 +4,14 @@ tags:
 parameters:
   - name: room_id
     in: path
-    type: string
+    type: integer
     required: true
-    description: get post daily by room ID
+    description: room ID
+  - name: topic
+    in: path
+    type: integer
+    required: true
+    description: topic
 responses:
   200:
     description: return post daily with details
