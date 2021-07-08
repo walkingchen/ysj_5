@@ -107,7 +107,8 @@ class PostApi(Resource):
         socketio.emit('post_pull',
                       {
                           'timeline_type': timeline_type,
-                          'posts_number': 1
+                          'posts_number': 1,
+                          'topic': topic
                       },
                       room_id=post.room_id,
                       skip_sid=sid)
