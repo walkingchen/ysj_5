@@ -56,7 +56,7 @@ export default {
       showPostImage: false,
       postImageLoading: false,
       postImageUri: '',
-      postImageId: '',
+      postImageFileName: '',
       showTopic: false,
       topicData: {},
       getPostLoading: true,
@@ -115,7 +115,7 @@ export default {
           if (data.result_code === 2000) {
             this.postImageLoading = false
             this.postImageUri = data.data.upload_path + data.data.filename_s
-            this.postImageId = data.data.id
+            this.postImageFileName = data.data.filename
           }
         })
       } else {
@@ -126,7 +126,7 @@ export default {
     },
     deletePostImage () {
       this.postImageUri = ''
-      this.postImageId = ''
+      this.postImageFileName = ''
       this.showPostImage = false
     },
     formatPostData (item, showShared = true) {
@@ -240,8 +240,8 @@ export default {
           sid: this.sid,
           room_id: Number(localStorage.getItem('roomid'))
         }
-        if (this.postImageId) {
-          params.photo_uri = this.postImageId
+        if (this.postImageFileName) {
+          params.photo_uri = this.postImageFileName
         }
 
         await createPost(params).then(res => {
