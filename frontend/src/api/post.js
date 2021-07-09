@@ -1,4 +1,3 @@
-export const getTopic = rid => axios.get('/post/daily/' + rid)
 export const getPosts = params => axios.get('/post', { params })
 export const createPost = params => axios.post('/post', params)
 export const getPost = id => axios.get('/post/' + id)
@@ -12,3 +11,10 @@ export const deleteCheck = id => axios.delete('/post/factcheck/' + id)
 export const flagPost = post_id => axios.post('/post/flag', { post_id })
 export const deleteFlag = id => axios.delete('/post/flag/' + id)
 export const postPhoto = params => axios.post('/post/photo', params)
+export const getTopic = rid => axios.get('/post/topic?room_id=' + rid)
+export const getTopicContent = (room_id, topic) => axios.get('/post/daily', {
+  params: {
+    room_id,
+    topic
+  }
+})

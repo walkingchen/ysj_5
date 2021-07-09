@@ -6,7 +6,9 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     user: {},
-    friends: []
+    friends: [],
+    topic: [],
+    currentTopic: null
   },
   mutations: {
     setUser(state, data) {
@@ -14,6 +16,13 @@ export default new Vuex.Store({
     },
     setFriends(state, data) {
       state.friends = data
+    },
+    setTopic (state, data) {
+      state.topic = data
+      state.currentTopic = data[data.length - 1]
+    },
+    setCurrentTopic (state, data) {
+      state.currentTopic = data
     }
   },
   actions: {

@@ -43,6 +43,7 @@ import connections from './connections'
 import instantChat from './instantChat'
 import { formatDate } from '@assets/utils.js'
 import { getRoomInfo } from '@api/room'
+import { getTopic } from '@api/post'
 
 export default {
   components: {
@@ -72,9 +73,16 @@ export default {
     ])
   },
   async created() {
+    const rid = localStorage.getItem('roomid')
+    getTopic(rid).then(({ data }) => {
+      if (data.result_code === 2000) {
+        this.$store.commit('setTopic', data.data)
+      }
+    })
+
     const loading = this.$loading({ lock: true })
 
-    await getRoomInfo(localStorage.getItem('roomid')).then(res => {
+    await getRoomInfo(rid).then(res => {
       const resdata = res.data
       if (resdata.result_code === 2000) {
         const { friends, me } = resdata.data.members

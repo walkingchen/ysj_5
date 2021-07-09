@@ -3,10 +3,12 @@
     <div class="layout">
       <div>
         <div class="topics-box">
-          <el-tag>Topics 1</el-tag>
-          <el-tag>Topics 2</el-tag>
-          <el-tag>Topics 3</el-tag>
-          <el-tag>Topics 4</el-tag>
+          <el-badge v-for="item in topic" :key="item" :is-dot="false">
+            <el-tag
+              :effect="item === currentTopic ? 'light' : 'plain'"
+              @click="changeTopic(item)"
+            >Topic {{ item }}</el-tag>
+          </el-badge>
         </div>
 
         <el-input
@@ -25,6 +27,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import 'vue-awesome/icons/sign-out-alt'
 import { logout } from '@api/auth'
 
@@ -34,7 +37,14 @@ export default {
       searchKey: ''
     }
   },
+  computed: mapState([
+    'topic',
+    'currentTopic'
+  ]),
   methods: {
+    changeTopic (topic) {
+      this.$store.commit('setCurrentTopic', topic)
+    },
     handleLogout() {
       logout()
       localStorage.removeItem('roomid')
@@ -61,12 +71,14 @@ header
     justify-content space-between
 
 .topics-box
-  width 400px
+  width 670px
+  display flex
+  justify-content space-between
 
   .el-tag
-    width 90px
-    margin-right 10px
+    width 75px
     text-align center
+    cursor pointer
 
 .el-input
   width 200px

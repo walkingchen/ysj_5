@@ -35,6 +35,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import 'vue-awesome/icons/share'
 import titleCom from '@components/title'
 import postContent from '@components/postContent'
@@ -52,12 +53,10 @@ export default {
       noMoreData: false
     }
   },
+  computed: mapState(['currentTopic']),
   components: {
     titleCom,
     postContent
-  },
-  created() {
-    this.getMessageList()
   },
   methods: {
     async getMessageList() {
@@ -66,7 +65,7 @@ export default {
         room_id: localStorage.getItem('roomid'),
         timeline_type: 1,
         pull_new: 0,
-        topic: 1,
+        topic: this.currentTopic,
         last_update: this.messages.length === 0 ? null : this.messages[this.messages.length - 1].created_at
       }).then(res => {
         if (res.data.data.length === 0) {
@@ -102,7 +101,7 @@ export default {
           room_id: Number(localStorage.getItem('roomid')),
           timeline_type: 0,
           post_type: 1,
-          topic: 1,
+          topic: this.currentTopic,
           post_shared_id: id,
           post_content: value
         }).then(({ data }) => {
@@ -136,12 +135,23 @@ export default {
         room_id: localStorage.getItem('roomid'),
         timeline_type: 1,
         pull_new: 1,
-        topic: 1,
+        topic: this.currentTopic,
         last_update: this.messages.length === 0 ? null : this.messages[0].created_at
       }).then(res => {
         this.messages.unshift(...res.data.data)
       })
       this.getNewPostLoading = false
+    }
+  },
+  watch: {
+    currentTopic: {
+      handler (topic) {
+        if (topic) {
+          this.messages = []
+          this.getMessageList()
+        }
+      },
+      immediate: true
     }
   }
 }

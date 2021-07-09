@@ -13,7 +13,12 @@
 
     <el-card class="topic-layout">
       <title-com title="Topic of The Day" />
-      <public-post-item v-if="showTopic" :item="_topicData" :is-topic="true" @action-success="updatePost" />
+      <public-post-item
+        v-for="item in topicList"
+        :key="item.id"
+        :item="formatPostData(item, false)"
+        :is-topic="true"
+        @action-success="updatePost" />
     </el-card>
 
     <div class="new-tip" v-show="newCount > 0">
@@ -36,9 +41,10 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import 'vue-awesome/icons/images'
 import {
-  getTopic,
+  getTopicContent,
   getPosts,
   getPost,
   postPhoto,
@@ -57,8 +63,7 @@ export default {
       postImageLoading: false,
       postImageUri: '',
       postImageFileName: '',
-      showTopic: false,
-      topicData: {},
+      topicList: {},
       getPostLoading: true,
       moments: [],
       noMoreData: false,
@@ -83,14 +88,9 @@ export default {
       const moments = [...this.me_post_moments, ...this.moments]
       return moments.map(item => this.formatPostData(item))
     },
-    _topicData () {
-      return this.formatPostData(this.topicData, false)
-    }
+    ...mapState(['currentTopic'])
   },
   created() {
-    this.updateTopic()
-    this.getMomentList()
-
     this.$bus.$on('share-success', id => {
       this.updatePost({
         id,
@@ -170,9 +170,8 @@ export default {
       return _item
     },
     updateTopic () {
-      getTopic(localStorage.getItem('roomid')).then(({ data }) => {
-        this.showTopic = true
-        this.topicData = data.data
+      getTopicContent(localStorage.getItem('roomid'), this.currentTopic).then(({ data }) => {
+        this.topicList = data.data
       })
     },
     async getMomentList() {
@@ -181,7 +180,7 @@ export default {
         room_id: localStorage.getItem('roomid'),
         timeline_type: 0,
         pull_new: 0,
-        topic: 1,
+        topic: this.currentTopic,
         last_update: this.moments.length === 0 ? null : this.moments[this.moments.length - 1].created_at
       }).then(res => {
         if (res.data.data.length === 0) {
@@ -199,7 +198,7 @@ export default {
         room_id: localStorage.getItem('roomid'),
         timeline_type: 0,
         pull_new: 1,
-        topic: 1,
+        topic: this.currentTopic,
         last_update: this.moments.length === 0 ? null : this.moments[0].created_at
       }).then(res => {
         this.me_post_moments = []
@@ -236,7 +235,7 @@ export default {
           post_content: this.postContent,
           timeline_type: 0,
           post_type: 1,
-          topic: 1,
+          topic: this.currentTopic,
           sid: this.sid,
           room_id: Number(localStorage.getItem('roomid'))
         }
@@ -259,6 +258,17 @@ export default {
           type: 'warning'
         })
       }
+    }
+  },
+  watch: {
+    currentTopic: {
+      handler (topic) {
+        if (topic) {
+          this.updateTopic()
+          this.getMomentList()
+        }
+      },
+      immediate: true
     }
   }
 }
