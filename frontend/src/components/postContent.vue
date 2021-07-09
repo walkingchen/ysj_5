@@ -2,7 +2,7 @@
   <div>
     <p>
       {{ _content }}
-      <span v-if="showSeeMore" class="seeMore" @click="showDetail">See More</span>
+      <el-button v-if="showSeeMore" size="mini" class="seeMore" @click="showDetail">See More</el-button>
     </p>
 
     <el-dialog
@@ -94,12 +94,8 @@ p
   white-space pre-wrap
 
   .seeMore
-    cursor pointer
-    font-weight 700
     margin-left 5px
-
-    &:hover
-      text-decoration underline
+    padding 4px 8px
 
 .detail-dialog
   >>> .el-dialog
