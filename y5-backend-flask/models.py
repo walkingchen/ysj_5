@@ -88,6 +88,7 @@ class PostDaily(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     room_id = db.Column(db.Integer)
     post_id = db.Column(db.Integer)
+    topic = db.Column(db.Integer)
     updated_at = db.Column(db.DateTime, nullable=False, server_default=db.FetchedValue())
     created_at = db.Column(db.DateTime, server_default=db.FetchedValue())
 

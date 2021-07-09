@@ -1,6 +1,9 @@
+import os
+
 from flask import json
 from sqlalchemy import inspect
 
+import config
 from models import RoomPrototype, RoomMember, PostComment, Serializer, User, PostLike, PostFactcheck, Post, PostFlag
 
 
@@ -76,9 +79,17 @@ def process_post(post, user_id):
     if post['photo_uri'] is not None:
         post['photo_uri'] = {
             'file': '/uploads/' + post['photo_uri'],
-            'small': '/uploads/' + post['photo_uri'].split('.')[0] + '_s.jpg',
-            'medium': '/uploads/' + post['photo_uri'].split('.')[0] + '_m.jpg'
         }
+
+        if not os.path.exists(config.UPLOAD_PATH + post['photo_uri'].split('.')[0] + '_s.jpg'):
+            post['photo_uri']['small'] = '/uploads/' + post['photo_uri']
+        else:
+            post['photo_uri']['small'] = '/uploads/' + post['photo_uri'].split('.')[0] + '_s.jpg'
+
+        if not os.path.exists(config.UPLOAD_PATH + post['photo_uri'].split('.')[0] + '_m.jpg'):
+            post['photo_uri']['medium'] = '/uploads/' + post['photo_uri']
+        else:
+            post['photo_uri']['medium'] = '/uploads/' + post['photo_uri'].split('.')[0] + '_m.jpg'
 
     # 判断是否已点过赞
     like = PostLike.query.filter_by(post_id=post['id'], user_id=user_id, post_like=1).first()

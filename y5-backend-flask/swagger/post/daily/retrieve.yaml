@@ -3,10 +3,15 @@ tags:
   - Post Daily
 parameters:
   - name: room_id
-    in: path
-    type: string
+    in: query
+    type: integer
     required: true
-    description: get post daily by room ID
+    description: room ID
+  - name: topic
+    in: query
+    type: integer
+    required: true
+    description: topic
 responses:
   200:
     description: return post daily with details
