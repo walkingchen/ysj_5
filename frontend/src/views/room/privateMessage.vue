@@ -16,11 +16,14 @@
         ref="messageItem"
         class="privateMessageItem"
       >
-        <el-tag v-if="item.timeline_type === 2" type="info" size="small" class="shared-tag">shared</el-tag>
         <p class="title">{{ item.post_title }}</p>
         <post-content :content="item.post_content" :id="item.id" :is-private="true" @share="share(item.id, index)" />
         <img v-if="item.photo_uri" :src="item.photo_uri.small" />
         <span class="message-time">{{ item.created_at }}</span>
+        <div class="share-box">
+          <el-tag v-if="item.timeline_type === 2" type="info" size="small">shared</el-tag>
+          <el-button v-else size="mini" @click="share(item.id, index)">share</el-button>
+        </div>
       </div>
     </div>
 
@@ -177,10 +180,15 @@ export default {
     .privateMessageItem
       position relative
 
-      .shared-tag
+      .share-box
         position absolute
-        top 10px
+        bottom 10px
         right 10px
+
+        .el-button
+          height 24px
+          padding 0 8px
+          line-height 22px
 
   .loading-layout
     text-align center
@@ -228,4 +236,7 @@ export default {
   width 345px
   border-radius 4px
   transition top 1s, left 1s
+
+  .share-box
+    display none
 </style>
