@@ -57,6 +57,7 @@ class Post(db.Model):
     post_type = Column(Integer)
     photo_uri = Column(String(128))
     keywords = Column(String(256))
+    abstract = Column(Text)
     user_id = Column(Integer)
     topic = Column(Integer)
     timeline_type = Column(Integer)
