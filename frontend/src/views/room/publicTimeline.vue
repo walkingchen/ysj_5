@@ -63,7 +63,7 @@ export default {
       postImageLoading: false,
       postImageUri: '',
       postImageFileName: '',
-      topicList: {},
+      topicList: [],
       getPostLoading: true,
       moments: [],
       noMoreData: false,
@@ -264,7 +264,11 @@ export default {
     currentTopic: {
       handler (topic) {
         if (topic) {
+          this.topicList = []
           this.updateTopic()
+
+          this.me_post_moments = []
+          this.moments = []
           this.getMomentList()
         }
       },
