@@ -13,7 +13,7 @@
           <span class="moment-time">{{ item.time }}</span>
         </div>
         <div>
-          <post-content :content="item.content" :id="item.id" :is-topic="isTopic" />
+          <p>{{ item.content }}</p>
           <img v-if="item.photo_uri" :src="item.photo_uri.small" />
           <div v-if="item.isShared" class="shared-box">
             <div class="privateMessageItem">
