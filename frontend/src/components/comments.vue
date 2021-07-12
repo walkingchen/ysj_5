@@ -53,7 +53,7 @@
           v-model="comment_content"
           placeholder="Write a comment..."
           class="post-comment-input"
-          @keyup.enter="postComment(item.id)" />
+          @keyup.enter="postComment" />
         <p>Press Enter to post.</p>
       </div>
     </div>
