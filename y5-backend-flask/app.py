@@ -68,6 +68,8 @@ def index():
 @app.route('/reload', methods=['POST'])
 def reload():
     if request.method == 'POST':
+        json = request.get_data()
+        print(json)
         git_pull()
         print("reload success", str(datetime.datetime.now())[:19])
         return "reload success"
