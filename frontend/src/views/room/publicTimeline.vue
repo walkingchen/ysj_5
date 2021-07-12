@@ -139,6 +139,13 @@ export default {
       })
     }
   },
+  mounted () {
+    this.$bus.$on('new_post', data => {
+      if (data.topic === this.currentTopic && data.timeline_type === 0) {
+        this.newCount = data.posts_number
+      }
+    })
+  },
   watch: {
     currentTopic: {
       handler (topic) {

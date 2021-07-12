@@ -137,6 +137,13 @@ export default {
       this.getNewPostLoading = false
     }
   },
+  mounted () {
+    this.$bus.$on('new_post', data => {
+      if (data.topic === this.currentTopic && data.timeline_type === 1) {
+        this.newCount = data.posts_number
+      }
+    })
+  },
   watch: {
     currentTopic: {
       handler (topic) {

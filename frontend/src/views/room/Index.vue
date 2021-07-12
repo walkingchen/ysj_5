@@ -9,7 +9,7 @@
         <el-row :gutter="20">
           <el-col :span="8">
             <daily-digest />
-            <private-message ref="privateMessage" :sid="sid" />
+            <private-message :sid="sid" />
           </el-col>
           <el-col :span="11">
             <add-public :sid="sid" @on-success="addPostSuccess" />
@@ -110,11 +110,7 @@ export default {
           })
 
           this.socket.on('post_pull', data => {
-            if (data.timeline_type === 0) { // 有新的public timeline
-              this.$refs.publicTimeline.newCount = data.posts_number
-            } else { // 有新的private timeline
-              this.$refs.privateMessage.newCount = data.posts_number
-            }
+            this.$bus.$emit('new_post', data)
           })
 
           // 接收即时聊天消息

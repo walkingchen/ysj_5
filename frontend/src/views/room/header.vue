@@ -3,10 +3,10 @@
     <div class="layout">
       <div>
         <div class="topics-box">
-          <el-badge v-for="item in topic" :key="item" :is-dot="false">
+          <el-badge v-for="(item, index) in topic" :key="item" :is-dot="hasNewPost[index]">
             <el-tag
               :effect="item === currentTopic ? 'light' : 'plain'"
-              @click="changeTopic(item)"
+              @click="changeTopic(item, index)"
             >Topic {{ item }}</el-tag>
           </el-badge>
         </div>
@@ -34,6 +34,7 @@ import { logout } from '@api/auth'
 export default {
   data () {
     return {
+      hasNewPost: [],
       searchKey: ''
     }
   },
@@ -42,14 +43,30 @@ export default {
     'currentTopic'
   ]),
   methods: {
-    changeTopic (topic) {
+    changeTopic (topic, index) {
       this.$store.commit('setCurrentTopic', topic)
+      this.hasNewPost.splice(index, 1, false)
     },
     handleLogout() {
       logout()
       localStorage.removeItem('roomid')
       this.$emit('logout')
       this.$router.push({ name: 'Login' })
+    }
+  },
+  mounted () {
+    this.$bus.$on('new_post', data => {
+      if (data.topic !== this.currentTopic) {
+        this.hasNewPost.splice(this.topic.indexOf(data.topic), 1, true)
+      }
+    })
+  },
+  watch: {
+    topic: {
+      handler (val) {
+        this.hasNewPost = new Array(val.length).fill(false)
+      },
+      immediate: true
     }
   }
 }
