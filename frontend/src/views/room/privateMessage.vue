@@ -11,13 +11,13 @@
     <div class="messages">
       <div class="privateMessageItem" v-if="messages.length === 0">No messages.</div>
       <private-post-item
-        v-for="(item, index) in messages"
+        v-for="item in messages"
         :key="item.id"
         ref="messageItem"
         :item="item"
       >
         <el-tag v-if="item.timeline_type === 2" type="info" size="small">shared</el-tag>
-        <el-button v-else size="mini" class="share-btn" @click="share(item.id, index)">share</el-button>
+        <el-button v-else size="mini" class="share-btn" @click="share(item.id)">share</el-button>
       </private-post-item>
     </div>
 
@@ -72,17 +72,19 @@ export default {
       })
       this.getPostLoading = false
     },
-    share (id, index) {
+    share (id) {
       this.$prompt('Say something...', '', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Cancel'
       }).then(({ value }) => {
+        const index = this.messages.findIndex(ele => ele.id === id)
+
         const parentEle = document.getElementsByClassName('room-content')[0]
         const ele = this.$refs.messageItem[index].$el
         const cloneEle = ele.cloneNode(true)
         cloneEle.classList.add('movingMessage')
         cloneEle.style.width = (document.getElementsByClassName('topic-layout')[0].offsetWidth - 20) + 'px'
-        cloneEle.style.top = ele.getBoundingClientRect().top - 60 + 'px'
+        cloneEle.style.top = (ele.getBoundingClientRect().top + parentEle.scrollTop - 60) + 'px'
         cloneEle.style.left = ele.getBoundingClientRect().left + 'px'
         parentEle.appendChild(cloneEle)
 
@@ -101,7 +103,7 @@ export default {
             const newPostId = data.data.id
             this.$bus.$emit('share-success', newPostId)
 
-            const targetTop = document.getElementById('moments-ul').getBoundingClientRect().top - parentEle.scrollTop - 60
+            const targetTop = document.getElementById('moments-ul').getBoundingClientRect().top + parentEle.scrollTop - 60
             const targetLeft = document.getElementById('moments-ul').getBoundingClientRect().left
             cloneEle.style.top = targetTop + 'px'
             cloneEle.style.left = targetLeft + 'px'
@@ -142,6 +144,9 @@ export default {
       if (data.topic === this.currentTopic && data.timeline_type === 1) {
         this.newCount = data.posts_number
       }
+    })
+    this.$bus.$on('share', id => {
+      this.share(id)
     })
   },
   watch: {

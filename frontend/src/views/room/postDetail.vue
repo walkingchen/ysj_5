@@ -11,7 +11,7 @@
       <p class="content">{{ detailData.post_content }}</p>
     </div>
     <span v-if="detailData.timeline_type === 1" slot="footer" class="dialog-footer">
-      <el-button size="small" icon="el-icon-share" @click="$emit('share')">Share</el-button>
+      <el-button size="small" icon="el-icon-share" @click="share">Share</el-button>
     </span>
   </el-dialog>
 </template>
@@ -39,6 +39,10 @@ export default {
           created_at: formatDate(data.data.created_at)
         })
       })
+    },
+    share () {
+      this.showDetailDialog = false
+      this.$bus.$emit('share', this.detailData.id)
     }
   },
   mounted () {
