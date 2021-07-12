@@ -144,9 +144,9 @@ def process_post(post, user_id):
 
     post_shared = Post.query.filter_by(id=post['post_shared_id']).first()
     if post_shared is not None:
-        post_shared_serialized = Serializer.serialize(post_shared)
-        process_photo(post_shared_serialized)
-        post['post_shared'] = Serializer.serialize(post_shared_serialized)
+        process_post(post_shared)
+        process_photo(process_post)
+        post['post_shared'] = Serializer.serialize(process_post)
     else:
         post['post_shared'] = None
 
