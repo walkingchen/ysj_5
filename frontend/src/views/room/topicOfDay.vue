@@ -7,11 +7,11 @@
         <div class="moment-actions">
           <span class="count" v-if="item.comments.length > 0">{{ item.comments.length }}</span>
           <button><v-icon name="comment-dots" /></button>
-          <span class="count">{{ item.flagCount }}</span>
+          <span class="count">{{ item.flags.count }}</span>
           <button @click="flag(item)" :class="{ done: item.flagged }">
             <v-icon :name="item.flagged ? 'flag' : 'regular/flag'" />
           </button>
-          <span class="count">{{ item.likeCount }}</span>
+          <span class="count">{{ item.likes.count }}</span>
           <button @click="like(item)" :class="{ done: item.liked }">
             <v-icon :name="item.liked ? 'thumbs-up' : 'regular/thumbs-up'" />
           </button>
