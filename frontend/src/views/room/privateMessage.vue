@@ -10,21 +10,15 @@
 
     <div class="messages">
       <div class="privateMessageItem" v-if="messages.length === 0">No messages.</div>
-      <div
+      <private-post-item
         v-for="(item, index) in messages"
         :key="item.id"
         ref="messageItem"
-        class="privateMessageItem"
+        :item="item"
       >
-        <p class="title">{{ item.post_title }}</p>
-        <post-content :content="item.post_content" :id="item.id" :is-private="true" @share="share(item.id, index)" />
-        <img v-if="item.photo_uri" :src="item.photo_uri.small" />
-        <span class="message-time">{{ item.created_at }}</span>
-        <div class="share-box">
-          <el-tag v-if="item.timeline_type === 2" type="info" size="small">shared</el-tag>
-          <el-button v-else size="mini" @click="share(item.id, index)">share</el-button>
-        </div>
-      </div>
+        <el-tag v-if="item.timeline_type === 2" type="info" size="small">shared</el-tag>
+        <el-button v-else size="mini" class="share-btn" @click="share(item.id, index)">share</el-button>
+      </private-post-item>
     </div>
 
     <div class="get-more-btn" v-show="!getPostLoading && !noMoreData">
@@ -41,9 +35,8 @@
 import { mapState } from 'vuex'
 import 'vue-awesome/icons/share'
 import titleCom from '@components/title'
-import postContent from '@components/postContent'
+import privatePostItem from '@components/privatePostItem'
 import { getPosts, createPost } from '@api/post'
-import { formatDate } from '@assets/utils.js'
 
 export default {
   props: ['sid'],
@@ -59,7 +52,7 @@ export default {
   computed: mapState(['currentTopic']),
   components: {
     titleCom,
-    postContent
+    privatePostItem
   },
   methods: {
     async getMessageList() {
@@ -75,24 +68,20 @@ export default {
           this.noMoreData = true
         }
 
-        this.messages.push(
-          ...res.data.data.map(item => {
-            item.created_at = formatDate(item.created_at)
-            return item
-          })
-        )
+        this.messages.push(...res.data.data)
       })
       this.getPostLoading = false
     },
-    share(id, index) {
+    share (id, index) {
       this.$prompt('Say something...', '', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Cancel'
       }).then(({ value }) => {
         const parentEle = document.getElementsByClassName('room-content')[0]
-        const ele = this.$refs.messageItem[index]
+        const ele = this.$refs.messageItem[index].$el
         const cloneEle = ele.cloneNode(true)
         cloneEle.classList.add('movingMessage')
+        cloneEle.style.width = (document.getElementsByClassName('topic-layout')[0].offsetWidth - 20) + 'px'
         cloneEle.style.top = ele.getBoundingClientRect().top - 60 + 'px'
         cloneEle.style.left = ele.getBoundingClientRect().left + 'px'
         parentEle.appendChild(cloneEle)
@@ -124,6 +113,8 @@ export default {
                 }, 1000)
               }
             })
+
+            this.messages[index].timeline_type = 2
           } else {
             cloneEle.remove()
             this.$message.error('Failed!')
@@ -178,17 +169,15 @@ export default {
     padding 0 10px
 
     .privateMessageItem
-      position relative
+      border-bottom 1px solid #e4e7ed
 
-      .share-box
-        position absolute
-        bottom 10px
-        right 10px
+      &:last-child
+        border-bottom 0
 
-        .el-button
-          height 24px
-          padding 0 8px
-          line-height 22px
+  .share-btn
+    height 24px
+    padding 0 8px
+    line-height 22px
 
   .loading-layout
     text-align center
@@ -202,41 +191,4 @@ export default {
     text-align center
     padding-bottom 10px
     color #999
-</style>
-<style lang="stylus">
-.privateMessageItem
-  padding 10px
-  border-bottom 1px solid #e4e7ed
-
-  &:last-child
-    border-bottom 0
-
-  p
-    line-height 1.5
-
-    &.title
-      font-size 16px
-      font-weight 600
-
-  img
-    max-width 100%
-    max-height 300px
-    display block
-
-  .message-time
-    color #999
-    font-size 14px
-    line-height 24px
-    display inline-block
-
-.movingMessage
-  position absolute
-  z-index 10
-  background-color #fff
-  width 345px
-  border-radius 4px
-  transition top 1s, left 1s
-
-  .share-box
-    display none
 </style>

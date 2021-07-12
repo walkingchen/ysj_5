@@ -12,7 +12,9 @@
             <private-message ref="privateMessage" :sid="sid" />
           </el-col>
           <el-col :span="11">
-            <public-timeline ref="publicTimeline" :sid="sid" />
+            <add-public :sid="sid" @on-success="addPostSuccess" />
+            <topic-of-day />
+            <public-timeline ref="publicTimeline" />
           </el-col>
           <el-col :span="5">
             <connections @start-chat="startChart" />
@@ -22,6 +24,8 @@
     </div>
 
     <el-backtop target=".room-content" :bottom="chatShow ? 420 : 40" />
+
+    <post-detail />
 
     <instant-chat
       ref="instantChat"
@@ -35,23 +39,29 @@
 <script>
 import { mapState } from 'vuex'
 import io from 'socket.io-client'
-import headerCom from './header'
-import dailyDigest from './dailyDigest'
-import privateMessage from './privateMessage'
-import publicTimeline from './publicTimeline'
-import connections from './connections'
-import instantChat from './instantChat'
 import { formatDate } from '@assets/utils.js'
 import { getRoomInfo } from '@api/room'
 import { getTopic } from '@api/post'
+import headerCom from './header'
+import dailyDigest from './dailyDigest'
+import privateMessage from './privateMessage'
+import addPublic from './addPublic'
+import topicOfDay from './topicOfDay'
+import publicTimeline from './publicTimeline'
+import connections from './connections'
+import postDetail from './postDetail'
+import instantChat from './instantChat'
 
 export default {
   components: {
     headerCom,
     dailyDigest,
+    addPublic,
+    topicOfDay,
     privateMessage,
     publicTimeline,
     connections,
+    postDetail,
     instantChat
   },
   data() {
@@ -127,6 +137,9 @@ export default {
     loading.close()
   },
   methods: {
+    addPostSuccess (id) {
+      this.$refs.publicTimeline.updatePost(id, 0)
+    },
     updateMoments() {
       this.$refs.publicTimeline.getMomentList()
     },
@@ -199,4 +212,29 @@ export default {
     overflow hidden
     text-overflow ellipsis
     white-space nowrap
+
+.post-photo
+  max-width 100%
+  max-height 300px
+  display block
+  margin 5px 0
+
+.moment-actions
+  height 30px
+  display flex
+  flex-direction row-reverse
+
+  button
+    padding 0 8px
+    height 24px
+    color #909399
+
+    &:hover
+      color #409eff
+
+    &.done
+      color #409eff
+
+  .count
+    margin-right 8px
 </style>

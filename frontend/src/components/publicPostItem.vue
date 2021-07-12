@@ -13,15 +13,10 @@
           <span class="moment-time">{{ item.time }}</span>
         </div>
         <div>
-          <post-content :content="item.content" :id="item.id" :is-topic="isTopic" />
-          <img v-if="item.photo_uri" :src="item.photo_uri.small" />
+          <p class="content">{{ item.content }}</p>
+          <img v-if="item.photo_uri" :src="item.photo_uri.small" class="post-photo" />
           <div v-if="item.isShared" class="shared-box">
-            <div class="privateMessageItem">
-              <p class="title">{{ item.postSource.title }}</p>
-              <post-content :content="item.postSource.content" :id="item.postSource.id" />
-              <img v-if="item.postSource.photo_uri" :src="item.postSource.photo_uri.small" />
-              <span class="message-time">{{ item.postSource.time }}</span>
-            </div>
+            <private-post-item :item="item.postSource" />
           </div>
         </div>
       </div>
@@ -39,46 +34,12 @@
         <v-icon :name="item.flagged ? 'flag' : 'regular/flag'" />
       </button>
       <span class="count">{{ item.likeCount }}</span>
-      <button @click="like(item, 1)" :class="{ done: item.liked }">
+      <button @click="like(item)" :class="{ done: item.liked }">
         <v-icon :name="item.liked ? 'thumbs-up' : 'regular/thumbs-up'" />
       </button>
     </div>
-    <div v-show="showComments" class="comments-box">
-      <ul>
-        <li class="comment-item" v-for="comment in item.comments" :key="comment.id">
-          <div class="comment-item-content">
-            <el-avatar
-              :size="32"
-              :src="comment.user.avatar ? comment.user.avatar : ''"
-              :icon="comment.user.avatar ? '' : 'el-icon-user-solid'"
-              class="user-portrait" />
-            <div class="comment-text">
-              <div>
-                <span class="user-name">{{ comment.user.nickname }}</span>
-                <span class="comment-time">{{ comment.created_at }}</span>
-              </div>
-              <p>{{ comment.comment_content }}</p>
-            </div>
-          </div>
-        </li>
-      </ul>
 
-      <div class="post-comment">
-        <el-avatar
-          :size="32"
-          :src="user.avatar ? user.avatar : ''"
-          :icon="user.avatar ? '' : 'el-icon-user-solid'"
-          class="user-portrait" />
-        <div class="post-comment-input-box">
-          <input
-            v-model="comment_content"
-            placeholder="Write a comment..."
-            class="post-comment-input"
-            @keyup.enter="postComment(item.id)" />
-          <p>Press Enter to post.</p>
-        </div>
-      </div>
-    </div>
+    <comments :comments="item.comments" :post-id="item.id" @action-success="$emit('action-success', item.id)" />
   </div>
 </template>
 
@@ -88,42 +49,32 @@ import 'vue-awesome/icons/flag'
 import 'vue-awesome/icons/regular/flag'
 import 'vue-awesome/icons/thumbs-up'
 import 'vue-awesome/icons/regular/thumbs-up'
-import 'vue-awesome/icons/thumbs-down'
-import 'vue-awesome/icons/regular/thumbs-down'
+// import 'vue-awesome/icons/thumbs-down'
+// import 'vue-awesome/icons/regular/thumbs-down'
 import 'vue-awesome/icons/comment-dots'
-import 'vue-awesome/icons/exclamation-circle'
+// import 'vue-awesome/icons/exclamation-circle'
 import {
   flagPost,
   deleteFlag,
   likePost,
   deleteLike,
-  changeLike,
-  commentPost,
-  deleteComment,
+  // changeLike,
   checkPost,
   deleteCheck
 } from '@api/post'
-import postContent from '@components/postContent'
+import privatePostItem from '@components/privatePostItem'
+import comments from '@components/comments'
 
 export default {
-  props: {
-    item: {
-      type: Object,
-      required: true
-    },
-    isTopic: {
-      type: Boolean,
-      default: false
-    }
+  props: ['item'],
+  components: {
+    privatePostItem,
+    comments
   },
   data () {
     return {
-      showComments: false,
       comment_content: ''
     }
-  },
-  components: {
-    postContent
   },
   computed: mapState(['user']),
   methods: {
@@ -133,57 +84,42 @@ export default {
       } else {
         await flagPost(item.id)
       }
-      this.$emit('action-success', {
-        id: item.id,
-        isTopic: this.isTopic
-      })
+      this.$emit('action-success', item.id)
     },
-    async like(item, type) {
-      if (item.liked === null && item.disliked === null) { // 初次赞或踩
+    async like(item) {
+      if (item.liked) { // 已经赞了
+        await deleteLike(item.liked.id)
+      } else {
         await likePost({
-          like_or_not: type,
+          like_or_not: 1,
           post_id: item.id
         })
-      } else {
-        if (type === 1) { // 赞
-          if (item.liked) { // 如果已经赞了
-            await deleteLike(item.liked.id)
-          } else if (item.disliked) { // 如果已经踩了
-            await changeLike(item.disliked.id, { like_or_not: type })
-          }
-        } else { // 踩
-          if (item.liked) { // 如果已经赞了
-            await changeLike(item.liked.id, { like_or_not: type })
-          } else if (item.disliked) { // 如果已经踩了
-            await deleteLike(item.disliked.id)
-          }
-        }
       }
-      this.$emit('action-success', {
-        id: item.id,
-        isTopic: this.isTopic
-      })
+      this.$emit('action-success', item.id)
     },
-    postComment (id) {
-      commentPost({
-        comment_content: this.comment_content,
-        post_id: id
-      }).then(() => {
-        this.$emit('action-success', {
-          id,
-          isTopic: this.isTopic
-        })
-        this.comment_content = ''
-      })
-    },
-    deleteComment(momentid, commentid) {
-      deleteComment(commentid).then(() => {
-        this.$emit('action-success', {
-          id: momentid,
-          isTopic: this.isTopic
-        })
-      })
-    },
+    // async like(item, type) {
+    //   if (item.liked === null && item.disliked === null) { // 初次赞或踩
+    //     await likePost({
+    //       like_or_not: type,
+    //       post_id: item.id
+    //     })
+    //   } else {
+    //     if (type === 1) { // 赞
+    //       if (item.liked) { // 如果已经赞了
+    //         await deleteLike(item.liked.id)
+    //       } else if (item.disliked) { // 如果已经踩了
+    //         await changeLike(item.disliked.id, { like_or_not: type })
+    //       }
+    //     } else { // 踩
+    //       if (item.liked) { // 如果已经赞了
+    //         await changeLike(item.liked.id, { like_or_not: type })
+    //       } else if (item.disliked) { // 如果已经踩了
+    //         await deleteLike(item.disliked.id)
+    //       }
+    //     }
+    //   }
+    //   this.$emit('action-success', item.id)
+    // },
     async factcheck(item) {
       item.factcheck = item.factcheck ? null : {}
       if (item.factcheck) {
@@ -191,10 +127,7 @@ export default {
       } else {
         await checkPost({ post_id: item.id })
       }
-      this.$emit('action-success', {
-        id: item.id,
-        isTopic: this.isTopic
-      })
+      this.$emit('action-success', item.id)
     }
   }
 }
@@ -231,80 +164,13 @@ export default {
       font-size 14px
       line-height 24px
 
-    img
-      display block
-      max-width 100%
-      max-height 300px
-
-  .moment-actions
-    height 30px
-    display flex
-    flex-direction row-reverse
-
-    button
-      padding 0 8px
-      height 24px
-      color #909399
-
-      &:hover
-        color #409eff
-
-      &.done
-        color #409eff
-
-    .count
-      margin-right 8px
-
-  .comments-box
-    border-top 1px solid #e4e7ed
-    padding 8px
-
-  .comment-item
-    padding 8px 0
-
-    .comment-item-content
-      display flex
-
-    .comment-text
-      flex 1
-      padding 10px
-      background-color #f0f2f5
-      border-radius 8px
-
-      .user-name
-        font-size 16px
-        line-height 22px
-
-      .comment-time
-        float right
-        color #666
-        font-size 12px
-        line-height 22px
-
-      p
-        line-height 1.5
-        font-size 14px
+    .content
+      font-size 14px
+      line-height 1.5
+      white-space pre-wrap
 
 .shared-box
   border 1px solid #e4e7ed
   border-radius 4px
   margin 5px 0
-
-.post-comment
-  display flex
-
-  &-input-box
-    flex 1
-
-    p
-      font-size 12px
-
-  &-input
-    width calc(100% - 24px)
-    height 36px
-    background-color #f0f2f5
-    border-radius 18px
-    border 0
-    padding 0 12px
-    outline none
 </style>

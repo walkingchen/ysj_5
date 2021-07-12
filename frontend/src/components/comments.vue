@@ -1,0 +1,169 @@
+<template>
+  <div class="comments-box">
+    <ul>
+      <li class="comment-item" v-for="comment in firstTwoComments" :key="comment.id">
+        <div class="comment-item-content">
+          <el-avatar
+            :size="32"
+            :src="comment.user.avatar ? comment.user.avatar : ''"
+            :icon="comment.user.avatar ? '' : 'el-icon-user-solid'"
+            class="user-portrait" />
+          <div class="comment-text">
+            <div>
+              <span class="user-name">{{ comment.user.nickname }}</span>
+              <span class="comment-time">{{ comment.created_at }}</span>
+            </div>
+            <p>{{ comment.comment_content }}</p>
+          </div>
+        </div>
+      </li>
+      <div v-if="restComments.length > 0" class="showMoreComments-btn">
+        <el-button type="text" size="mini" @click="showMoreComments = !showMoreComments">
+          <v-icon :name="showMoreComments ? 'angle-double-down' : 'angle-double-right'" />
+        </el-button>
+      </div>
+      <div v-show="showMoreComments">
+        <li class="comment-item" v-for="comment in restComments" :key="comment.id">
+          <div class="comment-item-content">
+            <el-avatar
+              :size="32"
+              :src="comment.user.avatar ? comment.user.avatar : ''"
+              :icon="comment.user.avatar ? '' : 'el-icon-user-solid'"
+              class="user-portrait" />
+            <div class="comment-text">
+              <div>
+                <span class="user-name">{{ comment.user.nickname }}</span>
+                <span class="comment-time">{{ comment.created_at }}</span>
+              </div>
+              <p>{{ comment.comment_content }}</p>
+            </div>
+          </div>
+        </li>
+      </div>
+    </ul>
+
+    <div class="post-comment">
+      <el-avatar
+        :size="32"
+        :src="user.avatar ? user.avatar : ''"
+        :icon="user.avatar ? '' : 'el-icon-user-solid'"
+        class="user-portrait" />
+      <div class="post-comment-input-box">
+        <input
+          v-model="comment_content"
+          placeholder="Write a comment..."
+          class="post-comment-input"
+          @keyup.enter="postComment(item.id)" />
+        <p>Press Enter to post.</p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { mapState } from 'vuex'
+import 'vue-awesome/icons/angle-double-right'
+import 'vue-awesome/icons/angle-double-down'
+import { commentPost } from '@api/post'
+import { formatDate } from '@assets/utils.js'
+
+export default {
+  props: ['comments', 'postId'],
+  data () {
+    return {
+      showMoreComments: false,
+      comment_content: ''
+    }
+  },
+  computed: {
+    _comments () {
+      return this.comments.map(ele => {
+        ele.created_at = formatDate(ele.created_at)
+        return ele
+      })
+    },
+    firstTwoComments () {
+      return this._comments.slice(0, 2)
+    },
+    restComments () {
+      return this._comments.slice(2)
+    },
+    ...mapState(['user'])
+  },
+  methods: {
+    postComment () {
+      commentPost({
+        comment_content: this.comment_content,
+        post_id: this.postId
+      }).then(() => {
+        this.$emit('action-success', this.postId)
+        this.comment_content = ''
+      })
+    }
+  }
+}
+</script>
+
+<style lang="stylus" scoped>
+.comments-box
+  border-top 1px solid #e4e7ed
+  padding 8px
+
+.user-portrait
+  margin-right 12px
+
+.comment-item
+  padding 8px 0
+
+  .comment-item-content
+    display flex
+
+  .comment-text
+    flex 1
+    padding 10px
+    background-color #f0f2f5
+    border-radius 8px
+
+    .user-name
+      font-size 16px
+      line-height 22px
+
+    .comment-time
+      float right
+      color #666
+      font-size 12px
+      line-height 22px
+
+    p
+      line-height 1.5
+      font-size 14px
+
+.showMoreComments-btn
+  text-align center
+
+  .el-button
+    padding 0 10px
+    color #666
+
+    &:hover
+      color #409eff
+
+.post-comment
+  padding 8px 0
+  display flex
+
+  &-input-box
+    flex 1
+
+    p
+      font-size 12px
+
+  &-input
+    width calc(100% - 24px)
+    height 36px
+    background-color #f0f2f5
+    border-radius 18px
+    border 0
+    padding 0 12px
+    outline none
+</style>
