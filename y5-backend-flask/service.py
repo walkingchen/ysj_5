@@ -54,6 +54,25 @@ def process_posts(posts, user_id):
         process_post(post, user_id)
 
 
+def process_photo(post):
+    if post['photo_uri'] is not None:
+        tmp = post['photo_uri']
+
+        post['photo_uri'] = {
+            'file': '/uploads/' + tmp,
+        }
+
+        if not os.path.exists(config.UPLOAD_PATH + tmp.split('.')[0] + '_s.jpg'):
+            post['photo_uri']['small'] = '/uploads/' + tmp
+        else:
+            post['photo_uri']['small'] = '/uploads/' + tmp.split('.')[0] + '_s.jpg'
+
+        if not os.path.exists(config.UPLOAD_PATH + tmp.split('.')[0] + '_m.jpg'):
+            post['photo_uri']['medium'] = '/uploads/' + tmp
+        else:
+            post['photo_uri']['medium'] = '/uploads/' + tmp.split('.')[0] + '_m.jpg'
+
+
 def process_post(post, user_id):
     comments = PostComment.query.filter_by(post_id=post['id']).all()
     comments_serialized = []
@@ -76,22 +95,7 @@ def process_post(post, user_id):
         'details': likes_serialized
     }
 
-    if post['photo_uri'] is not None:
-        tmp = post['photo_uri']
-
-        post['photo_uri'] = {
-            'file': '/uploads/' + tmp,
-        }
-
-        if not os.path.exists(config.UPLOAD_PATH + tmp.split('.')[0] + '_s.jpg'):
-            post['photo_uri']['small'] = '/uploads/' + tmp
-        else:
-            post['photo_uri']['small'] = '/uploads/' + tmp.split('.')[0] + '_s.jpg'
-
-        if not os.path.exists(config.UPLOAD_PATH + tmp.split('.')[0] + '_m.jpg'):
-            post['photo_uri']['medium'] = '/uploads/' + tmp
-        else:
-            post['photo_uri']['medium'] = '/uploads/' + tmp.split('.')[0] + '_m.jpg'
+    process_photo(post)
 
     # 判断是否已点过赞
     like = PostLike.query.filter_by(post_id=post['id'], user_id=user_id, post_like=1).first()
@@ -140,7 +144,9 @@ def process_post(post, user_id):
 
     post_shared = Post.query.filter_by(id=post['post_shared_id']).first()
     if post_shared is not None:
-        post['post_shared'] = Serializer.serialize(post_shared)
+        post_shared_serialized = Serializer.serialize(post_shared)
+        process_photo(post_shared_serialized)
+        post['post_shared'] = Serializer.serialize(post_shared_serialized)
     else:
         post['post_shared'] = None
 
