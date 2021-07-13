@@ -1,4 +1,5 @@
 import datetime
+import os
 
 from flasgger import Swagger
 from flask import Flask, render_template, request
@@ -65,12 +66,24 @@ def index():
     return render_template('index.html')
 
 
+def reload_vue():
+    os.system('cd ' + config.BASE_DIR + '/frontend')
+    os.system('yarn build')
+    os.system('sudo rm /var/www/ysj_5_frontend -rf')
+    os.system('sudo mv dist /var/www/')
+    os.system('sudo chown www-data:www-data /var/www/ysj_5_frontend')
+    os.system('cd ' + config.PROJECT_ROOT)
+
+
 @app.route('/reload', methods=['POST'])
 def reload():
     if request.method == 'POST':
         json = request.get_data()
-        print(json)
-        git_pull()
+        # print(json)
+
+        if json['sender']['login'] == 'codingchan':
+            git_pull()
+        
         print("reload success", str(datetime.datetime.now())[:19])
         return "reload success"
 
