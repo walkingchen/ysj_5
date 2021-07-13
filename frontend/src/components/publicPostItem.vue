@@ -39,7 +39,11 @@
       </button>
     </div>
 
-    <comments :comments="item.comments" :post-id="item.id" @action-success="$emit('action-success', item.id)" />
+    <comments
+      :comments="item.comments"
+      :post-id="item.id"
+      style="margin-top: 10px"
+      @action-success="$emit('action-success', item.id)" />
   </div>
 </template>
 

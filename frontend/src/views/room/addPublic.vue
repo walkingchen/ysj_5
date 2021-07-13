@@ -103,6 +103,7 @@ export default {
 
         await createPost(params).then(res => {
           this.postContent = ''
+          this.$message.success('Post successfully!')
           this.$emit('on-success', res.data.data.id)
         })
         this.submitPostLoading = false

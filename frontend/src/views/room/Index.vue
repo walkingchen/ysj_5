@@ -216,7 +216,6 @@ export default {
   margin 5px 0
 
 .moment-actions
-  height 30px
   display flex
   flex-direction row-reverse
 
