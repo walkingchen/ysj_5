@@ -11,12 +11,10 @@ module.exports = {
     proxy: {
       '/api': {
         target: 'http://ysj_5.soulfar.com',
-        // target: 'http://127.0.0.1:5000',
         changeOrigin: true
       },
       '/socket.io': {
         target: 'http://ysj_5.soulfar.com',
-        // target: 'http://127.0.0.1:5000',
         ws: true,
         changeOrigin: true
       }
