@@ -354,12 +354,24 @@ class CommentApi(Resource):
         try:
             post_id = data['post_id']
             comment_content = data['comment_content']
+            sid = data['sid']
+            topic = data['topic']
         except KeyError:
             return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
 
         comment = PostComment(post_id=post_id, comment_content=comment_content, user_id=user_id)
         db.session.add(comment)
         db.session.commit()
+
+        post = Post.query.get(post_id)
+        socketio.emit('comment_pull',
+                      {
+                          'topic': topic,
+                          'post_id': post_id,
+                          'comment_id': comment.id
+                      },
+                      room_id=post.room_id,
+                      skip_sid=sid)
 
         return jsonify(Resp(result_code=2000, result_msg="success", data=Serializer.serialize(comment)).__dict__)
 

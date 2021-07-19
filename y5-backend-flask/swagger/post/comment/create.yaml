@@ -10,12 +10,20 @@ parameters:
       required:
         - post_id
         - comment_content
+        - sid
+        - topic
       properties:
         post_id:
-          type: string
+          type: integer
           description: post id
         comment_content:
           type: string
+          description: comment content
+        sid:
+          type: integer
+          description: comment content
+        topic:
+          type: integer
           description: comment content
 responses:
   200:
