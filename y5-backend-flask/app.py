@@ -79,6 +79,7 @@ def reload_vue():
 def reload():
     if request.method == 'POST':
         # json = request.args()
+
         # if json['sender']['login'] == 'codingchan':
         git_pull()
         
