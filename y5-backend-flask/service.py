@@ -74,7 +74,7 @@ def process_photo(post):
 
 
 def process_post(post, user_id):
-    comments = PostComment.query.filter_by(post_id=post['id']).all()
+    comments = PostComment.query.filter_by(post_id=post['id']).order_by(PostComment.created_at.desc()).all()
     comments_serialized = []
     for comment in comments:
         comment_serialized = Serializer.serialize(comment)
