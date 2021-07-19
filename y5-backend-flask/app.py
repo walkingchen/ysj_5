@@ -78,11 +78,10 @@ def reload_vue():
 @app.route('/reload', methods=['POST'])
 def reload():
     if request.method == 'POST':
-        json = request.get_data()
-        # print(json)
+        json = request.args()
 
-        if json['sender']['login'] == 'codingchan':
-            git_pull()
+        # if json['sender']['login'] == 'codingchan':
+        git_pull()
         
         print("reload success", str(datetime.datetime.now())[:19])
         return "reload success"

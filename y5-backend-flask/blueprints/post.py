@@ -30,7 +30,7 @@ class PostApi(Resource):
 
         user_id = current_user.id
 
-        post = Post.query.filter_by(id=id).first()
+        post = Post.query.get(id)
         if post is None:
             return jsonify(Resp(
                 result_code=4000,
@@ -132,7 +132,7 @@ class PostApi(Resource):
         if not current_user.is_authenticated:
             return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
 
-        post = Post.query.filter_by(id=id).first()
+        post = Post.query.get(id)
         db.session.delete(post)
         db.session.commit()
 
@@ -335,7 +335,7 @@ api.add_resource(
 class CommentApi(Resource):
     @swag_from('../swagger/post/comment/retrieve.yaml')
     def get(self, id):
-        comment = PostComment.query.filter_by(id=id).first()
+        comment = PostComment.query.get(id)
         comment_serialized = Serializer.serialize(comment)
         resp = Resp(
             result_code=2000,
@@ -365,7 +365,7 @@ class CommentApi(Resource):
 
     @swag_from('../swagger/post/comment/delete.yaml')
     def delete(self, id):
-        comment = PostComment.query.filter_by(id=id).first()
+        comment = PostComment.query.get(id)
         if comment is None:
             return jsonify(Resp(result_code=2000, result_msg="comment not found", data=None).__dict__)
 
@@ -400,7 +400,7 @@ api.add_resource(
 class LikeApi(Resource):
     @swag_from('../swagger/post/like/retrieve.yaml')
     def get(self, id):
-        like = PostLike.query.filter_by(id=id).first()
+        like = PostLike.query.get(id)
         like_serialized = Serializer.serialize(like)
         return jsonify(Resp(result_code=2000, result_msg="success", data=like_serialized).__dict__)
 
@@ -441,7 +441,7 @@ class LikeApi(Resource):
 
     @swag_from('../swagger/post/like/delete.yaml')
     def delete(self, id):
-        like = PostLike.query.filter_by(id=id).first()
+        like = PostLike.query.get(id)
         db.session.delete(like)
         db.session.commit()
 
@@ -473,7 +473,7 @@ api.add_resource(
 class FactcheckApi(Resource):
     @swag_from('../swagger/post/factcheck/retrieve.yaml')
     def get(self, id):
-        check = PostFactcheck.query.filter_by(id=id).first()
+        check = PostFactcheck.query.get(id)
         check_serialized = Serializer.serialize(check)
         return jsonify(Resp(result_code=2000, result_msg="success", data=check_serialized).__dict__)
 
@@ -496,7 +496,7 @@ class FactcheckApi(Resource):
 
     @swag_from('../swagger/post/factcheck/delete.yaml')
     def delete(self, id):
-        check = PostFactcheck.query.filter_by(id=id).first()
+        check = PostFactcheck.query.get(id)
         db.session.delete(check)
         db.session.commit()
 
@@ -523,7 +523,7 @@ api.add_resource(
 class FlagApi(Resource):
     @swag_from('../swagger/post/flag/retrieve.yaml')
     def get(self, id):
-        flag = PostFlag.query.filter_by(id=id).first()
+        flag = PostFlag.query.get(id)
         flag_serialized = Serializer.serialize(flag)
         return jsonify(Resp(result_code=2000, result_msg="success", data=flag_serialized).__dict__)
 
@@ -546,7 +546,7 @@ class FlagApi(Resource):
 
     @swag_from('../swagger/post/flag/delete.yaml')
     def delete(self, id):
-        flag = PostFlag.query.filter_by(id=id).first()
+        flag = PostFlag.query.get(id)
         db.session.delete(flag)
         db.session.commit()
 
