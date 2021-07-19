@@ -1,5 +1,5 @@
 <template>
-  <el-card class="privateMessage-layout">
+  <el-card v-show="messages.length > 0" class="privateMessage-layout">
     <title-com title="Private Message Feed" />
 
     <el-alert v-show="newCount > 0" type="info" center :closable="false" class="new-tip">
@@ -9,7 +9,6 @@
     <div class="loading-layout" v-show="getNewPostLoading"><i class="el-icon-loading"></i></div>
 
     <div class="messages">
-      <div class="privateMessageItem" v-if="messages.length === 0">No messages.</div>
       <private-post-item
         v-for="item in messages"
         :key="item.id"

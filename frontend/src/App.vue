@@ -1,8 +1,28 @@
 <template>
   <div id="app">
-    <router-view/>
+    <Phone v-if="isMobile" />
+    <router-view v-else />
   </div>
 </template>
+
+<script>
+import Phone from './views/Phone'
+
+export default {
+  components: {
+    Phone
+  },
+  computed: {
+    isMobile () {
+      const ua = navigator.userAgent
+      const isAndroid = /(?:Android)/.test(ua)
+      const isTablet = /(?:iPad|PlayBook)/.test(ua) || (isAndroid && !/(?:Mobile)/.test(ua)) || (/(?:Firefox)/.test(ua) && /(?:Tablet)/.test(ua))
+      const isIOS = /(?:iPhone)/.test(ua) && !isTablet
+      return isAndroid || isIOS
+    }
+  }
+}
+</script>
 
 <style lang="stylus">
 *
