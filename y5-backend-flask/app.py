@@ -78,7 +78,7 @@ def reload_vue():
 @app.route('/reload', methods=['POST'])
 def reload():
     if request.method == 'POST':
-        json = request.args()
+        # json = request.args()
 
         # if json['sender']['login'] == 'codingchan':
         git_pull()
