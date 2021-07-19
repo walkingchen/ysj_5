@@ -1,18 +1,22 @@
 <template>
   <el-dialog
     :visible.sync="showDetailDialog"
-    center
     width="70%"
     class="detail-dialog">
+    <el-button
+      v-if="detailData.timeline_type !== 0"
+      size="small"
+      icon="el-icon-share"
+      class="share-btn"
+      :disabled="detailData.timeline_type === 2"
+      @click="share"
+    >Share</el-button>
     <div v-loading="detailLoading">
       <h2>{{ detailData.post_title }}</h2>
       <p class="createAt">{{ detailData.created_at }}</p>
       <img v-if="detailData.photo_uri" :src="detailData.photo_uri.medium" />
       <p class="content">{{ detailData.post_content }}</p>
     </div>
-    <span v-if="detailData.timeline_type === 1" slot="footer" class="dialog-footer">
-      <el-button size="small" icon="el-icon-share" @click="share">Share</el-button>
-    </span>
   </el-dialog>
 </template>
 
@@ -77,6 +81,11 @@ export default {
 
   >>> .el-dialog__footer
     padding-bottom 0
+
+  .share-btn
+    position absolute
+    right 10px
+    top 34px
 
   h2
     text-align center
