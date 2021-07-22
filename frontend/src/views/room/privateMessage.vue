@@ -27,6 +27,38 @@
     <div class="loading-layout" v-show="getPostLoading"><i class="el-icon-loading"></i></div>
 
     <div class="nomore-layout" v-show="noMoreData">No more~</div>
+
+    <el-dialog
+      :visible.sync="showShareDialog"
+      center
+      class="share-dialog">
+      <div class="moments-item">
+        <div class="moments-item-content">
+          <el-avatar
+            :size="40"
+            :src="user.avatar ? user.avatar : ''"
+            :icon="user.avatar ? '' : 'el-icon-user-solid'"
+            class="user-portrait" />
+          <div class="moment-text">
+            <div>
+              <span class="user-name">{{ user.nickname }}</span>
+              <span class="shared-tip">shared:</span>
+            </div>
+            <div>
+              <el-input
+                size="small"
+                placeholder="Say something..."
+                ref="shareInput"
+                v-model="shareContent" />
+              <div class="shared-box">
+                <private-post-item :item="sharedPost" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <el-button slot="footer" size="small" @click="submitShare">Submit</el-button>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -45,10 +77,16 @@ export default {
       messages: [],
       newCount: 0,
       getNewPostLoading: false,
-      noMoreData: false
+      noMoreData: false,
+      showShareDialog: false,
+      sharedPost: {},
+      shareContent: ''
     }
   },
-  computed: mapState(['currentTopic']),
+  computed: mapState([
+    'user',
+    'currentTopic'
+  ]),
   components: {
     titleCom,
     privatePostItem
@@ -71,58 +109,6 @@ export default {
       })
       this.getPostLoading = false
     },
-    share (id) {
-      this.$prompt('Say something...', '', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel'
-      }).then(({ value }) => {
-        const index = this.messages.findIndex(ele => ele.id === id)
-
-        const parentEle = document.getElementsByClassName('room-content')[0]
-        const ele = this.$refs.messageItem[index].$el
-        const cloneEle = ele.cloneNode(true)
-        cloneEle.classList.add('movingMessage')
-        cloneEle.style.width = (document.getElementsByClassName('topic-layout')[0].offsetWidth - 20) + 'px'
-        cloneEle.style.top = (ele.getBoundingClientRect().top + parentEle.scrollTop - 60) + 'px'
-        cloneEle.style.left = ele.getBoundingClientRect().left + 'px'
-        parentEle.appendChild(cloneEle)
-
-        this.showDetailDialog = false
-
-        createPost({
-          sid: this.sid,
-          room_id: Number(localStorage.getItem('roomid')),
-          timeline_type: 0,
-          post_type: 1,
-          topic: this.currentTopic,
-          post_shared_id: id,
-          post_content: value
-        }).then(({ data }) => {
-          if (data.result_code === 2000) {
-            const newPostId = data.data.id
-            this.$bus.$emit('share-success', newPostId)
-
-            const targetTop = document.getElementById('moments-ul').getBoundingClientRect().top + parentEle.scrollTop - 60
-            const targetLeft = document.getElementById('moments-ul').getBoundingClientRect().left
-            cloneEle.style.top = targetTop + 'px'
-            cloneEle.style.left = targetLeft + 'px'
-
-            this.$bus.$on('share-success-refresh', _id => {
-              if (_id === newPostId) {
-                setTimeout(() => {
-                  cloneEle.remove()
-                }, 1000)
-              }
-            })
-
-            this.messages[index].timeline_type = 2
-          } else {
-            cloneEle.remove()
-            this.$message.error('Failed!')
-          }
-        })
-      }).catch(_ => {})
-    },
     async getNews() {
       this.getNewPostLoading = true
       this.newCount = 0
@@ -136,6 +122,62 @@ export default {
         this.messages.unshift(...res.data.data)
       })
       this.getNewPostLoading = false
+    },
+    share (id) {
+      this.shareContent = ''
+      this.showShareDialog = true
+      this.sharedPost = this.messages.find(ele => ele.id === id)
+      this.$nextTick(() => {
+        this.$refs.shareInput.focus()
+      })
+    },
+    submitShare () {
+      const { id } = this.sharedPost
+      const index = this.messages.findIndex(ele => ele.id === id)
+
+      const parentEle = document.getElementsByClassName('room-content')[0]
+      const ele = this.$refs.messageItem[index].$el
+      const cloneEle = ele.cloneNode(true)
+      cloneEle.classList.add('movingMessage')
+      cloneEle.style.width = (document.getElementsByClassName('topic-layout')[0].offsetWidth - 20) + 'px'
+      cloneEle.style.top = (ele.getBoundingClientRect().top + parentEle.scrollTop - 60) + 'px'
+      cloneEle.style.left = ele.getBoundingClientRect().left + 'px'
+      parentEle.appendChild(cloneEle)
+
+      this.showShareDialog = false
+
+      createPost({
+        sid: this.sid,
+        room_id: Number(localStorage.getItem('roomid')),
+        timeline_type: 0,
+        post_type: 1,
+        topic: this.currentTopic,
+        post_shared_id: id,
+        post_content: this.shareContent
+      }).then(({ data }) => {
+        if (data.result_code === 2000) {
+          const newPostId = data.data.id
+          this.$bus.$emit('share-success', newPostId)
+
+          const targetTop = document.getElementById('moments-ul').getBoundingClientRect().top + parentEle.scrollTop - 60
+          const targetLeft = document.getElementById('moments-ul').getBoundingClientRect().left
+          cloneEle.style.top = targetTop + 'px'
+          cloneEle.style.left = targetLeft + 'px'
+
+          this.$bus.$on('share-success-refresh', _id => {
+            if (_id === newPostId) {
+              setTimeout(() => {
+                cloneEle.remove()
+              }, 1000)
+            }
+          })
+
+          this.messages[index].timeline_type = 2
+        } else {
+          cloneEle.remove()
+          this.$message.error('Failed!')
+        }
+      })
     }
   },
   mounted () {
@@ -202,4 +244,11 @@ export default {
     text-align center
     padding-bottom 10px
     color #999
+
+.share-dialog
+  >>> .el-dialog__body
+    padding 10px 10px 0
+
+  >>> .el-dialog__footer
+    padding 0 0 15px
 </style>
