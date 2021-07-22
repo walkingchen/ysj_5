@@ -4,7 +4,9 @@ from flask import json
 from sqlalchemy import inspect
 
 import config
-from models import RoomPrototype, RoomMember, PostComment, Serializer, User, PostLike, PostFactcheck, Post, PostFlag
+from extensions import db
+from models import RoomPrototype, RoomMember, PostComment, Serializer, User, PostLike, PostFactcheck, Post, PostFlag, \
+    PostStatus, CommentStatus
 
 
 # 查询好友网络
@@ -80,6 +82,17 @@ def process_post(post, user_id):
         comment_serialized = Serializer.serialize(comment)
         user = query_user(user_id=comment.user_id)
         comment_serialized['user'] = user._asdict()
+
+        # check read status
+        comment_status = CommentStatus.query.filter_by(comment_id=comment_serialized['id'], user_id=user_id).first()
+        if comment_status is None:
+            comment_serialized['read_status'] = 0    # unread
+            comment_status = CommentStatus(comment_id=comment_serialized['id'], user_id=user_id, read_status=1)
+            db.session.add(comment_status)
+            db.session.commit()
+        else:
+            comment_serialized['read_status'] = 1    # read
+
         comments_serialized.append(comment_serialized)
     post['comments'] = comments_serialized
 
@@ -149,6 +162,15 @@ def process_post(post, user_id):
         post['post_shared'] = process_post_serialized
     else:
         post['post_shared'] = None
+
+    post_status = PostStatus.query.filter_by(post_id=post['id'], user_id=user_id).first()
+    if post_status is None:
+        post['read_status'] = '0'   # unread
+        post_status = PostStatus(post_id=post['id'], user_id=user_id, read_status=1)
+        db.session.add(post_status)
+        db.session.commit()
+    else:
+        post['read_status'] = '1'   # read
 
 
 def object_as_dict(obj):

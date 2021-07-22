@@ -83,6 +83,17 @@ class Photo(db.Model):
     created_at = db.Column(db.DateTime, server_default=db.FetchedValue())
 
 
+class PostStatus(db.Model):
+    __tablename__ = 'tb_post_status'
+
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer)
+    user_id = db.Column(db.Integer)
+    read_status = db.Column(db.Integer, server_default=db.FetchedValue())
+    created_at = db.Column(db.DateTime, server_default=db.FetchedValue())
+    updated_at = db.Column(db.DateTime, server_default=db.FetchedValue())
+
+
 class PostDaily(db.Model):
     __tablename__ = 'tb_post_daily'
 
@@ -107,6 +118,17 @@ class PostComment(db.Model):
     def serialize(self):
         d = Serializer.serialize(self)
         return d
+
+
+class CommentStatus(db.Model):
+    __tablename__ = 'tb_comment_status'
+
+    id = db.Column(db.Integer, primary_key=True)
+    comment_id = db.Column(db.Integer)
+    user_id = db.Column(db.Integer)
+    read_status = db.Column(db.Integer, server_default=db.FetchedValue())
+    created_at = db.Column(db.DateTime, server_default=db.FetchedValue())
+    updated_at = db.Column(db.DateTime, server_default=db.FetchedValue())
 
 
 class PostLike(db.Model):

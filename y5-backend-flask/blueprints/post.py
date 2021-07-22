@@ -9,7 +9,7 @@ import config
 from entity.Resp import Resp
 from extensions import db, socketio
 from models import Post, PostComment, PostLike, Serializer, Timeline, User, Room, RoomPrototype, RoomMember, \
-    PostFactcheck, PostFlag, PostDaily, Photo
+    PostFactcheck, PostFlag, PostDaily, Photo, PostStatus
 from service import get_friends, process_posts, process_post
 from utils import rename_image, resize_image
 
