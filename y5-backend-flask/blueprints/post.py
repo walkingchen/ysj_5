@@ -236,7 +236,16 @@ class PostApi(Resource):
         posts_serialized = Serializer.serialize_list(posts)
         process_posts(posts=posts_serialized, user_id=user_id)
 
-        return jsonify(Resp(result_code=2000, result_msg='success', data=posts_serialized).__dict__)
+        unread_list = []
+        read_list = []
+        for post in posts_serialized:
+            if post['read_status'] is False or post['comment_status'] is False:
+                unread_list.append(post)
+            else:
+                read_list.append(post)
+        all_posts = unread_list + read_list
+
+        return jsonify(Resp(result_code=2000, result_msg='success', data=all_posts).__dict__)
 
 
 api.add_resource(
