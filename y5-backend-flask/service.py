@@ -88,7 +88,7 @@ def process_post(post, user_id):
         comment_status = CommentStatus.query.filter_by(comment_id=comment_serialized['id'], user_id=user_id).first()
         if comment_status is None:
             comment_serialized['read_status'] = False    # unread
-            post['has_comment_unread'] = False
+            post['comments_all_read'] = False
             comment_status = CommentStatus(comment_id=comment_serialized['id'], user_id=user_id, read_status=1)
             db.session.add(comment_status)
             db.session.commit()
