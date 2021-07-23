@@ -86,12 +86,12 @@ def process_post(post, user_id):
         # check read status
         comment_status = CommentStatus.query.filter_by(comment_id=comment_serialized['id'], user_id=user_id).first()
         if comment_status is None:
-            comment_serialized['read_status'] = 0    # unread
+            comment_serialized['read_status'] = False    # unread
             comment_status = CommentStatus(comment_id=comment_serialized['id'], user_id=user_id, read_status=1)
             db.session.add(comment_status)
             db.session.commit()
         else:
-            comment_serialized['read_status'] = 1    # read
+            comment_serialized['read_status'] = True    # read
 
         comments_serialized.append(comment_serialized)
     post['comments'] = comments_serialized
@@ -165,12 +165,12 @@ def process_post(post, user_id):
 
     post_status = PostStatus.query.filter_by(post_id=post['id'], user_id=user_id).first()
     if post_status is None:
-        post['read_status'] = '0'   # unread
+        post['read_status'] = False   # unread
         post_status = PostStatus(post_id=post['id'], user_id=user_id, read_status=1)
         db.session.add(post_status)
         db.session.commit()
     else:
-        post['read_status'] = '1'   # read
+        post['read_status'] = True   # read
 
 
 def object_as_dict(obj):
