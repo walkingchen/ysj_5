@@ -239,7 +239,7 @@ class PostApi(Resource):
         unread_list = []
         read_list = []
         for post in posts_serialized:
-            if post['read_status'] is False or post['has_comment_unread'] is False:
+            if post['read_status'] is False or post['comments_all_read'] is False:
                 unread_list.append(post)
             else:
                 read_list.append(post)

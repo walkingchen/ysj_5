@@ -76,7 +76,7 @@ def process_photo(post):
 
 
 def process_post(post, user_id):
-    post['has_comment_unread'] = False
+    post['comments_all_read'] = True
     comments = PostComment.query.filter_by(post_id=post['id']).order_by(PostComment.created_at.desc()).all()
     comments_serialized = []
     for comment in comments:
@@ -88,7 +88,7 @@ def process_post(post, user_id):
         comment_status = CommentStatus.query.filter_by(comment_id=comment_serialized['id'], user_id=user_id).first()
         if comment_status is None:
             comment_serialized['read_status'] = False    # unread
-            post['has_comment_unread'] = True
+            post['has_comment_unread'] = False
             comment_status = CommentStatus(comment_id=comment_serialized['id'], user_id=user_id, read_status=1)
             db.session.add(comment_status)
             db.session.commit()
