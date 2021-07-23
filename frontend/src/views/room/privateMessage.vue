@@ -70,7 +70,6 @@ import privatePostItem from '@components/privatePostItem'
 import { getPosts, createPost } from '@api/post'
 
 export default {
-  props: ['sid'],
   data() {
     return {
       getPostLoading: true,
@@ -84,6 +83,7 @@ export default {
     }
   },
   computed: mapState([
+    'sid',
     'user',
     'currentTopic'
   ]),

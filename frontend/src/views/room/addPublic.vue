@@ -42,7 +42,6 @@ import {
 } from '@api/post'
 
 export default {
-  props: ['sid'],
   data () {
     return {
       postContent: '',
@@ -53,7 +52,10 @@ export default {
       submitPostLoading: false
     }
   },
-  computed: mapState(['currentTopic']),
+  computed: mapState([
+    'sid',
+    'currentTopic'
+  ]),
   methods: {
     selectFile () {
       this.$refs.fileInput.click()

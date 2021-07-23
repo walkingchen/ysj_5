@@ -88,13 +88,17 @@ export default {
     restComments () {
       return this._comments.slice(2)
     },
-    ...mapState(['user'])
+    ...mapState([
+      'sid',
+      'user'
+    ])
   },
   methods: {
     postComment () {
       commentPost({
-        comment_content: this.comment_content,
-        post_id: this.postId
+        sid: this.sid,
+        post_id: this.postId,
+        comment_content: this.comment_content
       }).then(() => {
         this.$emit('action-success', this.postId)
         this.comment_content = ''

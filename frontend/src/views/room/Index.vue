@@ -9,10 +9,10 @@
         <el-row :gutter="20">
           <el-col :span="8">
             <daily-digest />
-            <private-message :sid="sid" />
+            <private-message />
           </el-col>
           <el-col :span="11">
-            <add-public :sid="sid" @on-success="addPostSuccess" />
+            <add-public @on-success="addPostSuccess" />
             <topic-of-day />
             <public-timeline ref="publicTimeline" />
           </el-col>
@@ -68,7 +68,6 @@ export default {
     return {
       roomInfo: [],
       socket: null,
-      sid: '',
       chatShow: false,
       startChatUser: {}
     }
@@ -102,7 +101,7 @@ export default {
 
         this.socket = io({ reconnection: false })
         this.socket.on('connect', () => {
-          this.sid = this.socket.io.engine.id
+          this.$store.commit('setSid', this.socket.io.engine.id)
 
           this.socket.emit('room_join', { // 加入房间
             room_id: this.roomInfo.id,

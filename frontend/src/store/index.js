@@ -5,16 +5,20 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    sid: '',
     user: {},
     friends: [],
     topic: [],
     currentTopic: null
   },
   mutations: {
-    setUser(state, data) {
+    setSid (state, data) {
+      state.sid = data
+    },
+    setUser (state, data) {
       state.user = data
     },
-    setFriends(state, data) {
+    setFriends (state, data) {
       state.friends = data
     },
     setTopic (state, data) {
