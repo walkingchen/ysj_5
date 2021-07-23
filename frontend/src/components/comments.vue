@@ -1,7 +1,7 @@
 <template>
   <div class="comments-box">
     <ul>
-      <li class="comment-item" v-for="comment in firstTwoComments" :key="comment.id">
+      <li v-for="comment in firstTwoComments" :key="comment.id" class="comment-item" :class="{unread: !comment.read_status}">
         <div class="comment-item-content">
           <el-avatar
             :size="32"
@@ -23,7 +23,7 @@
         </el-button>
       </div>
       <div v-show="showMoreComments">
-        <li class="comment-item" v-for="comment in restComments" :key="comment.id">
+        <li v-for="comment in restComments" :key="comment.id" class="comment-item" :class="{unread: !comment.read_status}">
           <div class="comment-item-content">
             <el-avatar
               :size="32"
@@ -107,13 +107,13 @@ export default {
 <style lang="stylus" scoped>
 .comments-box
   border-top 1px solid #e4e7ed
-  padding 8px
+  padding 8px 0
 
 .user-portrait
   margin-right 12px
 
 .comment-item
-  padding 8px 0
+  padding 8px
 
   .comment-item-content
     display flex

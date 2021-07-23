@@ -1,5 +1,5 @@
 <template>
-  <div class="privateMessageItem">
+  <div class="privateMessageItem" :class="{unread: !item.read_status}">
     <p class="title">{{ item.post_title }}</p>
     <p class="content">
       {{ item.abstract }}

@@ -1,5 +1,5 @@
 <template>
-  <div class="moments-item">
+  <div class="moments-item" :class="{unread: item.unread}">
     <div class="moments-item-content">
       <el-avatar
         :size="40"

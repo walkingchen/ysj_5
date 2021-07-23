@@ -109,8 +109,12 @@ export default {
             username: me.username
           })
 
-          this.socket.on('post_pull', data => {
+          this.socket.on('post_pull', data => { // 有新的post
             this.$bus.$emit('new_post', data)
+          })
+
+          this.socket.on('comment_pull', data => { // 有新的comment
+            this.$bus.$emit('new_comment', data)
           })
 
           // 接收即时聊天消息
@@ -232,4 +236,7 @@ export default {
 
   .count
     margin-right 8px
+
+.unread
+  background-color #ff9
 </style>
