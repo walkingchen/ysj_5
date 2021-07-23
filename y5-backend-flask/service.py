@@ -76,6 +76,7 @@ def process_photo(post):
 
 
 def process_post(post, user_id):
+    post['has_comment_unread'] = False
     comments = PostComment.query.filter_by(post_id=post['id']).order_by(PostComment.created_at.desc()).all()
     comments_serialized = []
     for comment in comments:
