@@ -355,7 +355,6 @@ class CommentApi(Resource):
             post_id = data['post_id']
             comment_content = data['comment_content']
             sid = data['sid']
-            topic = data['topic']
         except KeyError:
             return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
 
@@ -366,7 +365,7 @@ class CommentApi(Resource):
         post = Post.query.get(post_id)
         socketio.emit('comment_pull',
                       {
-                          'topic': topic,
+                          'topic': post.topic,
                           'post_id': post_id,
                           'comment_id': comment.id
                       },
