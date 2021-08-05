@@ -18,7 +18,7 @@
         </div>
       </li>
       <div v-if="restComments.length > 0" class="showMoreComments-btn">
-        <el-button type="text" size="mini" @click="showMoreComments = !showMoreComments">
+        <el-button type="text" size="mini" @click="toggleShowMoreComments">
           <v-icon :name="showMoreComments ? 'angle-double-down' : 'angle-double-right'" />
         </el-button>
       </div>
@@ -94,6 +94,9 @@ export default {
     ])
   },
   methods: {
+    toggleShowMoreComments () {
+      this.showMoreComments = !this.showMoreComments
+    },
     postComment () {
       commentPost({
         sid: this.sid,

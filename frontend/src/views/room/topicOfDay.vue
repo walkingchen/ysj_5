@@ -2,11 +2,11 @@
   <el-card class="topic-layout">
     <title-com title="Topic of The Day" />
 
-    <div v-for="item in topicList" :key="item.id" class="topic-item">
+    <div v-for="(item, index) in topicList" :key="item.id" class="topic-item">
       <private-post-item :item="item">
         <div class="moment-actions">
           <span class="count" v-if="item.comments.length > 0">{{ item.comments.length }}</span>
-          <button><v-icon name="comment-dots" /></button>
+          <button @click="toggleShowMoreComments(index)"><v-icon name="comment-dots" /></button>
           <span class="count">{{ item.flags.count }}</span>
           <button @click="flag(item)" :class="{ done: item.flagged }">
             <v-icon :name="item.flagged ? 'flag' : 'regular/flag'" />
@@ -18,7 +18,7 @@
         </div>
       </private-post-item>
 
-      <comments :comments="item.comments" :post-id="item.id" @action-success="updateTopic" />
+      <comments ref="comments" :comments="item.comments" :post-id="item.id" @action-success="updateTopic" />
     </div>
   </el-card>
 </template>
@@ -84,6 +84,11 @@ export default {
         })
       }
       this.updateTopic(item.id)
+    },
+    toggleShowMoreComments (index) {
+      if (this.topicList[index].comments.length > 2) {
+        this.$refs.comments[index].toggleShowMoreComments()
+      }
     }
   },
   watch: {

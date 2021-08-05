@@ -24,7 +24,7 @@
     <div class="moment-actions">
       <!-- <button @click="factcheck(item)" :class="{ done: item.factcheck }"><v-icon name="exclamation-circle" /></button> -->
       <span class="count" v-if="item.comments.length > 0">{{ item.comments.length }}</span>
-      <button @click="showComments = !showComments"><v-icon name="comment-dots" /></button>
+      <button @click="toggleShowMoreComments"><v-icon name="comment-dots" /></button>
       <!-- <span class="count">{{ item.dislikeCount }}</span>
       <button @click="like(item, 0)" :class="{ done: item.disliked }">
         <v-icon :name="item.disliked ? 'thumbs-down' : 'regular/thumbs-down'" />
@@ -40,6 +40,7 @@
     </div>
 
     <comments
+      ref="comments"
       :comments="item.comments"
       :post-id="item.id"
       style="margin-top: 10px"
@@ -132,6 +133,11 @@ export default {
         await checkPost({ post_id: item.id })
       }
       this.$emit('action-success', item.id)
+    },
+    toggleShowMoreComments () {
+      if (this.item.comments.length > 2) {
+        this.$refs.comments.toggleShowMoreComments()
+      }
     }
   }
 }
