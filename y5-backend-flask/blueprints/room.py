@@ -9,7 +9,7 @@ from flask_restful import Api, Resource
 from entity.Resp import Resp
 from entity.RoomResp import RoomResp
 from extensions import db, socketio
-from models import Room, Timeline, RoomMember, RoomPrototype, Serializer, User
+from models import Room, Timeline, RoomMember, RoomPrototype, Serializer, User, Redspot
 from service import get_friends, query_membership
 
 # error code: 401x
@@ -40,10 +40,14 @@ class RoomApi(Resource):
             if m is not None:
                 members['friends'].append(m._asdict())
 
+        redspot_list = Redspot.query.filter_by(room_id=room.room_id, user_id=current_user.id).all()
+        redspot_list_serialized = Serializer.serialize_list(redspot_list)
+
         room_serialized = room.serialize()
         room_resp = RoomResp(
             room=room_serialized,
-            members=members
+            members=members,
+            redspot_list=redspot_list_serialized
         )
 
         socketio.emit('friend_online', {'user_id': current_user.id}, room_id=id)

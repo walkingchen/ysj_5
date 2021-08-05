@@ -244,6 +244,8 @@ class PostApi(Resource):
             else:
                 read_list.append(post)
         all_posts = unread_list + read_list
+        if len(unread_list) == 0:
+            pass    # FIXME
 
         return jsonify(Resp(result_code=2000, result_msg='success', data=all_posts).__dict__)
 

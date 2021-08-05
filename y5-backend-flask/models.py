@@ -131,6 +131,22 @@ class CommentStatus(db.Model):
     updated_at = db.Column(db.DateTime, server_default=db.FetchedValue())
 
 
+class Redspot(db.Model):
+    __tablename__ = 'tb_redspot'
+
+    id = db.Column(db.Integer, primary_key=True)
+    room = db.Column(db.Integer)
+    user_id = db.Column(db.Integer)
+    topic = db.Column(db.Integer)
+    unread = db.Column(db.Integer)
+    created_at = db.Column(db.DateTime, server_default=db.FetchedValue())
+    updated_at = db.Column(db.DateTime, server_default=db.FetchedValue())
+
+    def serialize(self):
+        d = Serializer.serialize(self)
+        return d
+
+
 class PostLike(db.Model):
     __tablename__ = 'tb_post_like'
 
