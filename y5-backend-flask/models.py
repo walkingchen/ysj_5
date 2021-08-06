@@ -135,7 +135,7 @@ class Redspot(db.Model):
     __tablename__ = 'tb_redspot'
 
     id = db.Column(db.Integer, primary_key=True)
-    room = db.Column(db.Integer)
+    room_id = db.Column(db.Integer)
     user_id = db.Column(db.Integer)
     topic = db.Column(db.Integer)
     unread = db.Column(db.Integer)

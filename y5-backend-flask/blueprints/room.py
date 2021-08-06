@@ -9,7 +9,7 @@ from flask_restful import Api, Resource
 from entity.Resp import Resp
 from entity.RoomResp import RoomResp
 from extensions import db, socketio
-from models import Room, Timeline, RoomMember, RoomPrototype, Serializer, User, Redspot
+from models import Room, Timeline, RoomMember, RoomPrototype, Serializer, User, Redspot, Post
 from service import get_friends, query_membership
 
 # error code: 401x

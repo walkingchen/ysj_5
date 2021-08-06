@@ -9,7 +9,7 @@ import config
 from entity.Resp import Resp
 from extensions import db, socketio
 from models import Post, PostComment, PostLike, Serializer, Timeline, User, Room, RoomPrototype, RoomMember, \
-    PostFactcheck, PostFlag, PostDaily, Photo, PostStatus
+    PostFactcheck, PostFlag, PostDaily, Photo, PostStatus, Redspot
 from service import get_friends, process_posts, process_post
 from utils import rename_image, resize_image
 
@@ -102,6 +102,22 @@ class PostApi(Resource):
             post_shared = Post.query.filter_by(id=post_shared_id).first()
             post_shared.timeline_type = 2
             db.session.add(post_shared)
+            db.session.commit()
+
+        friends = get_friends(room=room_id, user_id=user_id)
+        for friend in friends:
+            redspot = Redspot.query.filter_by(room_id=room_id, user_id=friend.id, topic=topic).first()
+            if redspot is None:
+                redspot = Redspot(
+                    room_id=room_id,
+                    user_id=friend.id,
+                    topic=topic,
+                    unread=1
+                )
+            else:
+                redspot.unread = 1
+
+            db.session.add(redspot)
             db.session.commit()
 
         socketio.emit('post_pull',
@@ -244,8 +260,20 @@ class PostApi(Resource):
             else:
                 read_list.append(post)
         all_posts = unread_list + read_list
-        if len(unread_list) == 0:
-            pass    # FIXME
+
+        redspot = Redspot.query.filter_by(room_id=room_id, user_id=current_user.id, topic=topic).first()
+        if redspot is None:
+            redspot = Redspot(
+                room_id=room_id,
+                user_id=current_user.id,
+                topic=topic,
+                unread=0
+            )
+        else:
+            redspot.unread = 0
+
+        db.session.add(redspot)
+        db.session.commit()
 
         return jsonify(Resp(result_code=2000, result_msg='success', data=all_posts).__dict__)
 
