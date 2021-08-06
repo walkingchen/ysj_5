@@ -104,7 +104,8 @@ class PostApi(Resource):
             db.session.add(post_shared)
             db.session.commit()
 
-        friends = get_friends(room=room_id, user_id=user_id)
+        room = Room.query.filter_by(id=room_id).first()
+        friends = get_friends(room=room, user_id=user_id)
         for friend in friends:
             redspot = Redspot.query.filter_by(room_id=room_id, user_id=friend.id, topic=topic).first()
             if redspot is None:
