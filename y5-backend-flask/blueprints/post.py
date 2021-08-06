@@ -115,10 +115,9 @@ class PostApi(Resource):
                     topic=topic,
                     unread=1
                 )
+                db.session.add(redspot)
             else:
                 redspot.unread = 1
-
-            db.session.add(redspot)
             db.session.commit()
 
         socketio.emit('post_pull',
