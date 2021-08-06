@@ -107,11 +107,11 @@ class PostApi(Resource):
         room = Room.query.filter_by(id=room_id).first()
         friends = get_friends(room=room, user_id=user_id)
         for friend in friends:
-            redspot = Redspot.query.filter_by(room_id=room_id, user_id=friend.id, topic=topic).first()
+            redspot = Redspot.query.filter_by(room_id=room_id, user_id=friend.user_id, topic=topic).first()
             if redspot is None:
                 redspot = Redspot(
                     room_id=room_id,
-                    user_id=friend.id,
+                    user_id=friend.user_id,
                     topic=topic,
                     unread=1
                 )
