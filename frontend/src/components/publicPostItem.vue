@@ -87,7 +87,11 @@ export default {
       if (item.flagged) {
         await deleteFlag(item.flagged.id)
       } else {
-        await flagPost(item.id)
+        await flagPost(item.id).then(res => {
+          if (res.data.result_code === 2000) {
+            this.$message.success('You\'ve flagged the post, you can cancel it by reclicking the flag button.')
+          }
+        })
       }
       this.$emit('action-success', item.id)
     },
