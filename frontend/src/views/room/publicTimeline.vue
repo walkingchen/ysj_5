@@ -151,6 +151,7 @@ export default {
     currentTopic: {
       handler (topic) {
         if (topic) {
+          this.noMoreData = false
           this.me_post_moments = []
           this.moments = []
           this.getMomentList()
