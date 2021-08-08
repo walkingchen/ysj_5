@@ -231,7 +231,7 @@ class PostApi(Resource):
                     Post.timeline_type.in_(types),
                     Post.created_at > last_update,
                     Post.topic == topic
-                ).order_by(Post.created_at.desc()).limit(MSG_SIZE_INIT).all()
+                ).order_by(Post.created_at.desc()).all()
             else:
                 posts = Post.query.filter(
                     Post.room_id == room_id,
@@ -239,14 +239,14 @@ class PostApi(Resource):
                     Post.timeline_type.in_(types),
                     Post.created_at < last_update,
                     Post.topic == topic
-                ).order_by(Post.created_at.desc()).limit(MSG_SIZE_INIT).all()
+                ).order_by(Post.created_at.desc()).all()
         else:
             posts = Post.query.filter(
                 Post.room_id == room_id,
                 Post.user_id.in_(friend_ids),
                 Post.timeline_type.in_(types),
                 Post.topic == topic
-            ).order_by(Post.created_at.desc()).limit(MSG_SIZE_INIT).all()
+            ).order_by(Post.created_at.desc()).all()
 
         # 为每篇post添加评论、点赞
         posts_serialized = Serializer.serialize_list(posts)
