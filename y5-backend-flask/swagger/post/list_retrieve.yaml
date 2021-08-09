@@ -17,11 +17,11 @@ parameters:
     type: string
     required: false
     description: datetime format, 2020-04-11T22:58:06, null = pull newest posts
-  - name: pull_new
-    in: query
-    type: string
-    required: true
-    description: 1 = pull new posts, 0 = pull old posts, 2 = shared
+#  - name: pull_new
+#    in: query
+#    type: string
+#    required: true
+#    description: 1 = pull new posts, 0 = pull old posts, 2 = shared
   - name: topic
     in: query
     type: integer
