@@ -20,8 +20,7 @@
       </private-post-item>
     </div>
 
-    <div v-if="getPostLoading" class="loading-layout"><i class="el-icon-loading"></i></div>
-    <div v-else class="nomore-layout">No more~</div>
+    <div class="nomore-layout">No more~</div>
 
     <el-dialog
       :visible.sync="showShareDialog"
@@ -67,7 +66,6 @@ import { getPosts, createPost } from '@api/post'
 export default {
   data() {
     return {
-      getPostLoading: true,
       messages: [],
       newCount: 0,
       getNewPostLoading: false,
@@ -87,7 +85,6 @@ export default {
   },
   methods: {
     async getMessageList() {
-      this.getPostLoading = true
       getPosts({
         room_id: localStorage.getItem('roomid'),
         timeline_type: 1,
@@ -95,7 +92,6 @@ export default {
       }).then(res => {
         this.messages.push(...res.data.data)
       })
-      this.getPostLoading = false
     },
     async getNews() {
       this.getNewPostLoading = true
@@ -220,11 +216,6 @@ export default {
     height 24px
     padding 0 8px
     line-height 22px
-
-  .loading-layout
-    text-align center
-    font-size 20px
-    color #409eff
 
   .nomore-layout
     text-align center

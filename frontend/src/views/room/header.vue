@@ -54,6 +54,7 @@ export default {
     },
     handleLogout() {
       logout()
+      this.$store.commit('setCurrentTopic', null)
       localStorage.removeItem('roomid')
       this.$emit('logout')
       this.$router.push({ name: 'Login' })
