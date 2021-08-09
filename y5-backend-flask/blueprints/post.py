@@ -191,7 +191,6 @@ class PostApi(Resource):
         try:
             room_id = int(data['room_id'])
             timeline_type = int(data['timeline_type'])
-            # pull_new = int(data['pull_new'])  # 1: 新posts 0: last_update前的posts
             topic = int(data['topic'])
         except KeyError:
             return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
@@ -206,6 +205,10 @@ class PostApi(Resource):
         # fixme
         if 'page_size' in data:
             page_size = data['page_size']
+
+        pull_new = None
+        if 'pull_new' in data:
+            pull_new = int(data['pull_new'])  # 1: 新posts 0: last_update前的posts
 
         user_id = current_user.id
         if user_id is None:
