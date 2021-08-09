@@ -20,13 +20,8 @@
       </private-post-item>
     </div>
 
-    <div class="get-more-btn" v-show="!getPostLoading && !noMoreData">
-      <el-button type="text" @click="getMessageList">see more</el-button>
-    </div>
-
-    <div class="loading-layout" v-show="getPostLoading"><i class="el-icon-loading"></i></div>
-
-    <div class="nomore-layout" v-show="noMoreData">No more~</div>
+    <div v-if="getPostLoading" class="loading-layout"><i class="el-icon-loading"></i></div>
+    <div v-else class="nomore-layout">No more~</div>
 
     <el-dialog
       :visible.sync="showShareDialog"
@@ -76,7 +71,6 @@ export default {
       messages: [],
       newCount: 0,
       getNewPostLoading: false,
-      noMoreData: false,
       showShareDialog: false,
       sharedPost: {},
       shareContent: ''
@@ -97,14 +91,8 @@ export default {
       getPosts({
         room_id: localStorage.getItem('roomid'),
         timeline_type: 1,
-        pull_new: 0,
-        topic: this.currentTopic,
-        last_update: this.messages.length === 0 ? null : this.messages[this.messages.length - 1].created_at
+        topic: this.currentTopic
       }).then(res => {
-        if (res.data.data.length === 0) {
-          this.noMoreData = true
-        }
-
         this.messages.push(...res.data.data)
       })
       this.getPostLoading = false
@@ -112,13 +100,17 @@ export default {
     async getNews() {
       this.getNewPostLoading = true
       this.newCount = 0
-      await getPosts({
+
+      const params = {
         room_id: localStorage.getItem('roomid'),
-        timeline_type: 1,
-        pull_new: 1,
-        topic: this.currentTopic,
-        last_update: this.messages.length === 0 ? null : this.messages[0].created_at
-      }).then(res => {
+        timeline_type: 0,
+        topic: this.currentTopic
+      }
+      if (this.moments.length > 0) {
+        params.pull_new = 1
+        params.last_update = this.moments[0].created_at
+      }
+      await getPosts(params).then(res => {
         this.messages.unshift(...res.data.data)
       })
       this.getNewPostLoading = false
@@ -191,14 +183,11 @@ export default {
     })
   },
   watch: {
-    currentTopic: {
-      handler (topic) {
-        if (topic) {
-          this.messages = []
-          this.getMessageList()
-        }
-      },
-      immediate: true
+    currentTopic (topic) {
+      if (topic) {
+        this.messages = []
+        this.getMessageList()
+      }
     }
   }
 }
@@ -236,9 +225,6 @@ export default {
     text-align center
     font-size 20px
     color #409eff
-
-  .get-more-btn
-    text-align center
 
   .nomore-layout
     text-align center

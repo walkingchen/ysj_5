@@ -1,10 +1,7 @@
 <template>
   <div class="room-layout">
     <header-com @logout="logout" />
-    <div
-      class="room-content"
-      v-infinite-scroll="updateMoments"
-      infinite-scroll-disabled="stopLoadMoments">
+    <div class="room-content">
       <div class="layout">
         <el-row :gutter="20">
           <el-col :span="8">
@@ -72,15 +69,10 @@ export default {
       startChatUser: {}
     }
   },
-  computed: {
-    stopLoadMoments() {
-      return this.$refs.publicTimeline.stopLoadMoments
-    },
-    ...mapState([
-      'user',
-      'friends'
-    ])
-  },
+  computed: mapState([
+    'user',
+    'friends'
+  ]),
   async created() {
     const rid = localStorage.getItem('roomid')
     getTopic(rid).then(({ data }) => {
@@ -118,7 +110,6 @@ export default {
 
           // 接收即时聊天消息
           this.socket.on('chat_msg', data => {
-            console.log(data)
             const username = this.friends.find(ele => ele.id === data.user_from).nickname
             this.$notify.info({
               message: `【${username}】${data.message_content}`,
@@ -138,9 +129,6 @@ export default {
   methods: {
     addPostSuccess (id) {
       this.$refs.publicTimeline.updatePost(id, 0)
-    },
-    updateMoments() {
-      this.$refs.publicTimeline.getMomentList()
     },
     startChart(user) {
       this.chatShow = true

@@ -12,8 +12,8 @@
           <public-post-item :item="item" @action-success="updatePost" />
         </el-card>
       </li>
-      <div class="loading-layout" v-show="getPostLoading"><i class="el-icon-loading"></i></div>
-      <div class="nomore-layout" v-show="noMoreData">No more~</div>
+      <div v-if="getPostLoading" class="loading-layout"><i class="el-icon-loading"></i></div>
+      <div v-else class="nomore-layout">No more~</div>
     </ul>
 
   </div>
@@ -23,14 +23,12 @@
 import { mapState } from 'vuex'
 import { getPosts, getPost } from '@api/post'
 import publicPostItem from '@components/publicPostItem'
-import { formatDate } from '@assets/utils.js'
 
 export default {
   data() {
     return {
       getPostLoading: true,
       moments: [],
-      noMoreData: false,
       me_post_moments: [],
       newCount: 0,
       getNewPostLoading: false
@@ -40,15 +38,8 @@ export default {
     publicPostItem
   },
   computed: {
-    stopLoadMoments() {
-      return this.getPostLoading || this.noMoreData
-    },
-    members () {
-      return [this.$store.state.user, ...this.$store.state.friends]
-    },
     moment_list() {
-      const moments = [...this.me_post_moments, ...this.moments]
-      return moments.map(item => this.formatPostData(item))
+      return [...this.me_post_moments, ...this.moments]
     },
     ...mapState(['currentTopic'])
   },
@@ -58,51 +49,13 @@ export default {
     })
   },
   methods: {
-    formatPostData (item, showShared = true) {
-      const user = this.members.find(ele => ele.id === item.user_id)
-      const _item = {
-        id: item.id,
-        unread: !item.read_status,
-        isShared: showShared && item.post_shared_id,
-        title: item.post_title,
-        content: item.post_content,
-        photo_uri: item.photo_uri,
-        flagged: item.flagged,
-        flagCount: item.flags.count,
-        liked: item.liked,
-        likeCount: item.likes.count,
-        disliked: item.disliked,
-        dislikeCount: item.dislikes.count,
-        factcheck: item.factcheck,
-        time: formatDate(item.created_at),
-        user: user ? {
-          avatar: user.avatar,
-          nickname: user.nickname
-        } : {
-          avatar: null,
-          nickname: ''
-        },
-        comments: item.comments
-      }
-
-      if (_item.isShared) {
-        _item.postSource = item.post_shared
-      }
-      return _item
-    },
     async getMomentList() {
       this.getPostLoading = true
       await getPosts({
         room_id: localStorage.getItem('roomid'),
         timeline_type: 0,
-        pull_new: 0,
-        topic: this.currentTopic,
-        last_update: this.moments.length === 0 ? null : this.moments[this.moments.length - 1].created_at
+        topic: this.currentTopic
       }).then(res => {
-        if (res.data.data.length === 0) {
-          this.noMoreData = true
-        }
-
         this.moments.push(...res.data.data)
       })
       this.getPostLoading = false
@@ -110,13 +63,17 @@ export default {
     async getNews() {
       this.getNewPostLoading = true
       this.newCount = 0
-      await getPosts({
+
+      const params = {
         room_id: localStorage.getItem('roomid'),
         timeline_type: 0,
-        pull_new: 1,
-        topic: this.currentTopic,
-        last_update: this.moments.length === 0 ? null : this.moments[0].created_at
-      }).then(res => {
+        topic: this.currentTopic
+      }
+      if (this.moments.length > 0) {
+        params.pull_new = 1
+        params.last_update = this.moments[0].created_at
+      }
+      await getPosts(params).then(res => {
         this.me_post_moments = []
         this.moments.unshift(...res.data.data)
       })
@@ -150,16 +107,12 @@ export default {
     })
   },
   watch: {
-    currentTopic: {
-      handler (topic) {
-        if (topic) {
-          this.noMoreData = false
-          this.me_post_moments = []
-          this.moments = []
-          this.getMomentList()
-        }
-      },
-      immediate: true
+    currentTopic (topic) {
+      if (topic) {
+        this.me_post_moments = []
+        this.moments = []
+        this.getMomentList()
+      }
     }
   }
 }

@@ -3,48 +3,48 @@
     <div class="moments-item-content">
       <el-avatar
         :size="40"
-        :src="item.user.avatar ? item.user.avatar : ''"
-        :icon="item.user.avatar ? '' : 'el-icon-user-solid'"
+        :src="_item.user.avatar ? _item.user.avatar : ''"
+        :icon="_item.user.avatar ? '' : 'el-icon-user-solid'"
         class="user-portrait" />
       <div class="moment-text">
         <div>
-          <span class="user-name">{{ item.user.nickname }}</span>
-          <span v-if="item.isShared" class="shared-tip">shared:</span>
-          <span class="moment-time">{{ item.time }}</span>
+          <span class="user-name">{{ _item.user.nickname }}</span>
+          <span v-if="_item.isShared" class="shared-tip">shared:</span>
+          <span class="moment-time">{{ _item.time }}</span>
         </div>
         <div>
-          <p class="content">{{ item.content }}</p>
-          <img v-if="item.photo_uri" :src="item.photo_uri.small" class="post-photo" />
-          <div v-if="item.isShared" class="shared-box">
-            <private-post-item :item="item.postSource" />
+          <p class="content">{{ _item.content }}</p>
+          <img v-if="_item.photo_uri" :src="_item.photo_uri.small" class="post-photo" />
+          <div v-if="_item.isShared" class="shared-box">
+            <private-post-item :item="_item.postSource" />
           </div>
         </div>
       </div>
     </div>
     <div class="moment-actions">
-      <!-- <button @click="factcheck(item)" :class="{ done: item.factcheck }"><v-icon name="exclamation-circle" /></button> -->
-      <span class="count" v-if="item.comments.length > 0">{{ item.comments.length }}</span>
+      <!-- <button @click="factcheck(_item)" :class="{ done: _item.factcheck }"><v-icon name="exclamation-circle" /></button> -->
+      <span class="count" v-if="_item.comments.length > 0">{{ _item.comments.length }}</span>
       <button @click="toggleShowMoreComments"><v-icon name="comment-dots" /></button>
-      <!-- <span class="count">{{ item.dislikeCount }}</span>
-      <button @click="like(item, 0)" :class="{ done: item.disliked }">
-        <v-icon :name="item.disliked ? 'thumbs-down' : 'regular/thumbs-down'" />
+      <!-- <span class="count">{{ _item.dislikeCount }}</span>
+      <button @click="like(_item, 0)" :class="{ done: _item.disliked }">
+        <v-icon :name="_item.disliked ? 'thumbs-down' : 'regular/thumbs-down'" />
       </button> -->
-      <span class="count">{{ item.flagCount }}</span>
-      <button @click="flag(item)" :class="{ done: item.flagged }">
-        <v-icon :name="item.flagged ? 'flag' : 'regular/flag'" />
+      <span class="count">{{ _item.flagCount }}</span>
+      <button @click="flag(_item)" :class="{ done: _item.flagged }">
+        <v-icon :name="_item.flagged ? 'flag' : 'regular/flag'" />
       </button>
-      <span class="count">{{ item.likeCount }}</span>
-      <button @click="like(item)" :class="{ done: item.liked }">
-        <v-icon :name="item.liked ? 'thumbs-up' : 'regular/thumbs-up'" />
+      <span class="count">{{ _item.likeCount }}</span>
+      <button @click="like(_item)" :class="{ done: _item.liked }">
+        <v-icon :name="_item.liked ? 'thumbs-up' : 'regular/thumbs-up'" />
       </button>
     </div>
 
     <comments
       ref="comments"
-      :comments="item.comments"
-      :post-id="item.id"
+      :comments="_item.comments"
+      :post-id="_item.id"
       style="margin-top: 10px"
-      @action-success="$emit('action-success', item.id)" />
+      @action-success="$emit('action-success', _item.id)" />
   </div>
 </template>
 
@@ -69,6 +69,7 @@ import {
 } from '@api/post'
 import privatePostItem from '@components/privatePostItem'
 import comments from '@components/comments'
+import { formatDate } from '@assets/utils.js'
 
 export default {
   props: ['item'],
@@ -81,7 +82,48 @@ export default {
       comment_content: ''
     }
   },
-  computed: mapState(['user']),
+  computed: {
+    members () {
+      return [this.user, ...this.friends]
+    },
+    _item () {
+      const item = this.item
+      const user = this.members.find(ele => ele.id === item.user_id)
+      const _item = {
+        id: item.id,
+        unread: !item.read_status,
+        isShared: item.post_shared_id,
+        title: item.post_title,
+        content: item.post_content,
+        photo_uri: item.photo_uri,
+        flagged: item.flagged,
+        flagCount: item.flags.count,
+        liked: item.liked,
+        likeCount: item.likes.count,
+        disliked: item.disliked,
+        dislikeCount: item.dislikes.count,
+        factcheck: item.factcheck,
+        time: formatDate(item.created_at),
+        user: user ? {
+          avatar: user.avatar,
+          nickname: user.nickname
+        } : {
+          avatar: null,
+          nickname: ''
+        },
+        comments: item.comments
+      }
+
+      if (_item.isShared) {
+        _item.postSource = item.post_shared
+      }
+      return _item
+    },
+    ...mapState([
+      'user',
+      'friends'
+    ])
+  },
   methods: {
     async flag(item) {
       if (item.flagged) {

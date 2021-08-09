@@ -96,14 +96,11 @@ export default {
     }
   },
   watch: {
-    currentTopic: {
-      handler (topic) {
-        if (topic) {
-          this.topicList = []
-          this.updateTopicList()
-        }
-      },
-      immediate: true
+    currentTopic (topic) {
+      if (topic) {
+        this.topicList = []
+        this.updateTopicList()
+      }
     }
   }
 }
