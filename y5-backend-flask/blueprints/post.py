@@ -360,10 +360,9 @@ class TopicApi(Resource):
 
         data = []
         for topic in topics:
-            item = {}
             redspot = Redspot.query.filter_by(room_id=room_id, user_id=current_user.id, topic=topic).first()
             if redspot is None:
-                item['redspot'] = {'topic': topic, 'redspot': False}
+                data.append({'topic': topic, 'redspot': False})
                 redspot = Redspot(
                     room_id=room_id,
                     user_id=current_user.id,
@@ -372,9 +371,8 @@ class TopicApi(Resource):
                 )
                 db.session.add(redspot)
             else:
-                item['redspot'] = {'topic': topic, 'redspot': True}
+                data.append({'topic': topic, 'redspot': True})
                 redspot.unread = 0
-            data.append(item)
             db.session.commit()
 
         return jsonify(Resp(result_code=2000, result_msg="success", data=data).__dict__)
