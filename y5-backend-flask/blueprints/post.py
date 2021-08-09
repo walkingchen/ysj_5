@@ -266,6 +266,7 @@ class PostApi(Resource):
 
         redspot = Redspot.query.filter_by(room_id=room_id, user_id=current_user.id, topic=topic).first()
         if redspot is None:
+            all_posts['redspot'] = False
             redspot = Redspot(
                 room_id=room_id,
                 user_id=current_user.id,
@@ -274,6 +275,7 @@ class PostApi(Resource):
             )
             db.session.add(redspot)
         else:
+            all_posts['redspot'] = True
             redspot.unread = 0
         db.session.commit()
 
