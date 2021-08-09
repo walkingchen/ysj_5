@@ -23,7 +23,7 @@ export default new Vuex.Store({
     },
     setTopic (state, data) {
       state.topic = data
-      state.currentTopic = data[data.length - 1]
+      state.currentTopic = data[data.length - 1].topic
     },
     setCurrentTopic (state, data) {
       state.currentTopic = data
