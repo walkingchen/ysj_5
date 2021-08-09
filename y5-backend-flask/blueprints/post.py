@@ -264,6 +264,7 @@ class PostApi(Resource):
                 read_list.append(post)
         all_posts = unread_list + read_list
 
+        data = {}
         redspot = Redspot.query.filter_by(room_id=room_id, user_id=current_user.id, topic=topic).first()
         if redspot is None:
             data['redspot'] = False
