@@ -13,7 +13,9 @@
               <span class="user-name">{{ comment.user.nickname }}</span>
               <span class="comment-time">{{ comment.created_at }}</span>
             </div>
-            <p>{{ comment.comment_content }}</p>
+            <p>
+              <highlight :content="comment.comment_content" />
+            </p>
           </div>
         </div>
       </li>
@@ -35,7 +37,9 @@
                 <span class="user-name">{{ comment.user.nickname }}</span>
                 <span class="comment-time">{{ comment.created_at }}</span>
               </div>
-              <p>{{ comment.comment_content }}</p>
+              <p>
+                <highlight :content="comment.comment_content" />
+              </p>
             </div>
           </div>
         </li>
@@ -64,11 +68,15 @@
 import { mapState } from 'vuex'
 import 'vue-awesome/icons/angle-double-right'
 import 'vue-awesome/icons/angle-double-down'
+import highlight from './highlight'
 import { commentPost } from '@api/post'
 import { formatDate } from '@assets/utils.js'
 
 export default {
   props: ['comments', 'postId'],
+  components: {
+    highlight
+  },
   data () {
     return {
       showMoreComments: false,

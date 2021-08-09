@@ -2,7 +2,7 @@
   <div class="privateMessageItem" :class="{unread: !item.read_status}">
     <p class="title">{{ item.post_title }}</p>
     <p class="content">
-      {{ item.abstract }}
+      <highlight :content="item.abstract" />
       <el-button size="mini" class="seeMore-btn" @click="showDetail">See More</el-button>
     </p>
     <img v-if="item.photo_uri" :src="item.photo_uri.small" class="post-photo" />
@@ -14,10 +14,14 @@
 </template>
 
 <script>
+import highlight from './highlight'
 import { formatDate } from '@assets/utils.js'
 
 export default {
   props: ['item'],
+  components: {
+    highlight
+  },
   computed: {
     date () {
       return formatDate(this.item.created_at)

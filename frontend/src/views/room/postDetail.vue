@@ -15,16 +15,22 @@
       <h2>{{ detailData.post_title }}</h2>
       <p class="createAt">{{ detailData.created_at }}</p>
       <img v-if="detailData.photo_uri" :src="detailData.photo_uri.medium" />
-      <p class="content">{{ detailData.post_content }}</p>
+      <p class="content">
+        <highlight :content="detailData.post_content" />
+      </p>
     </div>
   </el-dialog>
 </template>
 
 <script>
+import highlight from '@components/highlight'
 import { formatDate } from '@assets/utils.js'
 import { getPost } from '@api/post'
 
 export default {
+  components: {
+    highlight
+  },
   data () {
     return {
       showDetailDialog: false,
@@ -103,4 +109,5 @@ export default {
 
   .content
     font-size 16px
+    white-space pre-wrap
 </style>

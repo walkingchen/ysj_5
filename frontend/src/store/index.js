@@ -9,7 +9,8 @@ export default new Vuex.Store({
     user: {},
     friends: [],
     topic: [],
-    currentTopic: null
+    currentTopic: null,
+    searchKey: ''
   },
   mutations: {
     setSid (state, data) {
@@ -27,6 +28,10 @@ export default new Vuex.Store({
     },
     setCurrentTopic (state, data) {
       state.currentTopic = data
+    },
+    setSearchKey (state, data) {
+      console.log(data)
+      state.searchKey = data
     }
   },
   actions: {

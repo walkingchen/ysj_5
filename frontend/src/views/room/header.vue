@@ -15,7 +15,8 @@
           placeholder="Search..."
           prefix-icon="el-icon-search"
           size="small"
-          v-model="searchKey">
+          v-model="searchKey"
+          @change="handleChangeSearchKey">
         </el-input>
 
         <el-button type="text" @click="handleLogout">
@@ -51,6 +52,10 @@ export default {
     changeTopic (topic, index) {
       this.$store.commit('setCurrentTopic', topic)
       this.hasNew.splice(index, 1, false)
+    },
+    handleChangeSearchKey () {
+      console.log(1)
+      this.$store.commit('setSearchKey', this.searchKey)
     },
     handleLogout() {
       logout()

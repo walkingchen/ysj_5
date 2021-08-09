@@ -13,7 +13,9 @@
           <span class="moment-time">{{ _item.time }}</span>
         </div>
         <div>
-          <p class="content">{{ _item.content }}</p>
+          <p class="content">
+            <highlight :content="_item.content" />
+          </p>
           <img v-if="_item.photo_uri" :src="_item.photo_uri.small" class="post-photo" />
           <div v-if="_item.isShared" class="shared-box">
             <private-post-item :item="_item.postSource" />
@@ -67,6 +69,7 @@ import {
   checkPost,
   deleteCheck
 } from '@api/post'
+import highlight from './highlight'
 import privatePostItem from '@components/privatePostItem'
 import comments from '@components/comments'
 import { formatDate } from '@assets/utils.js'
@@ -74,6 +77,7 @@ import { formatDate } from '@assets/utils.js'
 export default {
   props: ['item'],
   components: {
+    highlight,
     privatePostItem,
     comments
   },
