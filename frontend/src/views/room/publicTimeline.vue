@@ -133,9 +133,11 @@ export default {
           this.moments.splice(momentIndex, 1, res.data.data)
         } else {
           this.$bus.$emit('share-success-refresh', id)
-          setTimeout(() => {
-            this.me_post_moments.unshift(res.data.data)
-          }, 1000)
+          if (this.currentTopic === res.data.data.topic) {
+            setTimeout(() => {
+              this.me_post_moments.unshift(res.data.data)
+            }, 1000)
+          }
         }
       })
     }
