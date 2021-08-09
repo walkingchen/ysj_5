@@ -264,25 +264,7 @@ class PostApi(Resource):
                 read_list.append(post)
         all_posts = unread_list + read_list
 
-        data = {}
-        redspot = Redspot.query.filter_by(room_id=room_id, user_id=current_user.id, topic=topic).first()
-        if redspot is None:
-            data['redspot'] = False
-            redspot = Redspot(
-                room_id=room_id,
-                user_id=current_user.id,
-                topic=topic,
-                unread=0
-            )
-            db.session.add(redspot)
-        else:
-            data['redspot'] = True
-            redspot.unread = 0
-        db.session.commit()
-
-        data['post_list'] = all_posts
-
-        return jsonify(Resp(result_code=2000, result_msg='success', data=data).__dict__)
+        return jsonify(Resp(result_code=2000, result_msg='success', data=all_posts).__dict__)
 
 
 api.add_resource(
@@ -366,9 +348,36 @@ api.add_resource(
 class TopicApi(Resource):
     @swag_from('../swagger/post/topic/list_retrieve.yaml')
     def get(self):
+        data = request.args
+        try:
+            room_id = data['room_id']
+        except TypeError:
+            return jsonify(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
+        except KeyError:
+            return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
+
         topics = [1, 2, 3, 4, 5, 6, 7, 8]
 
-        return jsonify(Resp(result_code=2000, result_msg="success", data=topics).__dict__)
+        data = []
+        for topic in topics:
+            item = {}
+            redspot = Redspot.query.filter_by(room_id=room_id, user_id=current_user.id, topic=topic).first()
+            if redspot is None:
+                item['redspot'] = {'topic': topic, 'redspot': False}
+                redspot = Redspot(
+                    room_id=room_id,
+                    user_id=current_user.id,
+                    topic=topic,
+                    unread=0
+                )
+                db.session.add(redspot)
+            else:
+                item['redspot'] = {'topic': topic, 'redspot': True}
+                redspot.unread = 0
+            data.append(item)
+            db.session.commit()
+
+        return jsonify(Resp(result_code=2000, result_msg="success", data=data).__dict__)
 
 
 api.add_resource(
