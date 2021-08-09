@@ -372,9 +372,9 @@ class TopicApi(Resource):
                 db.session.add(redspot)
             else:
                 if redspot.unread == 0:
-                    data.append({'topic': topic, 'redspot': True})
-                else:
                     data.append({'topic': topic, 'redspot': False})
+                else:
+                    data.append({'topic': topic, 'redspot': True})
                 redspot.unread = 0
             db.session.commit()
 
