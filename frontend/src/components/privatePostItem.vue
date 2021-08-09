@@ -1,6 +1,8 @@
 <template>
   <div class="privateMessageItem" :class="{unread: !item.read_status}">
-    <p class="title">{{ item.post_title }}</p>
+    <p class="title">
+      <highlight :content="item.post_title" />
+    </p>
     <p class="content">
       <highlight :content="item.abstract" />
       <el-button size="mini" class="seeMore-btn" @click="showDetail">See More</el-button>

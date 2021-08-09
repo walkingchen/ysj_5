@@ -12,7 +12,9 @@
       @click="share"
     >Share</el-button>
     <div v-loading="detailLoading">
-      <h2>{{ detailData.post_title }}</h2>
+      <h2>
+        <highlight :content="detailData.post_title" />
+      </h2>
       <p class="createAt">{{ detailData.created_at }}</p>
       <img v-if="detailData.photo_uri" :src="detailData.photo_uri.medium" />
       <p class="content">
