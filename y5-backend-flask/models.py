@@ -71,6 +71,22 @@ class Post(db.Model):
         return d
 
 
+class PostPrivate(db.Model):
+    __tablename__ = 'tb_post_private'
+
+    id = db.Column(db.Integer, primary_key=True)
+    post_title = db.Column(db.String(256))
+    post_content = db.Column(db.Text)
+    photo_uri = db.Column(db.String(128))
+    post_type = db.Column(db.Integer)
+    keywords = db.Column(db.String(256))
+    abstract = db.Column(db.Text)
+    updated_at = db.Column(db.DateTime, nullable=False, server_default=db.FetchedValue())
+    created_at = db.Column(db.DateTime, server_default=db.FetchedValue())
+    room_id = db.Column(db.Integer)
+    topic = db.Column(db.Integer)
+
+
 class Photo(db.Model):
     __tablename__ = 'tb_post_photo'
 

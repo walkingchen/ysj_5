@@ -9,7 +9,7 @@ import config
 from entity.Resp import Resp
 from extensions import db, socketio
 from models import Post, PostComment, PostLike, Serializer, Timeline, User, Room, RoomPrototype, RoomMember, \
-    PostFactcheck, PostFlag, PostDaily, Photo, PostStatus, Redspot
+    PostFactcheck, PostFlag, PostDaily, Photo, PostStatus, Redspot, PostPrivate
 from service import get_friends, process_posts, process_post
 from utils import rename_image, resize_image
 
@@ -222,34 +222,44 @@ class PostApi(Resource):
             friend_ids.append(friend.user_id)
 
         if timeline_type == TIMELINE_PUB:
-            types = [TIMELINE_PUB]
-        else:
-            types = [TIMELINE_PRI, TIMELINE_ALL]
-
-        if last_update is not None:
-            if pull_new == 1:
-                posts = Post.query.filter(
-                    Post.room_id == room_id,
-                    Post.user_id.in_(friend_ids),
-                    Post.timeline_type.in_(types),
-                    Post.created_at > last_update,
-                    Post.topic == topic
-                ).order_by(Post.created_at.desc()).all()
-            else:
-                posts = Post.query.filter(
-                    Post.room_id == room_id,
-                    Post.user_id.in_(friend_ids),
-                    Post.timeline_type.in_(types),
-                    Post.created_at < last_update,
-                    Post.topic == topic
-                ).order_by(Post.created_at.desc()).all()
-        else:
             posts = Post.query.filter(
                 Post.room_id == room_id,
                 Post.user_id.in_(friend_ids),
-                Post.timeline_type.in_(types),
+                Post.timeline_type == timeline_type,
                 Post.topic == topic
             ).order_by(Post.created_at.desc()).all()
+        else:
+            posts = PostPrivate.query.filter(
+                Post.room_id == room_id,
+                Post.user_id is None,
+                Post.timeline_type is TIMELINE_PRI,
+                Post.topic == topic
+            ).order_by(Post.created_at.desc()).all()
+
+        # if last_update is not None:
+        #     if pull_new == 1:
+        #         posts = Post.query.filter(
+        #             Post.room_id == room_id,
+        #             Post.user_id.in_(friend_ids),
+        #             Post.timeline_type.in_(types),
+        #             Post.created_at > last_update,
+        #             Post.topic == topic
+        #         ).order_by(Post.created_at.desc()).all()
+        #     else:
+        #         posts = Post.query.filter(
+        #             Post.room_id == room_id,
+        #             Post.user_id.in_(friend_ids),
+        #             Post.timeline_type.in_(types),
+        #             Post.created_at < last_update,
+        #             Post.topic == topic
+        #         ).order_by(Post.created_at.desc()).all()
+        # else:
+        #     posts = Post.query.filter(
+        #         Post.room_id == room_id,
+        #         Post.user_id.in_(friend_ids),
+        #         Post.timeline_type.in_(types),
+        #         Post.topic == topic
+        #     ).order_by(Post.created_at.desc()).all()
 
         # 为每篇post添加评论、点赞
         posts_serialized = Serializer.serialize_list(posts)
