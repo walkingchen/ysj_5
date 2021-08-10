@@ -9,7 +9,7 @@ import config
 from entity.Resp import Resp
 from extensions import db, socketio
 from models import Post, PostComment, PostLike, Serializer, Timeline, User, Room, RoomPrototype, RoomMember, \
-    PostFactcheck, PostFlag, PostDaily, Photo, PostStatus, Redspot, PostPrivate
+    PostFactcheck, PostFlag, PostDaily, Photo, PostStatus, Redspot
 from service import get_friends, process_posts, process_post
 from utils import rename_image, resize_image
 
@@ -242,10 +242,11 @@ class PostApi(Resource):
                     read_list.append(post)
             all_posts = unread_list + read_list
         else:
-            posts = PostPrivate.query.filter(
-                PostPrivate.room_id == room_id,
-                PostPrivate.topic == topic
-            ).order_by(PostPrivate.created_at.desc()).all()
+            posts = Post.query.filter(
+                Post.room_id == room_id,
+                Post.user_id==None,
+                Post.topic == topic
+            ).order_by(Post.created_at.desc()).all()
             all_posts = Serializer.serialize_list(posts)
 
         # if last_update is not None:
