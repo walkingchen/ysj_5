@@ -9,8 +9,7 @@
       icon="el-icon-share"
       class="share-btn"
       :disabled="detailData.timeline_type === 2"
-      @click="share"
-    >Share</el-button>
+      @click="share" />
     <div v-loading="detailLoading">
       <h2>
         <highlight :content="detailData.post_title" />
@@ -92,8 +91,21 @@ export default {
 
   .share-btn
     position absolute
-    right 10px
-    top 34px
+    right 38px
+    top 10px
+    color #909399
+    padding 0
+    background 0 0
+    border none
+    outline none
+    font-size 16px
+
+    &:hover
+      color #409eff
+
+    &.is-disabled,
+    &.is-disabled:hover
+      color #c0c4cc
 
   h2
     text-align center
@@ -105,6 +117,7 @@ export default {
     padding 8px 0
 
   img
+    display block
     margin 0 auto
     max-width 100%
     margin-bottom 10px
