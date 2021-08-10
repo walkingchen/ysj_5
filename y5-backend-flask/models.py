@@ -86,6 +86,10 @@ class PostPrivate(db.Model):
     room_id = db.Column(db.Integer)
     topic = db.Column(db.Integer)
 
+    def serialize(self):
+        d = Serializer.serialize(self)
+        return d
+
 
 class Photo(db.Model):
     __tablename__ = 'tb_post_photo'
