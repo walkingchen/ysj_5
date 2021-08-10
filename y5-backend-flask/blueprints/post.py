@@ -229,25 +229,12 @@ class PostApi(Resource):
                 Post.topic == topic
             ).order_by(Post.created_at.desc()).all()
 
-            # 为每篇post添加评论、点赞
-            posts_serialized = Serializer.serialize_list(posts)
-            process_posts(posts=posts_serialized, user_id=user_id)
-
-            unread_list = []
-            read_list = []
-            for post in posts_serialized:
-                if post['read_status'] is False or post['comments_all_read'] is False:
-                    unread_list.append(post)
-                else:
-                    read_list.append(post)
-            all_posts = unread_list + read_list
         else:
             posts = Post.query.filter(
                 Post.room_id == room_id,
                 Post.user_id==None,
                 Post.topic == topic
             ).order_by(Post.created_at.desc()).all()
-            all_posts = Serializer.serialize_list(posts)
 
         # if last_update is not None:
         #     if pull_new == 1:
@@ -273,6 +260,19 @@ class PostApi(Resource):
         #         Post.timeline_type.in_(types),
         #         Post.topic == topic
         #     ).order_by(Post.created_at.desc()).all()
+
+        # 为每篇post添加评论、点赞
+        posts_serialized = Serializer.serialize_list(posts)
+        process_posts(posts=posts_serialized, user_id=user_id)
+
+        unread_list = []
+        read_list = []
+        for post in posts_serialized:
+            if post['read_status'] is False or post['comments_all_read'] is False:
+                unread_list.append(post)
+            else:
+                read_list.append(post)
+        all_posts = unread_list + read_list
 
         return jsonify(Resp(result_code=2000, result_msg='success', data=all_posts).__dict__)
 
