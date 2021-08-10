@@ -101,7 +101,6 @@ class PostApi(Resource):
         if post_shared_id is not None:
             post_shared = Post.query.filter_by(id=post_shared_id).first()
             post_shared.timeline_type = 2
-            db.session.add(post_shared)
             db.session.commit()
 
         room = Room.query.filter_by(id=room_id).first()
