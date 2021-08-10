@@ -81,13 +81,18 @@ export default {
     },
     updatePost (id, type = 1) {
       /*
-      * type = 1 更新已经获取过的timeline，用来进行了like/dislike/comment/fackcheck操作后对当前单条timeline进行刷新
-      * type = 0 用来分享了private timeline或新增了一条timeline后将这条timeline直接显示在最上方而不用获取所有新的post
+      * type = 1 更新已经获取过的post，用来对某条post进行了操作后刷新该条post
+      * type = 0 用来分享了private post或发表了一条post后将这条post直接显示在最上方而不用获取所有新的post
       */
       getPost(id).then(res => {
         if (type) {
-          const momentIndex = this.moments.findIndex(ele => ele.id === id)
-          this.moments.splice(momentIndex, 1, res.data.data)
+          if (this.moments.findIndex(ele => ele.id === id) > -1) {
+            const momentIndex = this.moments.findIndex(ele => ele.id === id)
+            this.moments.splice(momentIndex, 1, res.data.data)
+          } else {
+            const momentIndex = this.me_post_moments.findIndex(ele => ele.id === id)
+            this.me_post_moments.splice(momentIndex, 1, res.data.data)
+          }
         } else {
           this.$bus.$emit('share-success-refresh', id)
           if (this.currentTopic === res.data.data.topic) {
