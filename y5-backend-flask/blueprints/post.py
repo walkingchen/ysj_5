@@ -273,6 +273,19 @@ class PostApi(Resource):
                 read_list.append(post)
         all_posts = unread_list + read_list
 
+        redspot = Redspot.query.filter_by(room_id=room_id, user_id=current_user.id, topic=topic).first()
+        if redspot is None:
+            redspot = Redspot(
+                room_id=room_id,
+                user_id=current_user.id,
+                topic=topic,
+                unread=0
+            )
+            db.session.add(redspot)
+        else:
+            redspot.unread = 0
+        db.session.commit()
+
         return jsonify(Resp(result_code=2000, result_msg='success', data=all_posts).__dict__)
 
 
