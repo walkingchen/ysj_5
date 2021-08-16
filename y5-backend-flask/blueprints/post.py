@@ -397,7 +397,7 @@ class TopicApi(Resource):
                     data.append({'topic': topic, 'redspot': False})
                 else:
                     data.append({'topic': topic, 'redspot': True})
-                redspot.unread = 0
+                # redspot.unread = 0    获取topic list时不需要重置，获取post list时才需要
             db.session.commit()
 
         return jsonify(Resp(result_code=2000, result_msg="success", data=data).__dict__)
