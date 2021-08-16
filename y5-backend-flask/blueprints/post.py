@@ -450,6 +450,22 @@ class CommentApi(Resource):
                       room_id=post.room_id,
                       skip_sid=sid)
 
+        room = Room.query.filter_by(id=post.room_id).first()
+        friends = get_friends(room=room, user_id=user_id)
+        for friend in friends:
+            redspot = Redspot.query.filter_by(room_id=post.room_id, user_id=friend.user_id, topic=post.topic).first()
+            if redspot is None:
+                redspot = Redspot(
+                    room_id=post.room_id,
+                    user_id=friend.user_id,
+                    topic=post.topic,
+                    unread=1
+                )
+                db.session.add(redspot)
+            else:
+                redspot.unread += 1
+            db.session.commit()
+
         return jsonify(Resp(result_code=2000, result_msg="success", data=Serializer.serialize(comment)).__dict__)
 
     @swag_from('../swagger/post/comment/delete.yaml')
