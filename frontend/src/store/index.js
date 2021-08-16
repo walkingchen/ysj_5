@@ -30,7 +30,6 @@ export default new Vuex.Store({
       state.currentTopic = data
     },
     setSearchKey (state, data) {
-      console.log(data)
       state.searchKey = data
     }
   },

@@ -54,7 +54,6 @@ export default {
       this.hasNew.splice(index, 1, false)
     },
     handleChangeSearchKey () {
-      console.log(1)
       this.$store.commit('setSearchKey', this.searchKey)
     },
     handleLogout() {
@@ -68,7 +67,7 @@ export default {
   mounted () {
     this.$bus.$on('new_post', data => {
       if (data.topic !== this.currentTopic) {
-        this.hasNew.splice(this.topic.indexOf(data.topic), 1, true)
+        this.hasNew.splice(this._topic.indexOf(data.topic), 1, true)
       }
     })
     this.$bus.$on('new_comment', data => {
