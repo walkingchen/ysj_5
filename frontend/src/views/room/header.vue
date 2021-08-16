@@ -72,7 +72,7 @@ export default {
     })
     this.$bus.$on('new_comment', data => {
       if (data.topic !== this.currentTopic) {
-        this.hasNew.splice(this.topic.indexOf(data.topic), 1, true)
+        this.hasNew.splice(this._topic.indexOf(data.topic), 1, true)
       }
     })
   },
