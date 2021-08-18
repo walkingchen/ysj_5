@@ -43,11 +43,6 @@ export default {
     },
     ...mapState(['currentTopic'])
   },
-  created() {
-    this.$bus.$on('share-success', id => {
-      this.updatePost(id, 0)
-    })
-  },
   methods: {
     async getMomentList() {
       this.getPostLoading = true
@@ -84,30 +79,40 @@ export default {
       * type = 1 更新已经获取过的post，用来对某条post进行了操作后刷新该条post
       * type = 0 用来分享了private post或发表了一条post后将这条post直接显示在最上方而不用获取所有新的post
       */
-      getPost(id).then(res => {
-        if (type) {
-          if (this.moments.findIndex(ele => ele.id === id) > -1) {
-            const momentIndex = this.moments.findIndex(ele => ele.id === id)
-            this.moments.splice(momentIndex, 1, res.data.data)
+      if (!type || this.moment_list.findIndex(ele => ele.id === id) > -1) {
+        getPost(id).then(res => {
+          if (type) {
+            const momentsIndex = this.moments.findIndex(ele => ele.id === id)
+            const mePostsIndex = this.me_post_moments.findIndex(ele => ele.id === id)
+            if (momentsIndex > -1) {
+              this.moments.splice(momentsIndex, 1, res.data.data)
+            } else if (mePostsIndex > -1) {
+              this.me_post_moments.splice(mePostsIndex, 1, res.data.data)
+            }
           } else {
-            const momentIndex = this.me_post_moments.findIndex(ele => ele.id === id)
-            this.me_post_moments.splice(momentIndex, 1, res.data.data)
+            this.$bus.$emit('share-success-refresh', id)
+            if (this.currentTopic === res.data.data.topic) {
+              setTimeout(() => {
+                this.me_post_moments.unshift(res.data.data)
+              }, 1000)
+            }
           }
-        } else {
-          this.$bus.$emit('share-success-refresh', id)
-          if (this.currentTopic === res.data.data.topic) {
-            setTimeout(() => {
-              this.me_post_moments.unshift(res.data.data)
-            }, 1000)
-          }
-        }
-      })
+        })
+      }
     }
   },
   mounted () {
+    this.$bus.$on('share-success', id => {
+      this.updatePost(id, 0)
+    })
     this.$bus.$on('new_post', data => {
       if (data.topic === this.currentTopic && data.timeline_type === 0) {
         this.newCount = data.posts_number
+      }
+    })
+    this.$bus.$on('new_comment', data => {
+      if (data.topic === this.currentTopic) {
+        this.updatePost(data.post_id)
       }
     })
   },

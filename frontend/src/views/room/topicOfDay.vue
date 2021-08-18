@@ -61,10 +61,12 @@ export default {
       })
     },
     updateTopic (id) {
-      getPost(id).then(res => {
-        const index = this.topicList.findIndex(ele => ele.id === id)
-        this.topicList.splice(index, 1, res.data.data)
-      })
+      const index = this.topicList.findIndex(ele => ele.id === id)
+      if (index > -1) {
+        getPost(id).then(res => {
+          this.topicList.splice(index, 1, res.data.data)
+        })
+      }
     },
     async flag(item) {
       if (item.flagged) {
@@ -94,6 +96,13 @@ export default {
         this.$refs.comments[index].toggleShowMoreComments()
       }
     }
+  },
+  mounted () {
+    this.$bus.$on('new_comment', data => {
+      if (data.topic === this.currentTopic) {
+        this.updateTopic(data.post_id)
+      }
+    })
   },
   watch: {
     currentTopic (topic) {
