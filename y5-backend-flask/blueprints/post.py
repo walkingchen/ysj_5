@@ -628,22 +628,22 @@ class CommentLikeApi(Resource):
 
 
 api.add_resource(
-    LikeApi,
+    CommentLikeApi,
     '/comment/like/<int:id>',
     methods=['GET'],
     endpoint='post/comment/like/retrieve')
 api.add_resource(
-    LikeApi,
+    CommentLikeApi,
     '/comment/like',
     methods=['POST'],
     endpoint='post/comment/like/create')
 api.add_resource(
-    LikeApi,
+    CommentLikeApi,
     '/comment/like/<int:id>',
     methods=['PUT'],
     endpoint='post/comment/like/update')
 api.add_resource(
-    LikeApi,
+    CommentLikeApi,
     '/comment/like/<int:id>',
     methods=['DELETE'],
     endpoint='post/comment/like/delete')
@@ -783,17 +783,17 @@ class CommentFlagApi(Resource):
 
 
 api.add_resource(
-    FlagApi,
+    CommentFlagApi,
     '/comment/flag/<int:id>',
     methods=['GET'],
     endpoint='post/comment/flag/retrieve')
 api.add_resource(
-    FlagApi,
+    CommentFlagApi,
     '/comment/flag',
     methods=['POST'],
     endpoint='post/comment/flag/create')
 api.add_resource(
-    FlagApi,
+    CommentFlagApi,
     '/comment/flag/<int:id>',
     methods=['DELETE'],
     endpoint='post/comment/flag/delete')
