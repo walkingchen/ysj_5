@@ -8,7 +8,7 @@ export default new Vuex.Store({
     sid: '',
     user: {},
     friends: [],
-    topic: [],
+    topics: [],
     currentTopic: null,
     searchKey: ''
   },
@@ -23,11 +23,19 @@ export default new Vuex.Store({
       state.friends = data
     },
     setTopic (state, data) {
-      state.topic = data
-      state.currentTopic = data[data.length - 1].topic
+      state.topics = data
+
+      const localTopic = Number(localStorage.getItem('currentTopic'))
+      if (localTopic && data.findIndex(ele => ele.topic === localTopic) > -1) {
+        state.currentTopic = localTopic
+      } else {
+        state.currentTopic = data[data.length - 1].topic
+      }
+      localStorage.setItem('currentTopic', state.currentTopic)
     },
     setCurrentTopic (state, data) {
       state.currentTopic = data
+      localStorage.setItem('currentTopic', data)
     },
     setSearchKey (state, data) {
       state.searchKey = data
