@@ -631,22 +631,22 @@ api.add_resource(
     LikeApi,
     '/comment/like/<int:id>',
     methods=['GET'],
-    endpoint='comment/like/retrieve')
+    endpoint='post/comment/like/retrieve')
 api.add_resource(
     LikeApi,
     '/comment/like',
     methods=['POST'],
-    endpoint='comment/like/create')
+    endpoint='post/comment/like/create')
 api.add_resource(
     LikeApi,
     '/comment/like/<int:id>',
     methods=['PUT'],
-    endpoint='comment/like/update')
+    endpoint='post/comment/like/update')
 api.add_resource(
     LikeApi,
     '/comment/like/<int:id>',
     methods=['DELETE'],
-    endpoint='comment/like/delete')
+    endpoint='post/comment/like/delete')
 
 
 class FactcheckApi(Resource):
