@@ -3,7 +3,7 @@
     <div class="layout">
       <div>
         <div class="topics-box">
-          <el-badge v-for="(item, index) in _topic" :key="item" :is-dot="item !== currentTopic && hasNew[index]">
+          <el-badge v-for="(item, index) in _topics" :key="item" :is-dot="item !== currentTopic && hasNew[index]">
             <el-tag
               :effect="item === currentTopic ? 'light' : 'plain'"
               @click="changeTopic(item, index)"
@@ -40,11 +40,11 @@ export default {
     }
   },
   computed: {
-    _topic () {
-      return this.topic.map(ele => ele.topic)
+    _topics () {
+      return this.topics.map(ele => ele.topic)
     },
     ...mapState([
-      'topic',
+      'topics',
       'currentTopic'
     ])
   },
@@ -67,17 +67,17 @@ export default {
   mounted () {
     this.$bus.$on('new_post', data => {
       if (data.topic !== this.currentTopic) {
-        this.hasNew.splice(this._topic.indexOf(data.topic), 1, true)
+        this.hasNew.splice(this._topics.indexOf(data.topic), 1, true)
       }
     })
     this.$bus.$on('new_comment', data => {
       if (data.topic !== this.currentTopic) {
-        this.hasNew.splice(this._topic.indexOf(data.topic), 1, true)
+        this.hasNew.splice(this._topics.indexOf(data.topic), 1, true)
       }
     })
   },
   watch: {
-    topic: {
+    topics: {
       handler (val) {
         this.hasNew = val.map(ele => ele.redspot)
       },

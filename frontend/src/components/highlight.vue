@@ -9,7 +9,7 @@ export default {
   props: ['content'],
   computed: {
     _content () {
-      return this.content ? this.content.split(this.searchKey).join(`<b class="highlight">${this.searchKey}</b>`) : ''
+      return this.searchKey ? (this.content ? this.content.split(this.searchKey).join(`<b class="highlight">${this.searchKey}</b>`) : '') : this.content
     },
     ...mapState(['searchKey'])
   }
