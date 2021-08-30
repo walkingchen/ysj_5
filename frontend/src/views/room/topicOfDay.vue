@@ -68,17 +68,23 @@ export default {
         })
       }
     },
-    async flag(item) {
-      if (item.flagged) {
-        await deleteFlag(item.flagged.id)
-      } else {
-        await flagPost(item.id).then(res => {
-          if (res.data.result_code === 2000) {
-            this.$message.success('You\'ve flagged the post, you can cancel it by reclicking the flag button.')
-          }
-        })
-      }
-      this.updateTopic(item.id)
+    flag(item) {
+      this.$confirm(`Are you sure to ${item.flagged ? 'cancel ' : ''}flag this post?`, '', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning'
+      }).then(async () => {
+        if (item.flagged) {
+          await deleteFlag(item.flagged.id)
+        } else {
+          await flagPost(item.id).then(res => {
+            if (res.data.result_code === 2000) {
+              this.$message.success('You\'ve flagged the post, you can cancel it by reclicking the flag button.')
+            }
+          })
+        }
+        this.updateTopic(item.id)
+      }).catch(_ => {})
     },
     async like(item) {
       if (item.liked) { // 已经赞了
