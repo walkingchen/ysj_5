@@ -3,18 +3,27 @@
     :visible.sync="showDetailDialog"
     width="70%"
     class="detail-dialog">
-    <el-button
-      v-if="detailData.timeline_type !== 0"
-      size="small"
-      icon="el-icon-share"
-      class="share-btn"
-      :disabled="detailData.timeline_type === 2"
-      @click="share" />
     <div v-loading="detailLoading">
-      <h2>
-        <highlight :content="detailData.post_title" />
-      </h2>
-      <p class="createAt">{{ detailData.created_at }}</p>
+      <div class="header">
+        <div class="title">
+          <h2>
+            <highlight :content="detailData.post_title" />
+          </h2>
+          <p class="createAt">{{ detailData.created_at }}</p>
+        </div>
+
+        <div>
+          <el-button
+            v-if="detailData.timeline_type !== 0"
+            size="mini"
+            class="share-btn"
+            :disabled="detailData.timeline_type === 2"
+            @click="share">
+            Share
+          </el-button>
+        </div>
+      </div>
+
       <img v-if="detailData.photo_uri" :src="detailData.photo_uri.medium" />
       <p class="content">
         <highlight :content="detailData.post_content" />
@@ -89,32 +98,21 @@ export default {
   >>> .el-dialog__footer
     padding-bottom 0
 
-  .share-btn
-    position absolute
-    right 38px
-    top 10px
-    color #909399
-    padding 0
-    background 0 0
-    border none
-    outline none
-    font-size 16px
+  .header
+    display flex
 
-    &:hover
-      color #409eff
+    .title
+      flex 1
+      width 0
 
-    &.is-disabled,
-    &.is-disabled:hover
-      color #c0c4cc
+    h2
+      text-align center
 
-  h2
-    text-align center
-
-  .createAt
-    text-align center
-    color #999
-    font-size 14px
-    padding 8px 0
+    .createAt
+      text-align center
+      color #999
+      font-size 14px
+      padding 8px 0
 
   img
     display block
