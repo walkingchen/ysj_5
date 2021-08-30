@@ -120,6 +120,36 @@ class PostComment(db.Model):
         return d
 
 
+class CommentFlag(db.Model):
+    __tablename__ = 'tb_comment_flag'
+
+    id = db.Column(db.Integer, primary_key=True)
+    comment_id = db.Column(db.Integer)
+    user_id = db.Column(db.Integer)
+    flag = db.Column(db.Integer)
+    created_at = db.Column(db.DateTime, server_default=db.FetchedValue())
+    updated_at = db.Column(db.DateTime, server_default=db.FetchedValue())
+
+    def serialize(self):
+        d = Serializer.serialize(self)
+        return d
+
+
+class CommentLike(db.Model):
+    __tablename__ = 'tb_comment_like'
+
+    id = db.Column(db.Integer, primary_key=True)
+    comment_id = db.Column(db.Integer)
+    user_id = db.Column(db.Integer)
+    comment_like = db.Column(db.Integer)
+    created_at = db.Column(db.DateTime, server_default=db.FetchedValue())
+    updated_at = db.Column(db.DateTime, server_default=db.FetchedValue())
+
+    def serialize(self):
+        d = Serializer.serialize(self)
+        return d
+
+
 class CommentStatus(db.Model):
     __tablename__ = 'tb_comment_status'
 

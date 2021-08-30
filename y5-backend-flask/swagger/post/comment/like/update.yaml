@@ -1,0 +1,29 @@
+---
+tags:
+  - Comment Like
+parameters:
+  - name: id
+    in: path
+    type: string
+    required: true
+    description: update comment like by ID
+  - name: body
+    in: body
+    required: true
+    schema:
+      id: comment_like_update
+      properties:
+        like_or_not:
+          type: int
+          description: 1 = like, 0 = dislike
+responses:
+  200:
+    description: return comment like
+    schema:
+      properties:
+        result_code:
+          type: string
+        result_msg:
+          type: string
+        data:
+          type: string

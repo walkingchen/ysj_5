@@ -1,0 +1,21 @@
+---
+tags:
+  - Comment Flag
+parameters:
+  - name: id
+    in: path
+    type: string
+    required: true
+    description: get comment flag by ID
+responses:
+  200:
+    description: return flag
+    schema:
+      id: Response
+      properties:
+        result_code:
+          type: string
+        result_msg:
+          type: string
+        data:
+          type: string

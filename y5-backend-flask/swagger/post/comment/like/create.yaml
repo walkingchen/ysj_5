@@ -1,0 +1,30 @@
+---
+tags:
+  - Comment Like
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      id: comment_like_create
+      required:
+        - comment_id
+        - like_or_not
+      properties:
+        post_id:
+          type: string
+          description: comment id
+        like_or_not:
+          type: string
+          description: 1 = like;  2 = dislike
+responses:
+  200:
+    description: return post like created
+    schema:
+      properties:
+        result_code:
+          type: string
+        result_msg:
+          type: string
+        data:
+          type: string

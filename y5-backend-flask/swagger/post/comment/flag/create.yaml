@@ -1,0 +1,28 @@
+---
+tags:
+  - Comment Flag
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      id: comment_flag_create
+      required:
+        - comment_id
+        - user_id
+      properties:
+        post_id:
+          type: string
+          description: comment id
+responses:
+  200:
+    description: return comment flag created
+    schema:
+      id: Response
+      properties:
+        result_code:
+          type: string
+        result_msg:
+          type: string
+        data:
+          type: string

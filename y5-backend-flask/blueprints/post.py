@@ -9,7 +9,7 @@ import config
 from entity.Resp import Resp
 from extensions import db, socketio
 from models import Post, PostComment, PostLike, Serializer, Timeline, User, Room, RoomPrototype, RoomMember, \
-    PostFactcheck, PostFlag, PostDaily, Photo, PostStatus, Redspot
+    PostFactcheck, PostFlag, PostDaily, Photo, PostStatus, Redspot, CommentFlag, CommentLike
 from service import get_friends, process_posts, process_post
 from utils import rename_image, resize_image
 
@@ -98,6 +98,7 @@ class PostApi(Resource):
         db.session.add(post)
         db.session.commit()
 
+        # 将private message设置为已分享
         if post_shared_id is not None:
             post_shared = Post.query.filter_by(id=post_shared_id).first()
             post_shared.timeline_type = 2
@@ -575,6 +576,79 @@ api.add_resource(
     endpoint='post/like/delete')
 
 
+class CommentLikeApi(Resource):
+    @swag_from('../swagger/post/comment/like/retrieve.yaml')
+    def get(self, id):
+        like = CommentLike.query.get(id)
+        like_serialized = Serializer.serialize(like)
+        return jsonify(Resp(result_code=2000, result_msg="success", data=like_serialized).__dict__)
+
+    @swag_from('../swagger/post/comment/like/create.yaml')
+    def post(self):
+        if not current_user.is_authenticated:
+            return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
+
+        user_id = current_user.id
+        data = request.get_json()
+        try:
+            comment_id = data['comment_id']
+            like_or_not = int(data['like_or_not'])
+        except KeyError:
+            return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
+        except TypeError:
+            return jsonify(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
+
+        like = CommentLike(comment_id=comment_id, user_id=user_id, post_like=like_or_not)
+        db.session.add(like)
+        db.session.commit()
+
+        return jsonify(Resp(result_code=2000, result_msg="success", data=Serializer.serialize(like)).__dict__)
+
+    @swag_from('../swagger/post/comment/like/update.yaml')
+    def put(self, id):
+        if not current_user.is_authenticated:
+            return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
+
+        user_id = current_user.id
+        data = request.get_json()
+        like_or_not = data['like_or_not']
+        like = CommentLike.query.filter_by(id=id, user_id=user_id).first()
+        like.comment_like = like_or_not
+        db.session.commit()
+
+        return jsonify(Resp(result_code=2000, result_msg="success", data=Serializer.serialize(like)).__dict__)
+
+    @swag_from('../swagger/post/comment/like/delete.yaml')
+    def delete(self, id):
+        like = CommentLike.query.get(id)
+        db.session.delete(like)
+        db.session.commit()
+
+        return jsonify(Resp(result_code=2000, result_msg="disliked", data=None).__dict__)
+
+
+api.add_resource(
+    LikeApi,
+    '/comment/like/<int:id>',
+    methods=['GET'],
+    endpoint='comment/like/retrieve')
+api.add_resource(
+    LikeApi,
+    '/comment/like',
+    methods=['POST'],
+    endpoint='comment/like/create')
+api.add_resource(
+    LikeApi,
+    '/comment/like/<int:id>',
+    methods=['PUT'],
+    endpoint='comment/like/update')
+api.add_resource(
+    LikeApi,
+    '/comment/like/<int:id>',
+    methods=['DELETE'],
+    endpoint='comment/like/delete')
+
+
 class FactcheckApi(Resource):
     @swag_from('../swagger/post/factcheck/retrieve.yaml')
     def get(self, id):
@@ -673,3 +747,53 @@ api.add_resource(
     '/flag/<int:id>',
     methods=['DELETE'],
     endpoint='post/flag/delete')
+
+
+class CommentFlagApi(Resource):
+    @swag_from('../swagger/post/comment/flag/retrieve.yaml')
+    def get(self, id):
+        flag = CommentFlag.query.get(id)
+        flag_serialized = Serializer.serialize(flag)
+        return jsonify(Resp(result_code=2000, result_msg="success", data=flag_serialized).__dict__)
+
+    @swag_from('../swagger/post/comment/flag/create.yaml')
+    def post(self):
+        if not current_user.is_authenticated:
+            return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
+
+        user_id = current_user.id
+        data = request.get_json()
+        try:
+            comment_id = data['comment_id']
+        except KeyError:
+            return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
+        flag = CommentFlag(comment_id=comment_id, user_id=user_id)
+        db.session.add(flag)
+        db.session.commit()
+
+        return jsonify(Resp(result_code=2000, result_msg="success", data=Serializer.serialize(flag)).__dict__)
+
+    @swag_from('../swagger/post/comment/flag/delete.yaml')
+    def delete(self, id):
+        flag = CommentFlag.query.get(id)
+        db.session.delete(flag)
+        db.session.commit()
+
+        return jsonify(Resp(result_code=2000, result_msg="submitted", data=None).__dict__)
+
+
+api.add_resource(
+    FlagApi,
+    '/comment/flag/<int:id>',
+    methods=['GET'],
+    endpoint='post/comment/flag/retrieve')
+api.add_resource(
+    FlagApi,
+    '/comment/flag',
+    methods=['POST'],
+    endpoint='post/comment/flag/create')
+api.add_resource(
+    FlagApi,
+    '/comment/flag/<int:id>',
+    methods=['DELETE'],
+    endpoint='post/comment/flag/delete')
