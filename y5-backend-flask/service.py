@@ -6,7 +6,7 @@ from sqlalchemy import inspect
 import config
 from extensions import db
 from models import RoomPrototype, RoomMember, PostComment, Serializer, User, PostLike, PostFactcheck, Post, PostFlag, \
-    PostStatus, CommentStatus
+    PostStatus, CommentStatus, CommentFlag, CommentLike
 
 
 # 查询好友网络
@@ -94,8 +94,19 @@ def process_post(post, user_id):
             db.session.commit()
         else:
             comment_serialized['read_status'] = True    # read
+        comment_flag = CommentFlag.query.filter_by(comment_id=comment_serialized['id'], user_id=user_id).first()
+        if comment_flag is not None:
+            comment_serialized['flagged'] = True
+        else:
+            comment_serialized['flagged'] = False
+        comment_like = CommentLike.query.filter_by(comment_id=comment_serialized['id'], user_id=user_id).first()
+        if comment_like is not None:
+            comment_serialized['like'] = True
+        else:
+            comment_serialized['like'] = False
 
         comments_serialized.append(comment_serialized)
+
     post['comments'] = comments_serialized
 
     likes = PostLike.query.filter(PostLike.post_id == post['id'], PostLike.post_like == 1).all()
