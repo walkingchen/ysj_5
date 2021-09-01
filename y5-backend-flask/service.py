@@ -100,7 +100,7 @@ def process_post(post, user_id):
         }
         comment_flag = CommentFlag.query.filter_by(comment_id=comment_serialized['id'], user_id=user_id).first()
         if comment_flag is not None:
-            comment_serialized['flagged'] = True
+            comment_serialized['flagged'] = Serializer.serialize(comment_flag)
         else:
             comment_serialized['flagged'] = False
 
@@ -110,7 +110,7 @@ def process_post(post, user_id):
         }
         comment_like = CommentLike.query.filter_by(comment_id=comment_serialized['id'], user_id=user_id).first()
         if comment_like is not None:
-            comment_serialized['liked'] = True
+            comment_serialized['liked'] = Serializer.serialize(comment_like)
         else:
             comment_serialized['liked'] = False
 
