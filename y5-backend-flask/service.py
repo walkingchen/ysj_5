@@ -94,11 +94,20 @@ def process_post(post, user_id):
             db.session.commit()
         else:
             comment_serialized['read_status'] = True    # read
+        comment_flag_count = CommentFlag.query.filter_by(comment_id=comment_serialized['id']).count()
+        comment_serialized['flags'] = {
+            'count': comment_flag_count
+        }
         comment_flag = CommentFlag.query.filter_by(comment_id=comment_serialized['id'], user_id=user_id).first()
         if comment_flag is not None:
             comment_serialized['flagged'] = True
         else:
             comment_serialized['flagged'] = False
+
+        comment_like_count = CommentLike.query.filter_by(comment_id=comment_serialized['id']).count()
+        comment_serialized['likes'] = {
+            'count': comment_like_count
+        }
         comment_like = CommentLike.query.filter_by(comment_id=comment_serialized['id'], user_id=user_id).first()
         if comment_like is not None:
             comment_serialized['liked'] = True
@@ -130,24 +139,24 @@ def process_post(post, user_id):
     else:
         post['liked'] = Serializer.serialize(like)
 
-    dislikes = PostLike.query.filter(PostLike.post_id == post['id'], PostLike.post_like == 0).all()
-    dislikes_serialized = []
-    for dislike in dislikes:
-        dislike_serialized = Serializer.serialize(dislike)
-        user = query_user(user_id=dislike.user_id)
-        dislike_serialized['user'] = user._asdict()
-        dislikes_serialized.append(dislike_serialized)
-    post['dislikes'] = {
-        'count': len(dislikes),
-        'details': dislikes_serialized
-    }
-
-    # 判断是否已点过踩
-    dislike = PostLike.query.filter_by(post_id=post['id'], user_id=user_id, post_like=0).first()
-    if dislike is None:
-        post['disliked'] = None
-    else:
-        post['disliked'] = Serializer.serialize(dislike)
+    # dislikes = PostLike.query.filter(PostLike.post_id == post['id'], PostLike.post_like == 0).all()
+    # dislikes_serialized = []
+    # for dislike in dislikes:
+    #     dislike_serialized = Serializer.serialize(dislike)
+    #     user = query_user(user_id=dislike.user_id)
+    #     dislike_serialized['user'] = user._asdict()
+    #     dislikes_serialized.append(dislike_serialized)
+    # post['dislikes'] = {
+    #     'count': len(dislikes),
+    #     'details': dislikes_serialized
+    # }
+    #
+    # # 判断是否已点过踩
+    # dislike = PostLike.query.filter_by(post_id=post['id'], user_id=user_id, post_like=0).first()
+    # if dislike is None:
+    #     post['disliked'] = None
+    # else:
+    #     post['disliked'] = Serializer.serialize(dislike)
 
     # 判断是否已点过factcheck
     check = PostFactcheck.query.filter_by(post_id=post['id'], user_id=user_id).first()
