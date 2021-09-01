@@ -19,7 +19,7 @@ parameters:
           description: 1 = like;  2 = dislike
 responses:
   200:
-    description: return post like created
+    description: return comment like created
     schema:
       properties:
         result_code:
