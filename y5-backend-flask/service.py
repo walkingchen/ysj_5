@@ -102,7 +102,7 @@ def process_post(post, user_id):
         if comment_flag is not None:
             comment_serialized['flagged'] = Serializer.serialize(comment_flag)
         else:
-            comment_serialized['flagged'] = False
+            comment_serialized['flagged'] = None
 
         comment_like_count = CommentLike.query.filter_by(comment_id=comment_serialized['id']).count()
         comment_serialized['likes'] = {
@@ -112,7 +112,7 @@ def process_post(post, user_id):
         if comment_like is not None:
             comment_serialized['liked'] = Serializer.serialize(comment_like)
         else:
-            comment_serialized['liked'] = False
+            comment_serialized['liked'] = None
 
         comments_serialized.append(comment_serialized)
 
