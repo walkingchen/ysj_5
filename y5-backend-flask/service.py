@@ -101,9 +101,9 @@ def process_post(post, user_id):
             comment_serialized['flagged'] = False
         comment_like = CommentLike.query.filter_by(comment_id=comment_serialized['id'], user_id=user_id).first()
         if comment_like is not None:
-            comment_serialized['like'] = True
+            comment_serialized['liked'] = True
         else:
-            comment_serialized['like'] = False
+            comment_serialized['liked'] = False
 
         comments_serialized.append(comment_serialized)
 
