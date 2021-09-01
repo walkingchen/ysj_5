@@ -81,7 +81,7 @@ def reload():
         # json = request.args()
 
         # if json['sender']['login'] == 'codingchan':
-        # git_pull()
+        git_pull()
         
         print("reload success", str(datetime.datetime.now())[:19])
         return "reload success"
