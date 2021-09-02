@@ -598,7 +598,7 @@ class CommentLikeApi(Resource):
         except TypeError:
             return jsonify(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
 
-        like = CommentLike(comment_id=comment_id, user_id=user_id, post_like=like_or_not)
+        like = CommentLike(comment_id=comment_id, user_id=user_id, comment_like=like_or_not)
         db.session.add(like)
         db.session.commit()
 
