@@ -1,48 +1,20 @@
 <template>
   <div class="comments-box">
     <ul>
-      <li v-for="comment in firstTwoComments" :key="comment.id" class="comment-item" :class="{unread: !comment.read_status}">
-        <div class="comment-item-content">
-          <el-avatar
-            :size="32"
-            :src="comment.user.avatar ? comment.user.avatar : ''"
-            :icon="comment.user.avatar ? '' : 'el-icon-user-solid'"
-            class="user-portrait" />
-          <div class="comment-text">
-            <div>
-              <span class="user-name">{{ comment.user.nickname }}</span>
-              <span class="comment-time">{{ comment.created_at }}</span>
-            </div>
-            <p>
-              <highlight :content="comment.comment_content" />
-            </p>
-          </div>
-        </div>
-      </li>
+      <comment-item
+        v-for="comment in firstTwoComments"
+        :key="comment.id"
+        :comment="comment" />
       <div v-if="restComments.length > 0" class="showMoreComments-btn">
         <el-button type="text" size="mini" @click="toggleShowMoreComments">
           <v-icon :name="showMoreComments ? 'angle-double-down' : 'angle-double-right'" />
         </el-button>
       </div>
       <div v-show="showMoreComments">
-        <li v-for="comment in restComments" :key="comment.id" class="comment-item" :class="{unread: !comment.read_status}">
-          <div class="comment-item-content">
-            <el-avatar
-              :size="32"
-              :src="comment.user.avatar ? comment.user.avatar : ''"
-              :icon="comment.user.avatar ? '' : 'el-icon-user-solid'"
-              class="user-portrait" />
-            <div class="comment-text">
-              <div>
-                <span class="user-name">{{ comment.user.nickname }}</span>
-                <span class="comment-time">{{ comment.created_at }}</span>
-              </div>
-              <p>
-                <highlight :content="comment.comment_content" />
-              </p>
-            </div>
-          </div>
-        </li>
+        <comment-item
+          v-for="comment in restComments"
+          :key="comment.id"
+          :comment="comment" />
       </div>
     </ul>
 
@@ -68,14 +40,14 @@
 import { mapState } from 'vuex'
 import 'vue-awesome/icons/angle-double-right'
 import 'vue-awesome/icons/angle-double-down'
-import highlight from './highlight'
-import { commentPost } from '@api/post'
+import { addComment } from '@api/comment'
 import { formatDate } from '@assets/utils.js'
+import commentItem from './commentItem.vue'
 
 export default {
   props: ['comments', 'postId'],
   components: {
-    highlight
+    commentItem
   },
   data () {
     return {
@@ -106,7 +78,7 @@ export default {
       this.showMoreComments = !this.showMoreComments
     },
     postComment () {
-      commentPost({
+      addComment({
         sid: this.sid,
         post_id: this.postId,
         comment_content: this.comment_content
@@ -126,32 +98,6 @@ export default {
 
 .user-portrait
   margin-right 12px
-
-.comment-item
-  padding 8px
-
-  .comment-item-content
-    display flex
-
-  .comment-text
-    flex 1
-    padding 10px
-    background-color #f0f2f5
-    border-radius 8px
-
-    .user-name
-      font-size 16px
-      line-height 22px
-
-    .comment-time
-      float right
-      color #666
-      font-size 12px
-      line-height 22px
-
-    p
-      line-height 1.5
-      font-size 14px
 
 .showMoreComments-btn
   text-align center

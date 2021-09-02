@@ -48,4 +48,7 @@ ul, li
   width 90%
   min-width 1200px
   margin 0 auto
+
+.fa-icon
+  width auto
 </style>

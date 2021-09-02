@@ -103,9 +103,9 @@ export default {
         flagCount: item.flags.count,
         liked: item.liked,
         likeCount: item.likes.count,
-        disliked: item.disliked,
-        dislikeCount: item.dislikes.count,
-        factcheck: item.factcheck,
+        // disliked: item.disliked,
+        // dislikeCount: item.dislikes.count,
+        // factcheck: item.factcheck,
         time: formatDate(item.created_at),
         user: user ? {
           avatar: user.avatar,
