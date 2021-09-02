@@ -123,4 +123,5 @@ export default {
   .content
     font-size 16px
     white-space pre-wrap
+    word-break break-word
 </style>
