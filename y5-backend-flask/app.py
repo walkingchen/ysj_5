@@ -12,6 +12,7 @@ from flask_ckeditor import CKEditor
 from flask_cors import CORS
 from flask_mail import Mail
 # from git import Repo
+from git import Repo
 
 import config
 from blueprints.auth import bp_auth, login_manager
