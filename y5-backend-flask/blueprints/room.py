@@ -367,7 +367,7 @@ def export_room_with_users():
         header = ['id', 'room_id', 'seat_no', 'user_id']
         csv_writer.writerow(header)
         for member in room_members:
-            line = member.values()
+            line = "'" + member.id + "','" + member.room_id + "','" + member.seat_no + "', '" + member.user_id + "'"
             csv_writer.writerow(line)
 
         return send_from_directory('static', 'export_room_with_users', as_attachment=True)
