@@ -16,9 +16,7 @@ from utils import rename_image, resize_image
 bp_post = Blueprint('/api/post', __name__)
 api = Api(bp_post, '/api/post')
 
-TIMELINE_PUB = 0
-TIMELINE_PRI = 1
-TIMELINE_ALL = 2
+
 MSG_SIZE_INIT = 5
 
 
@@ -221,7 +219,7 @@ class PostApi(Resource):
         for friend in friends:
             friend_ids.append(friend.user_id)
 
-        if timeline_type == TIMELINE_PUB:
+        if timeline_type == config.TIMELINE_PUB:
             posts = Post.query.filter(
                 Post.room_id == room_id,
                 Post.user_id.in_(friend_ids),

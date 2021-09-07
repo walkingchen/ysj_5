@@ -71,6 +71,20 @@ class Post(db.Model):
         return d
 
 
+class PrivateMessage(db.Model):
+    __tablename__ = 'tb_private_message'
+
+    id = Column(Integer, primary_key=True)
+    message_id = Column(Integer)
+    message_title = Column(String(256))
+    message_content = Column(Text)
+    photo_uri = Column(String(128))
+    keywords = Column(String(256))
+    abstract = Column(Text)
+    updated_at = Column(DateTime, nullable=False, server_default=FetchedValue())
+    created_at = Column(DateTime, server_default=FetchedValue())
+
+
 class Photo(db.Model):
     __tablename__ = 'tb_post_photo'
 

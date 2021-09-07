@@ -42,3 +42,7 @@ PHOTO_SUFFIX = {
     PHOTO_SIZE['small']: '_s',  # thumbnail
     PHOTO_SIZE['medium']: '_m',  # display
 }
+
+TIMELINE_PUB = 0
+TIMELINE_PRI = 1
+TIMELINE_ALL = 2
