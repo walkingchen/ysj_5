@@ -6,6 +6,7 @@ from flasgger import swag_from
 from flask import Blueprint, request, json, jsonify, send_from_directory
 from flask_login import current_user, login_required
 from flask_restful import Api, Resource
+from sqlalchemy import desc
 
 from blueprints.auth import bp_auth
 from entity.Resp import Resp
@@ -359,7 +360,7 @@ api.add_resource(
 @swag_from('../swagger/room/export_room_with_users.yaml')
 @bp_auth.route('/export_room_with_users', methods=['GET'])
 def export_room_with_users():
-    room_members = RoomMember.query.order_by(RoomMember.room_id, RoomMember.seat_no, 'ASC').all()
+    room_members = RoomMember.query.order_by(desc(RoomMember.room_id), RoomMember.seat_no).all()
     with open('static/export_room_with_users.csv', 'w',  encoding='UTF-8') as f:
         csv_writer = csv.writer(f)
         # header = ['id', 'user_id', 'room_type', 'room_id', 'seat_no', 'day', 'topic_no', 'message_id']
