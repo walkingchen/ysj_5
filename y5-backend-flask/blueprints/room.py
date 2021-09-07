@@ -1,11 +1,13 @@
+import csv
 import random
 import string
 
 from flasgger import swag_from
-from flask import Blueprint, request, json, jsonify
+from flask import Blueprint, request, json, jsonify, send_from_directory
 from flask_login import current_user, login_required
 from flask_restful import Api, Resource
 
+from blueprints.auth import bp_auth
 from entity.Resp import Resp
 from entity.RoomResp import RoomResp
 from extensions import db, socketio
@@ -352,3 +354,19 @@ api.add_resource(
     '/members',
     methods=['POST'],
     endpoint='member/list_create')
+
+
+@swag_from('../swagger/room/export_room_with_users.yaml')
+@bp_auth.route('/export_room_with_users', methods=['POST'])
+def export_room_with_users():
+    room_members = RoomMember.query.order_by(RoomMember.room_id, RoomMember.seat_no, 'ASC').all()
+    with open('static/export_room_with_users.csv', 'w',  encoding='UTF-8') as f:
+        csv_writer = csv.writer(f)
+        # header = ['id', 'user_id', 'room_type', 'room_id', 'seat_no', 'day', 'topic_no', 'message_id']
+        header = ['id', 'room_id', 'seat_no', 'user_id']
+        csv_writer.writerow(header)
+        for member in room_members:
+            line = member.values()
+            csv_writer.writerow(line)
+
+        return send_from_directory('static', 'export_room_with_users', as_attachment=True)

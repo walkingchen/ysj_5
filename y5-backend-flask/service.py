@@ -1,3 +1,4 @@
+import csv
 import os
 
 from flask import json
@@ -6,7 +7,7 @@ from sqlalchemy import inspect
 import config
 from extensions import db
 from models import RoomPrototype, RoomMember, PostComment, Serializer, User, PostLike, PostFactcheck, Post, PostFlag, \
-    PostStatus, CommentStatus, CommentFlag, CommentLike
+    PostStatus, CommentStatus, CommentFlag, CommentLike, Room, PrivateMessage
 
 
 # 查询好友网络
@@ -198,3 +199,30 @@ def process_post(post, user_id):
 def object_as_dict(obj):
     return {c.key: getattr(obj, c.key)
             for c in inspect(obj).mapper.column_attrs}
+
+
+def import_csv(file):
+    f = csv.reader(open(file, 'r', encoding='UTF-8'))
+    for key, line in enumerate(f):
+        if key == 0:
+            pass
+        username = line[1]
+        room_id = line[2]
+        seat_no = line[3]
+        topic_no = line[4]
+        message_id = line[5]
+
+        participant = User.query.filter_by(username=username).first()
+        private_message = PrivateMessage.query.filter_by(message_id=message_id).first()
+        post = Post(
+            timeline_type=config.TIMELINE_PRI,
+            post_title=private_message.message_title,
+            post_content=private_message.message_content,
+            post_type=1,    # fixme
+            user_id=participant.id,
+            room_id=room_id,
+            topic=topic_no,
+            photo_uri=private_message.photo_uri
+        )
+        db.session.add(post)
+        db.session.commit()
