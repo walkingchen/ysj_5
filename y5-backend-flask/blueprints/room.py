@@ -357,7 +357,7 @@ api.add_resource(
 
 
 @swag_from('../swagger/room/export_room_with_users.yaml')
-@bp_auth.route('/export_room_with_users', methods=['POST'])
+@bp_auth.route('/export_room_with_users', methods=['GET'])
 def export_room_with_users():
     room_members = RoomMember.query.order_by(RoomMember.room_id, RoomMember.seat_no, 'ASC').all()
     with open('static/export_room_with_users.csv', 'w',  encoding='UTF-8') as f:

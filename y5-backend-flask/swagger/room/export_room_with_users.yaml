@@ -1,0 +1,15 @@
+---
+tags:
+  - Room
+responses:
+  200:
+    description: return room members csv file
+    schema:
+      id: Response
+      properties:
+        result_code:
+          type: string
+        result_msg:
+          type: string
+        data:
+          type: string
