@@ -810,9 +810,9 @@ def import_private_messages():
             continue
         message_id = line[1]
         message_title = line[2]
-        message_content = line[3]
-        photo_uri = line[4]
-        abstract = line[5]
+        abstract = line[3]
+        message_content = line[4]
+        photo_uri = line[5]
 
         private_message = PrivateMessage(
             message_id=message_id,
