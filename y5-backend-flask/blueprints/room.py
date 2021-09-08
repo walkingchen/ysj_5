@@ -17,7 +17,7 @@ from service import get_friends, query_membership
 # error code: 401x
 
 
-bp_room = Blueprint('/api/room', __name__, url_prefix='/api/room')
+bp_room = Blueprint('/api/room', __name__)
 api = Api(bp_room, '/api/room')
 
 
@@ -357,7 +357,7 @@ api.add_resource(
 
 
 @swag_from('../swagger/room/export_room_with_users.yaml')
-@bp_room.route('/export_room_with_users', methods=['GET'])
+@bp_room.route('/api/room/export_room_with_users', methods=['GET'])
 def export_room_with_users():
     room_members = RoomMember.query.order_by(desc(RoomMember.room_id), RoomMember.seat_no).all()
     with open('static/export_room_with_users.csv', 'w',  encoding='UTF-8') as f:
