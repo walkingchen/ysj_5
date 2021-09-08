@@ -1,3 +1,4 @@
+import csv
 import os
 
 from flasgger import swag_from
@@ -9,7 +10,7 @@ import config
 from entity.Resp import Resp
 from extensions import db, socketio
 from models import Post, PostComment, PostLike, Serializer, Timeline, User, Room, RoomPrototype, RoomMember, \
-    PostFactcheck, PostFlag, PostDaily, Photo, PostStatus, Redspot, CommentFlag, CommentLike
+    PostFactcheck, PostFlag, PostDaily, Photo, PostStatus, Redspot, CommentFlag, CommentLike, PrivateMessage
 from service import get_friends, process_posts, process_post
 from utils import rename_image, resize_image
 
@@ -795,3 +796,35 @@ api.add_resource(
     '/comment/flag/<int:id>',
     methods=['DELETE'],
     endpoint='post/comment/flag/delete')
+
+
+@swag_from('../swagger/post/import_members_with_messages.yaml')
+@bp_post.route('/api/post/import_members_with_messages', methods=['GET'])
+def import_csv(file):
+    f = csv.reader(open(file, 'r', encoding='UTF-8'))
+    for key, line in enumerate(f):
+        if key == 0:
+            pass
+        username = line[1]
+        room_id = line[2]
+        seat_no = line[3]
+        topic_no = line[4]
+        message_id = line[5]
+
+        participant = User.query.filter_by(username=username).first()
+        private_message = PrivateMessage.query.filter_by(message_id=message_id).first()
+        post = Post(
+            timeline_type=config.TIMELINE_PRI,
+            post_title=private_message.message_title,
+            post_content=private_message.message_content,
+            post_type=1,    # fixme
+            user_id=participant.id,
+            room_id=room_id,
+            topic=topic_no,
+            photo_uri=private_message.photo_uri
+        )
+        db.session.add(post)
+        db.session.commit()
+
+    return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
+

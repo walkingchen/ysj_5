@@ -1,0 +1,15 @@
+---
+tags:
+  - Post
+responses:
+  200:
+    description: uplad room members csv file with private messages
+    schema:
+      id: Response
+      properties:
+        result_code:
+          type: string
+        result_msg:
+          type: string
+        data:
+          type: string
