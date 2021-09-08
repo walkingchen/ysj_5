@@ -805,8 +805,6 @@ def import_private_messages():
     file = request.files['file']
     stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
     csv_input = csv.reader(stream)
-    for row in csv_input:
-        print(row)
     for key, line in enumerate(csv_input):
         if key == 0:
             continue
@@ -835,8 +833,6 @@ def import_csv():
     file = request.files['file']
     stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
     csv_input = csv.reader(stream)
-    for row in csv_input:
-        print(row)
     for key, line in enumerate(csv_input):
         if key == 0:
             continue
