@@ -799,6 +799,42 @@ api.add_resource(
     endpoint='post/comment/flag/delete')
 
 
+@swag_from('../swagger/post/import_private_messages.yaml')
+@bp_post.route('/api/post/import_private_messages', methods=['POST'])
+def import_private_messages():
+    file = request.files['file']
+    stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
+    csv_input = csv.reader(stream)
+    for row in csv_input:
+        print(row)
+    for key, line in enumerate(csv_input):
+        if key == 0:
+            continue
+        message_id = line[1]
+        message_title = line[3]
+        seat_no = line[4]
+        day = line[5]
+        topic_no = line[6]
+        message_id = line[7]
+
+        participant = User.query.filter_by(username=username).first()
+        private_message = PrivateMessage.query.filter_by(message_id=message_id).first()
+        post = Post(
+            timeline_type=config.TIMELINE_PRI,
+            post_title=private_message.message_title,
+            post_content=private_message.message_content,
+            post_type=1,    # fixme
+            user_id=participant.id,
+            room_id=room_id,
+            topic=topic_no,
+            photo_uri=private_message.photo_uri
+        )
+        db.session.add(post)
+        db.session.commit()
+
+    return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
+
+
 @swag_from('../swagger/post/import_members_with_messages.yaml')
 @bp_post.route('/api/post/import_members_with_messages', methods=['POST'])
 def import_csv():
