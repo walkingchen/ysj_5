@@ -363,10 +363,11 @@ def export_room_with_users():
     with open('static/export_room_with_users.csv', 'w',  encoding='UTF-8') as f:
         csv_writer = csv.writer(f)
         # header = ['id', 'user_id', 'room_type', 'room_id', 'seat_no', 'day', 'topic_no', 'message_id']
-        header = ['id', 'room_id', 'seat_no', 'user_id']
+        header = ['id', 'room_id', 'seat_no', 'user_id', 'username']
         csv_writer.writerow(header)
         for member in room_members:
-            line = [str(member.id), str(member.room_id), str(member.seat_no), str(member.user_id)]
+            user = User.query.filter_by(id=member.user_id).first()
+            line = [str(member.id), str(member.room_id), str(member.seat_no), str(member.user_id), str(user.username)]
             csv_writer.writerow(line)
 
     return send_from_directory('static', 'export_room_with_users.csv', as_attachment=True)
