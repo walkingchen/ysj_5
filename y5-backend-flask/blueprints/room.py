@@ -356,7 +356,7 @@ api.add_resource(
     endpoint='member/list_create')
 
 
-@swag_from('../swagger/room/import_members_with_messages.yaml')
+@swag_from('../swagger/room/export_room_with_users.yaml')
 @bp_room.route('/api/room/export_room_with_users', methods=['GET'])
 def export_room_with_users():
     room_members = RoomMember.query.order_by(desc(RoomMember.room_id), RoomMember.seat_no).all()
