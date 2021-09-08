@@ -17,7 +17,7 @@ from service import get_friends, query_membership
 # error code: 401x
 
 
-bp_room = Blueprint('/api/room', __name__)
+bp_room = Blueprint('/api/room', __name__, url_prefix='/api/room')
 api = Api(bp_room, '/api/room')
 
 
