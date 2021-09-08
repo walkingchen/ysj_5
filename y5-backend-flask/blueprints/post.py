@@ -829,7 +829,7 @@ def import_private_messages():
 
 @swag_from('../swagger/post/import_members_with_messages.yaml')
 @bp_post.route('/api/post/import_members_with_messages', methods=['POST'])
-def import_csv():
+def import_members_with_messages():
     file = request.files['file']
     stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
     csv_input = csv.reader(stream)
@@ -843,6 +843,20 @@ def import_csv():
         day = line[5]
         topic_no = line[6]
         message_id = line[7]
+
+        user = User.query.filter_by(username=username).first()
+        if user is None:
+            jsonify(Resp(result_code=4000, result_msg="username error", data=None).__dict__)
+
+        member = RoomMember.query.filter_by(user_id=user.id).first()
+        if member is None:
+            member = RoomMember(
+                user_id=user.id,
+                room_id=room_id,
+                seat_no=seat_no
+            )
+            db.session.add(member)
+            db.session.commit()
 
         participant = User.query.filter_by(username=username).first()
         private_message = PrivateMessage.query.filter_by(message_id=message_id).first()
