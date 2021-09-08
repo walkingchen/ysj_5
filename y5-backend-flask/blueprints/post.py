@@ -800,7 +800,8 @@ api.add_resource(
 
 @swag_from('../swagger/post/import_members_with_messages.yaml')
 @bp_post.route('/api/post/import_members_with_messages', methods=['POST'])
-def import_csv(file):
+def import_csv():
+    file = request.files['file']
     f = csv.reader(open(file, 'r', encoding='UTF-8'))
     for key, line in enumerate(f):
         if key == 0:
