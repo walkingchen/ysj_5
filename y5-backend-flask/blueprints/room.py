@@ -360,7 +360,7 @@ api.add_resource(
 @bp_room.route('/api/room/export_room_with_users', methods=['GET'])
 def export_room_with_users():
     room_members = RoomMember.query.order_by(desc(RoomMember.room_id), RoomMember.seat_no).all()
-    with open('static/export_room_with_users.csv', 'w',  encoding='UTF-8') as f:
+    with open('static/export_room_with_users.csv', 'w',  encoding='UTF-8', newline='') as f:
         csv_writer = csv.writer(f)
         # header = ['id', 'user_id', 'room_type', 'room_id', 'seat_no', 'day', 'topic_no', 'message_id']
         header = ['id', 'room_id', 'seat_no', 'user_id', 'username']

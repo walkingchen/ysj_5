@@ -1,4 +1,5 @@
 import csv
+import io
 import os
 
 from flasgger import swag_from
@@ -802,10 +803,13 @@ api.add_resource(
 @bp_post.route('/api/post/import_members_with_messages', methods=['POST'])
 def import_csv():
     file = request.files['file']
-    f = csv.reader(open(file, 'r', encoding='UTF-8'))
-    for key, line in enumerate(f):
+    stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
+    csv_input = csv.reader(stream)
+    for row in csv_input:
+        print(row)
+    for key, line in enumerate(csv_input):
         if key == 0:
-            pass
+            continue
         username = line[1]
         room_id = line[2]
         seat_no = line[3]
