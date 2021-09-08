@@ -1,6 +1,12 @@
 ---
 tags:
   - Post
+parameters:
+  - name: file
+    in: formData
+    type: file
+    required: true
+    description: upload a members csv file with message ids
 responses:
   200:
     description: uplad room members csv file with private messages
