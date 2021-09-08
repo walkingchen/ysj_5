@@ -1,8 +1,11 @@
+import csv
+
 from flasgger import swag_from
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, send_from_directory
 from flask_restful import Api, Resource
 
 from entity.Resp import Resp
+from models import User
 
 bp_user = Blueprint('/api/user', __name__)
 api = Api(bp_user, '/api/user')
@@ -26,3 +29,19 @@ api.add_resource(
     '/',
     methods=['POST'],
     endpoint='post/photo/create')
+
+
+@swag_from('../swagger/user/export_user.yaml')
+@bp_user.route('/api/user/export_user', methods=['GET'])
+def export_room():
+    users = User.query.all()
+    with open('static/export_user.csv', 'w',  encoding='UTF-8', newline='') as f:
+        csv_writer = csv.writer(f)
+        # header = ['id', 'user_id', 'room_type', 'room_id', 'seat_no', 'day', 'topic_no', 'message_id']
+        header = ['id', 'username', 'created_at', 'updated_at']
+        csv_writer.writerow(header)
+        for user in users:
+            line = [str(user.id), str(user.username), str(user.email), str(user.created_at)]
+            csv_writer.writerow(line)
+
+    return send_from_directory('static', 'export_room.csv', as_attachment=True)

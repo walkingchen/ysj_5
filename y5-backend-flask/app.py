@@ -18,6 +18,7 @@ import config
 from blueprints.auth import bp_auth, login_manager
 from blueprints.post import bp_post
 from blueprints.room import bp_room
+from blueprints.user import bp_user
 from room_socketio import RoomNamespace
 from extensions import db, cache, socketio
 from models import User, Room, RoomPrototype, RoomMember, Timeline, Post, PostComment, PostLike, Message, Notice, \
@@ -60,6 +61,7 @@ scheduler.init_app(app)
 app.register_blueprint(bp_room)
 app.register_blueprint(bp_post)
 app.register_blueprint(bp_auth)
+app.register_blueprint(bp_user)
 
 
 @app.route('/chat', methods=['GET'])

@@ -356,18 +356,18 @@ api.add_resource(
     endpoint='member/list_create')
 
 
-@swag_from('../swagger/room/export_room_with_users.yaml')
-@bp_room.route('/api/room/export_room_with_users', methods=['GET'])
-def export_room_with_users():
-    room_members = RoomMember.query.order_by(desc(RoomMember.room_id), RoomMember.seat_no).all()
-    with open('static/export_room_with_users.csv', 'w',  encoding='UTF-8', newline='') as f:
+@swag_from('../swagger/room/export_room.yaml')
+@bp_room.route('/api/room/export_room', methods=['GET'])
+def export_room():
+    rooms = Room.query.all()
+    with open('static/export_room.csv', 'w',  encoding='UTF-8', newline='') as f:
         csv_writer = csv.writer(f)
         # header = ['id', 'user_id', 'room_type', 'room_id', 'seat_no', 'day', 'topic_no', 'message_id']
-        header = ['id', 'room_id', 'seat_no', 'user_id', 'username']
+        header = ['id', 'room_id', 'room_name', 'room_desc', 'room_type', 'people_limit', 'created_at', 'updated_at']
         csv_writer.writerow(header)
-        for member in room_members:
-            user = User.query.filter_by(id=member.user_id).first()
-            line = [str(member.id), str(member.room_id), str(member.seat_no), str(member.user_id), str(user.username)]
+        for room in rooms:
+            line = [str(room.id), str(room.room_id), str(room.room_name), room.room_desc, str(room.people_limit),
+                    room.created_at, room.updated_at]
             csv_writer.writerow(line)
 
-    return send_from_directory('static', 'export_room_with_users.csv', as_attachment=True)
+    return send_from_directory('static', 'export_room.csv', as_attachment=True)
