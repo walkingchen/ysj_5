@@ -850,6 +850,7 @@ def import_csv():
             timeline_type=config.TIMELINE_PRI,
             post_title=private_message.message_title,
             post_content=private_message.message_content,
+            abstract=private_message.abstract,
             post_type=1,    # fixme
             user_id=participant.id,
             room_id=room_id,
