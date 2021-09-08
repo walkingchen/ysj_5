@@ -810,11 +810,13 @@ def import_csv():
     for key, line in enumerate(csv_input):
         if key == 0:
             continue
+        # id,user_id,room_type,room_id,seat_no,day,topic_no,message_id
         username = line[1]
-        room_id = line[2]
-        seat_no = line[3]
-        topic_no = line[4]
-        message_id = line[5]
+        room_id = line[3]
+        seat_no = line[4]
+        day = line[5]
+        topic_no = line[6]
+        message_id = line[7]
 
         participant = User.query.filter_by(username=username).first()
         private_message = PrivateMessage.query.filter_by(message_id=message_id).first()
