@@ -22,7 +22,7 @@ from blueprints.user import bp_user
 from room_socketio import RoomNamespace
 from extensions import db, cache, socketio
 from models import User, Room, RoomPrototype, RoomMember, Timeline, Post, PostComment, PostLike, Message, Notice, \
-    PostDaily, PrivateMessage
+    PostDaily, PrivateMessage, PostFlag
 from views import ModelViewHasMultipleImages
 
 app = Flask(__name__)
@@ -48,6 +48,7 @@ admin.add_view(ModelView(RoomMember, db.session, name=u'Room Member', category='
 # admin.add_view(ModelView(Timeline, db.session, name=u'Timeline'))
 admin.add_view(ModelView(Post, db.session, name=u'Post', category='Post'))
 admin.add_view(ModelView(PostComment, db.session, name=u'Post Comment', category='Post'))
+admin.add_view(ModelView(PostFlag, db.session, name=u'Post Flag', category='Post'))
 admin.add_view(ModelView(PostLike, db.session, name=u'Post Like', category='Post'))
 admin.add_view(ModelView(PrivateMessage, db.session, name=u'PrivateMessage'))
 admin.add_view(ModelView(PostDaily, db.session, name=u'Post Daily'))
