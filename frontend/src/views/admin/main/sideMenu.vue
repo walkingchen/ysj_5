@@ -26,6 +26,10 @@
           </el-menu-item>
         </el-menu-item-group>
       </el-submenu>
+      <el-menu-item @click="toDataManage">
+        <v-icon name="table" />
+        <span slot="title">Data</span>
+      </el-menu-item>
     </el-menu>
   </div>
 </template>
@@ -35,9 +39,15 @@ import 'vue-awesome/icons/bezier-curve'
 import 'vue-awesome/icons/comments'
 import 'vue-awesome/icons/tags'
 import 'vue-awesome/icons/list'
+import 'vue-awesome/icons/table'
 
 export default {
-  props: ['isCollapse']
+  props: ['isCollapse'],
+  methods: {
+    toDataManage () {
+      window.open('http://ysj_5.soulfar.com/admin')
+    }
+  }
 }
 </script>
 
