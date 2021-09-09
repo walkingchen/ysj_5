@@ -807,6 +807,8 @@ def import_private_messages():
     csv_input = csv.reader(stream)
     for key, line in enumerate(csv_input):
         if key == 0:
+            if line == ['id', 'message_id', 'message_title', 'message_summary', 'message_content', 'photo_uri']:
+                return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
             continue
         message_id = line[1]
         message_title = line[2]
