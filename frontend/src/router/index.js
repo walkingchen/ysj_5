@@ -28,11 +28,11 @@ const router = new VueRouter({
       path: '/admin',
       name: 'Admin',
       component: () => import('@views/admin/main/Main'),
-      redirect: '/admin/dashboard',
+      redirect: '/admin/assign',
       children: [{
-        path: 'dashboard',
-        name: 'Dashboard',
-        component: () => import('@views/admin/Dashboard')
+        path: 'assign',
+        name: 'Assign',
+        component: () => import('@views/admin/Assign')
       }, {
         path: 'roomPrototype',
         name: 'RoomPrototype',
@@ -51,7 +51,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (to.name === 'Login' || localStorage.getItem('roomid')) {
+  if (to.name === 'Login' || to.name === 'AdminLogin' || localStorage.getItem('roomid')) {
     next()
   } else {
     next({ name: 'Login' })

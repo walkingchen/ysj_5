@@ -16,3 +16,5 @@ export const getTopicContent = (room_id, topic) => axios.get('/post/daily', {
     topic
   }
 })
+export const importPrivate = (params, config) => axios.post('/post/import_private_messages', params, config)
+export const importAssignFile = (params, config) => axios.post('/post/import_members_with_messages', params, config)

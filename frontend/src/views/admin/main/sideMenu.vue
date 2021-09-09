@@ -6,9 +6,9 @@
       :collapse="isCollapse"
       background-color="#304156"
       text-color="#bfcbd9">
-      <el-menu-item index="/admin/dashboard">
-        <v-icon name="tachometer-alt" />
-        <span slot="title">Dashboard</span>
+      <el-menu-item index="/admin/assign">
+        <v-icon name="bezier-curve" />
+        <span slot="title">Assign Message</span>
       </el-menu-item>
       <el-submenu index="2">
         <template slot="title">
@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import 'vue-awesome/icons/tachometer-alt'
+import 'vue-awesome/icons/bezier-curve'
 import 'vue-awesome/icons/comments'
 import 'vue-awesome/icons/tags'
 import 'vue-awesome/icons/list'
