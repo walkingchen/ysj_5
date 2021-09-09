@@ -837,6 +837,8 @@ def import_members_with_messages():
     csv_input = csv.reader(stream)
     for key, line in enumerate(csv_input):
         if key == 0:
+            if line != ['id', 'user_id', 'room_type', 'room_id', 'seat_no', 'day', 'topic_no', 'message_id']:
+                return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
             continue
         # id,user_id,room_type,room_id,seat_no,day,topic_no,message_id
         username = line[1]
