@@ -307,12 +307,12 @@ class User(db.Model, UserMixin):
 
     id = Column(Integer, primary_key=True)
     # user_id = Column(Integer)
-    avatar = Column(String(2048))
     username = Column(String(32))
     password = Column(String(128))
     email = Column(String(128))
     nickname = Column(String(32))
     realname = Column(String(32))
+    avatar = Column(String(2048))
     created_at = Column(DateTime, server_default=FetchedValue())
     updated_at = Column(DateTime)
 
