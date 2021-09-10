@@ -42,7 +42,7 @@ class RoomApi(Resource):
             if m is not None:
                 members['friends'].append(m._asdict())
 
-        redspot_list = Redspot.query.filter_by(room_id=room.room_id, user_id=current_user.id).all()
+        redspot_list = Redspot.query.filter_by(room_id=room.id, user_id=current_user.id).all()
         redspot_list_serialized = Serializer.serialize_list(redspot_list)
 
         room_serialized = room.serialize()
