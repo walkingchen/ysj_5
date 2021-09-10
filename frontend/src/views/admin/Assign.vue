@@ -78,10 +78,10 @@ export default {
           href = '/api/user/export_user'
           break
         case 'privateMessage':
-          href = 'https://ysj_5.soulfar.com/static/templates/private_message.csv'
+          href = 'http://ysj_5.soulfar.com/static/templates/private_message.csv'
           break
         case 'template':
-          href = 'https://ysj_5.soulfar.com/static/templates/user_with_room_message_upload.csv'
+          href = 'http://ysj_5.soulfar.com/static/templates/user_with_room_message_upload.csv'
           break
       }
       window.location.href = href
