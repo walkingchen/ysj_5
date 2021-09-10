@@ -44,4 +44,4 @@ def export_room():
             line = [str(user.id), str(user.username), str(user.email), str(user.created_at)]
             csv_writer.writerow(line)
 
-    return send_from_directory('static', 'export_room.csv', as_attachment=True)
+    return send_from_directory('static', 'export_user.csv', as_attachment=True)
