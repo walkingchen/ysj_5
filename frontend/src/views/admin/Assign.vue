@@ -2,7 +2,7 @@
   <div>
     <el-divider>
       <v-icon name="download" />
-      &nbsp;Download
+      &nbsp;Download Data
     </el-divider>
     <div class="btns" style="margin-bottom: 50px">
       <el-button type="primary" plain @click="download('rooms')">
@@ -11,11 +11,18 @@
       <el-button type="primary" plain @click="download('users')">
         <v-icon name="users" />&nbsp;Users
       </el-button>
+    </div>
+
+    <el-divider>
+      <v-icon name="download" />
+      &nbsp;Download Template
+    </el-divider>
+    <div class="btns" style="margin-bottom: 50px">
       <el-button type="primary" plain @click="download('privateMessage')">
-        <v-icon name="envelope-open-text" />&nbsp;Private Message Template
+        <v-icon name="envelope-open-text" />&nbsp;Private Message
       </el-button>
       <el-button type="primary" plain @click="download('template')">
-        <v-icon name="file-csv" />&nbsp;Assign Template
+        <v-icon name="bezier-curve" />&nbsp;Assign
       </el-button>
     </div>
 
@@ -25,7 +32,7 @@
     </el-divider>
     <div class="btns">
       <el-button type="primary" plain @click="upload('privateMessage')">
-        <v-icon name="envelope" />&nbsp;Private Message
+        <v-icon name="envelope-open-text" />&nbsp;Private Message
       </el-button>
       <el-button type="primary" plain @click="upload('assign')">
         <v-icon name="bezier-curve" />&nbsp;Assign
@@ -49,8 +56,6 @@ import 'vue-awesome/icons/upload'
 import 'vue-awesome/icons/comments'
 import 'vue-awesome/icons/users'
 import 'vue-awesome/icons/envelope-open-text'
-import 'vue-awesome/icons/file-csv'
-import 'vue-awesome/icons/envelope'
 import 'vue-awesome/icons/bezier-curve'
 import { importPrivate, importAssignFile } from '@api/post.js'
 const path = require('path')
