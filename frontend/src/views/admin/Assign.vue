@@ -75,7 +75,7 @@ export default {
           href = '/api/room/export_room'
           break
         case 'users':
-          href = '/api/room/export_room'
+          href = '/api/user/export_user'
           break
         case 'privateMessage':
           href = 'https://ysj_5.soulfar.com/static/templates/private_message.csv'
