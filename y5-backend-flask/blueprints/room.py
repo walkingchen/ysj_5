@@ -42,7 +42,7 @@ class RoomApi(Resource):
             if m is not None:
                 members['friends'].append(m._asdict())
 
-        redspot_list = Redspot.query.filter_by(room_id=room.room_id, user_id=current_user.id).all()
+        redspot_list = Redspot.query.filter_by(room_id=room.id, user_id=current_user.id).all()
         redspot_list_serialized = Serializer.serialize_list(redspot_list)
 
         room_serialized = room.serialize()
@@ -363,10 +363,10 @@ def export_room():
     with open('static/export_room.csv', 'w',  encoding='UTF-8', newline='') as f:
         csv_writer = csv.writer(f)
         # header = ['id', 'user_id', 'room_type', 'room_id', 'seat_no', 'day', 'topic_no', 'message_id']
-        header = ['id', 'room_id', 'room_name', 'room_desc', 'room_type', 'people_limit', 'created_at', 'updated_at']
+        header = ['id', 'room_name', 'room_desc', 'room_type', 'people_limit', 'created_at', 'updated_at']
         csv_writer.writerow(header)
         for room in rooms:
-            line = [str(room.id), str(room.room_id), str(room.room_name), room.room_desc, str(room.people_limit),
+            line = [str(room.id), str(room.room_name), room.room_desc, str(room.people_limit),
                     room.created_at, room.updated_at]
             csv_writer.writerow(line)
 

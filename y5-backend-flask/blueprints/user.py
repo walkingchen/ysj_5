@@ -38,10 +38,10 @@ def export_room():
     with open('static/export_user.csv', 'w',  encoding='UTF-8', newline='') as f:
         csv_writer = csv.writer(f)
         # header = ['id', 'user_id', 'room_type', 'room_id', 'seat_no', 'day', 'topic_no', 'message_id']
-        header = ['id', 'username', 'created_at', 'updated_at']
+        header = ['id', 'username', 'email', 'created_at']
         csv_writer.writerow(header)
         for user in users:
             line = [str(user.id), str(user.username), str(user.email), str(user.created_at)]
             csv_writer.writerow(line)
 
-    return send_from_directory('static', 'export_room.csv', as_attachment=True)
+    return send_from_directory('static', 'export_user.csv', as_attachment=True)
