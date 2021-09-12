@@ -80,10 +80,11 @@ class RoomApi(Resource):
             return jsonify(Resp(result_code=4000, result_msg='prototype not exist', data=None).__dict__)
 
         while room_count > 0:
-            room_id = ''.join(random.sample(string.ascii_letters + string.digits, 8))
+            room_id = ''.join(random.sample(string.digits, 6))
+            room_name = 'room_' + room_id
             room = Room(
                 room_id=room_id,
-                room_name=room_id,
+                room_name=room_name,
                 room_type=room_type,
                 people_limit=people_limit,
                 room_desc=room_desc
