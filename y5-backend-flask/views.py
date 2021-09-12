@@ -12,6 +12,13 @@ from flask_admin._compat import string_types, urljoin
 from extensions import db
 
 
+class RoomModelView(ModelView):
+    # can_create = False
+    # can_edit = True
+    column_searchable_list = ['room_id', 'people_limit', 'created_at']
+    column_filters = column_searchable_list
+
+
 class MultipleImageUploadInput(object):
     empty_template = "<input %(file)s multiple>"
 
