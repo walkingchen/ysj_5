@@ -15,6 +15,7 @@ from extensions import db
 class RoomModelView(ModelView):
     # can_create = False
     # can_edit = True
+    list_columns = ['id', 'room_name', 'room_desc', 'room_type', 'people_limit', 'created_at']
     column_searchable_list = ['room_id', 'people_limit', 'created_at']
     column_filters = column_searchable_list
 
