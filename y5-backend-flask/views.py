@@ -20,6 +20,14 @@ class RoomModelView(ModelView):
     column_filters = column_searchable_list
 
 
+class PostModelView(ModelView):
+    # can_create = False
+    # can_edit = True
+    # list_columns = ['id', 'room_name', 'room_desc', 'room_type', 'people_limit', 'created_at']
+    column_searchable_list = ['post_title', 'abstract', 'room_id']
+    column_filters = column_searchable_list
+
+
 class MultipleImageUploadInput(object):
     empty_template = "<input %(file)s multiple>"
 
