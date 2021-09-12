@@ -28,12 +28,16 @@ class PostModelView(ModelView):
     def _post_content_formatter(view, context, model, name):
         # Format your string here e.g show first 80 characters
         # can return any valid HTML e.g. a link to another view to show the detail or a popup window
-        return model.post_content[:80] + '...'
+        if model.post_content is not None:
+            return model.post_content[:80] + '...'
+        return None
 
     def _abstract_formatter(view, context, model, name):
         # Format your string here e.g show first 80 characters
         # can return any valid HTML e.g. a link to another view to show the detail or a popup window
-        return model.abstract[:80] + '...'
+        if model.abstract is not None:
+            return model.abstract[:80] + '...'
+        return None
 
     column_formatters = {
         'post_content': _post_content_formatter,
