@@ -38,7 +38,7 @@ def query_user(user_id):
 # 获取座位号
 def query_membership(room_id, user_id):
     return User.query.join(RoomMember, RoomMember.user_id == User.id) \
-        .filter(RoomMember.room_id == room_id, User.id == user_id) \
+        .filter(RoomMember.room_id == room_id, User.id == user_id, RoomMember.activated is True) \
         .with_entities(
             User.id,
             User.nickname,

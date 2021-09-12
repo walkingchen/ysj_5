@@ -267,6 +267,7 @@ class RoomMember(db.Model):
     user_id = Column(Integer)
     seat_no = Column(Integer)
     room_id = Column(Integer)
+    activated = Column(Integer, server_default=FetchedValue())
     created_at = Column(DateTime, server_default=FetchedValue())
     updated_at = Column(DateTime)
 
