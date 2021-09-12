@@ -28,6 +28,9 @@ class RoomApi(Resource):
         if room is None:
             return jsonify(Resp(result_code=4011, result_msg='room not exists', data=None).__dict__)
 
+        if room.activated != 1:
+            return jsonify(Resp(result_code=4012, result_msg='room not activated', data=None).__dict__)
+
         if not current_user.is_authenticated:
             return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
 
