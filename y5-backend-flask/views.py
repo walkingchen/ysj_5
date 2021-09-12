@@ -25,13 +25,19 @@ class PostModelView(ModelView):
     # can_edit = True
     # list_columns = ['id', 'room_name', 'room_desc', 'room_type', 'people_limit', 'created_at']
 
-    def _description_formatter(view, context, model, name):
-        # Format your string here e.g show first 20 characters
+    def _post_content_formatter(view, context, model, name):
+        # Format your string here e.g show first 80 characters
         # can return any valid HTML e.g. a link to another view to show the detail or a popup window
-        return model.post_content[:80]
+        return model.post_content[:80] + '...'
+
+    def _abstract_formatter(view, context, model, name):
+        # Format your string here e.g show first 80 characters
+        # can return any valid HTML e.g. a link to another view to show the detail or a popup window
+        return model.abstract[:80] + '...'
 
     column_formatters = {
-        'post_content': _description_formatter,
+        'post_content': _post_content_formatter,
+        'abstract': _abstract_formatter
     }
 
     column_searchable_list = ['post_title', 'abstract', 'room_id']
