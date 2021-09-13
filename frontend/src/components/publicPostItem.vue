@@ -129,7 +129,7 @@ export default {
   },
   methods: {
     flag(item) {
-      this.$confirm(`Are you sure to ${item.flagged ? 'cancel ' : ''}flag this post?`, '', {
+      this.$confirm(`Are you sure to ${item.flagged ? 'unflag ' : 'flag'} this post?`, '', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Cancel',
         type: 'warning'

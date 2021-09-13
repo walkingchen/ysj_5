@@ -51,7 +51,7 @@ export default {
   methods: {
     flag () {
       const item = this.comment
-      this.$confirm(`Are you sure to ${item.flagged ? 'cancel ' : ''}flag this comment?`, '', {
+      this.$confirm(`Are you sure to ${item.flagged ? 'unflag ' : 'flag'} this comment?`, '', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Cancel',
         type: 'warning'
