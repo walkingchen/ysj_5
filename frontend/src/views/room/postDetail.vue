@@ -12,12 +12,12 @@
           <p class="createAt">{{ detailData.created_at }}</p>
         </div>
 
-        <div>
+        <div v-if="detailData.timeline_type !== 0">
+          <el-tag v-if="detailData.timeline_type === 2" type="info" size="small">shared</el-tag>
           <el-button
-            v-if="detailData.timeline_type !== 0"
+            v-else
             size="mini"
             class="share-btn"
-            :disabled="detailData.timeline_type === 2"
             @click="share">
             Share
           </el-button>
