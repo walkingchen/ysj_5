@@ -50,20 +50,24 @@ export default {
 .privateMessageItem
   padding 10px
 
-  p
-    line-height 1.5
+  .title
+    font-size 40px
+    font-weight 700
+    line-height 48px
+    font-family nyt-cheltenham, georgia, 'times new roman', times, serif
+    margin-bottom 16px
+    font-style italic
 
-    &.title
-      font-size 16px
-      font-weight 600
+  .content
+    font-size 23px !important
+    white-space pre-wrap
+    font-weight 300 !important
+    line-height 30px !important
+    font-family nyt-cheltenham, georgia, 'times new roman', times, serif
 
-    &.content
-      font-size 14px
-      white-space pre-wrap
-
-      .seeMore-btn
-        margin-left 5px
-        padding 4px 8px
+  .seeMore-btn
+    margin-left 5px
+    padding 4px 8px
 
   .message-time
     color #999

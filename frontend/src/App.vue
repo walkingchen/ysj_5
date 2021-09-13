@@ -25,6 +25,21 @@ export default {
 </script>
 
 <style lang="stylus">
+@font-face {
+  font-family: 'nyt-cheltenham';
+  src: url('./assets/cheltenham-italic-700.woff2') format('woff2');
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'nyt-cheltenham';
+  src: url('./assets/cheltenham-normal-300.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+}
+
 *
   padding 0
   margin 0
