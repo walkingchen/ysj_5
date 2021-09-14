@@ -1,9 +1,9 @@
 <template>
   <div class="privateMessageItem" :class="{unread: !item.read_status}">
-    <p class="title">
+    <p class="nyt-title">
       <highlight :content="item.post_title" />
     </p>
-    <p class="content">
+    <p class="nyt-content">
       <highlight :content="item.abstract" />
       <el-button size="mini" class="seeMore-btn" @click="showDetail">See More</el-button>
     </p>
@@ -49,21 +49,6 @@ export default {
 <style lang="stylus">
 .privateMessageItem
   padding 10px
-
-  .title
-    font-size 40px
-    font-weight 700
-    line-height 48px
-    font-family nyt-cheltenham, georgia, 'times new roman', times, serif
-    margin-bottom 16px
-    font-style italic
-
-  .content
-    font-size 23px !important
-    white-space pre-wrap
-    font-weight 300 !important
-    line-height 30px !important
-    font-family nyt-cheltenham, georgia, 'times new roman', times, serif
 
   .seeMore-btn
     margin-left 5px

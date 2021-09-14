@@ -66,4 +66,20 @@ ul, li
 
 .fa-icon
   width auto
+
+.nyt-title
+  font-size 40px
+  font-weight 700
+  line-height 48px
+  font-family nyt-cheltenham, georgia, 'times new roman', times, serif
+  margin-bottom 16px
+  font-style italic
+
+.nyt-content
+  font-size 23px
+  font-weight 300
+  line-height 30px
+  font-family nyt-cheltenham, georgia, 'times new roman', times, serif
+  white-space pre-wrap
+  word-break break-word
 </style>
