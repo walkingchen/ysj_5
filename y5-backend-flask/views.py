@@ -21,8 +21,9 @@ class RoomModelView(ModelView):
 
     def after_model_change(self, form, model, is_created):
         # if activated, send mail
-        print(form)
-        pass
+        if form._obj.activated == 1:
+            # send mail
+            pass
 
 
 class PostModelView(ModelView):
