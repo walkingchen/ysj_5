@@ -19,6 +19,11 @@ class RoomModelView(ModelView):
     column_searchable_list = ['room_id', 'people_limit', 'created_at']
     column_filters = column_searchable_list
 
+    def after_model_change(self, form, model, is_created):
+        # if activated, send mail
+        print(form)
+        pass
+
 
 class PostModelView(ModelView):
     # can_create = False
