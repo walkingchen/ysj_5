@@ -10,6 +10,8 @@ from flask_admin.form.upload import ImageUploadField, thumbgen_filename
 from flask_admin._compat import string_types, urljoin
 
 from extensions import db
+from mail import mail_notify
+from models import RoomMember, User
 
 
 class RoomModelView(ModelView):
@@ -23,7 +25,12 @@ class RoomModelView(ModelView):
         # if activated, send mail
         if form._obj.activated == 1:
             # send mail
-            pass
+            members = RoomMember.query.filter_by(room_id=form._obj.id, activated=1).all()
+            users = []
+            for member in members:
+                user = User.query.filter_by(id=member.user_id).first()
+                users.append(user)
+            mail_notify(users)
 
 
 class PostModelView(ModelView):

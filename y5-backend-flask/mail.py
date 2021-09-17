@@ -1,0 +1,16 @@
+from flask_mail import Message
+from app import mail
+
+
+def mail_notify(users):
+    with mail.connect() as conn:
+        for user in users:
+            if user.email is None:
+                continue
+            message = '...'
+            subject = "hello, %s" % user.name
+            msg = Message(recipients=[user.email],
+                          body=message,
+                          subject=subject)
+
+            conn.send(msg)

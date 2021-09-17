@@ -23,7 +23,6 @@ from room_socketio import RoomNamespace
 from extensions import db, cache, socketio
 from models import User, Room, RoomPrototype, RoomMember, Timeline, Post, PostComment, PostLike, Message, Notice, \
     PostDaily, PrivateMessage, PostFlag
-from views import ModelViewHasMultipleImages, RoomModelView, PostModelView
 
 app = Flask(__name__)
 
@@ -39,6 +38,15 @@ socketio.init_app(app, engineio_logger=True)
 socketio.on_namespace(RoomNamespace('/'))
 login_manager.init_app(app)
 
+
+db.init_app(app)
+
+scheduler = APScheduler()
+scheduler.init_app(app)
+# scheduler.start()
+
+
+from views import ModelViewHasMultipleImages, RoomModelView, PostModelView
 admin = Admin(app=app, name=config.ADMIN_TITLE, template_mode='bootstrap3')
 admin.add_view(ModelView(User, db.session, name=u'User'))
 admin.add_view(RoomModelView(Room, db.session, name=u'Room', category='Room'))
@@ -54,11 +62,6 @@ admin.add_view(ModelView(PrivateMessage, db.session, name=u'PrivateMessage'))
 admin.add_view(ModelView(PostDaily, db.session, name=u'Post Daily'))
 # admin.add_view(ModelView(Message, db.session, name=u'Message', category='Chat'))
 
-db.init_app(app)
-
-scheduler = APScheduler()
-scheduler.init_app(app)
-# scheduler.start()
 
 app.register_blueprint(bp_room)
 app.register_blueprint(bp_post)
