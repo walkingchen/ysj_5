@@ -11,6 +11,7 @@ def mail_notify(users):
             subject = "hello, %s" % user.username
             msg = Message(recipients=[user.email],
                           body=message,
-                          subject=subject)
+                          subject=subject,
+                          sender=("Admin", "admin@soulfar.com"))
 
             conn.send(msg)
