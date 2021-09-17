@@ -8,7 +8,7 @@ def mail_notify(users):
             if user.email is None:
                 continue
             message = '...'
-            subject = "hello, %s" % user.name
+            subject = "hello, %s" % user.username
             msg = Message(recipients=[user.email],
                           body=message,
                           subject=subject)
