@@ -1,6 +1,7 @@
 import ast
 from PIL import Image
 from flask import url_for
+from flask_admin.actions import action
 from flask_admin.contrib.sqla import ModelView
 from markupsafe import Markup
 from wtforms.widgets import html_params, HTMLString
@@ -20,6 +21,14 @@ class RoomModelView(ModelView):
     list_columns = ['id', 'room_name', 'activated', 'room_desc', 'room_type', 'people_limit', 'created_at']
     column_searchable_list = ['room_id', 'people_limit', 'created_at']
     column_filters = column_searchable_list
+
+    @action('activate', 'Activate Rooms', 'Are you sure you want to start selected rooms?')
+    def action_start_rooms(self, ids):
+        print(ids)
+
+    @action('deactivate', 'Deactivate Rooms', 'Are you sure you want to stop selected rooms?')
+    def action_stop_rooms(self, ids):
+        print(ids)
 
     def after_model_change(self, form, model, is_created):
         # if activated, send mail
