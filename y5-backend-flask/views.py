@@ -12,7 +12,7 @@ from flask_admin._compat import string_types, urljoin
 
 from extensions import db
 from mail import mail_notify
-from models import RoomMember, User
+from models import RoomMember, User, Room
 
 
 class RoomModelView(ModelView):
@@ -24,11 +24,17 @@ class RoomModelView(ModelView):
 
     @action('activate', 'Activate Rooms', 'Are you sure you want to start selected rooms?')
     def action_start_rooms(self, ids):
-        print(ids)
+        for id in ids:
+            room = Room.query.filter_by(id=id).first()
+            room.activated = 1
+            db.session.commit()
 
     @action('deactivate', 'Deactivate Rooms', 'Are you sure you want to stop selected rooms?')
     def action_stop_rooms(self, ids):
-        print(ids)
+        for id in ids:
+            room = Room.query.filter_by(id=id).first()
+            room.activated = 0
+            db.session.commit()
 
     def after_model_change(self, form, model, is_created):
         # if activated, send mail
