@@ -41,6 +41,7 @@ export default {
 }
 
 *
+  font-family Calibri, Arial, Helvetica, sans-serif
   padding 0
   margin 0
 

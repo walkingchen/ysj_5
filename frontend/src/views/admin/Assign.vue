@@ -2,7 +2,7 @@
   <div>
     <el-divider>
       <v-icon name="download" />
-      &nbsp;Download Data
+      &nbsp;Download
     </el-divider>
     <div class="btns" style="margin-bottom: 50px">
       <el-button type="primary" plain @click="download('rooms')">
@@ -14,29 +14,24 @@
     </div>
 
     <el-divider>
-      <v-icon name="download" />
-      &nbsp;Download Template
-    </el-divider>
-    <div class="btns" style="margin-bottom: 50px">
-      <el-button type="primary" plain @click="download('privateMessage')">
-        <v-icon name="envelope-open-text" />&nbsp;Private Message
-      </el-button>
-      <el-button type="primary" plain @click="download('template')">
-        <v-icon name="bezier-curve" />&nbsp;Assign
-      </el-button>
-    </div>
-
-    <el-divider>
       <v-icon name="upload" />
       &nbsp;Upload
     </el-divider>
     <div class="btns">
-      <el-button type="primary" plain @click="upload('privateMessage')">
-        <v-icon name="envelope-open-text" />&nbsp;Private Message
-      </el-button>
-      <el-button type="primary" plain @click="upload('assign')">
-        <v-icon name="bezier-curve" />&nbsp;Assign
-      </el-button>
+      <div class="btn-box" style="margin-right: 10px">
+        <el-button type="primary" plain @click="upload('privateMessage')">
+          <v-icon name="envelope-open-text" />&nbsp;Private Message
+        </el-button>
+        <br />
+        <el-link type="primary" @click="download('privateMessage')">(template)</el-link>
+      </div>
+      <div class="btn-box">
+        <el-button type="primary" plain @click="upload('assign')">
+          <v-icon name="bezier-curve" />&nbsp;User With Room Id And Message Id
+        </el-button>
+        <br />
+        <el-link type="primary" @click="download('template')">(template)</el-link>
+      </div>
     </div>
     <input ref="fileInput" type="file" accept=".csv" hidden @change="uploadFile" />
     <div class="uploadList">
@@ -146,6 +141,16 @@ export default {
 .btns
   display flex
   justify-content center
+
+.el-button
+  height 40px
+  padding 0 20px
+
+.btn-box
+  text-align center
+
+  .el-link
+    margin-top 8px
 
 .uploadList
   width 350px
