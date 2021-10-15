@@ -2,12 +2,15 @@ from flask_mail import Message
 from app import mail
 
 
-def mail_notify(users):
+def mail_notify(users, status):
     with mail.connect() as conn:
         for user in users:
             if user.email is None:
                 continue
-            message = '...'
+            if status == 1:
+                message = 'room activated'
+            else:
+                message = 'room deactivated'
             subject = "hello, %s" % user.username
             msg = Message(recipients=[user.email],
                           body=message,
