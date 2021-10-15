@@ -1,6 +1,7 @@
 import csv
 import io
 import os
+import zipfile
 
 from flasgger import swag_from
 from flask import Blueprint, request, json, jsonify, current_app
@@ -903,5 +904,33 @@ def import_post_daily():
         )
         db.session.add(post_daily)
         db.session.commit()
+
+    return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
+
+
+@swag_from('../swagger/post/photo/import_private_messages_pics.yaml')
+@bp_post.route('/api/post/photo/import_private_messages_pics', methods=['POST'])
+def import_private_messages_pics():
+    file = request.files['file']
+    ext = file.filename.split('.')[-1]
+    filename = os.path.join(config.UPLOAD_PATH, 'private_messages_pics.' + ext)
+    file.save(filename)
+
+    with zipfile.ZipFile(filename, "r") as z:
+        z.extractall(config.UPLOAD_PATH)
+
+    return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
+
+
+@swag_from('../swagger/post/photo/import_daily_poll_pics.yaml')
+@bp_post.route('/api/post/photo/import_daily_poll_pics', methods=['POST'])
+def import_daily_poll_pics():
+    file = request.files['file']
+    ext = file.filename.split('.')[-1]
+    filename = os.path.join(config.UPLOAD_PATH, 'daily_poll_pics.' + ext)
+    file.save(filename)
+
+    with zipfile.ZipFile(filename, "r") as z:
+        z.extractall(config.UPLOAD_PATH)
 
     return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
