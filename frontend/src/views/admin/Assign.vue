@@ -18,7 +18,7 @@
       &nbsp;Upload
     </el-divider>
     <div class="btns">
-      <div class="btn-box" style="margin-right: 10px">
+      <div class="btn-box">
         <el-button type="primary" plain @click="upload('privateMessage')">
           <v-icon name="envelope-open-text" />&nbsp;Private Message
         </el-button>
@@ -30,7 +30,14 @@
           <v-icon name="bezier-curve" />&nbsp;User With Room Id And Message Id
         </el-button>
         <br />
-        <el-link type="primary" @click="download('template')">(template)</el-link>
+        <el-link type="primary" @click="download('assign')">(template)</el-link>
+      </div>
+      <div class="btn-box">
+        <el-button type="primary" plain @click="upload('topic')">
+          <v-icon name="calendar" />&nbsp;Topic Of The Day
+        </el-button>
+        <br />
+        <el-link type="primary" @click="download('topic')">(template)</el-link>
       </div>
     </div>
     <input ref="fileInput" type="file" accept=".csv" hidden @change="uploadFile" />
@@ -52,7 +59,8 @@ import 'vue-awesome/icons/comments'
 import 'vue-awesome/icons/users'
 import 'vue-awesome/icons/envelope-open-text'
 import 'vue-awesome/icons/bezier-curve'
-import { importPrivate, importAssignFile } from '@api/post.js'
+import 'vue-awesome/icons/calendar'
+import { importPrivate, importAssignFile, importPostDaily } from '@api/post.js'
 const path = require('path')
 
 export default {
@@ -75,8 +83,13 @@ export default {
         case 'privateMessage':
           href = 'http://ysj_5.soulfar.com/static/templates/private_message.csv'
           break
-        case 'template':
+        case 'assign':
           href = 'http://ysj_5.soulfar.com/static/templates/user_with_room_message_upload.csv'
+          break
+        case 'topic':
+          href = 'http://ysj_5.soulfar.com/static/templates/topic_of_the_day.csv'
+          break
+        default:
           break
       }
       window.location.href = href
@@ -116,6 +129,9 @@ export default {
             case 'assign':
               res = await importAssignFile(fileForm, { onUploadProgress })
               break
+            case 'topic':
+              res = await importPostDaily(fileForm, { onUploadProgress })
+              break
             default:
               break
           }
@@ -146,8 +162,13 @@ export default {
   height 40px
   padding 0 20px
 
+  .fa-icon
+    margin-right 5px
+    height 14px
+
 .btn-box
   text-align center
+  margin-right 10px
 
   .el-link
     margin-top 8px
