@@ -58,8 +58,8 @@ admin.add_view(PostModelView(Post, db.session, name=u'Post', category='Post'))
 admin.add_view(ModelView(PostComment, db.session, name=u'Post Comment', category='Post'))
 admin.add_view(ModelView(PostFlag, db.session, name=u'Post Flag', category='Post'))
 admin.add_view(ModelView(PostLike, db.session, name=u'Post Like', category='Post'))
-admin.add_view(ModelView(PrivateMessage, db.session, name=u'PrivateMessage'))
-admin.add_view(ModelView(PostDaily, db.session, name=u'Post Daily'))
+admin.add_view(ModelView(PrivateMessage, db.session, name=u'Private Message'))
+admin.add_view(ModelView(PostDaily, db.session, name=u'Topic of the day'))
 # admin.add_view(ModelView(Message, db.session, name=u'Message', category='Chat'))
 
 
