@@ -917,7 +917,7 @@ def import_private_messages_pics():
     file.save(filename)
 
     with zipfile.ZipFile(filename, "r") as z:
-        z.extractall(os.path.join(config.UPLOAD_PATH))
+        z.extractall(config.UPLOAD_PATH)
 
     return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
 
@@ -931,6 +931,6 @@ def import_daily_poll_pics():
     file.save(filename)
 
     with zipfile.ZipFile(filename, "r") as z:
-        z.extractall(os.path.join(config['UPLOAD_PATH']))
+        z.extractall(config.UPLOAD_PATH)
 
     return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
