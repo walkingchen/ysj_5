@@ -233,7 +233,7 @@ class PostApi(Resource):
         else:
             posts = Post.query.filter(
                 Post.room_id == room_id,
-                Post.user_id==None,
+                Post.user_id == user_id,
                 Post.topic == topic
             ).order_by(Post.created_at.desc()).all()
 
