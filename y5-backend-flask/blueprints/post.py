@@ -880,3 +880,28 @@ def import_members_with_messages():
 
     return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
 
+
+@swag_from('../swagger/post/import_post_daily.yaml')
+@bp_post.route('/api/post/import_post_daily', methods=['POST'])
+def import_post_daily():
+    file = request.files['file']
+    stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
+    csv_input = csv.reader(stream)
+    for key, line in enumerate(csv_input):
+        if key == 0:
+            if line != ['id', 'room_id', 'day', 'post_id']:
+                return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
+            continue
+        room_id = line[1]
+        topic = line[2]     # day
+        post_id = line[3]
+
+        post_daily = PostDaily(
+            room_id=room_id,
+            topic=topic,
+            post_id=post_id
+        )
+        db.session.add(post_daily)
+        db.session.commit()
+
+    return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
