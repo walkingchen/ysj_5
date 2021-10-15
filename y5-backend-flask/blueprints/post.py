@@ -913,7 +913,7 @@ def import_post_daily():
 def import_private_messages_pics():
     file = request.files['file']
     ext = file.filename.split('.')[-1]
-    filename = os.path.join(config.UPLOAD_PATH) + 'private_messages_pics.' + ext
+    filename = os.path.join(config.UPLOAD_PATH, 'private_messages_pics.' + ext)
     file.save(filename)
 
     with zipfile.ZipFile(filename, "r") as z:
@@ -927,7 +927,7 @@ def import_private_messages_pics():
 def import_daily_poll_pics():
     file = request.files['file']
     ext = file.filename.split('.')[-1]
-    filename = os.path.join(config.UPLOAD_PATH), 'daily_poll_pics.' + ext
+    filename = os.path.join(config.UPLOAD_PATH, 'daily_poll_pics.' + ext)
     file.save(filename)
 
     with zipfile.ZipFile(filename, "r") as z:
