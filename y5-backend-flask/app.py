@@ -11,7 +11,6 @@ from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
 from flask_cors import CORS
 from flask_mail import Mail
-# from git import Repo
 from git import Repo
 
 import config
