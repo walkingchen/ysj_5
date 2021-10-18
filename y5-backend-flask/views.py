@@ -15,6 +15,11 @@ from mail import mail_notify
 from models import RoomMember, User, Room
 
 
+class YModelView(ModelView):
+    can_create = False
+    can_edit = False
+
+
 class RoomModelView(ModelView):
     # can_create = False
     # can_edit = True
@@ -50,9 +55,9 @@ class RoomModelView(ModelView):
 
 
 class PostModelView(ModelView):
-    # can_create = False
-    # can_edit = True
-    # list_columns = ['id', 'room_name', 'room_desc', 'room_type', 'people_limit', 'created_at']
+    can_edit = False
+    can_delete = False
+    # list_columns = ['id', 'room_id', 'topic', 'timeline_type', 'user_id', 'created_at']   # fixme
 
     def _post_content_formatter(view, context, model, name):
         # Format your string here e.g show first 80 characters

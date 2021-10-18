@@ -849,6 +849,8 @@ def import_members_with_messages():
         topic_no = line[6]
         message_id = line[7]
 
+        # fixme filter room, if activated
+
         user = User.query.filter_by(username=username).first()
         if user is None:
             jsonify(Resp(result_code=4000, result_msg="username error", data=None).__dict__)
