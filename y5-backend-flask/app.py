@@ -21,7 +21,7 @@ from blueprints.user import bp_user
 from room_socketio import RoomNamespace
 from extensions import db, cache, socketio
 from models import User, Room, RoomPrototype, RoomMember, Timeline, PublicPost, PostComment, PostLike, Message, \
-    SystemMessage, PrivateMessage, PostFlag, PrivatePost, SystemPost
+    SystemMessage, PrivateMessage, PostFlag, PrivatePost, SystemPost, PollPost
 
 app = Flask(__name__)
 
@@ -51,8 +51,8 @@ admin = Admin(app=app, name=config.ADMIN_TITLE, template_mode='bootstrap3')
 admin.add_view(YModelView(User, db.session, name=u'User'))
 
 admin.add_view(RoomModelView(Room, db.session, name=u'Room', category='Room'))
-admin.add_view(YModelView(RoomMember, db.session, name=u'Room Member', category='Room'))
 admin.add_view(ModelView(RoomPrototype, db.session, name=u'Room Prototype', category='Room'))
+admin.add_view(YModelView(RoomMember, db.session, name=u'Room Member', category='Room'))
 
 admin.add_view(PostModelView(PublicPost, db.session, name=u'Post', category='Post'))
 admin.add_view(YModelView(PostComment, db.session, name=u'Post Comment', category='Post'))
@@ -63,9 +63,10 @@ admin.add_view(YModelView(PrivateMessage, db.session, name=u'Private Message Poo
 admin.add_view(PostModelView(PrivatePost, db.session, name=u'Private Message Assign', category='Private Message'))
 
 admin.add_view(YModelView(SystemMessage, db.session, name=u'System Message Pool', category='System Message'))
-admin.add_view(YModelView(SystemPost, db.session, name=u'System Message Assign', category='System Message Assign'))
+admin.add_view(YModelView(SystemPost, db.session, name=u'System Message Assign', category='System Message'))
 
-# fixme add poll
+admin.add_view(YModelView(PollPost, db.session, name=u'Daily Poll Assign', category='Daily Poll'))
+
 
 app.register_blueprint(bp_room)
 app.register_blueprint(bp_post)
