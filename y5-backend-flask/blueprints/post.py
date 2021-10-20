@@ -11,8 +11,9 @@ from flask_restful import Api, Resource
 import config
 from entity.Resp import Resp
 from extensions import db, socketio
-from models import Post, PostComment, PostLike, Serializer, Timeline, User, Room, RoomPrototype, RoomMember, \
-    PostFactcheck, PostFlag, PostDaily, Photo, PostStatus, Redspot, CommentFlag, CommentLike, PrivateMessage
+from models import PublicPost, PostComment, PostLike, Serializer, Timeline, User, Room, RoomPrototype, RoomMember, \
+    PostFactcheck, PostFlag, SystemMessage, Photo, PostStatus, Redspot, CommentFlag, CommentLike, PrivateMessage, \
+    PrivatePost, SystemPost, PollPost
 from service import get_friends, process_posts, process_post
 from utils import rename_image, resize_image
 
@@ -31,7 +32,7 @@ class PostApi(Resource):
 
         user_id = current_user.id
 
-        post = Post.query.get(id)
+        post = PublicPost.query.get(id)
         if post is None:
             return jsonify(Resp(
                 result_code=4000,
@@ -84,7 +85,7 @@ class PostApi(Resource):
         else:
             photo_uri = None
 
-        post = Post(
+        post = PublicPost(
             timeline_type=timeline_type,
             post_title=post_title,
             post_content=post_content,
@@ -101,7 +102,7 @@ class PostApi(Resource):
 
         # 将private message设置为已分享
         if post_shared_id is not None:
-            post_shared = Post.query.filter_by(id=post_shared_id).first()
+            post_shared = PublicPost.query.filter_by(id=post_shared_id).first()
             post_shared.timeline_type = 2
             db.session.commit()
 
@@ -149,7 +150,7 @@ class PostApi(Resource):
         if not current_user.is_authenticated:
             return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
 
-        post = Post.query.get(id)
+        post = PublicPost.query.get(id)
         db.session.delete(post)
         db.session.commit()
 
@@ -223,19 +224,19 @@ class PostApi(Resource):
             friend_ids.append(friend.user_id)
 
         if timeline_type == config.TIMELINE_PUB:
-            posts = Post.query.filter(
-                Post.room_id == room_id,
-                Post.user_id.in_(friend_ids),
-                Post.timeline_type == timeline_type,
-                Post.topic == topic
-            ).order_by(Post.created_at.desc()).all()
+            posts = PublicPost.query.filter(
+                PublicPost.room_id == room_id,
+                PublicPost.user_id.in_(friend_ids),
+                PublicPost.timeline_type == timeline_type,
+                PublicPost.topic == topic
+            ).order_by(PublicPost.created_at.desc()).all()
 
         else:
-            posts = Post.query.filter(
-                Post.room_id == room_id,
-                Post.user_id == user_id,
-                Post.topic == topic
-            ).order_by(Post.created_at.desc()).all()
+            posts = PublicPost.query.filter(
+                PublicPost.room_id == room_id,
+                PublicPost.user_id == user_id,
+                PublicPost.topic == topic
+            ).order_by(PublicPost.created_at.desc()).all()
 
         # if last_update is not None:
         #     if pull_new == 1:
@@ -298,7 +299,7 @@ api.add_resource(
     endpoint='post/list_retrieve')
 
 
-class PostDailyApi(Resource):
+class SystemMessageApi(Resource):
     @swag_from('../swagger/post/daily/retrieve.yaml')
     def get(self):
         data = request.args
@@ -310,27 +311,25 @@ class PostDailyApi(Resource):
         except KeyError:
             return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
 
-        post_dailys = PostDaily.query.filter_by(room_id=room_id, topic=topic).all()
+        messages = SystemMessage.query.filter_by(room_id=room_id, topic=topic).all()      # list not first, for api
 
-        post_dailys_serialized = []
-        if len(post_dailys) > 0:
-            for post in post_dailys:
-                post_daily = Post.query.filter_by(id=post.post_id).first()
-                post_daily_serialized = Serializer.serialize(post_daily)
-                process_post(post_daily_serialized, current_user.id)
-                post_dailys_serialized.append(post_daily_serialized)
+        message_serialized_list = []
+        for message in messages:
+            post_daily = PublicPost.query.filter_by(id=message.post_id).first()
+            post_daily_serialized = Serializer.serialize(post_daily)
+            process_post(post_daily_serialized, current_user.id)
 
         resp = Resp(
             result_code=2000,
             result_msg="success",
-            data=post_dailys_serialized
+            data=message_serialized_list
         )
 
         return jsonify(resp.__dict__)
 
 
 api.add_resource(
-    PostDailyApi,
+    SystemMessageApi,
     '/daily',
     methods=['GET'],
     endpoint='post/daily/retrieve')
@@ -442,7 +441,7 @@ class CommentApi(Resource):
         db.session.add(comment)
         db.session.commit()
 
-        post = Post.query.get(post_id)
+        post = PublicPost.query.get(post_id)
         socketio.emit('comment_pull',
                       {
                           'topic': post.topic,
@@ -800,6 +799,7 @@ api.add_resource(
     endpoint='post/comment/flag/delete')
 
 
+# import private messages pool
 @swag_from('../swagger/post/import_private_messages.yaml')
 @bp_post.route('/api/post/import_private_messages', methods=['POST'])
 def import_private_messages():
@@ -830,6 +830,7 @@ def import_private_messages():
     return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
 
 
+# assign private message
 @swag_from('../swagger/post/import_members_with_messages.yaml')
 @bp_post.route('/api/post/import_members_with_messages', methods=['POST'])
 def import_members_with_messages():
@@ -849,6 +850,8 @@ def import_members_with_messages():
         topic_no = line[6]
         message_id = line[7]
 
+        # fixme filter room, if activated
+
         user = User.query.filter_by(username=username).first()
         if user is None:
             jsonify(Resp(result_code=4000, result_msg="username error", data=None).__dict__)
@@ -865,7 +868,8 @@ def import_members_with_messages():
 
         participant = User.query.filter_by(username=username).first()
         private_message = PrivateMessage.query.filter_by(message_id=message_id).first()
-        post = Post(
+        post = PrivatePost(
+            message_id=message_id,
             timeline_type=config.TIMELINE_PRI,
             post_title=private_message.message_title,
             post_content=private_message.message_content,
@@ -882,27 +886,67 @@ def import_members_with_messages():
     return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
 
 
-@swag_from('../swagger/post/import_post_daily.yaml')
-@bp_post.route('/api/post/import_post_daily', methods=['POST'])
-def import_post_daily():
+# upload system message pool
+@swag_from('../swagger/post/import_post_daily_pool.yaml')
+@bp_post.route('/api/post/import_post_daily_pool')
+def import_post_daily_pool():
     file = request.files['file']
     stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
     csv_input = csv.reader(stream)
     for key, line in enumerate(csv_input):
         if key == 0:
-            if line != ['id', 'room_id', 'day', 'post_id']:
+            if line != ['id', 'message_id', 'message_title', 'message_summary', 'message_content', 'photo_uri']:
+                return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
+            continue
+        message_id = line[1]
+        message_title = line[2]
+        abstract = line[3]
+        message_content = line[4]
+        photo_uri = line[5]
+
+        system_message = SystemMessage(
+            message_id=message_id,
+            message_title=message_title,
+            message_content=message_content,
+            photo_uri=photo_uri,
+            abstract=abstract,
+        )
+        db.session.add(system_message)
+        db.session.commit()
+
+    return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
+
+
+# assign system message
+@swag_from('../swagger/post/import_post_daily.yaml')
+@bp_post.route('/api/post/import_post_daily', methods=['POST'])
+def import_post_daily_by_room():
+    file = request.files['file']
+    stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
+    csv_input = csv.reader(stream)
+    for key, line in enumerate(csv_input):
+        if key == 0:
+            if line != ['id', 'room_id', 'day', 'message_id']:
                 return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
             continue
         room_id = line[1]
         topic = line[2]     # day
-        post_id = line[3]
+        message_id = line[3]
 
-        post_daily = PostDaily(
+        system_message = PrivateMessage.query.filter_by(message_id=message_id).first()
+        post = SystemPost(
+            message_id=message_id,
+            # timeline_type=config.TIMELINE_PRI,
+            post_title=system_message.message_title,
+            post_content=system_message.message_content,
+            abstract=system_message.abstract,
+            post_type=1,  # fixme
+            # user_id=participant.id,
             room_id=room_id,
             topic=topic,
-            post_id=post_id
+            photo_uri=system_message.photo_uri
         )
-        db.session.add(post_daily)
+        db.session.add(post)
         db.session.commit()
 
     return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
@@ -932,5 +976,37 @@ def import_daily_poll_pics():
 
     with zipfile.ZipFile(filename, "r") as z:
         z.extractall(config.UPLOAD_PATH)
+
+    return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
+
+
+# assign poll picture
+@swag_from('../swagger/post/import_poll_picture.yaml')
+@bp_post.route('/api/post/import_poll_picture', methods=['POST'])
+def import_poll_picture():
+    file = request.files['file']
+    stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
+    csv_input = csv.reader(stream)
+    for key, line in enumerate(csv_input):
+        if key == 0:
+            if line != ['id', 'room_id', 'day', 'message_id', 'photo_uri']:
+                return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
+            continue
+        room_id = line[1]
+        topic = line[2]     # day
+        message_id = line[3]
+        photo_uri = line[4]
+
+        post = PollPost(
+            message_id=message_id,
+            # timeline_type=config.TIMELINE_PRI,
+            post_type=1,  # fixme
+            # user_id=participant.id,
+            room_id=room_id,
+            topic=topic,
+            photo_uri=photo_uri
+        )
+        db.session.add(post)
+        db.session.commit()
 
     return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)

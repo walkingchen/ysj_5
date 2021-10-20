@@ -11,7 +11,7 @@ from sqlalchemy import desc
 from entity.Resp import Resp
 from entity.RoomResp import RoomResp
 from extensions import db, socketio
-from models import Room, Timeline, RoomMember, RoomPrototype, Serializer, User, Redspot, Post
+from models import Room, Timeline, RoomMember, RoomPrototype, Serializer, User, Redspot, PublicPost
 from service import get_friends, query_membership
 
 # error code: 401x

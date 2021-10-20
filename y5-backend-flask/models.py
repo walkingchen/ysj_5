@@ -37,19 +37,32 @@ class Message(db.Model):
     updated_at = Column(DateTime)
 
 
-class Notice(db.Model):
-    __tablename__ = 'tb_notice'
+class PrivatePost(db.Model):
+    __tablename__ = 'tb_post_private'
 
     id = Column(Integer, primary_key=True)
-    notice_type = Column(Integer, info='公告类型：0全局，1room')
-    message = Column(Text)
-    images = Column(Text)
+    message_id = Column(Integer)
+    post_title = Column(String(256))
+    post_content = Column(Text)
+    post_type = Column(Integer)
+    photo_uri = Column(String(128))
+    keywords = Column(String(256))
+    abstract = Column(Text)
+    user_id = Column(Integer)
+    topic = Column(Integer)
+    timeline_type = Column(Integer)
+    room_id = Column(Integer)
+    post_shared_id = db.Column(db.Integer)
     created_at = Column(DateTime, server_default=FetchedValue())
     updated_at = Column(DateTime)
 
+    def serialize(self):
+        d = Serializer.serialize(self)
+        return d
 
-class Post(db.Model):
-    __tablename__ = 'tb_post'
+
+class PublicPost(db.Model):
+    __tablename__ = 'tb_post_public'
 
     id = Column(Integer, primary_key=True)
     post_title = Column(String(256))
@@ -71,8 +84,70 @@ class Post(db.Model):
         return d
 
 
+class SystemPost(db.Model):
+    __tablename__ = 'tb_post_system'
+
+    id = Column(Integer, primary_key=True)
+    message_id = Column(Integer)
+    post_title = Column(String(256))
+    post_content = Column(Text)
+    post_type = Column(Integer)
+    photo_uri = Column(String(128))
+    keywords = Column(String(256))
+    abstract = Column(Text)
+    user_id = Column(Integer)
+    topic = Column(Integer)
+    timeline_type = Column(Integer)
+    room_id = Column(Integer)
+    post_shared_id = db.Column(db.Integer)
+    created_at = Column(DateTime, server_default=FetchedValue())
+    updated_at = Column(DateTime)
+
+    def serialize(self):
+        d = Serializer.serialize(self)
+        return d
+
+
+class PollPost(db.Model):
+    __tablename__ = 'tb_post_poll'
+
+    id = Column(Integer, primary_key=True)
+    message_id = Column(Integer)
+    post_title = Column(String(256))
+    post_content = Column(Text)
+    post_type = Column(Integer)
+    photo_uri = Column(String(128))
+    keywords = Column(String(256))
+    abstract = Column(Text)
+    user_id = Column(Integer)
+    topic = Column(Integer)
+    timeline_type = Column(Integer)
+    room_id = Column(Integer)
+    post_shared_id = db.Column(db.Integer)
+    created_at = Column(DateTime, server_default=FetchedValue())
+    updated_at = Column(DateTime)
+
+    def serialize(self):
+        d = Serializer.serialize(self)
+        return d
+
+
+class SystemMessage(db.Model):
+    __tablename__ = 'tb_message_system'
+
+    id = Column(Integer, primary_key=True)
+    message_id = Column(Integer)
+    message_title = Column(String(256))
+    message_content = Column(Text)
+    photo_uri = Column(String(128))
+    keywords = Column(String(256))
+    abstract = Column(Text)
+    updated_at = Column(DateTime, nullable=False, server_default=FetchedValue())
+    created_at = Column(DateTime, server_default=FetchedValue())
+
+
 class PrivateMessage(db.Model):
-    __tablename__ = 'tb_private_message'
+    __tablename__ = 'tb_message_private'
 
     id = Column(Integer, primary_key=True)
     message_id = Column(Integer)
@@ -106,17 +181,6 @@ class PostStatus(db.Model):
     read_status = db.Column(db.Integer, server_default=db.FetchedValue())
     created_at = db.Column(db.DateTime, server_default=db.FetchedValue())
     updated_at = db.Column(db.DateTime, server_default=db.FetchedValue())
-
-
-class PostDaily(db.Model):
-    __tablename__ = 'tb_post_daily'
-
-    id = db.Column(db.Integer, primary_key=True)
-    room_id = db.Column(db.Integer)
-    post_id = db.Column(db.Integer)
-    topic = db.Column(db.Integer)
-    updated_at = db.Column(db.DateTime, nullable=False, server_default=db.FetchedValue())
-    created_at = db.Column(db.DateTime, server_default=db.FetchedValue())
 
 
 class PostComment(db.Model):

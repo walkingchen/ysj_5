@@ -8,7 +8,7 @@ from flask import current_app
 
 from config import TIMELINE_PRI
 from extensions import db
-from models import User, PrivateMessage, Post, Room, RoomMember, Serializer
+from models import User, PrivateMessage, PublicPost, Room, RoomMember, Serializer
 
 
 def rename_image(old_filename):
