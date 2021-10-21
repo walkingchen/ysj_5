@@ -1,6 +1,6 @@
 ---
 tags:
-  - Post Daily
+  - Daily Poll
 parameters:
   - name: file
     in: formData

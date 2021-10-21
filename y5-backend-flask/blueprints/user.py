@@ -15,20 +15,20 @@ class UserApi(Resource):
     pass
 
 
-class UserUploadApi(Resource):
-    @swag_from('../swagger/post/photo/create.yaml')
-    def post(self):
-        if request.method == 'POST' and 'file' in request.files:
-            f = request.files.get('file')
-
-        return jsonify(Resp(result_code=4000, result_msg="param error?", data=None).__dict__)
-
-
-api.add_resource(
-    UserUploadApi,
-    '/',
-    methods=['POST'],
-    endpoint='post/photo/create')
+# class UserUploadApi(Resource):
+#     @swag_from('../swagger/post/photo/create.yaml')
+#     def post(self):
+#         if request.method == 'POST' and 'file' in request.files:
+#             f = request.files.get('file')
+#
+#         return jsonify(Resp(result_code=4000, result_msg="param error?", data=None).__dict__)
+#
+#
+# api.add_resource(
+#     UserUploadApi,
+#     '/',
+#     methods=['POST'],
+#     endpoint='post/photo/create')
 
 
 @swag_from('../swagger/user/export_user.yaml')
