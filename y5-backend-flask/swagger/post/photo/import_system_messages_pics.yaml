@@ -1,0 +1,21 @@
+---
+tags:
+  - Post Photo
+parameters:
+  - name: file
+    in: formData
+    type: file
+    required: true
+    description: upload system messages pics
+responses:
+  200:
+    description: upload system messages pics
+    schema:
+      id: Response
+      properties:
+        result_code:
+          type: string
+        result_msg:
+          type: string
+        data:
+          type: string
