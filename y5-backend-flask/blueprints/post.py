@@ -943,7 +943,7 @@ def import_private_messages_pics():
 
 @swag_from('../swagger/post/photo/import_system_messages_pics.yaml')
 @bp_post.route('/api/post/photo/import_system_messages_pics', methods=['POST'])
-def import_private_messages_pics():
+def import_system_messages_pics():
     file = request.files['file']
     ext = file.filename.split('.')[-1]
     filename = os.path.join(config.UPLOAD_PATH, 'system_messages_pics.' + ext)
