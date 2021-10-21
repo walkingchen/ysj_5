@@ -863,7 +863,7 @@ def import_members_with_messages():
 
 # upload system message pool
 @swag_from('../swagger/post/import_post_daily_pool.yaml')
-@bp_post.route('/api/post/import_post_daily_pool')
+@bp_post.route('/api/post/import_post_daily_pool', methods=['POST'])
 def import_post_daily_pool():
     file = request.files['file']
     stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
