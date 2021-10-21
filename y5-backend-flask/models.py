@@ -65,6 +65,7 @@ class PublicPost(db.Model):
     __tablename__ = 'tb_post_public'
 
     id = Column(Integer, primary_key=True)
+    message_id = Column(Integer)
     post_title = Column(String(256))
     post_content = Column(Text)
     post_type = Column(Integer)

@@ -84,6 +84,10 @@ class PostApi(Resource):
             photo_uri = data['photo_uri']
         else:
             photo_uri = None
+        if 'message_id' in data:
+            message_id = data['message_id']
+        else:
+            message_id = None
 
         post = PublicPost(
             timeline_type=timeline_type,
@@ -95,14 +99,15 @@ class PostApi(Resource):
             room_id=room_id,
             post_shared_id=post_shared_id,
             topic=topic,
-            photo_uri=photo_uri
+            photo_uri=photo_uri,
+            message_id=message_id
         )
         db.session.add(post)
         db.session.commit()
 
         # 将private message设置为已分享
         if post_shared_id is not None:
-            post_shared = PublicPost.query.filter_by(id=post_shared_id).first()
+            post_shared = PrivatePost.query.filter_by(id=post_shared_id).first()
             post_shared.timeline_type = 2
             db.session.commit()
 
@@ -199,19 +204,6 @@ class PostApi(Resource):
         except TypeError:
             return jsonify(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
 
-        if 'last_update' in data:
-            last_update = data['last_update']
-        else:
-            last_update = None
-
-        # fixme
-        if 'page_size' in data:
-            page_size = data['page_size']
-
-        pull_new = None
-        if 'pull_new' in data:
-            pull_new = int(data['pull_new'])  # 1: 新posts 0: last_update前的posts
-
         user_id = current_user.id
         if user_id is None:
             return jsonify(Resp(result_code=4000, result_msg='user id is none', data=None).__dict__)
@@ -231,12 +223,12 @@ class PostApi(Resource):
                 PublicPost.topic == topic
             ).order_by(PublicPost.created_at.desc()).all()
 
-        else:
-            posts = PublicPost.query.filter(
-                PublicPost.room_id == room_id,
-                PublicPost.user_id == user_id,
-                PublicPost.topic == topic
-            ).order_by(PublicPost.created_at.desc()).all()
+        else:   # 获取private message feed
+            posts = PrivatePost.query.filter(
+                PrivatePost.room_id == room_id,
+                PrivatePost.user_id == user_id,
+                PrivatePost.topic == topic
+            ).order_by(PrivatePost.created_at.desc()).all()
 
         # 为每篇post添加评论、点赞
         posts_serialized = Serializer.serialize_list(posts)
@@ -290,9 +282,8 @@ class SystemMessageApi(Resource):
 
         message_serialized_list = []
         for message in messages:
-            post_daily = PublicPost.query.filter_by(id=message.post_id).first()
-            post_daily_serialized = Serializer.serialize(post_daily)
-            process_post(post_daily_serialized, current_user.id)
+            message_serialized = Serializer.serialize(message)
+            process_post(message_serialized, current_user.id)
 
         resp = Resp(
             result_code=2000,
@@ -305,9 +296,9 @@ class SystemMessageApi(Resource):
 
 api.add_resource(
     SystemMessageApi,
-    '/daily',
+    '/system_message',
     methods=['GET'],
-    endpoint='post/daily/retrieve')
+    endpoint='post/system_message/retrieve')
 
 
 class UploadApi(Resource):
@@ -466,11 +457,6 @@ api.add_resource(
     '/comment',
     methods=['POST'],
     endpoint='post/comment/create')
-# api.add_resource(
-#     CommentApi,
-#     '/comment/<int:id>',
-#     methods=['PUT'],
-#     endpoint='post/comment/update')
 api.add_resource(
     CommentApi,
     '/comment/<int:id>',
@@ -776,7 +762,7 @@ api.add_resource(
 
 # import private messages pool
 @swag_from('../swagger/post/import_private_messages.yaml')
-@bp_post.route('/api/post/import_private_messages', methods=['POST'])
+@bp_post.route('/api/post/import_private_messages_pool', methods=['POST'])
 def import_private_messages():
     file = request.files['file']
     stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
@@ -807,7 +793,7 @@ def import_private_messages():
 
 # assign private message
 @swag_from('../swagger/post/import_members_with_messages.yaml')
-@bp_post.route('/api/post/import_members_with_messages', methods=['POST'])
+@bp_post.route('/api/post/import_private_messages_assign', methods=['POST'])
 def import_members_with_messages():
     file = request.files['file']
     stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
@@ -825,7 +811,7 @@ def import_members_with_messages():
         topic_no = line[6]
         message_id = line[7]
 
-        # fixme filter room, if activated
+        # fixme clean by room_id, ignore if activated
 
         user = User.query.filter_by(username=username).first()
         if user is None:
@@ -863,7 +849,7 @@ def import_members_with_messages():
 
 # upload system message pool
 @swag_from('../swagger/post/import_post_daily_pool.yaml')
-@bp_post.route('/api/post/import_post_daily_pool', methods=['POST'])
+@bp_post.route('/api/post/import_system_message_pool', methods=['POST'])
 def import_post_daily_pool():
     file = request.files['file']
     stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
@@ -894,7 +880,7 @@ def import_post_daily_pool():
 
 # assign system message
 @swag_from('../swagger/post/import_post_daily.yaml')
-@bp_post.route('/api/post/import_post_daily', methods=['POST'])
+@bp_post.route('/api/post/import_system_message_assign', methods=['POST'])
 def import_post_daily_by_room():
     file = request.files['file']
     stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
@@ -907,6 +893,8 @@ def import_post_daily_by_room():
         room_id = line[1]
         topic = line[2]     # day
         message_id = line[3]
+
+        # fixme clean by room_id
 
         system_message = PrivateMessage.query.filter_by(message_id=message_id).first()
         post = SystemPost(
@@ -928,7 +916,7 @@ def import_post_daily_by_room():
 
 
 @swag_from('../swagger/post/photo/import_private_messages_pics.yaml')
-@bp_post.route('/api/post/photo/import_private_messages_pics', methods=['POST'])
+@bp_post.route('/api/post/photo/import_private_messages_pool_pics', methods=['POST'])
 def import_private_messages_pics():
     file = request.files['file']
     ext = file.filename.split('.')[-1]
@@ -942,7 +930,7 @@ def import_private_messages_pics():
 
 
 @swag_from('../swagger/post/photo/import_system_messages_pics.yaml')
-@bp_post.route('/api/post/photo/import_system_messages_pics', methods=['POST'])
+@bp_post.route('/api/post/photo/import_system_messages_pool_pics', methods=['POST'])
 def import_system_messages_pics():
     file = request.files['file']
     ext = file.filename.split('.')[-1]
@@ -956,7 +944,7 @@ def import_system_messages_pics():
 
 
 @swag_from('../swagger/post/photo/import_daily_poll_pics.yaml')
-@bp_post.route('/api/post/photo/import_daily_poll_pics', methods=['POST'])
+@bp_post.route('/api/post/photo/import_daily_poll_pool_pics', methods=['POST'])
 def import_daily_poll_pics():
     file = request.files['file']
     ext = file.filename.split('.')[-1]
@@ -971,7 +959,7 @@ def import_daily_poll_pics():
 
 # assign poll picture
 @swag_from('../swagger/post/import_poll_picture.yaml')
-@bp_post.route('/api/post/import_poll_picture', methods=['POST'])
+@bp_post.route('/api/post/import_daily_poll_assign', methods=['POST'])
 def import_poll_picture():
     file = request.files['file']
     stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)

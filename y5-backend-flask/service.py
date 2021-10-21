@@ -140,25 +140,6 @@ def process_post(post, user_id):
     else:
         post['liked'] = Serializer.serialize(like)
 
-    # dislikes = PostLike.query.filter(PostLike.post_id == post['id'], PostLike.post_like == 0).all()
-    # dislikes_serialized = []
-    # for dislike in dislikes:
-    #     dislike_serialized = Serializer.serialize(dislike)
-    #     user = query_user(user_id=dislike.user_id)
-    #     dislike_serialized['user'] = user._asdict()
-    #     dislikes_serialized.append(dislike_serialized)
-    # post['dislikes'] = {
-    #     'count': len(dislikes),
-    #     'details': dislikes_serialized
-    # }
-    #
-    # # 判断是否已点过踩
-    # dislike = PostLike.query.filter_by(post_id=post['id'], user_id=user_id, post_like=0).first()
-    # if dislike is None:
-    #     post['disliked'] = None
-    # else:
-    #     post['disliked'] = Serializer.serialize(dislike)
-
     # 判断是否已点过factcheck
     check = PostFactcheck.query.filter_by(post_id=post['id'], user_id=user_id).first()
     if check is not None:
