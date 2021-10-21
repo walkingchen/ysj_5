@@ -188,7 +188,7 @@ api.add_resource(
     endpoint='post/delete')
 
 
-class PostApi(Resource):
+class PostListApi(Resource):
     @swag_from('../swagger/post/list_retrieve.yaml')
     def get(self):
         if not current_user.is_authenticated:
@@ -260,10 +260,78 @@ class PostApi(Resource):
 
 
 api.add_resource(
-    PostApi,
+    PostListApi,
     '',
     methods=['GET'],
     endpoint='post/list_retrieve')
+
+
+class PrivatePostApi(Resource):
+    @swag_from('../swagger/post/private_post/retrieve.yaml')
+    def get(self, id):
+        if not current_user.is_authenticated:
+            return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
+
+        user_id = current_user.id
+
+        post = PrivatePost.query.get(id)
+        if post is None:
+            return jsonify(Resp(
+                result_code=4000,
+                result_msg='post not found',
+                data=None
+            ).__dict__)
+
+        post_serialized = Serializer.serialize(post)
+        process_post(post_serialized, user_id)
+
+        return jsonify(Resp(
+            result_code=2000,
+            result_msg='success',
+            data=post_serialized
+        ).__dict__)
+
+
+api.add_resource(
+    PrivatePostApi,
+    '/private_post/<int:id>',
+    methods=['GET'],
+    endpoint='post/private_post/retrieve')
+
+
+# class PrivatePostListApi(Resource):
+#     @swag_from('../swagger/post/private_post/list_retrieve.yaml')
+#     def get(self):
+#         data = request.args
+#         try:
+#             room_id = data['room_id']
+#             topic = data['topic']
+#         except TypeError:
+#             return jsonify(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
+#         except KeyError:
+#             return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
+#
+#         messages = PrivatePost.query.filter_by(room_id=room_id, topic=topic).all()      # list not first, for api
+#
+#         message_serialized_list = []
+#         for message in messages:
+#             message_serialized = Serializer.serialize(message)
+#             process_post(message_serialized, current_user.id)
+#
+#         resp = Resp(
+#             result_code=2000,
+#             result_msg="success",
+#             data=message_serialized_list
+#         )
+#
+#         return jsonify(resp.__dict__)
+#
+#
+# api.add_resource(
+#     PrivatePostListApi,
+#     '/private_post',
+#     methods=['GET'],
+#     endpoint='post/private_post/list_retrieve')
 
 
 class SystemMessageApi(Resource):
@@ -296,9 +364,9 @@ class SystemMessageApi(Resource):
 
 api.add_resource(
     SystemMessageApi,
-    '/system_message',
+    '/system_post',
     methods=['GET'],
-    endpoint='post/system_message/retrieve')
+    endpoint='post/system_post/retrieve')
 
 
 class UploadApi(Resource):
