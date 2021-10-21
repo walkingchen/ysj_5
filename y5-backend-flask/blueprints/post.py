@@ -927,18 +927,18 @@ def import_post_daily_by_room():
     return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
 
 
-# @swag_from('../swagger/post/photo/import_private_messages_pics.yaml')
-# @bp_post.route('/api/post/photo/import_private_messages_pics', methods=['POST'])
-# def import_private_messages_pics():
-#     file = request.files['file']
-#     ext = file.filename.split('.')[-1]
-#     filename = os.path.join(config.UPLOAD_PATH, 'private_messages_pics.' + ext)
-#     file.save(filename)
-#
-#     with zipfile.ZipFile(filename, "r") as z:
-#         z.extractall(config.UPLOAD_PATH)
-#
-#     return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
+@swag_from('../swagger/post/photo/import_private_messages_pics.yaml')
+@bp_post.route('/api/post/photo/import_private_messages_pics', methods=['POST'])
+def import_private_messages_pics():
+    file = request.files['file']
+    ext = file.filename.split('.')[-1]
+    filename = os.path.join(config.UPLOAD_PATH, 'private_messages_pics.' + ext)
+    file.save(filename)
+
+    with zipfile.ZipFile(filename, "r") as z:
+        z.extractall(config.UPLOAD_PATH)
+
+    return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
 
 
 @swag_from('../swagger/post/photo/import_system_messages_pics.yaml')
