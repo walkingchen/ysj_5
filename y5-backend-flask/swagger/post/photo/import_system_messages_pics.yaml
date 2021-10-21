@@ -1,6 +1,6 @@
 ---
 tags:
-  - Post Photo
+  - System Message
 parameters:
   - name: file
     in: formData

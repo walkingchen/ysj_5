@@ -1,6 +1,6 @@
 ---
 tags:
-  - Post Photo
+  - Private Message
 parameters:
   - name: file
     in: formData

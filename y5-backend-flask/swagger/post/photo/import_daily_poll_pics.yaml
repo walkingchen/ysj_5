@@ -1,6 +1,6 @@
 ---
 tags:
-  - Post Photo
+  - Post Daily
 parameters:
   - name: file
     in: formData
