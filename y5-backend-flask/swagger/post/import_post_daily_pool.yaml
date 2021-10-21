@@ -1,6 +1,6 @@
 ---
 tags:
-  - System Message
+  - System Message Pool && Assign
 parameters:
   - name: file
     in: formData

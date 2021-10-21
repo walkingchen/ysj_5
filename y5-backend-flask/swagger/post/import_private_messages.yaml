@@ -1,6 +1,6 @@
 ---
 tags:
-  - Private Message
+  - Private Message Pool && Assign
 parameters:
   - name: file
     in: formData

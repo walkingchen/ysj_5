@@ -1,6 +1,6 @@
 ---
 tags:
-  - Daily Poll
+  - Daily Poll Pool && Assign
 parameters:
   - name: file
     in: formData

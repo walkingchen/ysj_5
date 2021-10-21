@@ -176,11 +176,11 @@ api.add_resource(
     '',
     methods=['POST'],
     endpoint='post/create')
-api.add_resource(
-    PostApi,
-    '/<int:id>',
-    methods=['PUT'],
-    endpoint='post/update')
+# api.add_resource(
+#     PostApi,
+#     '/<int:id>',
+#     methods=['PUT'],
+#     endpoint='post/update')
 api.add_resource(
     PostApi,
     '/<int:id>',

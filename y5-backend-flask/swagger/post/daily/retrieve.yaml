@@ -1,6 +1,6 @@
 ---
 tags:
-  - Post Daily
+  - System Post
 parameters:
   - name: room_id
     in: query
