@@ -46,6 +46,9 @@ parameters:
         photo_uri:
           type: string
           description: photo_uri
+        message_id:
+          type: integer
+          description: message_id of private message
 responses:
   200:
     description: return room array created
