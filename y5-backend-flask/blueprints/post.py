@@ -238,31 +238,6 @@ class PostApi(Resource):
                 PublicPost.topic == topic
             ).order_by(PublicPost.created_at.desc()).all()
 
-        # if last_update is not None:
-        #     if pull_new == 1:
-        #         posts = Post.query.filter(
-        #             Post.room_id == room_id,
-        #             Post.user_id.in_(friend_ids),
-        #             Post.timeline_type.in_(types),
-        #             Post.created_at > last_update,
-        #             Post.topic == topic
-        #         ).order_by(Post.created_at.desc()).all()
-        #     else:
-        #         posts = Post.query.filter(
-        #             Post.room_id == room_id,
-        #             Post.user_id.in_(friend_ids),
-        #             Post.timeline_type.in_(types),
-        #             Post.created_at < last_update,
-        #             Post.topic == topic
-        #         ).order_by(Post.created_at.desc()).all()
-        # else:
-        #     posts = Post.query.filter(
-        #         Post.room_id == room_id,
-        #         Post.user_id.in_(friend_ids),
-        #         Post.timeline_type.in_(types),
-        #         Post.topic == topic
-        #     ).order_by(Post.created_at.desc()).all()
-
         # 为每篇post添加评论、点赞
         posts_serialized = Serializer.serialize_list(posts)
         process_posts(posts=posts_serialized, user_id=user_id)
@@ -311,7 +286,7 @@ class SystemMessageApi(Resource):
         except KeyError:
             return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
 
-        messages = SystemMessage.query.filter_by(room_id=room_id, topic=topic).all()      # list not first, for api
+        messages = SystemPost.query.filter_by(room_id=room_id, topic=topic).all()      # list not first, for api
 
         message_serialized_list = []
         for message in messages:
@@ -958,6 +933,20 @@ def import_private_messages_pics():
     file = request.files['file']
     ext = file.filename.split('.')[-1]
     filename = os.path.join(config.UPLOAD_PATH, 'private_messages_pics.' + ext)
+    file.save(filename)
+
+    with zipfile.ZipFile(filename, "r") as z:
+        z.extractall(config.UPLOAD_PATH)
+
+    return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
+
+
+@swag_from('../swagger/post/photo/import_system_messages_pics.yaml')
+@bp_post.route('/api/post/photo/import_system_messages_pics', methods=['POST'])
+def import_private_messages_pics():
+    file = request.files['file']
+    ext = file.filename.split('.')[-1]
+    filename = os.path.join(config.UPLOAD_PATH, 'system_messages_pics.' + ext)
     file.save(filename)
 
     with zipfile.ZipFile(filename, "r") as z:
