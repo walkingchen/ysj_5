@@ -840,11 +840,19 @@ def import_private_messages():
     file = request.files['file']
     stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
     csv_input = csv.reader(stream)
+
     for key, line in enumerate(csv_input):
         if key == 0:
             if line != ['id', 'message_id', 'message_title', 'message_summary', 'message_content', 'photo_uri']:
                 return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
             continue
+
+        # 清空pool
+        messages_exisited = PrivateMessage.query.all()
+        for message in messages_exisited:
+            db.session.delete(message)
+            db.session.commit()
+
         message_id = line[1]
         message_title = line[2]
         abstract = line[3]
@@ -871,6 +879,8 @@ def import_members_with_messages():
     file = request.files['file']
     stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
     csv_input = csv.reader(stream)
+
+    room_cleaned = []
     for key, line in enumerate(csv_input):
         if key == 0:
             if line != ['id', 'user_id', 'room_type', 'room_id', 'seat_no', 'day', 'topic_no', 'message_id']:
@@ -884,7 +894,16 @@ def import_members_with_messages():
         topic_no = line[6]
         message_id = line[7]
 
-        # fixme clean by room_id, ignore if activated
+        # clean by room_id, ignore if activated
+        if room_id not in room_cleaned:
+            room = Room.query.filter_by(id=room_id).first()     # id, not room_id
+            if room.activated == 1:
+                return jsonify(Resp(result_code=4000, result_msg="room activated", data=room.serialize()).__dict__)
+            messages_existed = PrivatePost.query.filter_by(room_id=room_id).all()
+            for message in messages_existed:
+                db.session.delete(message)
+                db.session.commit()
+            room_cleaned.append(room_id)
 
         user = User.query.filter_by(username=username).first()
         if user is None:
@@ -932,6 +951,13 @@ def import_post_daily_pool():
             if line != ['id', 'message_id', 'message_title', 'message_summary', 'message_content', 'photo_uri']:
                 return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
             continue
+
+        # 清空pool
+        messages_exisited = SystemMessage.query.all()
+        for message in messages_exisited:
+            db.session.delete(message)
+            db.session.commit()
+
         message_id = line[1]
         message_title = line[2]
         abstract = line[3]
@@ -961,14 +987,14 @@ def import_post_daily_by_room():
     room_cleaned = []
     for key, line in enumerate(csv_input):
         if key == 0:
-            if line != ['id', 'room_id', 'day', 'message_id']:
+            if line != ['id', 'room_id', 'day', 'topic_no', 'message_id']:
                 return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
             continue
         room_id = line[1]
         topic = line[2]     # day
         message_id = line[3]
 
-        # fixme clean by room_id
+        # clean by room_id
         if room_id not in room_cleaned:
             messages_existed = SystemPost.query.filter_by(room_id=room_id).all()
             for message in messages_existed:
@@ -1047,7 +1073,7 @@ def import_poll_picture():
     csv_input = csv.reader(stream)
     for key, line in enumerate(csv_input):
         if key == 0:
-            if line != ['id', 'room_id', 'day', 'message_id', 'photo_uri']:
+            if line != ['id', 'room_id', 'day', 'topic_no', 'photo_uri']:
                 return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
             continue
         room_id = line[1]
