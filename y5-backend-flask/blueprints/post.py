@@ -357,6 +357,7 @@ class SystemMessageApi(Resource):
         for message in messages:
             message_serialized = Serializer.serialize(message)
             process_post(message_serialized, current_user.id)
+            message_serialized_list.append(message_serialized)
 
         resp = Resp(
             result_code=2000,
