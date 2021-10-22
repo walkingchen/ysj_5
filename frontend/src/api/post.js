@@ -10,12 +10,17 @@ export const flagPost = post_id => axios.post('/post/flag', { post_id })
 export const deleteFlag = id => axios.delete('/post/flag/' + id)
 export const postPhoto = params => axios.post('/post/photo', params)
 export const getTopic = rid => axios.get('/post/topic?room_id=' + rid)
-export const getTopicContent = (room_id, topic) => axios.get('/post/daily', {
+export const getTopicContent = (room_id, topic) => axios.get('/post/system_post', {
   params: {
     room_id,
     topic
   }
 })
-export const importPrivate = (params, config) => axios.post('/post/import_private_messages', params, config)
-export const importAssignFile = (params, config) => axios.post('/post/import_members_with_messages', params, config)
-export const importPostDaily = (params, config) => axios.post('/post/import_post_daily', params, config)
+export const importPrivateMessage = (params, config) => axios.post('/post/import_private_messages_pool', params, config)
+export const importPrivateMessagePictures = (params, config) => axios.post('/post/photo/import_private_messages_pool_pics', params, config)
+export const importPrivateMessageAssign = (params, config) => axios.post('/post/photo/import_private_messages_assign', params, config)
+export const importSystemMessage = (params, config) => axios.post('/post/import_system_message_pool', params, config)
+export const importSystemMessagePictures = (params, config) => axios.post('/post/photo/import_system_messages_pool_pics', params, config)
+export const importSystemMessageAssign = (params, config) => axios.post('/post/photo/import_system_message_assign', params, config)
+export const importDailyPictures = (params, config) => axios.post('/post/photo/import_daily_poll_pool_pics', params, config)
+export const importDailyAssign = (params, config) => axios.post('/post/photo/import_daily_poll_assign', params, config)

@@ -120,7 +120,7 @@ export default {
       })
     },
     submitShare () {
-      const { id } = this.sharedPost
+      const { id, message_id } = this.sharedPost
       const index = this.messages.findIndex(ele => ele.id === id)
 
       const parentEle = document.getElementsByClassName('room-content')[0]
@@ -141,7 +141,8 @@ export default {
         post_type: 1,
         topic: this.currentTopic,
         post_shared_id: id,
-        post_content: this.shareContent
+        post_content: this.shareContent,
+        message_id
       }).then(({ data }) => {
         if (data.result_code === 2000) {
           const newPostId = data.data.id
