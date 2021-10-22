@@ -77,6 +77,7 @@ class PublicPost(db.Model):
     timeline_type = Column(Integer)
     room_id = Column(Integer)
     post_shared_id = db.Column(db.Integer)
+    is_system_post = Column(Integer)
     created_at = Column(DateTime, server_default=FetchedValue())
     updated_at = Column(DateTime)
 

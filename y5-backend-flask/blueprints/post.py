@@ -220,7 +220,8 @@ class PostListApi(Resource):
                 PublicPost.room_id == room_id,
                 PublicPost.user_id.in_(friend_ids),
                 PublicPost.timeline_type == timeline_type,
-                PublicPost.topic == topic
+                PublicPost.topic == topic,
+                PublicPost.is_system_post == 0
             ).order_by(PublicPost.created_at.desc()).all()
 
         else:   # 获取private message feed
@@ -346,7 +347,11 @@ class SystemMessageApi(Resource):
         except KeyError:
             return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
 
-        messages = SystemPost.query.filter_by(room_id=room_id, topic=topic).all()      # list not first, for api
+        messages = PublicPost.query.filter_by(
+            room_id=room_id,
+            topic=topic,
+            is_system_post=1
+        ).all()
 
         message_serialized_list = []
         for message in messages:
@@ -953,6 +958,7 @@ def import_post_daily_by_room():
     file = request.files['file']
     stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
     csv_input = csv.reader(stream)
+    room_cleaned = []
     for key, line in enumerate(csv_input):
         if key == 0:
             if line != ['id', 'room_id', 'day', 'message_id']:
@@ -963,9 +969,15 @@ def import_post_daily_by_room():
         message_id = line[3]
 
         # fixme clean by room_id
+        if room_id not in room_cleaned:
+            messages_existed = SystemPost.query.filter_by(room_id=room_id).all()
+            for message in messages_existed:
+                db.session.delete(message)
+                db.session.commit()
+            room_cleaned.append(room_id)
 
-        system_message = PrivateMessage.query.filter_by(message_id=message_id).first()
-        post = SystemPost(
+        system_message = SystemMessage.query.filter_by(message_id=message_id).first()
+        post = PublicPost(
             message_id=message_id,
             # timeline_type=config.TIMELINE_PRI,
             post_title=system_message.message_title,
@@ -975,7 +987,8 @@ def import_post_daily_by_room():
             # user_id=participant.id,
             room_id=room_id,
             topic=topic,
-            photo_uri=system_message.photo_uri
+            photo_uri=system_message.photo_uri,
+            is_system_post=1
         )
         db.session.add(post)
         db.session.commit()
