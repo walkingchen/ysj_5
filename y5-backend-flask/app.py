@@ -56,7 +56,6 @@ admin.add_view(YModelView(RoomMember, db.session, name=u'Room Member', category=
 
 admin.add_view(PostModelView(PrivatePost, db.session, name=u'Private Post', category='Post'))
 admin.add_view(PostModelView(PublicPost, db.session, name=u'Public Post', category='Post'))
-admin.add_view(PostModelView(PublicPost, db.session, name=u'Post', category='Post'))
 admin.add_view(YModelView(PostComment, db.session, name=u'Post Comment', category='Post'))
 admin.add_view(YModelView(PostFlag, db.session, name=u'Post Flag', category='Post'))
 admin.add_view(YModelView(PostLike, db.session, name=u'Post Like', category='Post'))
