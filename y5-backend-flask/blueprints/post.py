@@ -997,11 +997,12 @@ def import_post_daily_by_room():
 
         # clean by room_id
         if room_id not in room_cleaned:
-            messages_existed = SystemPost.query.filter_by(room_id=room_id).all()
+            messages_existed = PublicPost.query.filter_by(room_id=room_id, is_system_post=1).all()
             for message in messages_existed:
                 db.session.delete(message)
                 db.session.commit()
             room_cleaned.append(room_id)
+            # fixme alert if room activated
 
         system_message = SystemMessage.query.filter_by(message_id=message_id).first()
         post = PublicPost(
