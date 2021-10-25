@@ -852,10 +852,15 @@ class DailyPollApi(Resource):
             topic=topic
         ).first()
 
+        if message is not None:
+            message_serialized = Serializer.serialize(message)
+        else:
+            message_serialized = None
+
         resp = Resp(
             result_code=2000,
             result_msg="success",
-            data=Serializer.serialize(message)
+            data=message_serialized
         )
 
         return jsonify(resp.__dict__)
