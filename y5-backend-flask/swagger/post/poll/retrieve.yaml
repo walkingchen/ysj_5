@@ -1,0 +1,26 @@
+---
+tags:
+  - Daily Poll
+parameters:
+  - name: room_id
+    in: query
+    type: integer
+    required: true
+    description: room ID
+  - name: topic
+    in: query
+    type: integer
+    required: true
+    description: topic
+responses:
+  200:
+    description: return daily poll with details
+    schema:
+      id: Response
+      properties:
+        result_code:
+          type: string
+        result_msg:
+          type: string
+        data:
+          type: string

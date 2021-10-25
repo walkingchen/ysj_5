@@ -834,6 +834,39 @@ api.add_resource(
     endpoint='post/comment/flag/delete')
 
 
+# Daily Poll
+class DailyPollApi(Resource):
+    @swag_from('../swagger/post/poll/retrieve.yaml')
+    def get(self):
+        data = request.args
+        try:
+            room_id = data['room_id']
+            topic = data['topic']
+        except TypeError:
+            return jsonify(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
+        except KeyError:
+            return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
+
+        message = PollPost.query.filter_by(
+            room_id=room_id,
+            topic=topic
+        ).first()
+
+        resp = Resp(
+            result_code=2000,
+            result_msg="success",
+            data=Serializer.serialize(message)
+        )
+
+        return jsonify(resp.__dict__)
+
+
+api.add_resource(
+    SystemMessageApi,
+    '/system_post',
+    methods=['GET'],
+    endpoint='post/system_post/retrieve')
+
 # import private messages pool
 @swag_from('../swagger/post/import_private_messages.yaml')
 @bp_post.route('/api/post/import_private_messages_pool', methods=['POST'])
