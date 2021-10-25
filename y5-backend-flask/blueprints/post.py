@@ -862,10 +862,11 @@ class DailyPollApi(Resource):
 
 
 api.add_resource(
-    SystemMessageApi,
-    '/system_post',
+    DailyPollApi,
+    '/daily_poll',
     methods=['GET'],
-    endpoint='post/system_post/retrieve')
+    endpoint='post/daily_poll/retrieve')
+
 
 # import private messages pool
 @swag_from('../swagger/post/import_private_messages.yaml')
