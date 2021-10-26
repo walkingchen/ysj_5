@@ -319,6 +319,7 @@ class Room(db.Model):
     room_type = Column(Integer)
     people_limit = Column(Integer)
     activated = Column(Integer, server_default=FetchedValue())
+    activated_at = Column(DateTime, server_default=FetchedValue())
     created_at = Column(DateTime, server_default=FetchedValue())
     updated_at = Column(DateTime)
 

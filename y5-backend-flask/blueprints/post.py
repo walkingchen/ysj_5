@@ -1,6 +1,7 @@
 import csv
 import io
 import os
+import time
 import zipfile
 
 from flasgger import swag_from
@@ -419,10 +420,21 @@ class TopicApi(Resource):
         except KeyError:
             return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
 
-        topics = [1, 2, 3, 4, 5, 6, 7, 8]
+        # get topics
+        room = Room.query.get(room_id)
+        updated_at = room.updated_at
+        local_time = time.localtime(updated_at)
+        activated_day = local_time.tm_yday
+
+        now = time.localtime(time.time())
+        now_day = now.tm_yday
+
+        n = now_day - activated_day + 1
+        if n > 8:
+            n = 8
 
         data = []
-        for topic in topics:
+        for topic in range(n):
             redspot = Redspot.query.filter_by(room_id=room_id, user_id=current_user.id, topic=topic).first()
             if redspot is None:
                 data.append({'topic': topic, 'redspot': False})

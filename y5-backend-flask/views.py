@@ -1,4 +1,6 @@
 import ast
+import time
+
 from PIL import Image
 from flask import url_for
 from flask_admin.actions import action
@@ -32,6 +34,7 @@ class RoomModelView(ModelView):
         for id in ids:
             room = Room.query.filter_by(id=id).first()
             room.activated = 1
+            room.updated_at = time.time()
             db.session.commit()
 
     @action('deactivate', 'Deactivate Rooms', 'Are you sure you want to stop selected rooms?')
@@ -39,6 +42,7 @@ class RoomModelView(ModelView):
         for id in ids:
             room = Room.query.filter_by(id=id).first()
             room.activated = 0
+            room.updated_at = None
             db.session.commit()
 
     def after_model_change(self, form, model, is_created):
