@@ -437,9 +437,9 @@ class TopicApi(Resource):
 
         data = []
         for i in range(n):
+            topic = i + 1
             redspot = Redspot.query.filter_by(room_id=room_id, user_id=current_user.id, topic=topic).first()
             if redspot is None:
-                topic = i + 1
                 data.append({'topic': topic, 'redspot': False})
                 redspot = Redspot(
                     room_id=room_id,
