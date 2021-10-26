@@ -425,11 +425,11 @@ class TopicApi(Resource):
         updated_at = room.updated_at
         local_time = time.localtime(int(updated_at.timestamp() / 1000))
         activated_day = local_time.tm_yday
-        print('activated_day = ' + activated_day)
+        print('activated_day = ' + str(activated_day))
 
         now = time.localtime(time.time())
         now_day = now.tm_yday
-        print('now_day = ' + now_day)
+        print('now_day = ' + str(now_day))
 
         n = now_day - activated_day + 1
         if n > 8:
