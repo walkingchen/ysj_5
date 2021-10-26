@@ -423,7 +423,7 @@ class TopicApi(Resource):
         # get topics
         room = Room.query.get(room_id)
         updated_at = room.updated_at
-        local_time = time.localtime(updated_at)
+        local_time = time.localtime(int(updated_at.timestamp() / 1000))
         activated_day = local_time.tm_yday
         print('activated_day = ' + activated_day)
 
