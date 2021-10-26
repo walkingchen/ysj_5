@@ -1,5 +1,5 @@
 <template>
-  <el-card class="dailyDigest-layout">
+  <el-card v-if="imgUrl" class="dailyDigest-layout">
     <title-com title="Daily poll results" />
     <div class="img-box">
       <img :src="imgUrl" />
@@ -25,7 +25,9 @@ export default {
   methods: {
     updateDailyPoll () {
       getDailyPoll(localStorage.getItem('roomid'), this.currentTopic).then(({ data }) => {
-        this.imgUrl = data.data.photo_uri
+        if (data.data && data.data.photo_uri) {
+          this.imgUrl = data.data.photo_uri
+        }
       })
     }
   },
