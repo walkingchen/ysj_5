@@ -423,7 +423,7 @@ class TopicApi(Resource):
         # get topics
         room = Room.query.get(room_id)
         updated_at = room.updated_at
-        local_time = time.localtime(int(updated_at.timestamp() / 1000))
+        local_time = time.localtime(int(updated_at.timestamp()))
         activated_day = local_time.tm_yday
         print('activated_day = ' + str(activated_day))
 
@@ -436,9 +436,10 @@ class TopicApi(Resource):
             n = 8
 
         data = []
-        for topic in range(n):
+        for i in range(n):
             redspot = Redspot.query.filter_by(room_id=room_id, user_id=current_user.id, topic=topic).first()
             if redspot is None:
+                topic = i + 1
                 data.append({'topic': topic, 'redspot': False})
                 redspot = Redspot(
                     room_id=room_id,
