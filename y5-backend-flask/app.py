@@ -117,5 +117,31 @@ def git_pull():
     print("拉取修改 {0} 成功！".format(remote_name))
 
 
+@scheduler.task('cron', id='job_mail_night', day='*', hour='8', minute='0', second='0')
+def mail_morning():
+    with mail.connect() as conn:
+        message = 'mail_morning'
+        subject = "mail_morning"
+        msg = Message(recipients=['cenux1987@163.com'],
+                      body=message,
+                      subject=subject,
+                      sender=("Admin", "admin@soulfar.com"))
+
+        conn.send(msg)
+
+
+@scheduler.task('cron', id='job_mail_night', day='*', hour='20', minute='0', second='0')
+def mail_night():
+    with mail.connect() as conn:
+        message = 'mail_night'
+        subject = "mail_night"
+        msg = Message(recipients=['cenux1987@163.com'],
+                      body=message,
+                      subject=subject,
+                      sender=("Admin", "admin@soulfar.com"))
+
+        conn.send(msg)
+
+
 if __name__ == '__main__':
     app.run()

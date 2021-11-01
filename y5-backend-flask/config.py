@@ -46,3 +46,18 @@ PHOTO_SUFFIX = {
 TIMELINE_PUB = 0
 TIMELINE_PRI = 1
 TIMELINE_ALL = 2
+
+# schedule
+# JOBS = [
+#     {
+#         'id': 'job_mail_night',
+#         'func': 'scheduler:task',
+#         'args': None,
+#         'trigger': 'cron',
+#         'day': '*',
+#         'hour': '20',
+#         'minute': '0',
+#         'second': '0'
+#     }
+# ]
+SCHEDULER_API_ENABLED = True
