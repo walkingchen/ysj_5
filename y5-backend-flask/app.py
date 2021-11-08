@@ -1,5 +1,6 @@
 import datetime
 import os
+import time
 
 from flasgger import Swagger
 from flask import Flask, render_template, request
@@ -10,6 +11,7 @@ from flask_babelex import Babel
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
 from flask_cors import CORS
+from flask_login import current_user
 from flask_mail import Mail
 from git import Repo
 
@@ -21,7 +23,7 @@ from blueprints.user import bp_user
 from room_socketio import RoomNamespace
 from extensions import db, cache, socketio
 from models import User, Room, RoomPrototype, RoomMember, Timeline, PublicPost, PostComment, PostLike, Message, \
-    SystemMessage, PrivateMessage, PostFlag, PrivatePost, SystemPost, PollPost
+    SystemMessage, PrivateMessage, PostFlag, PrivatePost, SystemPost, PollPost, CommentStatus, PostStatus
 
 app = Flask(__name__)
 
@@ -80,6 +82,33 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/mail')
+def mail():
+
+    today = datetime.datetime.today()
+    tomorrow = datetime.datetime.today() + datetime.timedelta(days=1)
+
+    # room activate day
+    rooms = Room.query.filter_by(activated=1).all()
+    for room in rooms:
+        day_activated = room.activated_at
+        day = today - day_activated
+
+        private_posts = PrivatePost.query.filter_by(topic=day.days).all()
+        # titles
+        titles = []
+        for post in private_posts:
+            pass
+
+        # comments
+        comment_count = CommentStatus.query.filter_by(user_id=current_user.id).count()
+
+        # flags
+        post_count = PostStatus.query.filter_by(user_id=current_user.id).count()
+
+    return render_template('404.html')
+
+
 def reload_vue():
     os.system('cd ' + config.BASE_DIR + '/frontend')
     os.system('yarn build')
@@ -132,15 +161,43 @@ def mail_morning():
 
 @scheduler.task('cron', id='job_mail_night', day='*', hour='20', minute='0', second='0')
 def mail_night():
-    with mail.connect() as conn:
-        message = 'mail_night'
-        subject = "mail_night"
-        msg = Message(recipients=['cenux1987@163.com'],
-                      body=message,
-                      subject=subject,
-                      sender=("Admin", "admin@soulfar.com"))
+    today = datetime.datetime.today()
+    tomorrow = datetime.datetime.today() + datetime.timedelta(days=1)
 
-        conn.send(msg)
+    # room activate day
+    rooms = Room.query.filter_by(activated=1).all()
+    for room in rooms:
+        day_activated = room.activated_at
+        day = today - day_activated
+
+        private_posts = PrivatePost.query.filter_by(topic=day)
+        # titles
+        titles = []
+        for post in private_posts:
+            pass
+
+        # comments
+        comments_count = PostComment.query.filter(
+            PostComment.created_at >= today,
+            PostComment.created_at < tomorrow
+        ).count()
+
+        # likes
+
+        # posts
+
+        # flags
+
+
+        with mail.connect() as conn:
+            message = 'mail_night'
+            subject = "mail_night"
+            msg = Message(recipients=['cenux1987@163.com'],
+                          body=message,
+                          subject=subject,
+                          sender=("Admin", "admin@soulfar.com"))
+
+            conn.send(msg)
 
 
 if __name__ == '__main__':
