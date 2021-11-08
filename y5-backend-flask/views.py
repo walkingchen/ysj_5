@@ -25,7 +25,7 @@ class YModelView(ModelView):
 class RoomModelView(ModelView):
     # can_create = False
     # can_edit = True
-    list_columns = ['id', 'room_name', 'activated', 'room_desc', 'room_type', 'people_limit', 'created_at']
+    column_list = ['id', 'room_name', 'activated', 'room_desc', 'room_type', 'people_limit', 'created_at']
     column_searchable_list = ['room_id', 'people_limit', 'created_at']
     column_filters = column_searchable_list
 
@@ -61,7 +61,7 @@ class RoomModelView(ModelView):
 class PostModelView(ModelView):
     can_edit = False
     can_delete = False
-    # list_columns = ['id', 'room_id', 'topic', 'timeline_type', 'user_id', 'created_at']   # fixme
+    # column_list = ['id', 'room_id', 'topic', 'timeline_type', 'user_id', 'created_at']   # fixme
 
     def _post_content_formatter(view, context, model, name):
         # Format your string here e.g show first 80 characters
