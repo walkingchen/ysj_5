@@ -9,21 +9,16 @@ parameters:
       id: auth_register
       required:
         - username
-        - nickname
-        - avatar
+        - email
         - password
       properties:
         username:
           type: string
           description: email
           required: true
-        nickname:
-          type: string
-          description: nickname
-          required: true
         avatar:
           type: string
-          description: avatar
+          description: username
           required: true
         password:
           type: string
