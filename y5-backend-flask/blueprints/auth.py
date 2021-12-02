@@ -19,24 +19,24 @@ def register():
     data = request.get_json()
     try:
         email = data['email']
-        username = data['username']
-        # nickname = data['nickname']
-        # avatar = data['avatar']
+        # username = data['username']
+        nickname = data['nickname']
+        avatar = data['avatar']
         password = data['password']
     except KeyError:
         return json.dumps(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
     except TypeError:
         return json.dumps(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
 
-    user = User.query.filter_by(email=username).first()
+    user = User.query.filter_by(email=email).first()
     if user is not None:
         return json.dumps(Resp(result_code=4000, result_msg='user exists', data=None).__dict__)
 
     user = User(
         email=email,
-        username=username,
-        # nickname=nickname,
-        # avatar=avatar,
+        # username=username,
+        nickname=nickname,
+        avatar=avatar,
         password=password
     )
     db.session.add(user)
@@ -50,14 +50,15 @@ def register():
 def login():
     data = request.get_json()
     try:
-        username = str(data['username']).strip()
+        email = str(data['email']).strip()
+        # username = str(data['username']).strip()
         password = str(data['password']).strip()
     except KeyError:
         return json.dumps(Resp(result_code=4000, result_msg='login, KeyError', data=None).__dict__)
     except TypeError:
         return json.dumps(Resp(result_code=4000, result_msg='login, TypeError', data=None).__dict__)
 
-    user = User.query.filter_by(username=username).first()
+    user = User.query.filter_by(email=email).first()
 
     if user is None or password is None or password != user.password:
         return json.dumps(Resp(result_code=4000, result_msg='username or password wrong', data=None).__dict__)
