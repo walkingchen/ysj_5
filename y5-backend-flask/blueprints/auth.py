@@ -71,6 +71,13 @@ def login():
     # return redirect('/admin/')
 
     member = RoomMember.query.filter_by(user_id=user.id).first()
+    if member is None:
+        return json.dumps(Resp(
+            result_code=2010,
+            result_msg='Please wait for email notification',
+            data=None
+        ).__dict__)
+
     room = Room.query.filter_by(id=member.room_id).first()
 
     return json.dumps(Resp(
