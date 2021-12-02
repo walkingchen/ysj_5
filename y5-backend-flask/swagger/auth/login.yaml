@@ -11,7 +11,7 @@ parameters:
         - email
         - password
       properties:
-        username:
+        email:
           type: string
           description: email
           required: true
