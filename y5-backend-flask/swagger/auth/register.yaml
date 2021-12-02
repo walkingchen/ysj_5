@@ -8,7 +8,7 @@ parameters:
     schema:
       id: auth_register
       required:
-        - username
+        - email
         - nickname
         - avatar
         - password

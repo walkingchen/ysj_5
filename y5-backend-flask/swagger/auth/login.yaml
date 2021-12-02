@@ -8,12 +8,12 @@ parameters:
     schema:
       id: auth_login
       required:
-        - username
+        - email
         - password
       properties:
         username:
           type: string
-          description: username
+          description: email
           required: true
         password:
           type: string
