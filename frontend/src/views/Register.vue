@@ -4,12 +4,12 @@
 
       <h3 class="title">Register</h3>
 
-      <el-form-item prop="username">
+      <el-form-item prop="email">
         <span class="svg-container">
           <v-icon name="envelope" />
         </span>
         <el-input
-          v-model="registerForm.username"
+          v-model="registerForm.email"
           placeholder="E-mail"
           type="text"
           @keyup.enter.native="submit"
@@ -38,7 +38,7 @@
         </span>
         <el-input
           v-model="registerForm.nickname"
-          placeholder="Nickname"
+          placeholder="Name"
           type="text"
           @keyup.enter.native="submit"
         />
@@ -120,13 +120,13 @@ export default {
     return {
       avatars,
       registerForm: {
-        username: '',
+        email: '',
         nickname: '',
         password: '',
         checkPassword: ''
       },
       rules: {
-        username: [
+        email: [
           { required: true, message: 'Please enter E-mail.', trigger: 'blur' },
           { type: 'email', message: 'Must be of type email.', trigger: 'blur' }
         ],
@@ -138,7 +138,8 @@ export default {
       passwordType: 'password',
       checkPasswordType: 'password',
       loading: false,
-      error_show: false
+      error_show: false,
+      errorMessage: ''
     }
   },
   methods: {
