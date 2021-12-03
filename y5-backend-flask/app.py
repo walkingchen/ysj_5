@@ -156,8 +156,9 @@ def mail_night():
     rooms = Room.query.filter_by(activated=1).all()
     for room in rooms:
         day_activated = room.activated_at
-        # day = today - day_activated
-        day = 8
+        day = today - day_activated.date()
+        day = day.days
+        # day = 8
         room_members = RoomMember.query.filter_by(room_id=room.id).all()
         member_ids = []
         for member in room_members:
