@@ -1144,7 +1144,7 @@ def import_poll_picture():
         post = PollPost(
             message_id=message_id,
             # timeline_type=config.TIMELINE_PRI,
-            post_type=1,  # fixme
+            # post_type=1,  # fixme
             # user_id=participant.id,
             room_id=room_id,
             topic=topic,
