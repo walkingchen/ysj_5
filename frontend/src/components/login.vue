@@ -4,12 +4,12 @@
 
       <h3 class="title">Login</h3>
 
-      <el-form-item prop="username">
+      <el-form-item prop="email">
         <span class="svg-container">
           <v-icon name="envelope" />
         </span>
         <el-input
-          v-model="loginForm.username"
+          v-model="loginForm.email"
           placeholder="E-mail"
           type="text"
           @keyup.enter.native="handleLogin"
@@ -32,10 +32,23 @@
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" class="login-btn" @click.native.prevent="handleLogin">Login</el-button>
+      <el-button
+        :loading="loading"
+        type="primary"
+        class="login-btn"
+        @click.native.prevent="handleLogin"
+      >Login</el-button>
 
-      <el-alert v-show="error_show" title="Login failed, please try again." type="error" show-icon :closable="false" />
+      <el-alert
+        v-show="error_show"
+        :title="errorMessage"
+        type="error"
+        show-icon
+        :closable="false"
+        style="margin-bottom: 22px"
+      />
 
+      <slot></slot>
     </el-form>
   </div>
 </template>
@@ -52,16 +65,17 @@ export default {
   data() {
     return {
       loginForm: {
-        username: 'user14',
-        password: '123456'
+        email: '',
+        password: ''
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', message: 'Please enter the username.' }],
+        email: [{ required: true, trigger: 'blur', message: 'Please enter the E-mail.' }],
         password: [{ required: true, trigger: 'blur', message: 'Please enter the password.' }]
       },
       loading: false,
       passwordType: 'password',
-      error_show: false
+      error_show: false,
+      errorMessage: ''
     }
   },
   methods: {
@@ -87,10 +101,12 @@ export default {
             } else {
               this.loading = false
               this.error_show = true
+              this.errorMessage = res.data.result_msg
             }
           }).catch(() => {
             this.loading = false
             this.error_show = true
+            this.errorMessage = 'Login failed, please try again.'
           })
         }
       })
