@@ -1133,13 +1133,13 @@ def import_poll_picture():
     csv_input = csv.reader(stream)
     for key, line in enumerate(csv_input):
         if key == 0:
-            if line != ['id', 'room_id', 'day', 'topic_no', 'photo_uri']:
+            if line != ['id', 'message_id', 'room_id', 'day', 'topic_no', 'photo_uri']:
                 return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
             continue
-        room_id = line[1]
-        topic = line[2]     # day
-        message_id = line[3]
-        photo_uri = line[4]
+        room_id = line[2]
+        topic = line[3]     # day
+        message_id = line[1]
+        photo_uri = line[5]
 
         post = PollPost(
             message_id=message_id,
