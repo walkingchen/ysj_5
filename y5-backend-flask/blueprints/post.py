@@ -962,7 +962,7 @@ def import_members_with_messages():
 
         user = User.query.filter_by(username=username).first()
         if user is None:
-            jsonify(Resp(result_code=4000, result_msg="username error", data=None).__dict__)
+            return jsonify(Resp(result_code=4000, result_msg="username error", data=None).__dict__)
 
         member = RoomMember.query.filter_by(user_id=user.id).first()
         if member is None:
@@ -976,6 +976,9 @@ def import_members_with_messages():
 
         participant = User.query.filter_by(username=username).first()
         private_message = PrivateMessage.query.filter_by(message_id=message_id).first()
+        if private_message is None:
+            return jsonify(Resp(result_code=4000, result_msg="message id not exists, id=" + str(message_id), data=None).__dict__)
+
         post = PrivatePost(
             message_id=message_id,
             timeline_type=config.TIMELINE_PRI,
