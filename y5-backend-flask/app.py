@@ -201,7 +201,7 @@ def mail_night():
                       '<p>New likes: ' + str(new_like_count) + ' </p>' + \
                       '<p>New flags: ' + str(new_flag_count) + ' </p>' + \
                       '</div>'\
-                      '<button><a href="http://demo.soulfar.com">Log back to the platform</a></button>'
+                      '<button><a href="http://demo.soulfar.com">Log back to the platform</a></button></body></html>'
 
             subject = "Night Mail"
             user = User.query.filter_by(id=member.user_id).first()
