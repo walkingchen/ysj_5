@@ -83,7 +83,7 @@ def index():
 
 
 @app.route('/mail')
-def mail():
+def test_mail():
     mail_night()
 
     return render_template('404.html')
