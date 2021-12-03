@@ -24,19 +24,6 @@ class Serializer(object):
         return [m.serialize() for m in l]
 
 
-class Message(db.Model):
-    __tablename__ = 'tb_message'
-
-    id = Column(Integer, primary_key=True)
-    message = Column(String(255))
-    message_type = Column(Integer)
-    room_id = Column(Integer)
-    user_id_from = Column(Integer)
-    user_id_to = Column(Integer)
-    created_at = Column(DateTime, server_default=FetchedValue())
-    updated_at = Column(DateTime)
-
-
 class PrivatePost(db.Model):
     __tablename__ = 'tb_post_private'
 

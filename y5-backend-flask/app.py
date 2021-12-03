@@ -12,7 +12,7 @@ from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
 from flask_cors import CORS
 from flask_login import current_user
-from flask_mail import Mail
+from flask_mail import Mail, Message
 from git import Repo
 
 import config
@@ -22,7 +22,7 @@ from blueprints.room import bp_room
 from blueprints.user import bp_user
 from room_socketio import RoomNamespace
 from extensions import db, cache, socketio
-from models import User, Room, RoomPrototype, RoomMember, Timeline, PublicPost, PostComment, PostLike, Message, \
+from models import User, Room, RoomPrototype, RoomMember, Timeline, PublicPost, PostComment, PostLike, \
     SystemMessage, PrivateMessage, PostFlag, PrivatePost, SystemPost, PollPost, CommentStatus, PostStatus
 
 app = Flask(__name__)
