@@ -148,7 +148,8 @@ def mail_night():
     rooms = Room.query.filter_by(activated=1).all()
     for room in rooms:
         day_activated = room.activated_at
-        day = today - day_activated
+        # day = today - day_activated
+        day = 8
 
         # room level
 
@@ -175,8 +176,11 @@ def mail_night():
 
             # flags
 
-            message = 'We have recommended these messages for you. Check them out and share them with others! ' + titles
-            subject = "mail_night"
+            message = '<html><body><div><p>We have recommended these messages for you. ' \
+                      'Check them out and share them with others!</p></div><div>' + titles + \
+                      '</div><button><a href="http://demo.soulfar.com">Log back to the platform</a></button>'
+
+            subject = "Night Mail"
             msg = Message(recipients=['cenux1987@163.com'],
                           body=message,
                           subject=subject,
