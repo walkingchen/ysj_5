@@ -320,6 +320,7 @@ class Room(db.Model):
     people_limit = Column(Integer)
     activated = Column(Integer, server_default=FetchedValue())
     activated_at = Column(DateTime, server_default=FetchedValue())
+    publish_time = Column(Integer)  # 每日发布时间，以小时计
     created_at = Column(DateTime, server_default=FetchedValue())
     updated_at = Column(DateTime)
 

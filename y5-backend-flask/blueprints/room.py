@@ -106,6 +106,7 @@ class RoomApi(Resource):
             room_name = data['room_name']
             room_type = data['room_type']
             people_limit = data['people_limit']
+
         except KeyError:
             return jsonify(Resp(result_code=4000, result_msg='key error', data=None).__dict__)
         if 'room_desc' in data:
@@ -113,11 +114,22 @@ class RoomApi(Resource):
         else:
             room_desc = None
 
+        if 'activate' in data:
+            activate = data['activate']
+        else:
+            activate = 0
+        if 'publish_time' in data:
+            publish_time = data['publish_time']
+        else:
+            publish_time = 7
+
         room = Room.query.filter_by(id=id).first()
         room.room_name = room_name
         room.room_type = room_type
         room.people_limit = people_limit
         room.room_desc = room_desc
+        room.activated = activate
+        room.publish_time = publish_time
 
         db.session.add(room)
         db.session.commit()
