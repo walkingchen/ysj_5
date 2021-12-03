@@ -128,15 +128,23 @@ def git_pull():
 
 @scheduler.task('cron', id='job_mail_night', day='*', hour='8', minute='0', second='0')
 def mail_morning():
-    with mail.connect() as conn:
-        message = 'mail_morning'
-        subject = "mail_morning"
-        msg = Message(recipients=['cenux1987@163.com'],
-                      body=message,
-                      subject=subject,
-                      sender=("Admin", "admin@soulfar.com"))
+    message = 'mail_morning'
+    subject = "mail_morning"
+    rooms = Room.query.filter_by(activated=1).all()
+    for room in rooms:
+        day_activated = room.activated_at
+        # day = today - day_activated
+        day = 8
+        room_members = RoomMember.query.filter_by(room_id=room.id).all()
+        for member in room_members:
+            user = User.query.filter_by(id=member.user_id).first()
+            if user.email is not None:
+                msg = Message(recipients=['cenux1987@163.com'],
+                              body=message,
+                              subject=subject,
+                              sender=("Admin", "cenux1987@163.com"))
 
-        conn.send(msg)
+                mail.send(msg)
 
 
 @scheduler.task('cron', id='job_mail_night', day='*', hour='20', minute='0', second='0')
@@ -196,12 +204,14 @@ def mail_night():
                       '<button><a href="http://demo.soulfar.com">Log back to the platform</a></button>'
 
             subject = "Night Mail"
-            msg = Message(recipients=['cenux1987@163.com'],
-                          body=message,
-                          subject=subject,
-                          sender=("Admin", "admin@soulfar.com"))
+            user = User.query.filter_by(id=member.user_id).first()
+            if user.email is not None:
+                msg = Message(recipients=[user.email],
+                              body=message,
+                              subject=subject,
+                              sender=("Admin", "cenux1987@163.com"))
 
-            mail.send(msg)
+                mail.send(msg)
 
 
 if __name__ == '__main__':
