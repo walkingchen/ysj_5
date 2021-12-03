@@ -896,17 +896,17 @@ def import_private_messages():
     stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
     csv_input = csv.reader(stream)
 
+    # 清空pool
+    messages_exisited = PrivateMessage.query.all()
+    for message in messages_exisited:
+        db.session.delete(message)
+        db.session.commit()
+
     for key, line in enumerate(csv_input):
         if key == 0:
             if line != ['id', 'message_id', 'message_title', 'message_summary', 'message_content', 'photo_uri']:
                 return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
             continue
-
-        # 清空pool
-        messages_exisited = PrivateMessage.query.all()
-        for message in messages_exisited:
-            db.session.delete(message)
-            db.session.commit()
 
         message_id = line[1]
         message_title = line[2]
