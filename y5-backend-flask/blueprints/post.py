@@ -1051,7 +1051,7 @@ def import_post_daily_by_room():
             continue
         room_id = line[1]
         topic = line[2]     # day
-        message_id = line[3]
+        message_id = line[4]
 
         # clean by room_id
         if room_id not in room_cleaned:
