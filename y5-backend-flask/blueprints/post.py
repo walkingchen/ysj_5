@@ -1055,12 +1055,14 @@ def import_post_daily_by_room():
 
         # clean by room_id
         if room_id not in room_cleaned:
+            room = Room.query.filter_by(id=room_id).first()  # id, not room_id
+            if room.activated == 1:
+                return jsonify(Resp(result_code=4000, result_msg="room activated, room id: " + str(room_id), data=room.serialize()).__dict__)
             messages_existed = PublicPost.query.filter_by(room_id=room_id, is_system_post=1).all()
             for message in messages_existed:
                 db.session.delete(message)
                 db.session.commit()
             room_cleaned.append(room_id)
-            # fixme alert if room activated
 
         system_message = SystemMessage.query.filter_by(message_id=message_id).first()
         post = PublicPost(
@@ -1131,12 +1133,26 @@ def import_poll_picture():
     file = request.files['file']
     stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
     csv_input = csv.reader(stream)
+    room_cleaned = []
     for key, line in enumerate(csv_input):
         if key == 0:
             if line != ['id', 'message_id', 'room_id', 'day', 'topic_no', 'photo_uri']:
                 return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
             continue
         room_id = line[2]
+
+        # clean by room_id
+        if room_id not in room_cleaned:
+            room = Room.query.filter_by(id=room_id).first()  # id, not room_id
+            if room.activated == 1:
+                return jsonify(Resp(result_code=4000, result_msg="room activated, room id: " + str(room_id),
+                                data=room.serialize()).__dict__)
+            messages_existed = PollPost.query.filter_by(room_id=room_id).all()
+            for message in messages_existed:
+                db.session.delete(message)
+                db.session.commit()
+            room_cleaned.append(room_id)
+
         topic = line[3]     # day
         message_id = line[1]
         photo_uri = line[5]
