@@ -6,15 +6,21 @@
     @close="close">
     <el-form ref="form" :model="formData" :rules="rules" label-width="100px">
       <el-form-item label="Count">
-        <el-input-number v-model="formData.room_count" controls-position="right" :min="1" />
+        <el-input-number v-model="formData.room_count" controls-position="right" :min="1" :precision="0" />
       </el-form-item>
       <el-form-item label="People Limit">
-        <el-input-number v-model="formData.people_limit" controls-position="right" :min="1" />
+        <el-input-number v-model="formData.people_limit" controls-position="right" :min="1" :precision="0" />
       </el-form-item>
       <el-form-item label="Type">
         <el-select v-model="formData.room_type" prop="room_type">
           <el-option v-for="item in prototypes" :key="item.id" :value="item.id" :label="item.prototype_name" />
         </el-select>
+      </el-form-item>
+      <el-form-item label="Actived">
+        <el-switch v-model="formData.activate" :active-value="1" :inactive-value="0" />
+      </el-form-item>
+      <el-form-item label="Publish Time">
+        <el-time-select v-model="formData.publish_time" :picker-options="{ start: '00:00', step: '01:00', end: '23:00' }" />
       </el-form-item>
       <el-form-item label="Description">
         <el-input type="textarea" v-model="formData.room_desc"></el-input>
@@ -38,6 +44,8 @@ export default {
         room_count: 1,
         people_limit: 1,
         room_type: '',
+        activate: 1,
+        publish_time: '00:00',
         room_desc: ''
       },
       rules: {
@@ -54,9 +62,12 @@ export default {
       this.$refs.form.validate(async valid => {
         if (valid) {
           this.loading = true
-          await createRoom(this.formData).then(res => {
+
+          const submitData = JSON.parse(JSON.stringify(this.formData))
+          submitData.publish_time = Number(this.formData.publish_time.split(':')[0])
+          await createRoom(submitData).then(res => {
             if (res.data.result_code === 2000) {
-              this.$message.success('Edit room succeeded!')
+              this.$message.success('Create room succeeded!')
               this.close()
               this.$emit('success')
             } else {
@@ -65,6 +76,7 @@ export default {
           }).catch(() => {
             this.$message.error('Failed!')
           })
+
           this.loading = false
         }
       })

@@ -35,6 +35,20 @@
         :filters="typeFilters"
       />
       <el-table-column label="People limit" prop="people_limit" align="center" />
+      <el-table-column label="Actived" prop="activated" align="center">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.activated ? 'success' : 'danger'">
+            {{ scope.row.activated ? 'Actived' : 'Inactivated' }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="Publish Time" prop="people_limit" align="center">
+        <template slot-scope="scope">
+          <span>
+            {{ scope.row.publish_time ? ((scope.row.publish_time > 9 ? scope.row.publish_time : ('0' + scope.row.publish_time)) + ':00') : '-' }}
+          </span>
+        </template>
+      </el-table-column>
       <el-table-column label="Description" prop="room_desc" align="center" show-overflow-tooltip />
       <el-table-column
         label="Created Time"
