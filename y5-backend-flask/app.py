@@ -84,27 +84,7 @@ def index():
 
 @app.route('/mail')
 def mail():
-
-    today = datetime.datetime.today()
-    tomorrow = datetime.datetime.today() + datetime.timedelta(days=1)
-
-    # room activate day
-    rooms = Room.query.filter_by(activated=1).all()
-    for room in rooms:
-        day_activated = room.activated_at
-        day = today - day_activated
-
-        private_posts = PrivatePost.query.filter_by(topic=day.days).all()
-        # titles
-        titles = []
-        for post in private_posts:
-            pass
-
-        # comments
-        comment_count = CommentStatus.query.filter_by(user_id=current_user.id).count()
-
-        # flags
-        post_count = PostStatus.query.filter_by(user_id=current_user.id).count()
+    mail_night()
 
     return render_template('404.html')
 
@@ -170,34 +150,39 @@ def mail_night():
         day_activated = room.activated_at
         day = today - day_activated
 
-        private_posts = PrivatePost.query.filter_by(topic=day)
-        # titles
-        titles = []
-        for post in private_posts:
-            pass
+        # room level
 
-        # comments
-        comments_count = PostComment.query.filter(
-            PostComment.created_at >= today,
-            PostComment.created_at < tomorrow
-        ).count()
+        # user level
+        room_members = RoomMember.query.filter_by(room_id=room.id).all()
+        for member in room_members:
+            private_posts = PrivatePost.query.filter_by(user_id=member.id).filter_by(
+                room_id=room.id).filter_by(topic=day).all()
+            # titles
+            titles = ''
+            for post in private_posts:
+                titles += post.post_title
+                titles += ', '
 
-        # likes
+            # comments
+            # comments_count = PostComment.query.filter(
+            #     PostComment.created_at >= today,
+            #     PostComment.created_at < tomorrow
+            # ).count()
 
-        # posts
+            # likes
 
-        # flags
+            # posts
 
+            # flags
 
-        with mail.connect() as conn:
-            message = 'mail_night'
+            message = 'We have recommended these messages for you. Check them out and share them with others! ' + titles
             subject = "mail_night"
             msg = Message(recipients=['cenux1987@163.com'],
                           body=message,
                           subject=subject,
                           sender=("Admin", "admin@soulfar.com"))
 
-            conn.send(msg)
+            mail.send(msg)
 
 
 if __name__ == '__main__':
