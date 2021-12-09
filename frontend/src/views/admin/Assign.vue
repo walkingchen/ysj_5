@@ -233,6 +233,7 @@ export default {
             this.uploadList.splice(index, 1, Object.assign(item, { status: 'success' }))
           } else {
             this.uploadList.splice(index, 1, Object.assign(item, { status: 'warning' }))
+            this.$message.error(res.data.result_msg)
           }
         } catch {
           this.uploadList.splice(index, 1, Object.assign(item, { status: 'exception' }))
