@@ -394,3 +394,17 @@ class UserProfile(db.Model):
     user_status = Column(Integer)
     created_at = Column(DateTime, server_default=FetchedValue())
     updated_at = Column(DateTime)
+
+
+class Mail(db.Model):
+    __tablename__ = 'tb_mail'
+
+    id = Column(Integer, primary_key=True)
+    # room_type = Column(Integer)
+    # room_id = Column(Integer)
+    title = Column(String(2048))
+    content = Column(Text)
+    # created_at = Column(DateTime, server_default=FetchedValue())
+    # updated_at = Column(DateTime, server_default=FetchedValue())
+    mail_type = Column(Integer, info='1: morning;\\n2: night;')
+    send_hour = Column(Integer)

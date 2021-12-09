@@ -1,0 +1,39 @@
+---
+tags:
+  - Mail
+parameters:
+  - name: id
+    in: path
+    type: string
+    required: true
+    description: update mail with room id
+  - name: body
+    in: body
+    required: true
+    schema:
+      id: mail_update
+      properties:
+        mail_type:
+          type: integer
+          description: 邮件类型
+        title:
+          type: string
+          description: 邮件标题
+        content:
+          type: string
+          description: 邮件内容
+        send_hour:
+          type: integer
+          description: send clock, 0 ~ 23
+responses:
+  200:
+    description: return mail with details
+    schema:
+      id: Response
+      properties:
+        result_code:
+          type: string
+        result_msg:
+          type: string
+        data:
+          type: string

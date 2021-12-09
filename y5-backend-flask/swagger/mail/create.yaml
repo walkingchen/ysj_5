@@ -1,0 +1,39 @@
+---
+tags:
+  - Mail
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      id: mail_create
+      required:
+        - mail_type
+        - title
+        - content
+        - send_hour
+      properties:
+        mail_type:
+          type: string
+          description: 类型
+        title:
+          type: string
+          description: 邮件标题
+        content:
+          type: string
+          description: 邮件正文
+        send_hour:
+          type: integer
+          description: 发送时间
+responses:
+  200:
+    description: return mail with details
+    schema:
+      id: Response
+      properties:
+        result_code:
+          type: string
+        result_msg:
+          type: string
+        data:
+          type: string
