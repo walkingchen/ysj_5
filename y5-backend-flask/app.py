@@ -210,9 +210,10 @@ def mail_night():
             user = User.query.filter_by(id=member.user_id).first()
             if user.email is not None:
                 msg = Message(recipients=[user.email],
-                              body=message,
+                              # body=message,
                               subject=subject,
                               sender=("Admin", "cenux1987@163.com"))
+                msg.html = message
 
                 mail.send(msg)
 
