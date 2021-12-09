@@ -3,7 +3,7 @@ import os
 import time
 
 from flasgger import Swagger
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_apscheduler import APScheduler
@@ -21,10 +21,11 @@ from blueprints.mail import bp_mail
 from blueprints.post import bp_post
 from blueprints.room import bp_room
 from blueprints.user import bp_user
+from entity.Resp import Resp
 from room_socketio import RoomNamespace
 from extensions import db, cache, socketio
 from models import User, Room, RoomPrototype, RoomMember, Timeline, PublicPost, PostComment, PostLike, \
-    SystemMessage, PrivateMessage, PostFlag, PrivatePost, SystemPost, PollPost, CommentStatus, PostStatus
+    SystemMessage, PrivateMessage, PostFlag, PrivatePost, SystemPost, PollPost, CommentStatus, PostStatus, MailTemplate
 
 app = Flask(__name__)
 
@@ -128,94 +129,98 @@ def git_pull():
     print("拉取修改 {0} 成功！".format(remote_name))
 
 
-@scheduler.task('cron', id='job_mail_night', day='*', hour='8', minute='0', second='0')
+# @scheduler.task('cron', id='job_mail_morning', day='*', hour='8', minute='0', second='0')
 def mail_morning():
-    message = 'mail_morning'
-    subject = "mail_morning"
-    rooms = Room.query.filter_by(activated=1).all()
-    for room in rooms:
-        day_activated = room.activated_at
-        # day = today - day_activated
-        day = 8
-        room_members = RoomMember.query.filter_by(room_id=room.id).all()
-        for member in room_members:
-            user = User.query.filter_by(id=member.user_id).first()
-            if user.email is not None:
-                msg = Message(recipients=['cenux1987@163.com'],
-                              body=message,
-                              subject=subject,
-                              sender=("Admin", "cenux1987@163.com"))
+    with app.app_context():
+        message = 'mail_morning'
+        subject = "mail_morning"
+        rooms = Room.query.filter_by(activated=1).all()
+        for room in rooms:
+            day_activated = room.activated_at
+            # day = today - day_activated
+            day = 8
+            room_members = RoomMember.query.filter_by(room_id=room.id).all()
+            for member in room_members:
+                user = User.query.filter_by(id=member.user_id).first()
+                if user.email is not None:
+                    msg = Message(recipients=['cenux1987@163.com'],
+                                  body=message,
+                                  subject=subject,
+                                  sender=("Admin", "cenux1987@163.com"))
 
-                mail.send(msg)
+                    mail.send(msg)
 
 
-@scheduler.task('cron', id='job_mail_night', day='*', hour='20', minute='0', second='0')
+# @scheduler.task('cron', id='job_mail_night', day='*', hour='20', minute='0', second='0')
 def mail_night():
-    today = datetime.datetime.today().date()
-    tomorrow = datetime.datetime.today().date() + datetime.timedelta(days=1)
+    with app.app_context():
+        today = datetime.datetime.today().date()
+        tomorrow = datetime.datetime.today().date() + datetime.timedelta(days=1)
 
-    # room activate day
-    rooms = Room.query.filter_by(activated=1).all()
-    for room in rooms:
-        day_activated = room.activated_at
-        day = today - day_activated.date()
-        day = day.days
-        # day = 8
-        room_members = RoomMember.query.filter_by(room_id=room.id).all()
-        member_ids = []
-        for member in room_members:
-            member_ids.append(member.user_id)
+        # room activate day
+        rooms = Room.query.filter_by(activated=1).all()
+        for room in rooms:
+            day_activated = room.activated_at
+            day = today - day_activated.date()
+            day = day.days
+            # day = 8
+            room_members = RoomMember.query.filter_by(room_id=room.id).all()
+            member_ids = []
+            for member in room_members:
+                member_ids.append(member.user_id)
 
-        # room level
-        new_post_count = PublicPost.query.filter_by(room_id=room.id).filter_by(topic=day).count()
+            # room level
+            new_post_count = PublicPost.query.filter_by(room_id=room.id).filter_by(topic=day).count()
 
-        # comments
-        new_comment_count = PostComment.query.filter(PostComment.user_id.in_(tuple(member_ids))).filter(
-            PostComment.created_at >= today,
-            PostComment.created_at < tomorrow
-        ).count()
+            # comments
+            new_comment_count = PostComment.query.filter(PostComment.user_id.in_(tuple(member_ids))).filter(
+                PostComment.created_at >= today,
+                PostComment.created_at < tomorrow
+            ).count()
 
-        # likes
-        new_like_count = PostLike.query.filter(PostLike.user_id.in_(tuple(member_ids))).filter(
-            PostLike.created_at >= today,
-            PostLike.created_at < tomorrow
-        ).count()
+            # likes
+            new_like_count = PostLike.query.filter(PostLike.user_id.in_(tuple(member_ids))).filter(
+                PostLike.created_at >= today,
+                PostLike.created_at < tomorrow
+            ).count()
 
-        # flags
-        new_flag_count = PostFlag.query.filter(PostFlag.user_id.in_(tuple(member_ids))).filter(
-            PostFlag.created_at >= today,
-            PostFlag.created_at < tomorrow
-        ).count()
+            # flags
+            new_flag_count = PostFlag.query.filter(PostFlag.user_id.in_(tuple(member_ids))).filter(
+                PostFlag.created_at >= today,
+                PostFlag.created_at < tomorrow
+            ).count()
 
-        # user level
-        for member in room_members:
-            private_posts = PrivatePost.query.filter_by(user_id=member.id).filter_by(
-                room_id=room.id).filter_by(topic=day).all()
-            # titles
-            titles = ''
-            for post in private_posts:
-                titles += post.post_title
-                titles += ', '
+            # user level
+            for member in room_members:
+                private_posts = PrivatePost.query.filter_by(user_id=member.id).filter_by(
+                    room_id=room.id).filter_by(topic=day).all()
+                # titles
+                titles = ''
+                for post in private_posts:
+                    titles += post.post_title
+                    titles += ', '
 
-            message = '<html><body><div><p>We have recommended these messages for you. ' \
-                      'Check them out and share them with others!</p></div><div>' + titles + \
-                      '</div>' + '<div><p>New posts: ' + str(new_post_count) + '</p>' + \
-                      '<p>New commens: ' + str(new_comment_count) + ' </p>' + \
-                      '<p>New likes: ' + str(new_like_count) + ' </p>' + \
-                      '<p>New flags: ' + str(new_flag_count) + ' </p>' + \
-                      '</div>'\
-                      '<button><a href="http://demo.soulfar.com">Log back to the platform</a></button></body></html>'
+                message_template = MailTemplate.query.filter_by(mail_type=2).first()    # type=2: night mail template
+                message = message_template.content % (titles, new_post_count, new_comment_count, new_like_count, new_flag_count)
 
-            subject = "Night Mail"
-            user = User.query.filter_by(id=member.user_id).first()
-            if user.email is not None:
-                msg = Message(recipients=[user.email],
-                              # body=message,
-                              subject=subject,
-                              sender=("Admin", "cenux1987@163.com"))
-                msg.html = message
+                subject = message_template.title
+                user = User.query.filter_by(id=member.user_id).first()
+                if user.email is not None:
+                    msg = Message(recipients=[user.email],
+                                  # body=message,
+                                  subject=subject,
+                                  sender=("Admin", "cenux1987@163.com"))
+                    msg.html = message
 
-                mail.send(msg)
+                    mail.send(msg)
+
+
+with app.app_context():
+    mail_template_morning = MailTemplate.query.filter_by(mail_type=1).first()
+    scheduler.add_job(func=mail_morning, trigger='cron', hour=mail_template_morning.send_hour, id='job_mail_morning')
+
+    mail_template_night = MailTemplate.query.filter_by(mail_type=2).first()
+    scheduler.add_job(func=mail_night, trigger='cron', hour=mail_template_night.send_hour, minute='0', id='job_mail_night')
 
 
 if __name__ == '__main__':

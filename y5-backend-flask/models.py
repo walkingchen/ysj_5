@@ -396,7 +396,7 @@ class UserProfile(db.Model):
     updated_at = Column(DateTime)
 
 
-class Mail(db.Model):
+class MailTemplate(db.Model):
     __tablename__ = 'tb_mail'
 
     id = Column(Integer, primary_key=True)

@@ -5,8 +5,8 @@ from flask_restful import Resource, Api
 from requests import api
 
 from entity.Resp import Resp
-from extensions import db
-from models import Mail, Serializer
+from extensions import db, scheduler
+from models import MailTemplate, Serializer
 
 bp_mail = Blueprint('/api/mail', __name__)
 api = Api(bp_mail, '/api/mail')
@@ -17,7 +17,7 @@ class MailApi(Resource):
         if not current_user.is_authenticated:
             return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
 
-        mail = Mail.query.filter_by(id=id).get()
+        mail = MailTemplate.query.filter_by(id=id).get()
 
         return jsonify(Resp(
             result_code=2000,
@@ -41,7 +41,7 @@ class MailApi(Resource):
         except KeyError:
             return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
 
-        mail = Mail(
+        mail = MailTemplate(
             title=title,
             content=content,
             mail_type=mail_type,
@@ -61,7 +61,7 @@ class MailApi(Resource):
         if not current_user.is_authenticated:
             return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
 
-        mail = Mail.query.filter_by(id=id).get()
+        mail = MailTemplate.query.filter_by(id=id).get()
         if mail is None:
             return jsonify(Resp(
                 result_code=4000,
@@ -78,13 +78,20 @@ class MailApi(Resource):
             content = str(data['content'])
             mail.content = content
 
+        if 'mail_type' in data:
+            mail_type = int(data['mail_type'])
+            mail.mail_type = mail_type
+
         if 'send_hour' in data:
             send_hour = int(data['send_hour'])
             mail.send_hour = send_hour
 
-        if 'mail_type' in data:
-            mail_type = int(data['mail_type'])
-            mail.mail_type = mail_type
+            # reconfigure mail scheduler
+            hour = '*/' + str(send_hour)
+            if mail.mail_type == 1:
+                scheduler.reschedule_job('job_mail_morning', trigger='cron', hour=hour)
+            if mail.mail_type == 2:
+                scheduler.reschedule_job('job_mail_night', trigger='cron', hour=hour)
 
         db.session.commit()
 
@@ -118,7 +125,7 @@ class MailListApi(Resource):
         if not current_user.is_authenticated:
             return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
 
-        mails = Mail.query.all()
+        mails = MailTemplate.query.all()
         mail_serialized_list = []
         for mail in mails:
             mail_serialized_list.append(Serializer.serialize(mail))
