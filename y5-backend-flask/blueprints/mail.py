@@ -2,7 +2,6 @@ from flasgger import swag_from
 from flask import jsonify, request, Blueprint
 from flask_login import current_user
 from flask_restful import Resource, Api
-from requests import api
 
 from entity.Resp import Resp
 from extensions import db, scheduler
@@ -10,6 +9,7 @@ from models import MailTemplate, Serializer
 
 bp_mail = Blueprint('/api/mail', __name__)
 api = Api(bp_mail, '/api/mail')
+
 
 class MailApi(Resource):
     @swag_from('../swagger/mail/retrieve.yaml')
