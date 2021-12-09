@@ -113,34 +113,31 @@ class RoomApi(Resource):
     @swag_from('../swagger/room/update.yaml')
     def put(self, id):
         data = request.get_json()
-        try:
-            room_name = data['room_name']
-            room_type = data['room_type']
-            people_limit = data['people_limit']
 
-        except KeyError:
-            return jsonify(Resp(result_code=4000, result_msg='key error', data=None).__dict__)
+        room = Room.query.filter_by(id=id).first()
+        if 'room_name' in data:
+            room_name = data['room_name']
+            room.room_name = room_name
+
+        if 'room_type' in data:
+            room_type = data['room_type']
+            room.room_type = room_type
+
+        if 'people_limit' in data:
+            people_limit = data['people_limit']
+            room.people_limit = people_limit
+
         if 'room_desc' in data:
             room_desc = data['room_desc']
-        else:
-            room_desc = None
+            room.room_desc = room_desc
 
         if 'activate' in data:
             activate = data['activate']
-        else:
-            activate = 0
+            room.activated = activate
+
         if 'publish_time' in data:
             publish_time = data['publish_time']
-        else:
-            publish_time = 7
-
-        room = Room.query.filter_by(id=id).first()
-        room.room_name = room_name
-        room.room_type = room_type
-        room.people_limit = people_limit
-        room.room_desc = room_desc
-        room.activated = activate
-        room.publish_time = publish_time
+            room.publish_time = publish_time
 
         db.session.add(room)
         db.session.commit()
