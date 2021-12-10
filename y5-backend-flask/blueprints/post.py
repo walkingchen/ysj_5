@@ -976,7 +976,7 @@ def import_members_with_messages():
             db.session.add(member)
             db.session.commit()
 
-        participant = User.query.filter_by(username=username).first()
+        participant = User.query.filter_by(user_id=user.id).first()
         private_message = PrivateMessage.query.filter_by(message_id=message_id).first()
         if private_message is None:
             return jsonify(Resp(result_code=4000, result_msg="message id not exists, id=" + str(message_id), data=None).__dict__)
