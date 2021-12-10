@@ -42,13 +42,12 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="Publish Time" prop="people_limit" align="center">
-        <template slot-scope="scope">
-          <span>
-            {{ scope.row.publish_time ? ((scope.row.publish_time > 9 ? scope.row.publish_time : ('0' + scope.row.publish_time)) + ':00') : '-' }}
-          </span>
-        </template>
-      </el-table-column>
+      <el-table-column
+        label="Publish Time"
+        prop="publish_time"
+        align="center"
+        :formatter="(row, column, cellValue) => (cellValue > 9 ? cellValue : ('0' + cellValue)) + ':00'"
+      />
       <el-table-column label="Description" prop="room_desc" align="center" show-overflow-tooltip />
       <el-table-column
         label="Created Time"
@@ -64,7 +63,7 @@
         align="center"
         show-overflow-tooltip
       />
-      <el-table-column label="Operate" align="center" width="150">
+      <el-table-column label="Actions" align="center" width="150">
         <template slot-scope="scope">
           <el-button size="mini" type="primary" plain style="margin-right: 8px" @click="edit(scope.row)">Edit</el-button>
           <el-popconfirm

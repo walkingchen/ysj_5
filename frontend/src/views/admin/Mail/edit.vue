@@ -1,0 +1,94 @@
+<template>
+  <el-dialog
+    title="Edit Room"
+    :visible="show"
+    width="600px"
+    @close="close">
+    <el-form ref="form" :model="formData" :rules="rules" label-width="100px">
+      <el-form-item label="Title" prop="title">
+        <el-input v-model="formData.title" />
+      </el-form-item>
+      <el-form-item label="Content" prop="content">
+        <el-input type="textarea" v-model="formData.content" />
+      </el-form-item>
+      <el-form-item label="Type">
+        <el-radio v-model="formData.mail_type" :label="1">morning mail</el-radio>
+        <el-radio v-model="formData.mail_type" :label="2">night mail</el-radio>
+      </el-form-item>
+      <el-form-item label="Send Hour">
+        <el-time-select v-model="formData.send_hour" :picker-options="{ start: '00:00', step: '01:00', end: '23:00' }" />
+      </el-form-item>
+    </el-form>
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="close">Cancel</el-button>
+      <el-button type="primary" :loading="loading" @click="submit">Ok</el-button>
+    </span>
+  </el-dialog>
+</template>
+
+<script>
+import { editMail } from '@api/mail.js'
+
+export default {
+  props: ['show', 'initData'],
+  data() {
+    return {
+      formData: {
+        content: '',
+        mail_type: 1,
+        title: '',
+        send_hour: ''
+      },
+      rules: {
+        title: [{ required: true, message: 'This field is required.', trigger: 'blur' }],
+        content: [{ required: true, message: 'This field is required.', trigger: 'blur' }]
+      },
+      loading: false
+    }
+  },
+  methods: {
+    close() {
+      this.$emit('update:show', false)
+    },
+    submit() {
+      this.$refs.form.validate(async valid => {
+        if (valid) {
+          this.loading = true
+
+          const submitData = JSON.parse(JSON.stringify(this.formData))
+          submitData.send_hour = Number(this.formData.send_hour.split(':')[0])
+          await editMail(this.initData.id, submitData).then(res => {
+            if (res.data.result_code === 2000) {
+              this.$message.success('Edit mail succeeded!')
+              this.close()
+              this.$emit('success')
+            } else {
+              this.$message.error(res.data.result_msg)
+            }
+          }).catch(() => {
+            this.$message.error('Failed!')
+          })
+
+          this.loading = false
+        }
+      })
+    }
+  },
+  watch: {
+    show(val) {
+      if (val) {
+        const { mail_type, title, content, send_hour } = this.initData
+        const _send_hour = send_hour ? ((send_hour > 9 ? send_hour : ('0' + send_hour)) + ':00') : '00:00'
+        this.formData = {
+          mail_type,
+          title,
+          content,
+          send_hour: _send_hour
+        }
+      } else {
+        this.$refs.form.resetFields()
+      }
+    }
+  }
+}
+</script>

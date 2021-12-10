@@ -45,6 +45,10 @@ const router = new VueRouter({
         path: 'rooms',
         name: 'Rooms',
         component: () => import('@views/admin/room/Rooms')
+      }, {
+        path: 'mails',
+        name: 'Mails',
+        component: () => import('@views/admin/Mail/Mails')
       }]
     }
   ]

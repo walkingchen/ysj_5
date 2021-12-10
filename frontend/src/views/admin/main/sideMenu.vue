@@ -26,6 +26,10 @@
           </el-menu-item>
         </el-menu-item-group>
       </el-submenu>
+      <el-menu-item index="/admin/mails">
+        <v-icon name="envelope" />
+        <span slot="title">Mail</span>
+      </el-menu-item>
       <el-menu-item @click="toDataManage">
         <v-icon name="table" />
         <span slot="title">Data</span>
@@ -39,6 +43,7 @@ import 'vue-awesome/icons/bezier-curve'
 import 'vue-awesome/icons/comments'
 import 'vue-awesome/icons/tags'
 import 'vue-awesome/icons/list'
+import 'vue-awesome/icons/envelope'
 import 'vue-awesome/icons/table'
 
 export default {

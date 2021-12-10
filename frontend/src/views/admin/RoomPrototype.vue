@@ -5,7 +5,7 @@
       <el-table-column label="ID" prop="id" align="center" width="50" />
       <el-table-column prop="prototype_name" label="Prototype Name" align="center" />
       <el-table-column prop="people_limit" label="People Limit" align="center" />
-      <el-table-column label="Operate" align="center" width="160">
+      <el-table-column label="Actions" align="center" width="160">
         <template slot-scope="scope">
           <el-button size="mini" type="primary" plain @click="handleToDetail(scope.row.id)">view</el-button>
           <el-button size="mini" type="danger" plain @click="deletePrototype(scope.row.id)">delete</el-button>
