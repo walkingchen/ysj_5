@@ -872,6 +872,13 @@ class DailyPollApi(Resource):
         else:
             message_serialized = None
 
+        if message_serialized['photo_uri'] is not None:
+            tmp = message_serialized['photo_uri']
+
+            message_serialized['photo_uri'] = {
+                'file': '/uploads/' + tmp,
+            }
+
         resp = Resp(
             result_code=2000,
             result_msg="success",
