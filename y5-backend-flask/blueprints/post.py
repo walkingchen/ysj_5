@@ -869,15 +869,14 @@ class DailyPollApi(Resource):
 
         if message is not None:
             message_serialized = Serializer.serialize(message)
+            if 'photo_uri' in message_serialized:
+                tmp = message_serialized['photo_uri']
+
+                message_serialized['photo_uri'] = {
+                    'file': '/uploads/' + tmp,
+                }
         else:
             message_serialized = None
-
-        if 'photo_uri' in message_serialized:
-            tmp = message_serialized['photo_uri']
-
-            message_serialized['photo_uri'] = {
-                'file': '/uploads/' + tmp,
-            }
 
         resp = Resp(
             result_code=2000,
