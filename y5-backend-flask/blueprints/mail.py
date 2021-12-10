@@ -17,7 +17,7 @@ class MailApi(Resource):
         if not current_user.is_authenticated:
             return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
 
-        mail = MailTemplate.query.filter_by(id=id).get()
+        mail = MailTemplate.query.filter_by(id=id).first()
 
         return jsonify(Resp(
             result_code=2000,
@@ -61,7 +61,7 @@ class MailApi(Resource):
         if not current_user.is_authenticated:
             return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
 
-        mail = MailTemplate.query.filter_by(id=id).get()
+        mail = MailTemplate.query.filter_by(id=id).first()
         if mail is None:
             return jsonify(Resp(
                 result_code=4000,
