@@ -89,9 +89,9 @@ class MailApi(Resource):
             # reconfigure mail scheduler
             hour = '*/' + str(send_hour)
             if mail.mail_type == 1:
-                scheduler.reschedule_job('job_mail_morning', trigger='cron', hour=hour)
+                scheduler.modify_job('job_mail_morning', trigger='cron', hour=hour)
             if mail.mail_type == 2:
-                scheduler.reschedule_job('job_mail_night', trigger='cron', hour=hour)
+                scheduler.modify_job('job_mail_night', trigger='cron', hour=hour)
 
         db.session.commit()
 
