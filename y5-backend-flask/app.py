@@ -23,7 +23,7 @@ from blueprints.room import bp_room
 from blueprints.user import bp_user
 from entity.Resp import Resp
 from room_socketio import RoomNamespace
-from extensions import db, cache, socketio
+from extensions import db, cache, socketio, scheduler
 from models import User, Room, RoomPrototype, RoomMember, Timeline, PublicPost, PostComment, PostLike, \
     SystemMessage, PrivateMessage, PostFlag, PrivatePost, SystemPost, PollPost, CommentStatus, PostStatus, MailTemplate
 
@@ -44,7 +44,6 @@ login_manager.init_app(app)
 
 db.init_app(app)
 
-scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
 
