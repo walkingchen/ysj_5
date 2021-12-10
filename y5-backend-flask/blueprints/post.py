@@ -872,7 +872,7 @@ class DailyPollApi(Resource):
         else:
             message_serialized = None
 
-        if message_serialized['photo_uri'] is not None:
+        if 'photo_uri' in message_serialized:
             tmp = message_serialized['photo_uri']
 
             message_serialized['photo_uri'] = {
