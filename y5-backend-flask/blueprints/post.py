@@ -962,7 +962,7 @@ def import_members_with_messages():
                 db.session.commit()
             room_cleaned.append(room_id)
 
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(id=username).first()
         if user is None:
             return jsonify(Resp(result_code=4000, result_msg="username error", data=None).__dict__)
 
