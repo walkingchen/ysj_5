@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-table v-loading="loading" :data="tableData" border size="small" @filter-change="handleFilterChange">
+    <el-table v-loading="loading" :data="tableData" border size="small">
       <el-table-column label="Title" prop="title" show-overflow-tooltip />
       <el-table-column
         label="Type"

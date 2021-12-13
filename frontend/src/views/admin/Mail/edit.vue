@@ -2,14 +2,27 @@
   <el-dialog
     title="Edit Room"
     :visible="show"
-    width="600px"
+    width="80%"
     @close="close">
     <el-form ref="form" :model="formData" :rules="rules" label-width="100px">
       <el-form-item label="Title" prop="title">
         <el-input v-model="formData.title" />
       </el-form-item>
       <el-form-item label="Content" prop="content">
-        <el-input type="textarea" v-model="formData.content" />
+        <div class="content-editor">
+          <vue-editor
+            :editor-toolbar="[
+              [{ header: [false, 1, 2, 3, 4, 5, 6] }],
+              ['bold', 'italic', 'underline', 'strike'],
+              [{ align: '' }, { align: 'center' }, { align: 'right' }],
+              [{ list: 'ordered' }, { list: 'bullet' }],
+              [{ indent: '+1' }, { indent: '-1' }],
+              [{'background':[]}, {'color':[]}],
+              ['link', 'blockquote', 'code-block'],
+              ['clean']
+            ]"
+            v-model="formData.content" />
+        </div>
       </el-form-item>
       <el-form-item label="Type">
         <el-radio v-model="formData.mail_type" :label="1">morning mail</el-radio>
@@ -27,9 +40,13 @@
 </template>
 
 <script>
+import { VueEditor } from 'vue2-editor'
 import { editMail } from '@api/mail.js'
 
 export default {
+  components: {
+    VueEditor
+  },
   props: ['show', 'initData'],
   data() {
     return {
@@ -92,3 +109,18 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+.content-editor
+  line-height normal
+
+  >>> .ql-toolbar.ql-snow
+    border-color #dcdfe6
+    border-top-left-radius 4px
+    border-top-right-radius 4px
+
+  >>> .ql-container.ql-snow
+    border-color #dcdfe6
+    border-bottom-left-radius 4px
+    border-bottom-right-radius 4px
+</style>
