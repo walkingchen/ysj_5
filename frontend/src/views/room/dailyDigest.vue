@@ -34,7 +34,7 @@ export default {
   watch: {
     currentTopic (topic) {
       if (topic) {
-        this.topicList = []
+        this.imgUrl = ''
         this.updateDailyPoll()
       }
     }
