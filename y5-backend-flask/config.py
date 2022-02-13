@@ -1,7 +1,7 @@
 import os
 
 SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://admin:maxwit@ysj_5.soulfar.com:3306/ysj_5'
-# SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://admin:maxwit@tmp.soulfar.com:3306/ysj_5' # aliyun
+# SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://admin:maxwit@tmp.soulfar.com:3306/ysj_5'     # aliyun
 SQLALCHEMY_POOL_RECYCLE = 300
 SQLALCHEMY_POOL_SIZE = 100
 SQLALCHEMY_TRACK_MODIFICATIONS = False
