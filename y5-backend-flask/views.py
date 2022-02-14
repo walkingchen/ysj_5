@@ -19,7 +19,7 @@ from models import RoomMember, User, Room
 
 class YModelView(ModelView):
     can_create = False
-    can_edit = False
+    can_edit = True
 
 
 class RoomModelView(ModelView):
