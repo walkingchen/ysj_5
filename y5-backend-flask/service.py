@@ -6,8 +6,9 @@ from sqlalchemy import inspect
 
 import config
 from extensions import db
-from models import RoomPrototype, RoomMember, PostComment, Serializer, User, PostLike, PostFactcheck, PublicPost, PostFlag, \
-    PostStatus, CommentStatus, CommentFlag, CommentLike, Room, PrivateMessage
+from models import RoomPrototype, RoomMember, PostComment, Serializer, User, PostLike, PostFactcheck, PublicPost, \
+    PostFlag, \
+    PostStatus, CommentStatus, CommentFlag, CommentLike, Room, PrivateMessage, PrivatePost
 
 
 # 查询好友网络
@@ -161,7 +162,7 @@ def process_post(post, user_id):
         'count': flag_count
     }
 
-    post_shared = PublicPost.query.filter_by(id=post['post_shared_id']).first()
+    post_shared = PrivatePost.query.filter_by(id=post['post_shared_id']).first()
     if post_shared is not None:
         process_post_serialized = Serializer.serialize(post_shared)
         process_post(process_post_serialized, user_id)
