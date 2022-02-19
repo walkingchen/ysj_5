@@ -1,6 +1,6 @@
 <template>
   <el-card class="topic-layout">
-    <title-com title="Topic of The Day" />
+    <title-com title="Topic of the day" />
 
     <div v-for="(item, index) in topicList" :key="item.id" class="topic-item">
       <private-post-item :item="item">

@@ -7,7 +7,7 @@
         :comment="comment" />
       <div v-if="restComments.length > 0" class="showMoreComments-btn">
         <el-button type="text" size="mini" @click="toggleShowMoreComments">
-          <v-icon :name="showMoreComments ? 'angle-double-down' : 'angle-double-right'" />
+          <icon :name="showMoreComments ? 'collapse' : 'expand'" :size="20" />
         </el-button>
       </div>
       <div v-show="showMoreComments">
@@ -43,11 +43,13 @@ import 'vue-awesome/icons/angle-double-down'
 import { addComment } from '@api/comment'
 import { formatDate } from '@assets/utils.js'
 import commentItem from './commentItem.vue'
+import icon from './icon.vue'
 
 export default {
   props: ['comments', 'postId'],
   components: {
-    commentItem
+    commentItem,
+    icon
   },
   data () {
     return {

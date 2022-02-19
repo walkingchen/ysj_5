@@ -10,8 +10,7 @@ export default {
 
 <style lang="stylus" scoped>
 h2
-  height 40px
-  font-size 18px
+  font-size 36px
   font-weight bold
-  padding 10px 20px 0
+  padding 15px 20px 0
 </style>
