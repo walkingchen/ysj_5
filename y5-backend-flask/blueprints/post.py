@@ -1074,7 +1074,7 @@ def import_post_daily_by_room():
             post_content=system_message.message_content,
             abstract=system_message.abstract,
             post_type=1,  # fixme
-            # user_id=participant.id,
+            user_id=current_user.id,    # added 2022.02.19
             room_id=room_id,
             topic=topic,
             photo_uri=system_message.photo_uri,
