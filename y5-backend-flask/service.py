@@ -78,7 +78,7 @@ def process_photo(post):
 
 def process_post(post, user_id):
     author = query_user(user_id=post['user_id'])
-    post['author'] = author._asdict()
+    post['user'] = author._asdict()
     post['comments_all_read'] = True
     comments = PostComment.query.filter_by(post_id=post['id']).order_by(PostComment.created_at.desc()).all()
     comments_serialized = []
