@@ -14,7 +14,6 @@
         <el-input
           placeholder="Search..."
           prefix-icon="el-icon-search"
-          size="small"
           v-model="searchKey"
           @change="handleChangeSearchKey">
         </el-input>
@@ -90,28 +89,30 @@ export default {
 <style lang="stylus" scoped>
 header
   background-color #fff
-  height 60px
+  height 70px
   box-shadow 0 2px 3px rgba(0,0,0,.08)
   position relative
   z-index 1
 
   .layout > div
-    padding 0 100px
-    height 60px
+    height 70px
     display flex
     align-items center
     justify-content space-between
 
 .topics-box
-  width 670px
+  width 900px
   display flex
   justify-content space-between
 
   .el-tag
-    width 75px
     text-align center
     cursor pointer
+    height auto
+    font-size 24px
+    line-height 38px
+    padding 0 15px
 
 .el-input
-  width 200px
+  width 250px
 </style>

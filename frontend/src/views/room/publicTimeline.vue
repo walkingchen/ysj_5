@@ -13,7 +13,7 @@
         </el-card>
       </li>
       <div v-if="getPostLoading" class="loading-layout"><i class="el-icon-loading"></i></div>
-      <div v-else class="nomore-layout">No more~</div>
+      <div v-else class="nomore-layout">No more</div>
     </ul>
 
   </div>

@@ -20,7 +20,7 @@
       </private-post-item>
     </div>
 
-    <div class="nomore-layout">No more~</div>
+    <div class="nomore-layout">No more</div>
 
     <el-dialog
       :visible.sync="showShareDialog"
@@ -51,7 +51,7 @@
           </div>
         </div>
       </div>
-      <el-button slot="footer" size="small" @click="submitShare">Submit</el-button>
+      <el-button slot="footer" size="small" @click="submitShare">Post</el-button>
     </el-dialog>
   </el-card>
 </template>

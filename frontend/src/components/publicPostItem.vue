@@ -18,7 +18,7 @@
           </p>
           <img v-if="_item.photo_uri" :src="_item.photo_uri.small" class="post-photo" />
           <div v-if="_item.isShared" class="shared-box">
-            <private-post-item :item="_item.postSource" />
+            <private-post-item :item="_item.post_shared" />
           </div>
         </div>
       </div>
@@ -51,7 +51,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
 import 'vue-awesome/icons/flag'
 import 'vue-awesome/icons/regular/flag'
 import 'vue-awesome/icons/thumbs-up'
@@ -87,12 +86,8 @@ export default {
     }
   },
   computed: {
-    members () {
-      return [this.user, ...this.friends]
-    },
     _item () {
       const item = this.item
-      const user = this.members.find(ele => ele.id === item.user_id)
       const _item = {
         id: item.id,
         unread: !item.read_status,
@@ -107,13 +102,7 @@ export default {
         // dislikeCount: item.dislikes.count,
         // factcheck: item.factcheck,
         time: formatDate(item.created_at),
-        user: user ? {
-          avatar: user.avatar,
-          nickname: user.nickname
-        } : {
-          avatar: null,
-          nickname: ''
-        },
+        user: item.user,
         comments: item.comments
       }
 
@@ -121,11 +110,7 @@ export default {
         _item.postSource = item.post_shared
       }
       return _item
-    },
-    ...mapState([
-      'user',
-      'friends'
-    ])
+    }
   },
   methods: {
     flag(item) {
