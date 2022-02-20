@@ -4,11 +4,11 @@
     <div class="room-content">
       <div class="layout">
         <el-row :gutter="20">
-          <el-col :span="8">
-            <daily-digest />
-            <private-message />
+          <el-col :span="showLeftCol ? 8 : 0">
+            <daily-digest @has-data="showLeftCol = true" />
+            <private-message @has-data="showLeftCol = true" />
           </el-col>
-          <el-col :span="11">
+          <el-col :span="showLeftCol ? 11 : 19">
             <add-public @on-success="addPostSuccess" />
             <topic-of-day />
             <public-timeline ref="publicTimeline" />
@@ -65,13 +65,15 @@ export default {
     return {
       roomInfo: [],
       socket: null,
+      showLeftCol: false,
       chatShow: false,
       startChatUser: {}
     }
   },
   computed: mapState([
     'user',
-    'friends'
+    'friends',
+    'currentTopic'
   ]),
   async created() {
     const rid = localStorage.getItem('roomid')
@@ -150,6 +152,11 @@ export default {
       }, () => {
         this.socket.close()
       })
+    }
+  },
+  watch: {
+    currentTopic () {
+      this.showLeftCol = false
     }
   }
 }

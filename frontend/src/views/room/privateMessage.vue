@@ -20,7 +20,7 @@
       </private-post-item>
     </div>
 
-    <div class="nomore-layout">No more</div>
+    <div class="nomore-layout">no more</div>
 
     <el-dialog
       :visible.sync="showShareDialog"
@@ -184,6 +184,11 @@ export default {
       if (topic) {
         this.messages = []
         this.getMessageList()
+      }
+    },
+    messages (val) {
+      if (val.length > 0) {
+        this.$emit('has-data')
       }
     }
   }

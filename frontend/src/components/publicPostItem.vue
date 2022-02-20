@@ -18,7 +18,7 @@
           </p>
           <img v-if="_item.photo_uri" :src="_item.photo_uri.small" class="post-photo" />
           <div v-if="_item.isShared" class="shared-box">
-            <private-post-item :item="_item.post_shared" />
+            <private-post-item :item="_item.postSource" />
           </div>
         </div>
       </div>

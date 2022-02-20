@@ -35,7 +35,7 @@
 <script>
 import highlight from '@components/highlight'
 import { formatDate } from '@assets/utils.js'
-import { getPost } from '@api/post'
+import { getPrivatePostDetail } from '@api/post'
 
 export default {
   components: {
@@ -52,7 +52,7 @@ export default {
     showDetail (id) {
       this.showDetailDialog = true
       this.detailLoading = true
-      getPost(id).then(({ data }) => {
+      getPrivatePostDetail(id).then(({ data }) => {
         this.detailLoading = false
         this.detailData = data.data
         Object.assign(this.detailData, {

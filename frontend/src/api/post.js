@@ -22,6 +22,7 @@ export const getDailyPoll = (room_id, topic) => axios.get('/post/daily_poll', {
     topic
   }
 })
+export const getPrivatePostDetail = id => axios.get('/post/private_post/' + id)
 export const importPrivateMessage = (params, config) => axios.post('/post/import_private_messages_pool', params, config)
 export const importPrivateMessagePictures = (params, config) => axios.post('/post/photo/import_private_messages_pool_pics', params, config)
 export const importPrivateMessageAssign = (params, config) => axios.post('/post/import_private_messages_assign', params, config)
