@@ -29,7 +29,7 @@ def query_user(user_id):
             User.id,
             User.nickname,
             User.realname,
-            User.username,
+            # User.username,
             User.avatar,
             User.email,
             User.created_at
@@ -44,7 +44,7 @@ def query_membership(room_id, user_id):
             User.id,
             User.nickname,
             User.realname,
-            User.username,
+            # User.username,
             User.avatar,
             User.email,
             RoomMember.seat_no,

@@ -377,7 +377,7 @@ class User(db.Model, UserMixin):
 
     id = Column(Integer, primary_key=True)
     # user_id = Column(Integer)
-    username = Column(String(32))
+    # username = Column(String(32))
     password = Column(String(128))
     email = Column(String(128))
     nickname = Column(String(32))
