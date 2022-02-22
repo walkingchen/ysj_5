@@ -944,7 +944,7 @@ def import_members_with_messages():
                 return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
             continue
         # id,user_id,room_type,room_id,seat_no,day,topic_no,message_id
-        username = line[1]
+        user_id = line[1]
         room_id = line[3]
         seat_no = line[4]
         day = line[5]
@@ -962,7 +962,7 @@ def import_members_with_messages():
                 db.session.commit()
             room_cleaned.append(room_id)
 
-        user = User.query.filter_by(id=username).first()
+        user = User.query.filter_by(id=user_id).first()
         if user is None:
             return jsonify(Resp(result_code=4000, result_msg="username error", data=None).__dict__)
 
