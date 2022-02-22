@@ -381,7 +381,7 @@ class User(db.Model, UserMixin):
     password = Column(String(128))
     email = Column(String(128))
     nickname = Column(String(32))
-    realname = Column(String(32))
+    # realname = Column(String(32))
     avatar = Column(Text)
     created_at = Column(DateTime, server_default=FetchedValue())
     updated_at = Column(DateTime)

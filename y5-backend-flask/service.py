@@ -28,7 +28,7 @@ def query_user(user_id):
         .with_entities(
             User.id,
             User.nickname,
-            User.realname,
+            # User.realname,
             # User.username,
             User.avatar,
             User.email,
@@ -43,7 +43,7 @@ def query_membership(room_id, user_id):
         .with_entities(
             User.id,
             User.nickname,
-            User.realname,
+            # User.realname,
             # User.username,
             User.avatar,
             User.email,
