@@ -77,10 +77,10 @@ class RoomApi(Resource):
         else:
             room_desc = None
 
-        if 'activate' in data:
-            activate = data['activate']
+        if 'activated' in data:
+            activated = data['activated']
         else:
-            activate = 0
+            activated = 0
         if 'publish_time' in data:
             publish_time = data['publish_time']
         else:
@@ -100,7 +100,7 @@ class RoomApi(Resource):
                 room_type=room_type,
                 people_limit=people_limit,
                 room_desc=room_desc,
-                activated=activate,
+                activated=activated,
                 publish_time=publish_time
             )
             db.session.add(room)
@@ -131,8 +131,8 @@ class RoomApi(Resource):
             room_desc = data['room_desc']
             room.room_desc = room_desc
 
-        if 'activate' in data:
-            activate = data['activate']
+        if 'activated' in data:
+            activated = data['activated']
             room.activated = activate
 
         if 'publish_time' in data:
