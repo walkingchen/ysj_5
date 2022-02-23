@@ -767,7 +767,7 @@ class FlagApi(Resource):
             post_id = data['post_id']
         except KeyError:
             return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
-        flag = PostFlag(post_id=post_id, user_id=user_id)
+        flag = PostFlag(post_id=post_id, user_id=user_id, flag=1)
         db.session.add(flag)
         db.session.commit()
 
