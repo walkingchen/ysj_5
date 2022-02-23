@@ -133,7 +133,7 @@ class RoomApi(Resource):
 
         if 'activated' in data:
             activated = data['activated']
-            room.activated = activate
+            room.activated = activated
 
         if 'publish_time' in data:
             publish_time = data['publish_time']
