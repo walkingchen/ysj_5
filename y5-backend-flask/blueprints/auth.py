@@ -78,7 +78,7 @@ def login():
             data=None
         ).__dict__)
 
-    room = Room.query.filter_by(id=member.room_id).first()
+    room = Room.query.filter_by(id=member.room_id, activated=1).first()
 
     return json.dumps(Resp(
         result_code=2000,
