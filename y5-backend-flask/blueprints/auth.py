@@ -70,7 +70,7 @@ def login():
     # fixme 判断是否管理员
     # return redirect('/admin/')
 
-    member = RoomMember.query.filter_by(user_id=user.id).first()
+    member = RoomMember.query.filter_by(user_id=user.id, activated=1).first()
     if member is None:
         return json.dumps(Resp(
             result_code=2010,
