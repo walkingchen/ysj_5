@@ -67,7 +67,7 @@ admin.add_view(YModelView(PrivateMessage, db.session, name=u'Private Message Poo
 admin.add_view(PostModelView(PrivatePost, db.session, name=u'Private Message Assign', category='Private Message'))
 
 admin.add_view(YModelView(SystemMessage, db.session, name=u'System Message Pool', category='System Message'))
-admin.add_view(YModelView(SystemPost, db.session, name=u'System Message Assign', category='System Message'))
+# admin.add_view(YModelView(SystemPost, db.session, name=u'System Message Assign', category='System Message'))
 
 admin.add_view(YModelView(PollPost, db.session, name=u'Daily Poll Assign', category='Daily Poll'))
 
