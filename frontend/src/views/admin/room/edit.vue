@@ -17,7 +17,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="Actived">
-        <el-switch v-model="formData.activate" :active-value="1" :inactive-value="0" />
+        <el-switch v-model="formData.activated" :active-value="1" :inactive-value="0" />
       </el-form-item>
       <el-form-item label="Publish Time">
         <el-time-select v-model="formData.publish_time" :picker-options="{ start: '00:00', step: '01:00', end: '23:00' }" />
@@ -45,7 +45,7 @@ export default {
         room_desc: '',
         room_name: '',
         room_type: '',
-        activate: 1,
+        activated: 1,
         publish_time: '00:00'
       },
       rules: {

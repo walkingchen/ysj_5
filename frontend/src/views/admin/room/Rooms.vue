@@ -46,7 +46,7 @@
         label="Publish Time"
         prop="publish_time"
         align="center"
-        :formatter="(row, column, cellValue) => (cellValue > 9 ? cellValue : ('0' + cellValue)) + ':00'"
+        :formatter="(row, column, cellValue) => typeof cellValue === 'number' ? ((cellValue > 9 ? cellValue : ('0' + cellValue)) + ':00') : '-'"
       />
       <el-table-column label="Description" prop="room_desc" align="center" show-overflow-tooltip />
       <el-table-column
