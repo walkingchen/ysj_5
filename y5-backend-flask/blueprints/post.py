@@ -1083,7 +1083,7 @@ def import_post_daily_by_room():
         db.session.add(post)
         db.session.commit()
 
-    return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
+    return jsonify(Resp(result_code=2000, result_msg="success added to public post", data=None).__dict__)
 
 
 @swag_from('../swagger/post/photo/import_private_messages_pics.yaml')
