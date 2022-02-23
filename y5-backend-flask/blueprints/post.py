@@ -966,7 +966,7 @@ def import_members_with_messages():
         if user is None:
             return jsonify(Resp(result_code=4000, result_msg="username error", data=None).__dict__)
 
-        member = RoomMember.query.filter_by(user_id=user.id).first()
+        member = RoomMember.query.filter_by(user_id=user.id, room_id=room_id).first()
         if member is None:
             member = RoomMember(
                 user_id=user.id,
