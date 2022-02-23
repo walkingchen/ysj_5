@@ -25,7 +25,7 @@ parameters:
         room_desc:
           type: string
           description: room desc
-        activate:
+        activated:
           type: integer
           description: is activated, 0 or 1
         publish_time:

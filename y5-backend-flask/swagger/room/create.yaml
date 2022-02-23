@@ -24,7 +24,7 @@ parameters:
         room_desc:
           type: string
           description: 描述
-        activate:
+        activated:
           type: integer
           description: is activated, 0 or 1
         publish_time:
