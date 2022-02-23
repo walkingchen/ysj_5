@@ -48,10 +48,10 @@ scheduler.init_app(app)
 scheduler.start()
 
 
-from views import RoomModelView, PostModelView, YModelView
+from views import RoomModelView, PostModelView, YModelView, UserModelView
 
 admin = Admin(app=app, name=config.ADMIN_TITLE, template_mode='bootstrap3')
-admin.add_view(YModelView(User, db.session, name=u'User'))
+admin.add_view(UserModelView(User, db.session, name=u'User'))
 
 admin.add_view(RoomModelView(Room, db.session, name=u'Room', category='Room'))
 admin.add_view(ModelView(RoomPrototype, db.session, name=u'Room Prototype', category='Room'))

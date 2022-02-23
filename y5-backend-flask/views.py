@@ -22,6 +22,12 @@ class YModelView(ModelView):
     can_edit = True
 
 
+class UserModelView(ModelView):
+    # can_create = False
+    # can_edit = True
+    column_list = ['id', 'email', 'nickname', 'password', 'created_at', 'updated_at']
+
+
 class RoomModelView(ModelView):
     # can_create = False
     # can_edit = True
