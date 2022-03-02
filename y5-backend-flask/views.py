@@ -67,7 +67,24 @@ class RoomModelView(ModelView):
 class PostModelView(ModelView):
     can_edit = False
     can_delete = False
-    # column_list = ['id', 'room_id', 'topic', 'timeline_type', 'user_id', 'created_at']   # fixme
+    column_list = [
+        'id'
+        'message_id',
+        'post_title',
+        'post_content',
+        # 'post_type',
+        'photo_uri',
+        # 'keywords',
+        'abstract',
+        'user_id',
+        'topic',
+        # 'timeline_type',
+        'room_id',
+        'post_shared_id',
+        'is_system_post',
+        'created_at',
+        'updated_at'
+    ]
 
     def _post_content_formatter(view, context, model, name):
         # Format your string here e.g show first 80 characters
