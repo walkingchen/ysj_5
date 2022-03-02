@@ -25,7 +25,7 @@ class YModelView(ModelView):
 class UserModelView(ModelView):
     # can_create = False
     # can_edit = True
-    column_list = ['id', 'email', 'nickname', 'password', 'created_at', 'updated_at']
+    column_list = ['id', 'email', 'nickname', 'created_at', 'updated_at']
 
 
 class RoomModelView(ModelView):
