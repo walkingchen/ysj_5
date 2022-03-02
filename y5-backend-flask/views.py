@@ -68,7 +68,7 @@ class PostModelView(ModelView):
     can_edit = False
     can_delete = False
     column_list = [
-        'id'
+        'id',
         'message_id',
         'post_title',
         'post_content',
