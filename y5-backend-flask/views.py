@@ -22,6 +22,11 @@ class YModelView(ModelView):
     can_edit = True
 
 
+class RoomMemberModelView(YModelView):
+    can_create = True
+    can_edit = True
+
+
 class UserModelView(ModelView):
     # can_create = False
     # can_edit = True
