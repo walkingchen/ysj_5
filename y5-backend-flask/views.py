@@ -34,7 +34,7 @@ class PrivateMessageView(YModelView):
         'message_title',
         'message_content',
         'photo_uri',
-        'keywords',
+        # 'keywords',
         'abstract',
         'updated_at',
         'created_at'
@@ -109,14 +109,14 @@ class PostModelView(ModelView):
         # Format your string here e.g show first 80 characters
         # can return any valid HTML e.g. a link to another view to show the detail or a popup window
         if model.post_content is not None:
-            return model.post_content[:80] + '...'
+            return model.post_content[:200] + '...'
         return None
 
     def _abstract_formatter(view, context, model, name):
         # Format your string here e.g show first 80 characters
         # can return any valid HTML e.g. a link to another view to show the detail or a popup window
         if model.abstract is not None:
-            return model.abstract[:80] + '...'
+            return model.abstract[:140] + '...'
         return None
 
     column_formatters = {
