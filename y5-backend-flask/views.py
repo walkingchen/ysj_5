@@ -130,6 +130,7 @@ class PostModelView(ModelView):
 
 class PublicPostModelView(PostModelView):
     column_searchable_list = ['post_title', 'abstract', 'room_id', 'is_system_post']
+    column_filters = column_searchable_list
 
 
 class MultipleImageUploadInput(object):
