@@ -124,7 +124,7 @@ class PostModelView(ModelView):
         'abstract': _abstract_formatter
     }
 
-    column_searchable_list = ['post_title', 'abstract', 'room_id']
+    column_searchable_list = ['post_title', 'abstract', 'room_id', 'is_system_post']
     column_filters = column_searchable_list
 
 
