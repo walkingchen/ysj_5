@@ -27,6 +27,20 @@ class RoomMemberModelView(YModelView):
     can_edit = True
 
 
+class PrivateMessageView(YModelView):
+    column_list = [
+        'id',
+        'message_id',
+        'message_title',
+        'message_content',
+        'photo_uri',
+        'keywords',
+        'abstract',
+        'updated_at',
+        'created_at'
+    ]
+
+
 class UserModelView(ModelView):
     # can_create = False
     # can_edit = True
