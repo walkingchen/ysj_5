@@ -48,7 +48,7 @@ scheduler.init_app(app)
 scheduler.start()
 
 
-from views import RoomModelView, PostModelView, YModelView, UserModelView, RoomMemberModelView, PrivateMessageView
+from views import RoomModelView, PostModelView, YModelView, UserModelView, RoomMemberModelView
 
 admin = Admin(app=app, name=config.ADMIN_TITLE, template_mode='bootstrap3')
 admin.add_view(UserModelView(User, db.session, name=u'User'))
@@ -63,7 +63,7 @@ admin.add_view(YModelView(PostComment, db.session, name=u'Post Comment', categor
 admin.add_view(YModelView(PostFlag, db.session, name=u'Post Flag', category='Post'))
 admin.add_view(YModelView(PostLike, db.session, name=u'Post Like', category='Post'))
 
-admin.add_view(PrivateMessageView(PrivateMessage, db.session, name=u'Private Message Pool', category='Private Message'))
+admin.add_view(YModelView(PrivateMessage, db.session, name=u'Private Message Pool', category='Private Message'))
 admin.add_view(PostModelView(PrivatePost, db.session, name=u'Private Message Assign', category='Private Message'))
 
 admin.add_view(YModelView(SystemMessage, db.session, name=u'System Message Pool', category='System Message'))
