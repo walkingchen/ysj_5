@@ -88,6 +88,7 @@ class PostModelView(ModelView):
     can_delete = False
     column_list = [
         'id',
+        'user_id',
         'message_id',
         'post_title',
         'post_content',
@@ -95,7 +96,6 @@ class PostModelView(ModelView):
         'photo_uri',
         # 'keywords',
         'abstract',
-        'user_id',
         'topic',
         # 'timeline_type',
         'room_id',
