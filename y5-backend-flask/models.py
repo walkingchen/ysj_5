@@ -114,6 +114,7 @@ class PollPost(db.Model):
     __tablename__ = 'tb_post_poll'
 
     id = Column(Integer, primary_key=True)
+    user_id = Column(Integer)
     message_id = Column(Integer)
     # post_title = Column(String(256))
     # post_content = Column(Text)
@@ -121,7 +122,6 @@ class PollPost(db.Model):
     photo_uri = Column(String(128))
     # keywords = Column(String(256))
     # abstract = Column(Text)
-    user_id = Column(Integer)
     topic = Column(Integer)
     timeline_type = Column(Integer)
     room_id = Column(Integer)
