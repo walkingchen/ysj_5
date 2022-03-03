@@ -124,8 +124,12 @@ class PostModelView(ModelView):
         'abstract': _abstract_formatter
     }
 
-    column_searchable_list = ['post_title', 'abstract', 'room_id', 'is_system_post']
+    column_searchable_list = ['post_title', 'abstract', 'room_id']
     column_filters = column_searchable_list
+
+
+class PublicPostModelView(PostModelView):
+    column_searchable_list = ['post_title', 'abstract', 'room_id', 'is_system_post']
 
 
 class MultipleImageUploadInput(object):
