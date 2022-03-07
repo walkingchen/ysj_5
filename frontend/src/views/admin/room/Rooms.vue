@@ -70,7 +70,7 @@
             title="Are you sure to delete this chat room?"
             confirmButtonText="Ok"
             cancelButtonText="Cancel"
-            @onConfirm="deleteRoom(scope.row.id)">
+            @confirm="deleteRoom(scope.row.id)">
             <el-button slot="reference" size="mini" type="danger" plain>Delete</el-button>
           </el-popconfirm>
         </template>
