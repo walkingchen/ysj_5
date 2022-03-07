@@ -68,6 +68,11 @@ ul, li
 .fa-icon
   width auto
 
+.module-title
+  font-size 36px
+  font-weight bold
+  padding 15px 20px 0
+
 .nyt-title
   font-size 40px
   font-weight 700

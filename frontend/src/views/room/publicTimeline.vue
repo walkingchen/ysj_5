@@ -1,5 +1,9 @@
 <template>
   <div class="publicTlimeline-layout">
+    <el-card style="margin-top: 20px;">
+      <h2 class="module-title">Public Post</h2>
+    </el-card>
+
     <div class="new-tip" v-show="newCount > 0">
       {{ newCount }} new messages, click <a href="javascript:;" @click="getNews">here</a> to update.
     </div>
@@ -130,6 +134,9 @@ export default {
 
 <style lang="stylus">
 .publicTlimeline-layout
+  .module-title
+    padding-bottom 15px
+
   .new-tip
     background-color #fff
     margin-top 20px

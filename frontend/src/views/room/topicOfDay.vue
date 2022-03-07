@@ -1,6 +1,6 @@
 <template>
   <el-card class="topic-layout">
-    <title-com title="Topic of the day" />
+    <h2 class="module-title">Topic of the day</h2>
 
     <div v-for="(item, index) in topicList" :key="item.id" class="topic-item">
       <private-post-item :item="item">
@@ -30,7 +30,6 @@ import 'vue-awesome/icons/regular/flag'
 import 'vue-awesome/icons/thumbs-up'
 import 'vue-awesome/icons/regular/thumbs-up'
 import 'vue-awesome/icons/comment-dots'
-import titleCom from '@components/title'
 import privatePostItem from '@components/privatePostItem'
 import comments from '@components/comments'
 import {
@@ -44,7 +43,6 @@ import {
 
 export default {
   components: {
-    titleCom,
     privatePostItem,
     comments
   },
@@ -124,6 +122,9 @@ export default {
 <style lang="stylus" scoped>
 .topic-layout
   border 0
+
+  .module-title
+    padding-bottom 15px
 
 .topic-item
   padding 0 10px
