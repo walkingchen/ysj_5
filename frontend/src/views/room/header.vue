@@ -2,14 +2,9 @@
   <header>
     <div class="layout">
       <div>
-        <div class="topics-box">
-          <el-badge v-for="(item, index) in _topics" :key="item" :is-dot="item !== currentTopic && hasNew[index]">
-            <el-tag
-              :effect="item === currentTopic ? 'light' : 'plain'"
-              @click="changeTopic(item, index)"
-            >Topic {{ item }}</el-tag>
-          </el-badge>
-        </div>
+        <el-button type="text" @click="handleLogout">
+          <v-icon name="sign-out-alt" />
+        </el-button>
 
         <el-input
           placeholder="Search..."
@@ -18,9 +13,14 @@
           @change="handleChangeSearchKey">
         </el-input>
 
-        <el-button type="text" @click="handleLogout">
-          <v-icon name="sign-out-alt" />
-        </el-button>
+        <div class="topics-box">
+          <el-badge v-for="(item, index) in _topics" :key="item" :is-dot="item !== currentTopic && hasNew[index]">
+            <el-tag
+              :effect="item === currentTopic ? 'light' : 'plain'"
+              @click="changeTopic(item, index)"
+            >Topic {{ item }}</el-tag>
+          </el-badge>
+        </div>
       </div>
     </div>
   </header>
@@ -101,7 +101,7 @@ header
     justify-content space-between
 
 .topics-box
-  width 900px
+  flex 1
   display flex
   justify-content space-between
 
@@ -115,4 +115,5 @@ header
 
 .el-input
   width 250px
+  margin 0 50px 0 20px
 </style>
