@@ -11,7 +11,7 @@ def mail_notify(users, status):
                 message = 'room activated'
             else:
                 message = 'room deactivated'
-            subject = "hello, %s" % user.username
+            subject = "hello, %s" % user.nickname
             msg = Message(recipients=[user.email],
                           body=message,
                           subject=subject,
@@ -26,7 +26,7 @@ def mail_morning(users):
             if user.email is None:
                 continue
             message = '...'
-            subject = "hello, %s" % user.username
+            subject = "hello, %s" % user.nickname
             msg = Message(recipients=[user.email],
                           body=message,
                           subject=subject,
@@ -41,7 +41,7 @@ def mail_night(users):
             if user.email is None:
                 continue
             message = '...'
-            subject = "hello, %s" % user.username
+            subject = "hello, %s" % user.nickname
             msg = Message(recipients=[user.email],
                           body=message,
                           subject=subject,
