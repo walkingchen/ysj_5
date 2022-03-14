@@ -1,6 +1,6 @@
 <template>
   <el-card v-if="imgUrl" class="dailyDigest-layout">
-    <title-com title="Daily poll results" />
+    <h2 class="module-title">Daily poll results</h2>
     <div class="img-box">
       <img :src="imgUrl" />
     </div>
@@ -9,13 +9,9 @@
 
 <script>
 import { mapState } from 'vuex'
-import titleCom from '@components/title'
 import { getDailyPoll } from '@api/post.js'
 
 export default {
-  components: {
-    titleCom
-  },
   data () {
     return {
       imgUrl: ''

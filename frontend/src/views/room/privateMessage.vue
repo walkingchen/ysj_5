@@ -1,6 +1,6 @@
 <template>
   <el-card v-show="messages.length > 0" class="privateMessage-layout">
-    <title-com title="Private Message Feed" />
+    <h2 class="module-title">Private Message Feed</h2>
 
     <el-alert v-show="newCount > 0" type="info" center :closable="false" class="new-tip">
       <span slot="title">{{ newCount }} new messages, click <a href="javascript:;" @click="getNews">here</a> to update.</span>
@@ -59,7 +59,6 @@
 <script>
 import { mapState } from 'vuex'
 import 'vue-awesome/icons/share'
-import titleCom from '@components/title'
 import privatePostItem from '@components/privatePostItem'
 import { getPosts, createPost } from '@api/post'
 
@@ -80,7 +79,6 @@ export default {
     'currentTopic'
   ]),
   components: {
-    titleCom,
     privatePostItem
   },
   methods: {

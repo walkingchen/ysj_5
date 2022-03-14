@@ -103,6 +103,7 @@ export default {
           })
 
           this.socket.on('post_pull', data => { // 有新的post
+            console.log(data)
             this.$bus.$emit('new_post', data)
           })
 

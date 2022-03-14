@@ -9,7 +9,7 @@
     </el-card>
 
     <el-card class="members-content">
-      <title-com title="Friends" />
+      <h2 class="module-title">Friends</h2>
       <ul>
         <li v-for="item in friends" :key="item.id" class="members-item">
           <el-avatar
@@ -29,12 +29,8 @@
 <script>
 import { mapState } from 'vuex'
 import 'vue-awesome/icons/comments'
-import titleCom from '@components/title'
 
 export default {
-  components: {
-    titleCom
-  },
   computed: mapState([
     'user',
     'friends'
