@@ -222,7 +222,7 @@ class PostListApi(Resource):
                 PublicPost.user_id.in_(friend_ids),
                 PublicPost.timeline_type == timeline_type,
                 PublicPost.topic == topic,
-                PublicPost.is_system_post != 1
+                PublicPost.is_system_post is None or PublicPost.is_system_post != 1
             ).order_by(PublicPost.created_at.desc()).all()
 
         else:   # 获取private message feed
