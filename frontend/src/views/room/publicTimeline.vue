@@ -111,7 +111,7 @@ export default {
     })
     this.$bus.$on('new_post', data => {
       if (data.topic === this.currentTopic && data.timeline_type === 0) {
-        this.newCount = data.posts_number
+        this.newCount += data.posts_number
       }
     })
     this.$bus.$on('new_comment', data => {
@@ -125,6 +125,7 @@ export default {
       if (topic) {
         this.me_post_moments = []
         this.moments = []
+        this.newCount = 0
         this.getMomentList()
       }
     }
