@@ -12,16 +12,12 @@
           <p class="createAt">{{ detailData.created_at }}</p>
         </div>
 
-        <div v-if="detailData.timeline_type !== 0">
-          <el-tag v-if="detailData.timeline_type === 2" type="info" size="small">shared</el-tag>
-          <el-button
-            v-else
-            size="mini"
-            class="share-btn"
-            @click="share">
-            Share
-          </el-button>
-        </div>
+        <el-button
+          v-if="detailData.timeline_type === 1"
+          size="mini"
+          @click="share">
+          Share
+        </el-button>
       </div>
 
       <img v-if="detailData.photo_uri" :src="detailData.photo_uri.medium" />
@@ -100,6 +96,7 @@ export default {
 
   .header
     display flex
+    align-items flex-start
 
     .title
       flex 1
