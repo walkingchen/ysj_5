@@ -205,6 +205,11 @@ class PostListApi(Resource):
         except TypeError:
             return jsonify(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
 
+        if 'last_update' in data:
+            last_update = data['last_update']
+        else:
+            last_update = None
+
         user_id = current_user.id
         if user_id is None:
             return jsonify(Resp(result_code=4000, result_msg='user id is none', data=None).__dict__)
@@ -217,19 +222,29 @@ class PostListApi(Resource):
             friend_ids.append(friend.user_id)
 
         if timeline_type == config.TIMELINE_PUB:
-            posts = PublicPost.query.filter(
-                PublicPost.room_id == room_id,
-                PublicPost.user_id.in_(friend_ids),
-                PublicPost.timeline_type == timeline_type,
-                PublicPost.topic == topic,
-                PublicPost.is_system_post.is_(None)  # fixme
-            ).order_by(PublicPost.created_at.desc()).all()
-
+            if last_update is not None:
+                posts = PublicPost.query.filter(
+                    PublicPost.room_id == room_id,
+                    PublicPost.user_id.in_(friend_ids),
+                    PublicPost.timeline_type == timeline_type,
+                    PublicPost.topic == topic,
+                    PublicPost.updated_at > last_update,
+                    PublicPost.is_system_post.is_(None)  # fixme
+                ).order_by(PublicPost.created_at.desc()).all()
+            else:
+                posts = PublicPost.query.filter(
+                    PublicPost.room_id == room_id,
+                    PublicPost.user_id.in_(friend_ids),
+                    PublicPost.timeline_type == timeline_type,
+                    PublicPost.topic == topic,
+                    PublicPost.is_system_post.is_(None)  # fixme
+                ).order_by(PublicPost.created_at.desc()).all()
         else:   # 获取private message feed
             posts = PrivatePost.query.filter(
                 PrivatePost.room_id == room_id,
                 PrivatePost.user_id == user_id,
-                PrivatePost.topic == topic
+                PrivatePost.topic == topic,
+                # PrivatePost.created_at > last_update
             ).order_by(PrivatePost.created_at.desc()).all()
 
         # 为每篇post添加评论、点赞
