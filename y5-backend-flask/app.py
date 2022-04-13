@@ -23,7 +23,7 @@ from blueprints.room import bp_room
 from blueprints.user import bp_user
 from entity.Resp import Resp
 from room_socketio import RoomNamespace
-from extensions import db, cache, socketio, scheduler
+from extensions import db, cache, socketio, scheduler, mail
 from models import User, Room, RoomPrototype, RoomMember, Timeline, PublicPost, PostComment, PostLike, \
     SystemMessage, PrivateMessage, PostFlag, PrivatePost, SystemPost, PollPost, CommentStatus, PostStatus, MailTemplate
 
@@ -34,7 +34,7 @@ Swagger(app)
 babel = Babel(app)
 ckeditor = CKEditor(app)
 cors = CORS(app)
-mail = Mail(app)
+mail.init_app(app)
 Bootstrap(app)
 cache.init_app(app)
 socketio.init_app(app, engineio_logger=True)

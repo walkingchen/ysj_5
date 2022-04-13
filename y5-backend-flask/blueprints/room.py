@@ -5,12 +5,13 @@ import string
 from flasgger import swag_from
 from flask import Blueprint, request, json, jsonify, send_from_directory
 from flask_login import current_user, login_required
+from flask_mail import Message
 from flask_restful import Api, Resource
 from sqlalchemy import desc
 
 from entity.Resp import Resp
 from entity.RoomResp import RoomResp
-from extensions import db, socketio
+from extensions import db, socketio, mail
 from models import Room, Timeline, RoomMember, RoomPrototype, Serializer, User, Redspot, PublicPost
 from service import get_friends, query_membership
 
@@ -134,6 +135,21 @@ class RoomApi(Resource):
         if 'activated' in data:
             activated = data['activated']
             room.activated = activated
+
+            if activated == 1:
+                members = RoomMember.query.filter_by(room_id=room.id).all()
+                for member in members:
+                    user = User.query.get(member.user_id)
+                    message = "Hi " + user.nickname + ", your platform has already been activated. " \
+                              + "Login url: http://camer-covid.journalism.wisc.edu/#/login"
+                    subject = "Room Activated"
+                    if user.email is not None:
+                        msg = Message(recipients=[user.email],
+                                      body=message,
+                                      subject=subject,
+                                      sender=("Admin", "sijia.yang@alumni.upenn.edu"))
+
+                        mail.send(msg)
 
         if 'publish_time' in data:
             publish_time = data['publish_time']

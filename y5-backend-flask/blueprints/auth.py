@@ -1,10 +1,11 @@
 from flasgger import swag_from
 from flask import Blueprint, request, redirect, current_app, flash, json
 from flask_login import login_required, logout_user, login_user, LoginManager, current_user
+from flask_mail import Message
 from flask_principal import identity_changed, Identity
 
 from entity.Resp import Resp
-from extensions import db
+from extensions import db, mail
 from models import User, RoomMember, Room, Serializer
 
 bp_auth = Blueprint('api/auth', __name__, url_prefix='/api/auth')
@@ -41,6 +42,16 @@ def register():
     )
     db.session.add(user)
     db.session.commit()
+
+    message = "Congratulations, you've successfully registered on the camer-covid platform."
+    subject = "Register Confirmation"
+    if user.email is not None:
+        msg = Message(recipients=[user.email],
+                      body=message,
+                      subject=subject,
+                      sender=("Admin", "sijia.yang@alumni.upenn.edu"))
+
+        mail.send(msg)
 
     return json.dumps(Resp(result_code=2000, result_msg='register success', data=None).__dict__)
 
