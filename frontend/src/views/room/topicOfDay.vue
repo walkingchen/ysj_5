@@ -1,7 +1,7 @@
 <template>
   <el-card class="topic-layout" id="topic-layout">
     <!-- <affix relative-element-selector="#opicLayout" :offset="{ top: 30, bottom: 40 }" :scroll-affix="false"> -->
-    <h2 class="module-title" ref="moduleTitle">Topic of the day</h2>
+    <h2 class="module-title" ref="moduleTitle" @click="handleSkip">Topic of the Day</h2>
     <!-- </affix> -->
 
     <div v-for="(item, index) in topicList" :key="item.id" class="topic-item" ref="topicItem">
@@ -57,6 +57,9 @@ export default {
   },
   computed: mapState(['currentTopic']),
   methods: {
+    handleSkip () {
+      document.getElementsByClassName('room-content')[0].scrollTop = 160
+    },
     updateTopicList () {
       getTopicContent(localStorage.getItem('roomid'), this.currentTopic).then(({ data }) => {
         this.topicList = data.data
@@ -77,8 +80,10 @@ export default {
         if (this.scrollTop >= 178) {
           moduleTitle.setAttribute('class', 'module-title fixed-title')
           moduleTitle.style.width = that.moduleTitleWidth
-          const topicFrist = document.getElementsByClassName('topic-item')[0]
-          topicFrist.style.marginTop = '71px'
+          if (document.getElementsByClassName('topic-item').length) {
+            const topicFrist = document.getElementsByClassName('topic-item')[0]
+            topicFrist.style.marginTop = '70px'
+          }
         } else {
           if (document.getElementsByClassName('fixed-title')) {
             moduleTitle.setAttribute('class', 'module-title')
@@ -161,6 +166,9 @@ export default {
 
   .module-title
     padding-bottom 15px
+    &:hover
+      box-shadow:rgb(192, 192, 192, 0.1) 0px 0px 10px
+      cursor pointer
 
 .topic-item
   padding 0 10px
@@ -171,7 +179,7 @@ export default {
 
 .fixed-title
   position: fixed;
-  top:71px;
+  top:70px;
   background: #fff;
   z-index: 99;
   border-bottom: 1px solid #ccc;

@@ -1,5 +1,5 @@
 <template>
-  <header>
+  <header style="z-index: 999">
     <div class="layout">
       <div>
         <el-button type="text" @click="handleLogout">

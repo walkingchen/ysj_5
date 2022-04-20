@@ -4,8 +4,7 @@
     <div class="room-content">
       <div class="layout">
         <el-row :gutter="20">
-          <el-col :span="5">
-            <daily-digest @has-data="showLeftCol = true" />
+          <el-col :span="showLeftCol ? 8 : 0">
             <el-card class="myself-box">
               <el-avatar
                 :size="80"
@@ -13,14 +12,15 @@
                 :icon="user.avatar ? '' : 'el-icon-user-solid'" />
               <p>{{ user.nickname }}</p>
             </el-card>
+            <private-message @has-data="showLeftCol = true" />
           </el-col>
           <el-col :span="showLeftCol ? 11 : 19">
             <add-public @on-success="addPostSuccess" />
             <topic-of-day :showLeftCol="showLeftCol" />
             <public-timeline ref="publicTimeline" />
           </el-col>
-          <el-col :span="showLeftCol ? 8 : 0">
-            <private-message @has-data="showLeftCol = true" />
+          <el-col :span="5">
+            <daily-digest @has-data="showLeftCol = true" />
             <connections @start-chat="startChart" />
           </el-col>
         </el-row>

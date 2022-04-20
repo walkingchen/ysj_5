@@ -33,7 +33,6 @@ export default {
 <style lang="stylus" scoped>
 .members-content
   border 0
-  margin-top 20px
 
   .members-item
     padding 10px
