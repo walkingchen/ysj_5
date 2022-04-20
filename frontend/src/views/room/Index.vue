@@ -4,16 +4,23 @@
     <div class="room-content">
       <div class="layout">
         <el-row :gutter="20">
-          <el-col :span="showLeftCol ? 8 : 0">
+          <el-col :span="5">
             <daily-digest @has-data="showLeftCol = true" />
-            <private-message @has-data="showLeftCol = true" />
+            <el-card class="myself-box">
+              <el-avatar
+                :size="80"
+                :src="user.avatar ? user.avatar : ''"
+                :icon="user.avatar ? '' : 'el-icon-user-solid'" />
+              <p>{{ user.nickname }}</p>
+            </el-card>
           </el-col>
           <el-col :span="showLeftCol ? 11 : 19">
             <add-public @on-success="addPostSuccess" />
-            <topic-of-day />
+            <topic-of-day :showLeftCol="showLeftCol" />
             <public-timeline ref="publicTimeline" />
           </el-col>
-          <el-col :span="5">
+          <el-col :span="showLeftCol ? 8 : 0">
+            <private-message @has-data="showLeftCol = true" />
             <connections @start-chat="startChart" />
           </el-col>
         </el-row>
@@ -234,4 +241,15 @@ export default {
 
 .unread
   background-color #ff9
+
+.myself-box
+  border 0
+  padding 20px
+  .el-card__body
+    display flex
+    flex-direction column
+    align-items center
+  p
+    margin-top 15px
+
 </style>

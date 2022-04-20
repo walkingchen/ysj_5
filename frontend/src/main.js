@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+import Affix from 'vue-affix'
 import Icon from 'vue-awesome/components/Icon'
 import lang from 'element-ui/lib/locale/lang/en'
 import locale from 'element-ui/lib/locale'
@@ -13,6 +14,7 @@ locale.use(lang)
 Vue.config.productionTip = false
 
 Vue.use(ElementUI)
+Vue.use(Affix)
 
 Vue.component('v-icon', Icon)
 

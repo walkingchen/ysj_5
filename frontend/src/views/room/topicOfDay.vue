@@ -1,8 +1,10 @@
 <template>
-  <el-card class="topic-layout">
-    <h2 class="module-title">Topic of the day</h2>
+  <el-card class="topic-layout" id="topic-layout">
+    <!-- <affix relative-element-selector="#opicLayout" :offset="{ top: 30, bottom: 40 }" :scroll-affix="false"> -->
+    <h2 class="module-title" ref="moduleTitle">Topic of the day</h2>
+    <!-- </affix> -->
 
-    <div v-for="(item, index) in topicList" :key="item.id" class="topic-item">
+    <div v-for="(item, index) in topicList" :key="item.id" class="topic-item" ref="topicItem">
       <private-post-item :item="item">
         <div class="moment-actions">
           <span class="count" v-if="item.comments.length > 0">{{ item.comments.length }}</span>
@@ -46,9 +48,11 @@ export default {
     privatePostItem,
     comments
   },
+  props: ['showLeftCol'],
   data () {
     return {
-      topicList: []
+      topicList: [],
+      moduleTitleWidth: 0
     }
   },
   computed: mapState(['currentTopic']),
@@ -56,7 +60,35 @@ export default {
     updateTopicList () {
       getTopicContent(localStorage.getItem('roomid'), this.currentTopic).then(({ data }) => {
         this.topicList = data.data
+        if (this.topicList.length) {
+          this.setModuleTitleTop()
+        }
       })
+    },
+    setModuleTitleTop () {
+      // 获取标题栏宽度
+      this.moduleTitleWidth = document.getElementById('topic-layout').clientWidth - 40 + 'px'
+      var moduleTitle = this.$refs.moduleTitle
+      const that = this
+      window.addEventListener('scroll', function () {
+        this.scrollTop = document.getElementsByClassName('room-content')[0].scrollTop
+        // console.log(this.scrollTop, '=========+.scrollTop')
+        // 滚动到标题位置时，将标题定位
+        if (this.scrollTop >= 178) {
+          moduleTitle.setAttribute('class', 'module-title fixed-title')
+          moduleTitle.style.width = that.moduleTitleWidth
+          const topicFrist = document.getElementsByClassName('topic-item')[0]
+          topicFrist.style.marginTop = '71px'
+        } else {
+          if (document.getElementsByClassName('fixed-title')) {
+            moduleTitle.setAttribute('class', 'module-title')
+            if (document.getElementsByClassName('topic-item').length) {
+              const topicFrist = document.getElementsByClassName('topic-item')[0]
+              topicFrist.style.marginTop = '0px'
+            }
+          }
+        }
+      }, true)
     },
     updateTopic (id) {
       const index = this.topicList.findIndex(ele => ele.id === id)
@@ -114,6 +146,10 @@ export default {
         this.topicList = []
         this.updateTopicList()
       }
+    },
+    showLeftCol (val) {
+      // 重新获取标题栏宽度
+      this.moduleTitleWidth = document.getElementById('topic-layout').clientWidth - 40 + 'px'
     }
   }
 }
@@ -132,4 +168,11 @@ export default {
 
   &:last-child
     border-bottom 0
+
+.fixed-title
+  position: fixed;
+  top:71px;
+  background: #fff;
+  z-index: 99;
+  border-bottom: 1px solid #ccc;
 </style>

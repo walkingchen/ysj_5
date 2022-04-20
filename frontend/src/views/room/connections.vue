@@ -1,13 +1,5 @@
 <template>
   <div>
-    <el-card class="myself-box">
-      <el-avatar
-        :size="80"
-        :src="user.avatar ? user.avatar : ''"
-        :icon="user.avatar ? '' : 'el-icon-user-solid'" />
-      <p>{{ user.nickname }}</p>
-    </el-card>
-
     <el-card class="members-content">
       <h2 class="module-title">Friends</h2>
       <ul>
@@ -39,18 +31,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.myself-box
-  border 0
-  padding 20px
-
-  & >>> .el-card__body
-    display flex
-    flex-direction column
-    align-items center
-
-  p
-    margin-top 15px
-
 .members-content
   border 0
   margin-top 20px
