@@ -198,6 +198,7 @@ export default {
   border 0
   margin-top: 20px
   background: #F5F5F5
+  border: 3px solid #d3d3d3
 
   .new-tip
     margin-top 10px
