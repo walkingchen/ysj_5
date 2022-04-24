@@ -183,11 +183,6 @@ export default {
         this.messages = []
         this.getMessageList()
       }
-    },
-    messages (val) {
-      if (val.length > 0) {
-        this.$emit('has-data')
-      }
     }
   }
 }

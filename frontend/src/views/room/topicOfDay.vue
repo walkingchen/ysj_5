@@ -1,10 +1,13 @@
 <template>
-  <el-card class="topic-layout" id="topic-layout">
-    <!-- <affix relative-element-selector="#opicLayout" :offset="{ top: 30, bottom: 40 }" :scroll-affix="false"> -->
-    <h2 class="module-title" ref="moduleTitle" @click="handleSkip">Topic of the Day</h2>
-    <!-- </affix> -->
+  <el-card id="topicOfDay">
+    <h2
+      class="module-title topic-title"
+      :class="{ fixed: titleFixed }"
+      :style="{ width: titleWidth }"
+      @click="handleSkip"
+    >Topic of the Day</h2>
 
-    <div v-for="(item, index) in topicList" :key="item.id" class="topic-item" ref="topicItem">
+    <div v-for="(item, index) in topicList" :key="item.id" class="topic-item">
       <private-post-item :item="item">
         <div class="moment-actions">
           <span class="count" v-if="item.comments.length > 0">{{ item.comments.length }}</span>
@@ -27,6 +30,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import elementResizeDetectorMaker from 'element-resize-detector'
 import 'vue-awesome/icons/flag'
 import 'vue-awesome/icons/regular/flag'
 import 'vue-awesome/icons/thumbs-up'
@@ -48,52 +52,26 @@ export default {
     privatePostItem,
     comments
   },
-  props: ['showLeftCol'],
   data () {
     return {
       topicList: [],
-      moduleTitleWidth: 0
+      titleFixed: false,
+      titleWidth: '100%'
     }
   },
   computed: mapState(['currentTopic']),
   methods: {
     handleSkip () {
-      document.getElementsByClassName('room-content')[0].scrollTop = 160
+      document.getElementsByClassName('room-content')[0].scrollTop = 180
     },
     updateTopicList () {
       getTopicContent(localStorage.getItem('roomid'), this.currentTopic).then(({ data }) => {
         this.topicList = data.data
-        if (this.topicList.length) {
-          this.setModuleTitleTop()
+
+        if (this.topicList.length === 0) {
+          this.titleFixed = false
         }
       })
-    },
-    setModuleTitleTop () {
-      // 获取标题栏宽度
-      this.moduleTitleWidth = document.getElementById('topic-layout').clientWidth - 40 + 'px'
-      var moduleTitle = this.$refs.moduleTitle
-      const that = this
-      window.addEventListener('scroll', function () {
-        this.scrollTop = document.getElementsByClassName('room-content')[0].scrollTop
-        // console.log(this.scrollTop, '=========+.scrollTop')
-        // 滚动到标题位置时，将标题定位
-        if (this.scrollTop >= 178) {
-          moduleTitle.setAttribute('class', 'module-title fixed-title')
-          moduleTitle.style.width = that.moduleTitleWidth
-          if (document.getElementsByClassName('topic-item').length) {
-            const topicFrist = document.getElementsByClassName('topic-item')[0]
-            topicFrist.style.marginTop = '70px'
-          }
-        } else {
-          if (document.getElementsByClassName('fixed-title')) {
-            moduleTitle.setAttribute('class', 'module-title')
-            if (document.getElementsByClassName('topic-item').length) {
-              const topicFrist = document.getElementsByClassName('topic-item')[0]
-              topicFrist.style.marginTop = '0px'
-            }
-          }
-        }
-      }, true)
     },
     updateTopic (id) {
       const index = this.topicList.findIndex(ele => ele.id === id)
@@ -144,6 +122,21 @@ export default {
         this.updateTopic(data.post_id)
       }
     })
+
+    // 处理标题栏宽度
+    const erd = elementResizeDetectorMaker()
+    erd.listenTo(document.getElementById('topicOfDay'), element => {
+      this.titleWidth = element.offsetWidth + 'px'
+    })
+
+    this.$bus.$on('room-content-scroll', top => {
+      // 滚动到标题位置时，将标题定位
+      if (this.topicList.length > 0 && top >= 183) {
+        this.titleFixed = true
+      } else {
+        this.titleFixed = false
+      }
+    })
   },
   watch: {
     currentTopic (topic) {
@@ -151,24 +144,36 @@ export default {
         this.topicList = []
         this.updateTopicList()
       }
-    },
-    showLeftCol (val) {
-      // 重新获取标题栏宽度
-      this.moduleTitleWidth = document.getElementById('topic-layout').clientWidth - 40 + 'px'
     }
   }
 }
 </script>
 
 <style lang="stylus" scoped>
-.topic-layout
+#topicOfDay
   border 0
 
-  .module-title
+  >>> .el-card__body
+    padding-top 59px
+    min-height 15px
+    position relative
+
+  .topic-title
+    position absolute
+    top 0
+    box-sizing border-box
     padding-bottom 15px
-    &:hover
-      box-shadow:rgb(192, 192, 192, 0.1) 0px 0px 10px
+
+    &.fixed
+      background-color #fff
       cursor pointer
+      border-bottom 1px solid #ddd
+      position fixed
+      top 70px
+      z-index 10
+
+      &:hover
+        box-shadow rgb(192, 192, 192, 0.1) 0px 0px 10px
 
 .topic-item
   padding 0 10px
@@ -176,11 +181,4 @@ export default {
 
   &:last-child
     border-bottom 0
-
-.fixed-title
-  position: fixed;
-  top:70px;
-  background: #fff;
-  z-index: 99;
-  border-bottom: 1px solid #ccc;
 </style>

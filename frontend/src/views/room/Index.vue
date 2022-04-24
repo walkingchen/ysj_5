@@ -1,10 +1,10 @@
 <template>
   <div class="room-layout">
     <header-com @logout="logout" />
-    <div class="room-content">
+    <div class="room-content" ref="content-div">
       <div class="layout">
         <el-row :gutter="20">
-          <el-col :span="showLeftCol ? 8 : 0">
+          <el-col :span="8">
             <el-card class="myself-box">
               <el-avatar
                 :size="80"
@@ -12,15 +12,15 @@
                 :icon="user.avatar ? '' : 'el-icon-user-solid'" />
               <p>{{ user.nickname }}</p>
             </el-card>
-            <private-message @has-data="showLeftCol = true" />
+            <private-message />
           </el-col>
-          <el-col :span="showLeftCol ? 11 : 19">
+          <el-col :span="10">
             <add-public @on-success="addPostSuccess" />
-            <topic-of-day :showLeftCol="showLeftCol" />
+            <topic-of-day />
             <public-timeline ref="publicTimeline" />
           </el-col>
-          <el-col :span="5">
-            <daily-digest @has-data="showLeftCol = true" />
+          <el-col :span="6">
+            <daily-digest />
             <connections @start-chat="startChart" />
           </el-col>
         </el-row>
@@ -72,7 +72,6 @@ export default {
     return {
       roomInfo: [],
       socket: null,
-      showLeftCol: false,
       chatShow: false,
       startChatUser: {}
     }
@@ -160,12 +159,16 @@ export default {
       }, () => {
         this.socket.close()
       })
+    },
+    onScroll() {
+      this.$bus.$emit('room-content-scroll', this.$refs['content-div'].scrollTop)
     }
   },
-  watch: {
-    currentTopic () {
-      this.showLeftCol = false
-    }
+  mounted() {
+    this.$refs['content-div'].addEventListener('scroll', this.onScroll)
+  },
+  beforeDestroy() {
+    this.$refs['content-div'].removeEventListener('scroll', this.onScroll)
   }
 }
 </script>
@@ -197,6 +200,19 @@ export default {
   &:hover
     &::-webkit-scrollbar-thumb
       background-color #ccc
+
+.myself-box
+  border 0
+  padding 20px
+
+  >>> .el-card__body
+    display flex
+    flex-direction column
+    align-items center
+
+  p
+    font-size 24px
+    margin-top 15px
 </style>
 <style lang="stylus">
 .new-message
@@ -241,15 +257,4 @@ export default {
 
 .unread
   background-color #ff9
-
-.myself-box
-  border 0
-  padding 20px
-  .el-card__body
-    display flex
-    flex-direction column
-    align-items center
-  p
-    margin-top 15px
-
 </style>

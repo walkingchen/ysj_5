@@ -23,7 +23,6 @@ export default {
       getDailyPoll(localStorage.getItem('roomid'), this.currentTopic).then(({ data }) => {
         if (data.data && data.data.photo_uri) {
           this.imgUrl = data.data.photo_uri
-          this.$emit('has-data')
         }
       })
     }
