@@ -18,7 +18,7 @@
             <el-tag
               :effect="item === currentTopic ? 'light' : 'plain'"
               @click="changeTopic(item, index)"
-            >Topic {{ item }}</el-tag>
+            >Day {{ item }}</el-tag>
           </el-badge>
         </div>
       </div>
