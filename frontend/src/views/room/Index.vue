@@ -20,8 +20,10 @@
             <public-timeline ref="publicTimeline" />
           </el-col>
           <el-col :span="6">
-            <daily-digest />
-            <connections @start-chat="startChart" />
+            <div class="right-wrapper">
+              <daily-digest />
+              <connections @start-chat="startChart" />
+            </div>
           </el-col>
         </el-row>
       </div>
@@ -213,6 +215,12 @@ export default {
   p
     font-size 24px
     margin-top 15px
+
+.right-wrapper
+  position fixed
+  width calc(22.5% - 15px)
+  top 90px
+  right calc(5% + 5px)
 </style>
 <style lang="stylus">
 .new-message

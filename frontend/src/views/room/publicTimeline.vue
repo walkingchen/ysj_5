@@ -134,7 +134,6 @@ export default {
     })
 
     this.$bus.$on('room-content-scroll', top => {
-      console.log(top)
       // 滚动到标题位置时，将标题定位
       if (top >= (document.getElementById('topicOfDay').offsetHeight + 131)) {
         this.titleFixed = true
