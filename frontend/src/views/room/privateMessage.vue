@@ -15,8 +15,10 @@
         ref="messageItem"
         :item="item"
       >
-        <el-tag v-if="item.timeline_type === 2" type="info" size="small">shared</el-tag>
-        <el-button v-else size="mini" class="share-btn" @click="share(item.id)">share</el-button>
+        <span v-if="item.timeline_type === 2" class="shared-tag">shared</span>
+        <template v-if="item.timeline_type !== 2" #actions>
+          <el-button size="mini" class="share-btn" @click="share(item.id)">share</el-button>
+        </template>
       </private-post-item>
     </div>
 
@@ -213,6 +215,16 @@ export default {
 
       &:last-child
         border-bottom 0
+
+  .shared-tag
+    position absolute
+    right -22px
+    top 8px
+    transform rotate(45deg)
+    padding 3px 20px
+    background-color #ecf5ff
+    color #409eff
+    border 1px solid #a0cfff
 
   .share-btn
     height 24px

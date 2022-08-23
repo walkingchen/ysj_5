@@ -9,18 +9,20 @@
 
     <div v-for="(item, index) in topicList" :key="item.id" class="topic-item">
       <private-post-item :item="item">
-        <div class="moment-actions">
-          <span class="count" v-if="item.comments.length > 0">{{ item.comments.length }}</span>
-          <button @click="toggleShowMoreComments(index)"><v-icon name="comment-dots" /></button>
-          <span class="count">{{ item.flags.count }}</span>
-          <button @click="flag(item)" :class="{ done: item.flagged }">
-            <v-icon :name="item.flagged ? 'flag' : 'regular/flag'" />
-          </button>
-          <span class="count">{{ item.likes.count }}</span>
-          <button @click="like(item)" :class="{ done: item.liked }">
-            <v-icon :name="item.liked ? 'thumbs-up' : 'regular/thumbs-up'" />
-          </button>
-        </div>
+        <template #actions>
+          <div class="moment-actions">
+            <span class="count" v-if="item.comments.length > 0">{{ item.comments.length }}</span>
+            <button @click="toggleShowMoreComments(index)"><v-icon name="comment-dots" /></button>
+            <span class="count">{{ item.flags.count }}</span>
+            <button @click="flag(item)" :class="{ done: item.flagged }">
+              <v-icon :name="item.flagged ? 'flag' : 'regular/flag'" />
+            </button>
+            <span class="count">{{ item.likes.count }}</span>
+            <button @click="like(item)" :class="{ done: item.liked }">
+              <v-icon :name="item.liked ? 'thumbs-up' : 'regular/thumbs-up'" />
+            </button>
+          </div>
+        </template>
       </private-post-item>
 
       <comments ref="comments" :comments="item.comments" :post-id="item.id" @action-success="updateTopic" />

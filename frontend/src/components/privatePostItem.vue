@@ -10,8 +10,9 @@
     <img v-if="item.photo_uri" :src="item.photo_uri.small" class="post-photo" />
     <span class="message-time">{{ date }}</span>
     <div class="actions">
-      <slot></slot>
+      <slot name="actions"></slot>
     </div>
+    <slot></slot>
   </div>
 </template>
 
@@ -40,6 +41,7 @@ export default {
 <style lang="stylus" scoped>
 .privateMessageItem
   position relative
+  overflow hidden
 
   .actions
     position absolute
