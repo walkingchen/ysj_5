@@ -1,6 +1,11 @@
 <template>
-  <el-card class="publicTlimeline-layout">
-    <h2 class="module-title">Public Post</h2>
+  <el-card id="publicTimeline">
+    <h2
+      class="module-title public-title"
+      :class="{ fixed: titleFixed }"
+      :style="{ width: titleWidth }"
+      @click="handleSkip"
+    >Public Post</h2>
 
     <el-alert v-show="newCount > 0" type="info" center :closable="false" class="new-tip">
       <span slot="title">{{ newCount }} new messages, click <a href="javascript:;" @click="getNews">here</a> to update.</span>
@@ -21,12 +26,15 @@
 
 <script>
 import { mapState } from 'vuex'
+import elementResizeDetectorMaker from 'element-resize-detector'
 import { getPosts, getPost } from '@api/post'
 import publicPostItem from '@components/publicPostItem'
 
 export default {
   data() {
     return {
+      titleFixed: false,
+      titleWidth: '100%',
       getPostLoading: true,
       moments: [],
       me_post_moments: [],
@@ -44,6 +52,9 @@ export default {
     ...mapState(['currentTopic'])
   },
   methods: {
+    handleSkip () {
+      document.getElementsByClassName('room-content')[0].scrollTop = document.getElementById('topicOfDay').offsetHeight + 130
+    },
     async getMomentList() {
       this.getPostLoading = true
       await getPosts({
@@ -115,6 +126,22 @@ export default {
         this.updatePost(data.post_id)
       }
     })
+
+    // 处理标题栏宽度
+    const erd = elementResizeDetectorMaker()
+    erd.listenTo(document.getElementById('publicTimeline'), element => {
+      this.titleWidth = element.offsetWidth + 'px'
+    })
+
+    this.$bus.$on('room-content-scroll', top => {
+      console.log(top)
+      // 滚动到标题位置时，将标题定位
+      if (top >= (document.getElementById('topicOfDay').offsetHeight + 131)) {
+        this.titleFixed = true
+      } else {
+        this.titleFixed = false
+      }
+    })
   },
   watch: {
     currentTopic (topic) {
@@ -129,9 +156,31 @@ export default {
 }
 </script>
 
-<style lang="stylus">
-.publicTlimeline-layout
+<style lang="stylus" scoped>
+#publicTimeline
   margin-top 20px
+
+  >>> .el-card__body
+    padding-top 59px
+    min-height 15px
+    position relative
+
+  .public-title
+    position absolute
+    top 0
+    box-sizing border-box
+    padding-bottom 15px
+
+    &.fixed
+      background-color #fff
+      cursor pointer
+      border-bottom 1px solid #ddd
+      position fixed
+      top 145px
+      z-index 10
+
+      &:hover
+        box-shadow rgb(192, 192, 192, 0.1) 0px 0px 10px
 
   .new-tip
     margin-top 10px
@@ -143,13 +192,6 @@ export default {
       &:hover
         text-decoration underline
 
-  #moments-ul > li
-    margin-top 20px
-    border-bottom 1px dashed #cdd0d6
-
-    &:last-child
-      border-bottom 0
-
   .loading-layout
     text-align center
     padding 20px 0 10px
@@ -160,4 +202,11 @@ export default {
     text-align center
     padding 20px 0 10px
     color #999
+
+#moments-ul > li
+  margin-top 20px
+  border-bottom 1px dashed #cdd0d6
+
+  &:last-child
+    border-bottom 0
 </style>
