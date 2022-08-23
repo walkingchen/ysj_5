@@ -90,7 +90,7 @@ export default {
         timeline_type: 1,
         topic: this.currentTopic
       }).then(res => {
-        this.messages.push(...res.data.data)
+        this.messages.push(...res.data.data.filter(item => item.topic === this.currentTopic))
       })
     },
     async getNews() {
@@ -107,7 +107,7 @@ export default {
         params.last_update = this.moments[0].created_at
       }
       await getPosts(params).then(res => {
-        this.messages.unshift(...res.data.data)
+        this.messages.unshift(...res.data.data.filter(item => item.topic === this.currentTopic))
       })
       this.getNewPostLoading = false
     },

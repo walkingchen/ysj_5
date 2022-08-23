@@ -68,7 +68,7 @@ export default {
     },
     updateTopicList () {
       getTopicContent(localStorage.getItem('roomid'), this.currentTopic).then(({ data }) => {
-        this.topicList = data.data
+        this.topicList = data.data.filter(item => item.topic === this.currentTopic)
 
         if (this.topicList.length === 0) {
           this.titleFixed = false

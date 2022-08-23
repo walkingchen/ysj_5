@@ -62,7 +62,7 @@ export default {
         timeline_type: 0,
         topic: this.currentTopic
       }).then(res => {
-        this.moments.push(...res.data.data)
+        this.moments.push(...res.data.data.filter(item => item.topic === this.currentTopic))
       })
       this.getPostLoading = false
     },
