@@ -1,26 +1,22 @@
 <template>
-  <div class="publicTlimeline-layout">
-    <el-card style="margin-top: 20px;">
-      <h2 class="module-title">Public Post</h2>
-    </el-card>
+  <el-card class="publicTlimeline-layout">
+    <h2 class="module-title">Public Post</h2>
 
-    <div class="new-tip" v-show="newCount > 0">
-      {{ newCount }} new messages, click <a href="javascript:;" @click="getNews">here</a> to update.
-    </div>
+    <el-alert v-show="newCount > 0" type="info" center :closable="false" class="new-tip">
+      <span slot="title">{{ newCount }} new messages, click <a href="javascript:;" @click="getNews">here</a> to update.</span>
+    </el-alert>
 
     <div class="loading-layout" v-show="getNewPostLoading"><i class="el-icon-loading"></i></div>
 
     <ul id="moments-ul">
       <li v-for="item in moment_list" :key="item.id">
-        <el-card>
-          <public-post-item :item="item" @action-success="updatePost" />
-        </el-card>
+        <public-post-item :item="item" @action-success="updatePost" />
       </li>
-      <div v-if="getPostLoading" class="loading-layout"><i class="el-icon-loading"></i></div>
-      <div v-else class="nomore-layout">no more</div>
     </ul>
 
-  </div>
+    <div v-if="getPostLoading" class="loading-layout"><i class="el-icon-loading"></i></div>
+    <div v-else class="nomore-layout">no more</div>
+  </el-card>
 </template>
 
 <script>
@@ -135,14 +131,10 @@ export default {
 
 <style lang="stylus">
 .publicTlimeline-layout
-  .module-title
-    padding-bottom 15px
+  margin-top 20px
 
   .new-tip
-    background-color #fff
-    margin-top 20px
-    text-align center
-    padding 10px 0
+    margin-top 10px
 
     a
       color #409eff
@@ -153,15 +145,19 @@ export default {
 
   #moments-ul > li
     margin-top 20px
+    border-bottom 1px dashed #cdd0d6
+
+    &:last-child
+      border-bottom 0
 
   .loading-layout
     text-align center
-    padding-top 20px
+    padding 20px 0 10px
     font-size 20px
     color #409eff
 
   .nomore-layout
     text-align center
-    padding-top 20px
+    padding 20px 0 10px
     color #999
 </style>

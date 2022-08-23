@@ -192,10 +192,9 @@ export default {
 
 <style lang="stylus" scoped>
 .privateMessage-layout
-  border 0
-  margin-top: 20px
-  background: #F5F5F5
-  border: 3px solid #d3d3d3
+  margin-top 20px
+  background-color #f5f5f5
+  border 3px solid #d3d3d3
 
   .new-tip
     margin-top 10px
