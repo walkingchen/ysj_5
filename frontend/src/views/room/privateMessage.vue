@@ -1,12 +1,10 @@
 <template>
-  <el-card v-show="messages.length > 0" class="privateMessage-layout">
-    <h2 class="module-title">Private Message Feed</h2>
-
+  <div v-show="messages.length > 0" id="feed" class="privateMessage-layout">
     <el-alert v-show="newCount > 0" type="info" center :closable="false" class="new-tip">
       <span slot="title">{{ newCount }} new messages, click <a href="javascript:;" @click="getNews">here</a> to update.</span>
     </el-alert>
 
-    <div class="loading-layout" v-show="getNewPostLoading"><i class="el-icon-loading"></i></div>
+    <div v-show="getNewPostLoading" class="loading-layout"><i class="el-icon-loading"></i></div>
 
     <div class="messages">
       <private-post-item
@@ -15,10 +13,8 @@
         ref="messageItem"
         :item="item"
       >
-        <span v-if="item.timeline_type === 2" class="shared-tag">shared</span>
-        <template v-if="item.timeline_type !== 2" #actions>
-          <el-button size="mini" class="share-btn" @click="share(item.id)">share</el-button>
-        </template>
+        <span v-if="item.timeline_type === 2" class="shared-tag">Shared</span>
+        <el-button v-else round class="share-btn" size="small" @click="share(item.id)">Share to forum</el-button>
       </private-post-item>
     </div>
 
@@ -55,7 +51,7 @@
       </div>
       <el-button slot="footer" size="small" @click="submitShare">Post</el-button>
     </el-dialog>
-  </el-card>
+  </div>
 </template>
 
 <script>
@@ -99,12 +95,12 @@ export default {
 
       const params = {
         room_id: localStorage.getItem('roomid'),
-        timeline_type: 0,
+        timeline_type: 1,
         topic: this.currentTopic
       }
-      if (this.moments.length > 0) {
+      if (this.messages.length > 0) {
         params.pull_new = 1
-        params.last_update = this.moments[0].created_at
+        params.last_update = this.messages[0].created_at
       }
       await getPosts(params).then(res => {
         this.messages.unshift(...res.data.data.filter(item => item.topic === this.currentTopic))
@@ -192,9 +188,8 @@ export default {
 
 <style lang="stylus" scoped>
 .privateMessage-layout
-  margin-top 20px
-  background-color #f5f5f5
-  border 3px solid #d3d3d3
+  background-color #90abda
+  padding 10px 6px
 
   .new-tip
     margin-top 10px
@@ -206,34 +201,37 @@ export default {
       &:hover
         text-decoration underline
 
-  .messages
-    padding 0 10px
+  .loading-layout
+    padding-top 10px
+    color #fff
 
-    .privateMessageItem
-      border-bottom 1px solid #e4e7ed
-
-      &:last-child
-        border-bottom 0
+  .messages .privateMessageItem
+    margin-top 10px
 
   .shared-tag
     position absolute
-    right -22px
-    top 8px
+    right -25px
+    top 11px
     transform rotate(45deg)
-    padding 3px 20px
-    background-color #ecf5ff
+    padding 3px 25px
+    background-color #fff
     color #409eff
     border 1px solid #a0cfff
 
   .share-btn
-    height 24px
-    padding 0 8px
-    line-height 22px
+    position absolute
+    right 10px
+    top 10px
+    background-color #fff
+    color #409eff
+    border 1px solid #409eff
+
+    &:hover
+      background-color #409eff
+      color #fff
 
   .nomore-layout
-    text-align center
-    padding-bottom 10px
-    color #999
+    color #fff
 
 .share-dialog
   >>> .el-dialog__body

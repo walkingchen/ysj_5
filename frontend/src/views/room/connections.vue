@@ -34,6 +34,9 @@ export default {
 .members-content
   border 0
 
+  .module-title
+    border-bottom 1px solid #ebeef5
+
   .members-item
     padding 10px
     position relative

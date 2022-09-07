@@ -1,23 +1,37 @@
 <template>
   <div class="room-layout">
     <header-com @logout="logout" />
+
     <div class="room-content" ref="content-div">
       <div class="layout">
         <el-row :gutter="20">
-          <el-col :span="8">
-            <el-card class="myself-box">
-              <el-avatar
-                :size="80"
-                :src="user.avatar ? user.avatar : ''"
-                :icon="user.avatar ? '' : 'el-icon-user-solid'" />
-              <p>{{ user.nickname }}</p>
+          <el-col :span="6">
+            <el-card>
+              <div class="right-top">
+                <div class="myself-box">
+                  <el-avatar
+                    :size="45"
+                    :src="user.avatar ? user.avatar : ''"
+                    :icon="user.avatar ? '' : 'el-icon-user-solid'"
+                  />
+                  <p>{{ user.nickname }}</p>
+                </div>
+                <h2
+                  class="module-title feed-title"
+                  :class="{ fixed: feedTitleFixed }"
+                  :style="{ width: feedTitleWidth }"
+                  @click="handleSkip"
+                >Your Feed</h2>
+              </div>
+
+              <private-message />
             </el-card>
-            <private-message />
           </el-col>
-          <el-col :span="10">
+
+          <el-col :span="12">
             <add-public @on-success="addPostSuccess" />
-            <topic-of-day />
-            <public-timeline ref="publicTimeline" />
+            <trends />
+            <public-forum ref="publicForum" />
           </el-col>
           <el-col :span="6">
             <div class="right-wrapper">
@@ -45,6 +59,7 @@
 <script>
 import { mapState } from 'vuex'
 import io from 'socket.io-client'
+import elementResizeDetectorMaker from 'element-resize-detector'
 import { formatDate } from '@assets/utils.js'
 import { getRoomInfo } from '@api/room'
 import { getTopic } from '@api/post'
@@ -52,8 +67,8 @@ import headerCom from './header'
 import dailyDigest from './dailyDigest'
 import privateMessage from './privateMessage'
 import addPublic from './addPublic'
-import topicOfDay from './topicOfDay'
-import publicTimeline from './publicTimeline'
+import trends from './trends'
+import publicForum from './publicTimeline'
 import connections from './connections'
 import postDetail from './postDetail'
 import instantChat from './instantChat'
@@ -63,9 +78,9 @@ export default {
     headerCom,
     dailyDigest,
     addPublic,
-    topicOfDay,
+    trends,
     privateMessage,
-    publicTimeline,
+    publicForum,
     connections,
     postDetail,
     instantChat
@@ -75,7 +90,9 @@ export default {
       roomInfo: [],
       socket: null,
       chatShow: false,
-      startChatUser: {}
+      startChatUser: {},
+      feedTitleFixed: false,
+      feedTitleWidth: '100%'
     }
   },
   computed: mapState([
@@ -138,8 +155,11 @@ export default {
     loading.close()
   },
   methods: {
+    handleSkip () {
+      document.getElementsByClassName('room-content')[0].scrollTop = 105
+    },
     addPostSuccess (id) {
-      this.$refs.publicTimeline.updatePost(id, 0)
+      this.$refs.publicForum.updatePost(id, 0)
     },
     startChart(user) {
       this.chatShow = true
@@ -163,11 +183,25 @@ export default {
       })
     },
     onScroll() {
-      this.$bus.$emit('room-content-scroll', this.$refs['content-div'].scrollTop)
+      const scrollTop = this.$refs['content-div'].scrollTop
+      this.$bus.$emit('room-content-scroll', scrollTop)
+
+      // 滚动到Feed标题位置时，将标题定位
+      if (scrollTop >= 108) {
+        this.feedTitleFixed = true
+      } else {
+        this.feedTitleFixed = false
+      }
     }
   },
   mounted() {
     this.$refs['content-div'].addEventListener('scroll', this.onScroll)
+
+    // 处理Feed标题栏宽度
+    const erd = elementResizeDetectorMaker()
+    erd.listenTo(document.getElementById('feed'), element => {
+      this.feedTitleWidth = element.offsetWidth + 'px'
+    })
   },
   beforeDestroy() {
     this.$refs['content-div'].removeEventListener('scroll', this.onScroll)
@@ -203,18 +237,30 @@ export default {
     &::-webkit-scrollbar-thumb
       background-color #ccc
 
-.myself-box
-  border 0
-  padding 20px
+.right-top
+  background-color #5a77a1
+  color #fff
+  position relative
+  padding-bottom var(--module-title-height)
 
-  >>> .el-card__body
-    display flex
-    flex-direction column
-    align-items center
+.myself-box
+  padding 20px
+  display flex
+  align-items center
+  justify-content center
 
   p
     font-size 24px
-    margin-top 15px
+    margin-left 15px
+
+.feed-title
+  background-color #5a77a1
+  box-sizing border-box
+  position absolute
+  bottom 0
+
+  &.fixed
+    top 70px
 
 .right-wrapper
   position fixed

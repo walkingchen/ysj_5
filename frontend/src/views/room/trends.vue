@@ -1,29 +1,36 @@
 <template>
-  <el-card id="topicOfDay">
+  <el-card id="trends">
     <h2
       class="module-title topic-title"
       :class="{ fixed: titleFixed }"
       :style="{ width: titleWidth }"
       @click="handleSkip"
-    >Topic of the Day</h2>
+    >Trends</h2>
 
     <div v-for="(item, index) in topicList" :key="item.id" class="topic-item">
-      <private-post-item :item="item">
-        <template #actions>
-          <div class="moment-actions">
-            <span class="count" v-if="item.comments.length > 0">{{ item.comments.length }}</span>
-            <button @click="toggleShowMoreComments(index)"><v-icon name="comment-dots" /></button>
-            <span class="count">{{ item.flags.count }}</span>
-            <button @click="flag(item)" :class="{ done: item.flagged }">
-              <v-icon :name="item.flagged ? 'flag' : 'regular/flag'" />
-            </button>
-            <span class="count">{{ item.likes.count }}</span>
-            <button @click="like(item)" :class="{ done: item.liked }">
-              <v-icon :name="item.liked ? 'thumbs-up' : 'regular/thumbs-up'" />
-            </button>
-          </div>
-        </template>
-      </private-post-item>
+      <p class="message-title">
+        <highlight :content="item.post_title" />
+      </p>
+      <p class="message-content">
+        <highlight :content="item.abstract" />
+        <span class="seeMore-btn" @click="showDetail(item.id)">See more</span>
+      </p>
+      <img v-if="item.photo_uri" :src="item.photo_uri" class="post-photo" />
+      <div class="actions">
+        <span class="message-time">{{ formatDate(item.created_at) }}</span>
+        <div class="moment-actions">
+          <span class="count" v-if="item.comments.length > 0">{{ item.comments.length }}</span>
+          <button @click="toggleShowMoreComments(index)"><v-icon name="comment-dots" /></button>
+          <span class="count">{{ item.flags.count }}</span>
+          <button @click="flag(item)" :class="{ done: item.flagged }">
+            <v-icon :name="item.flagged ? 'flag' : 'regular/flag'" />
+          </button>
+          <span class="count">{{ item.likes.count }}</span>
+          <button @click="like(item)" :class="{ done: item.liked }">
+            <v-icon :name="item.liked ? 'thumbs-up' : 'regular/thumbs-up'" />
+          </button>
+        </div>
+      </div>
 
       <comments ref="comments" :comments="item.comments" :post-id="item.id" @action-success="updateTopic" />
     </div>
@@ -38,8 +45,9 @@ import 'vue-awesome/icons/regular/flag'
 import 'vue-awesome/icons/thumbs-up'
 import 'vue-awesome/icons/regular/thumbs-up'
 import 'vue-awesome/icons/comment-dots'
-import privatePostItem from '@components/privatePostItem'
+import highlight from '@components/highlight'
 import comments from '@components/comments'
+import { formatDate } from '@assets/utils.js'
 import {
   getTopicContent,
   getPost,
@@ -51,7 +59,7 @@ import {
 
 export default {
   components: {
-    privatePostItem,
+    highlight,
     comments
   },
   data () {
@@ -63,6 +71,9 @@ export default {
   },
   computed: mapState(['currentTopic']),
   methods: {
+    formatDate (date) {
+      return formatDate(date)
+    },
     handleSkip () {
       document.getElementsByClassName('room-content')[0].scrollTop = 180
     },
@@ -82,6 +93,9 @@ export default {
           this.topicList.splice(index, 1, res.data.data)
         })
       }
+    },
+    showDetail (id) {
+      this.$bus.$emit('show-post-detail', id)
     },
     flag(item) {
       this.$confirm(`Are you sure to ${item.flagged ? 'unflag ' : 'flag'} this post?`, '', {
@@ -127,7 +141,7 @@ export default {
 
     // 处理标题栏宽度
     const erd = elementResizeDetectorMaker()
-    erd.listenTo(document.getElementById('topicOfDay'), element => {
+    erd.listenTo(document.getElementById('trends'), element => {
       this.titleWidth = element.offsetWidth + 'px'
     })
 
@@ -152,35 +166,39 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-#topicOfDay
+#trends
   border 0
 
   >>> .el-card__body
-    padding-top 59px
-    min-height 15px
+    padding-top var(--module-title-height)
     position relative
 
   .topic-title
+    background-color #5a77a1
+    color #fff
+    box-sizing border-box
     position absolute
     top 0
-    box-sizing border-box
-    padding-bottom 15px
 
     &.fixed
-      background-color #fff
-      cursor pointer
-      border-bottom 1px solid #ddd
-      position fixed
       top 70px
-      z-index 10
-
-      &:hover
-        box-shadow rgb(192, 192, 192, 0.1) 0px 0px 10px
 
 .topic-item
-  padding 0 10px
+  padding 20px
   border-bottom 1px solid #dcdfe6
 
   &:last-child
     border-bottom 0
+
+  .actions
+    display flex
+    align-items center
+    justify-content space-between
+    padding 10px 0
+
+  .message-time
+    color #999
+    font-size 14px
+    line-height 24px
+    display inline-block
 </style>
