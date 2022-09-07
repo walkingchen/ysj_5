@@ -1,4 +1,5 @@
 import csv
+import datetime
 import random
 import string
 
@@ -12,7 +13,8 @@ from sqlalchemy import desc
 from entity.Resp import Resp
 from entity.RoomResp import RoomResp
 from extensions import db, socketio, mail
-from models import Room, Timeline, RoomMember, RoomPrototype, Serializer, User, Redspot, PublicPost
+from models import Room, Timeline, RoomMember, RoomPrototype, Serializer, User, Redspot, PublicPost, PostComment, \
+    PostLike, PostFlag
 from service import get_friends, query_membership
 
 # error code: 401x
@@ -411,3 +413,52 @@ def export_room():
             csv_writer.writerow(line)
 
     return send_from_directory('static', 'export_room.csv', as_attachment=True)
+
+
+@swag_from('../swagger/room/room_stats.yaml')
+@bp_room.route('/api/room/room_stats', methods=['POST'])
+def room_stats():
+    data = request.get_json()
+    room_id = data['room_id']
+    room = Room.query.get(room_id)
+
+    today = datetime.datetime.today().date()
+    tomorrow = datetime.datetime.today().date() + datetime.timedelta(days=1)
+
+    day_activated = room.activated_at
+    day = today - day_activated.date()
+    day = day.days
+    # day = 8
+    room_members = RoomMember.query.filter_by(room_id=room.id).all()
+    member_ids = []
+    for member in room_members:
+        member_ids.append(member.user_id)
+
+    # room level
+    new_post_count = PublicPost.query.filter_by(room_id=room.id).filter_by(topic=day).count()
+
+    # comments
+    new_comment_count = PostComment.query.filter(PostComment.user_id.in_(tuple(member_ids))).filter(
+        PostComment.created_at >= today,
+        PostComment.created_at < tomorrow
+    ).count()
+
+    # likes
+    new_like_count = PostLike.query.filter(PostLike.user_id.in_(tuple(member_ids))).filter(
+        PostLike.created_at >= today,
+        PostLike.created_at < tomorrow
+    ).count()
+
+    # flags
+    new_flag_count = PostFlag.query.filter(PostFlag.user_id.in_(tuple(member_ids))).filter(
+        PostFlag.created_at >= today,
+        PostFlag.created_at < tomorrow
+    ).count()
+
+    return jsonify(Resp(result_code=2000, result_msg='success', data={
+        'new_post_count': new_post_count,
+        'new_comment_count': new_comment_count,
+        'new_like_count': new_like_count,
+        'new_flag_count': new_flag_count
+    }).__dict__)
+
