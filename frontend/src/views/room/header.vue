@@ -15,10 +15,11 @@
 
         <div class="topics-box">
           <el-badge v-for="(item, index) in _topics" :key="item" :is-dot="item !== currentTopic && hasNew[index]">
-            <el-tag
-              :effect="item === currentTopic ? 'light' : 'plain'"
+            <span
+              class="day-tag"
+              :class="{ actived: item === currentTopic }"
               @click="changeTopic(item, index)"
-            >Day {{ item }}</el-tag>
+            >Day {{ item }}</span>
           </el-badge>
         </div>
       </div>
@@ -105,13 +106,22 @@ header
   display flex
   justify-content space-between
 
-  .el-tag
+  .day-tag
+    display inline-block
     text-align center
     cursor pointer
-    height auto
     font-size 24px
+    height 38px
     line-height 38px
-    padding 0 15px
+    padding 0 25px
+    background-color #ecf5ff
+    border-radius 19px
+    color #409eff
+    transition .2s
+
+    &:hover, &.actived
+      background-color #409eff
+      color #fff
 
 .el-input
   width 250px

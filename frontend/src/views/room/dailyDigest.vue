@@ -1,6 +1,6 @@
 <template>
   <el-card v-if="imgUrl" class="dailyDigest-layout">
-    <h2 class="module-title">Daily poll results</h2>
+    <h2 class="module-title">Daily poll</h2>
     <div class="img-box">
       <img :src="imgUrl" />
     </div>
@@ -42,6 +42,9 @@ export default {
 .dailyDigest-layout
   border 0
   margin-bottom 20px
+
+  .module-title
+    border-bottom 1px solid #ebeef5
 
   .img-box
     padding 10px

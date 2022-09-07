@@ -1,17 +1,22 @@
 <template>
   <div class="privateMessageItem" :class="{unread: !item.read_status}">
-    <p class="nyt-title">
+    <div v-if="item.photo_uri" class="privateMessage-titleWithImage">
+      <img :src="item.photo_uri" class="post-photo" />
+      <p class="message-title">
+        <highlight :content="item.post_title" />
+      </p>
+    </div>
+    <p v-else class="message-title">
       <highlight :content="item.post_title" />
     </p>
-    <p class="nyt-content">
+    <p class="message-content">
       <highlight :content="item.abstract" />
-      <el-button size="mini" class="seeMore-btn" @click="showDetail">See More</el-button>
+      <span class="seeMore-btn" @click="showDetail">See more</span>
     </p>
-    <img v-if="item.photo_uri" :src="item.photo_uri.small" class="post-photo" />
-    <span class="message-time">{{ date }}</span>
+    <!-- <span class="message-time">{{ date }}</span>
     <div class="actions">
       <slot name="actions"></slot>
-    </div>
+    </div> -->
     <slot></slot>
   </div>
 </template>
@@ -50,17 +55,28 @@ export default {
 </style>
 <style lang="stylus">
 .privateMessageItem
+  border-radius 4px
   padding 10px
+  background-color #fff
 
-  .seeMore-btn
-    margin-left 5px
-    padding 4px 8px
+  .message-title,
+  .message-content
+    font-family EconSans
 
-  .message-time
-    color #999
-    font-size 14px
-    line-height 24px
-    display inline-block
+  // .message-time
+  //   color #999
+  //   font-size 14px
+  //   line-height 24px
+  //   display inline-block
+
+.privateMessage-titleWithImage
+  position relative
+
+  .message-title
+    position absolute
+    bottom 0
+    width 100%
+    color #fff
 
 .movingMessage
   position absolute !important

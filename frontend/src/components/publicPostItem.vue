@@ -13,7 +13,7 @@
           <span class="moment-time">{{ _item.time }}</span>
         </div>
         <div>
-          <p class="content">
+          <p class="message-content">
             <highlight :content="_item.content" />
           </p>
           <img v-if="_item.photo_uri" :src="_item.photo_uri.small" class="post-photo" />
@@ -214,10 +214,8 @@ export default {
       font-size 14px
       line-height 24px
 
-    .content
-      font-size 14px
-      line-height 1.5
-      white-space pre-wrap
+    .message-content
+      font-family Milo
 
 .shared-box
   border 1px solid #e4e7ed

@@ -1,11 +1,11 @@
 <template>
-  <el-card id="publicTimeline">
+  <el-card id="publicForum">
     <h2
       class="module-title public-title"
       :class="{ fixed: titleFixed }"
       :style="{ width: titleWidth }"
       @click="handleSkip"
-    >Public Post</h2>
+    >Public Forum</h2>
 
     <el-alert v-show="newCount > 0" type="info" center :closable="false" class="new-tip">
       <span slot="title">{{ newCount }} new messages, click <a href="javascript:;" @click="getNews">here</a> to update.</span>
@@ -53,7 +53,7 @@ export default {
   },
   methods: {
     handleSkip () {
-      document.getElementsByClassName('room-content')[0].scrollTop = document.getElementById('topicOfDay').offsetHeight + 130
+      document.getElementsByClassName('room-content')[0].scrollTop = document.getElementById('trends').offsetHeight + 130
     },
     async getMomentList() {
       this.getPostLoading = true
@@ -129,13 +129,13 @@ export default {
 
     // 处理标题栏宽度
     const erd = elementResizeDetectorMaker()
-    erd.listenTo(document.getElementById('publicTimeline'), element => {
+    erd.listenTo(document.getElementById('publicForum'), element => {
       this.titleWidth = element.offsetWidth + 'px'
     })
 
     this.$bus.$on('room-content-scroll', top => {
       // 滚动到标题位置时，将标题定位
-      if (top >= (document.getElementById('topicOfDay').offsetHeight + 131)) {
+      if (top >= (document.getElementById('trends').offsetHeight + 131)) {
         this.titleFixed = true
       } else {
         this.titleFixed = false
@@ -156,11 +156,14 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-#publicTimeline
+#publicForum
   margin-top 20px
 
+  .loading-layout
+    padding 20px 0 10px
+
   >>> .el-card__body
-    padding-top 59px
+    padding-top var(--module-title-height)
     min-height 15px
     position relative
 
@@ -168,18 +171,11 @@ export default {
     position absolute
     top 0
     box-sizing border-box
-    padding-bottom 15px
+    background-color #429cd9
+    color #fff
 
     &.fixed
-      background-color #fff
-      cursor pointer
-      border-bottom 1px solid #ddd
-      position fixed
-      top 145px
-      z-index 10
-
-      &:hover
-        box-shadow rgb(192, 192, 192, 0.1) 0px 0px 10px
+      top 132px
 
   .new-tip
     margin-top 10px
@@ -191,15 +187,7 @@ export default {
       &:hover
         text-decoration underline
 
-  .loading-layout
-    text-align center
-    padding 20px 0 10px
-    font-size 20px
-    color #409eff
-
   .nomore-layout
-    text-align center
-    padding 20px 0 10px
     color #999
 
 #moments-ul > li

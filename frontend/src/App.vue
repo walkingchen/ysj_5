@@ -39,14 +39,46 @@ export default {
   font-weight: 300;
   font-display: swap;
 }
+@font-face {
+  font-display: swap;
+  font-family: EconSans;
+  font-style: normal;
+  font-weight: 400;
+  src: url('./assets/econsans-primary-subset-rg.woff2') format('woff2');
+}
+@font-face {
+  font-display: swap;
+  font-family: EconSans;
+  font-style: normal;
+  font-weight: 700;
+  src: url(./assets/econsans-primary-subset-bd.woff2) format('woff2');
+}
+@font-face {
+  font-display: swap;
+  font-family: Milo;
+  font-style: normal;
+  font-weight: 400;
+  src: url('./assets/milo-primary-subset-rg.woff2') format('woff2');
+}
+@font-face {
+  font-display: swap;
+  font-family: Milo;
+  font-style: normal;
+  font-weight: 700;
+  src: url(./assets/milo-primary-subset-bd.woff2) format('woff2');
+}
+
+:root {
+  --module-title-height: 62px;
+}
 
 *
-  font-family Calibri, Arial, Helvetica, sans-serif
   padding 0
   margin 0
 
 #app
   color #333
+  font-family Calibri, Arial, Helvetica, sans-serif
 
   .el-card__body
     padding 0
@@ -69,9 +101,21 @@ ul, li
   width auto
 
 .module-title
-  font-size 36px
+  font-size 26px
   font-weight bold
-  padding 15px 20px 0
+  padding 0 20px
+  height var(--module-title-height)
+  line-height var(--module-title-height)
+
+  &.fixed
+    cursor pointer
+    position fixed !important
+    z-index 10
+    border-radius 8px
+
+    &:hover
+      box-shadow rgba(0, 0, 0, .5) 0px 0px 10px
+      z-index 11
 
 .nyt-title
   font-size 40px
@@ -88,4 +132,33 @@ ul, li
   font-family nyt-cheltenham, georgia, 'times new roman', times, serif
   white-space pre-wrap
   word-break break-word
+
+.message-title
+  font-size 26px
+  line-height 30px
+  font-weight 700
+
+.message-content
+  font-size 16px
+  font-weight 400
+  line-height 1.4
+  white-space pre-wrap
+
+.seeMore-btn
+  margin-left 10px
+  color #409eff
+  text-decoration underline
+  cursor pointer
+
+  &:hover
+    color #66b1ff
+
+.loading-layout
+  text-align center
+  font-size 20px
+  color #409eff
+
+.nomore-layout
+  text-align center
+  padding 10px 0
 </style>
