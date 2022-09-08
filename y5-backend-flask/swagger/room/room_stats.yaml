@@ -2,18 +2,11 @@
 tags:
   - Room
 parameters:
-  - name: body
-    in: body
-    required: false
-    schema:
-      id: room_stats
-      required:
-        - room_id
-      properties:
-        room_id:
-          type: integer
-          description: room id
-          required: true
+  - name: room_id
+    in: path
+    type: integer
+    required: true
+    description: room id
 responses:
   200:
     description: return room with details

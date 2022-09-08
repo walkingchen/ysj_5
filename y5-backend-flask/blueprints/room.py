@@ -416,9 +416,9 @@ def export_room():
 
 
 @swag_from('../swagger/room/room_stats.yaml')
-@bp_room.route('/api/room/room_stats', methods=['POST'])
+@bp_room.route('/api/room/room_stats', methods=['GET'])
 def room_stats():
-    data = request.get_json()
+    data = request.args
     room_id = data['room_id']
     room = Room.query.get(room_id)
 
