@@ -7,7 +7,7 @@
         <el-row :gutter="20">
           <el-col :span="6">
             <el-card>
-              <div class="right-top">
+              <div class="left-top">
                 <div class="myself-box">
                   <el-avatar
                     :size="45"
@@ -24,7 +24,10 @@
                 >Your Feed</h2>
               </div>
 
-              <private-message />
+              <div class="left-bottom">
+                <private-message />
+                <logos />
+              </div>
             </el-card>
           </el-col>
 
@@ -68,6 +71,7 @@ import dailyDigest from './dailyDigest'
 import privateMessage from './privateMessage'
 import addPublic from './addPublic'
 import trends from './trends'
+import logos from './logos'
 import publicForum from './publicTimeline'
 import connections from './connections'
 import postDetail from './postDetail'
@@ -79,6 +83,7 @@ export default {
     dailyDigest,
     addPublic,
     trends,
+    logos,
     privateMessage,
     publicForum,
     connections,
@@ -237,8 +242,9 @@ export default {
     &::-webkit-scrollbar-thumb
       background-color #ccc
 
-.right-top
-  background-color #5a77a1
+.left-top
+  background-image url('~@assets/left-top-bg.jpg')
+  background-size cover
   color #fff
   position relative
   padding-bottom var(--module-title-height)
@@ -254,13 +260,16 @@ export default {
     margin-left 15px
 
 .feed-title
-  background-color #5a77a1
   box-sizing border-box
   position absolute
   bottom 0
 
   &.fixed
+    background-color #6173a1
     top 70px
+
+.left-bottom
+  background-color #90abda
 
 .right-wrapper
   position fixed

@@ -188,7 +188,6 @@ export default {
 
 <style lang="stylus" scoped>
 .privateMessage-layout
-  background-color #90abda
   padding 10px 6px
 
   .new-tip
