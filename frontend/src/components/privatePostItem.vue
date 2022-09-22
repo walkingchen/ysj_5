@@ -61,7 +61,7 @@ export default {
 
   .message-title,
   .message-content
-    font-family EconSans
+    font-family Milo
 
   // .message-time
   //   color #999

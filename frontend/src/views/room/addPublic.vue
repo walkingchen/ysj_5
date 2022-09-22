@@ -1,5 +1,5 @@
 <template>
-  <el-card class="post-create-layout">
+  <el-card id="postForum" class="post-create-layout">
     <textarea
       rows="5"
       class="post-create-content"

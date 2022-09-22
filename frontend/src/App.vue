@@ -111,7 +111,8 @@ ul, li
     cursor pointer
     position fixed !important
     z-index 10
-    border-radius 8px
+    border-top-left-radius 4px
+    border-top-right-radius 4px
 
     &:hover
       box-shadow rgba(0, 0, 0, .5) 0px 0px 10px

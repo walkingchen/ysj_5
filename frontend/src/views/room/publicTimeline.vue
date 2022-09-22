@@ -3,7 +3,7 @@
     <h2
       class="module-title public-title"
       :class="{ fixed: titleFixed }"
-      :style="{ width: titleWidth }"
+      :style="{ width: titleWidth, top: fixedTitleTop + 'px' }"
       @click="handleSkip"
     >Public Forum</h2>
 
@@ -35,6 +35,7 @@ export default {
     return {
       titleFixed: false,
       titleWidth: '100%',
+      fixedTitleTop: 0,
       getPostLoading: true,
       moments: [],
       me_post_moments: [],
@@ -133,13 +134,37 @@ export default {
       this.titleWidth = element.offsetWidth + 'px'
     })
 
+    const appHeight = document.getElementById('app').offsetHeight
+    let trendsHeight = document.getElementById('trends').offsetHeight
+    let postForumHeight = document.getElementById('postForum').offsetHeight
     this.$bus.$on('room-content-scroll', top => {
-      // 滚动到标题位置时，将标题定位
-      if (top >= (document.getElementById('trends').offsetHeight + 131)) {
+      if (top < (20 + postForumHeight + 20 + trendsHeight + 20 + 62 - (appHeight - 70))) { // 向上滚动到 title 位置时，将 title 固定在底部
         this.titleFixed = true
-      } else {
+        this.fixedTitleTop = appHeight - 62
+      } else if (top >= (trendsHeight + 131)) { // 向下滚动到 title 位置时，将 title 固定在顶部
+        this.titleFixed = true
+        this.fixedTitleTop = 132
+      } else { // title 出现在可视区域内时取消上下固定
         this.titleFixed = false
+        this.fixedTitleTop = 0
       }
+    })
+
+    // 监听 trends 和 post dom 高度变化，判断是否将标题固定在底部
+    const title = document.getElementsByClassName('public-title')[0]
+    const fixedTitleOnBottom = () => {
+      if (title.getBoundingClientRect().top > appHeight - 62) {
+        this.titleFixed = true
+        this.fixedTitleTop = appHeight - 62
+      }
+    }
+    erd.listenTo(document.getElementById('trends'), () => {
+      trendsHeight = document.getElementById('trends').offsetHeight
+      fixedTitleOnBottom()
+    })
+    erd.listenTo(document.getElementById('postForum'), () => {
+      postForumHeight = document.getElementById('postForum').offsetHeight
+      fixedTitleOnBottom()
     })
   },
   watch: {
@@ -148,6 +173,8 @@ export default {
         this.me_post_moments = []
         this.moments = []
         this.newCount = 0
+        this.titleFixed = false
+        this.fixedTitleTop = 0
         this.getMomentList()
       }
     }
@@ -173,9 +200,6 @@ export default {
     box-sizing border-box
     background-color #429cd9
     color #fff
-
-    &.fixed
-      top 132px
 
   .new-tip
     margin-top 10px

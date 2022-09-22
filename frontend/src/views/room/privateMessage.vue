@@ -1,5 +1,5 @@
 <template>
-  <div v-show="messages.length > 0" id="feed" class="privateMessage-layout">
+  <div id="feed" class="privateMessage-layout">
     <el-alert v-show="newCount > 0" type="info" center :closable="false" class="new-tip">
       <span slot="title">{{ newCount }} new messages, click <a href="javascript:;" @click="getNews">here</a> to update.</span>
     </el-alert>

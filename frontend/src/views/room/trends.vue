@@ -7,7 +7,7 @@
       @click="handleSkip"
     >Trends</h2>
 
-    <div v-for="(item, index) in topicList" :key="item.id" class="topic-item">
+    <div v-for="(item, index) in topicList" :key="item.id + index" class="trend-item">
       <p class="message-title">
         <highlight :content="item.post_title" />
       </p>
@@ -183,12 +183,16 @@ export default {
     &.fixed
       top 70px
 
-.topic-item
+.trend-item
   padding 20px
   border-bottom 1px solid #dcdfe6
 
   &:last-child
     border-bottom 0
+
+  .message-title,
+  .message-content
+    font-family Milo
 
   .actions
     display flex
