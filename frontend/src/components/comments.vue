@@ -95,7 +95,6 @@ export default {
 
 <style lang="stylus" scoped>
 .comments-box
-  border-top 1px solid #e4e7ed
   padding 8px 0
 
 .user-portrait
@@ -120,13 +119,15 @@ export default {
 
     p
       font-size 12px
+      margin-top 8px
+      padding-left 13px
 
   &-input
     width calc(100% - 24px)
     height 36px
     background-color #f0f2f5
+    border 1px solid #dcdfe6
     border-radius 18px
-    border 0
     padding 0 12px
     outline none
 </style>

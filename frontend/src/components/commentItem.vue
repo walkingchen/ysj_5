@@ -7,23 +7,23 @@
         :icon="comment.user.avatar ? '' : 'el-icon-user-solid'"
         class="user-portrait" />
       <div class="comment-text">
-        <div>
-          <span class="user-name">{{ comment.user.nickname }}</span>
-          <span class="comment-time">{{ comment.created_at }}</span>
-        </div>
+        <div class="user-name">{{ comment.user.nickname }}</div>
         <p>
           <highlight :content="comment.comment_content" />
         </p>
 
-        <div class="moment-actions comment-actions">
-          <span class="count">{{ comment.flags.count }}</span>
-          <button @click="flag" :class="{ done: comment.flagged }">
-            <v-icon :name="comment.flagged ? 'flag' : 'regular/flag'" />
-          </button>
-          <span class="count">{{ comment.likes.count }}</span>
-          <button @click="like" :class="{ done: comment.liked }">
-            <v-icon :name="comment.liked ? 'thumbs-up' : 'regular/thumbs-up'" />
-          </button>
+        <div class="comment-timeAndActions">
+          <span class="comment-time">{{ comment.created_at }}</span>
+          <div class="moment-actions comment-actions">
+            <span class="count">{{ comment.flags.count }}</span>
+            <button @click="flag" :class="{ done: comment.flagged }">
+              <v-icon :name="comment.flagged ? 'flag' : 'regular/flag'" />
+            </button>
+            <span class="count">{{ comment.likes.count }}</span>
+            <button @click="like" :class="{ done: comment.liked }">
+              <v-icon :name="comment.liked ? 'thumbs-up' : 'regular/thumbs-up'" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -101,7 +101,7 @@ export default {
 
 <style lang="stylus" scoped>
 .comment-item
-  padding 8px
+  padding 8px 0
 
   .user-portrait
     margin-right 12px
@@ -111,16 +111,13 @@ export default {
 
   .comment-text
     flex 1
-    padding 10px
-    background-color #f0f2f5
-    border-radius 8px
+    border-bottom 1px solid #dcdfe6
 
     .user-name
       font-size 16px
       line-height 22px
 
     .comment-time
-      float right
       color #666
       font-size 12px
       line-height 22px
@@ -129,7 +126,14 @@ export default {
       line-height 1.5
       font-size 14px
 
+.comment-timeAndActions {
+  display flex
+  align-items center
+  justify-content space-between
+}
+
 .comment-actions
+  display flex
   font-size 14px
 
   button

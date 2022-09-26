@@ -124,7 +124,6 @@ ul, li
   line-height 48px
   font-family nyt-cheltenham, georgia, 'times new roman', times, serif
   margin-bottom 16px
-  font-style italic
 
 .nyt-content
   font-size 23px

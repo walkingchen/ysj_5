@@ -17,11 +17,11 @@
                   <p>{{ user.nickname }}</p>
                 </div>
                 <h2
-                  class="module-title feed-title"
+                  class="module-title private-title"
                   :class="{ fixed: feedTitleFixed }"
                   :style="{ width: feedTitleWidth }"
                   @click="handleSkip"
-                >Your Feed</h2>
+                >Private Message</h2>
               </div>
 
               <div class="left-bottom">
@@ -202,7 +202,7 @@ export default {
   mounted() {
     this.$refs['content-div'].addEventListener('scroll', this.onScroll)
 
-    // 处理Feed标题栏宽度
+    // 处理 Private Message 标题栏宽度
     const erd = elementResizeDetectorMaker()
     erd.listenTo(document.getElementById('feed'), element => {
       this.feedTitleWidth = element.offsetWidth + 'px'
@@ -259,7 +259,7 @@ export default {
     font-size 24px
     margin-left 15px
 
-.feed-title
+.private-title
   box-sizing border-box
   position absolute
   bottom 0
