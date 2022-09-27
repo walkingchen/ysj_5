@@ -10,7 +10,9 @@ export default new Vuex.Store({
     friends: [],
     topics: [],
     currentTopic: null,
-    searchKey: ''
+    searchKey: '',
+    getPostDetailLoading: false,
+    postDetailData: {}
   },
   mutations: {
     setSid (state, data) {
@@ -39,6 +41,12 @@ export default new Vuex.Store({
     },
     setSearchKey (state, data) {
       state.searchKey = data
+    },
+    setGetPostDetailLoading (state, value) {
+      state.getPostDetailLoading = value
+    },
+    setPostDetail (state, data) {
+      state.postDetailData = data
     }
   },
   actions: {

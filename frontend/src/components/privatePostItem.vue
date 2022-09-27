@@ -24,6 +24,7 @@
 <script>
 import highlight from './highlight'
 import { formatDate } from '@assets/utils.js'
+import { getPrivatePostDetail } from '@api/post'
 
 export default {
   props: ['item'],
@@ -37,7 +38,16 @@ export default {
   },
   methods: {
     showDetail () {
-      this.$bus.$emit('show-post-detail', this.item.id)
+      this.$bus.$emit('show-post-detail')
+      this.$store.commit('setGetPostDetailLoading', true)
+      getPrivatePostDetail(this.item.id).then(({ data }) => {
+        this.$store.commit('setGetPostDetailLoading', false)
+        const detailData = data.data
+        Object.assign(detailData, {
+          created_at: formatDate(data.data.created_at)
+        })
+        this.$store.commit('setPostDetail', detailData)
+      })
     }
   }
 }

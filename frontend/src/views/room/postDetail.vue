@@ -3,35 +3,34 @@
     :visible.sync="showDetailDialog"
     width="70%"
     class="detail-dialog">
-    <div v-loading="detailLoading">
+    <div v-loading="getPostDetailLoading">
       <div class="header">
         <div class="title">
           <h2 class="nyt-title">
-            <highlight :content="detailData.post_title" />
+            <highlight :content="postDetailData.post_title" />
           </h2>
-          <p class="createAt">{{ detailData.created_at }}</p>
+          <p class="createAt">{{ postDetailData.created_at }}</p>
         </div>
 
         <!-- <el-button
-          v-if="detailData.timeline_type === 1"
+          v-if="postDetailData.timeline_type === 1"
           size="mini"
           @click="share">
           Share
         </el-button> -->
       </div>
 
-      <img v-if="detailData.photo_uri" :src="detailData.photo_uri.medium" />
+      <img v-if="postDetailData.photo_uri" :src="postDetailData.photo_uri.medium" />
       <p class="nyt-content">
-        <highlight :content="detailData.post_content" />
+        <highlight :content="postDetailData.post_content" />
       </p>
     </div>
   </el-dialog>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import highlight from '@components/highlight'
-import { formatDate } from '@assets/utils.js'
-import { getPrivatePostDetail } from '@api/post'
 
 export default {
   components: {
@@ -39,37 +38,28 @@ export default {
   },
   data () {
     return {
-      showDetailDialog: false,
-      detailLoading: true,
-      detailData: {}
+      showDetailDialog: false
     }
   },
+  computed: mapState([
+    'getPostDetailLoading',
+    'postDetailData'
+  ]),
   methods: {
-    showDetail (id) {
-      this.showDetailDialog = true
-      this.detailLoading = true
-      getPrivatePostDetail(id).then(({ data }) => {
-        this.detailLoading = false
-        this.detailData = data.data
-        Object.assign(this.detailData, {
-          created_at: formatDate(data.data.created_at)
-        })
-      })
-    },
     share () {
       this.showDetailDialog = false
-      this.$bus.$emit('share', this.detailData.id)
+      this.$bus.$emit('share', this.postDetailData.id)
     }
   },
   mounted () {
-    this.$bus.$on('show-post-detail', id => {
-      this.showDetail(id)
+    this.$bus.$on('show-post-detail', () => {
+      this.showDetailDialog = true
     })
   },
   watch: {
     showDetailDialog (show) {
       if (!show) {
-        this.detailData = {}
+        this.$store.commit('setPostDetail', {})
       }
     }
   }
