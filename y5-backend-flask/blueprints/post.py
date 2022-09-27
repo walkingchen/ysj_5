@@ -885,16 +885,16 @@ class DailyPollApi(Resource):
         if message is not None:
             message_serialized = Serializer.serialize(message)
             if 'photo_uri' in message_serialized:
-                # fixme 测试daily poll图片
-                # message_serialized['photo_uri'] = '/uploads/' + message_serialized['photo_uri']
-                message_serialized['photo_uri'] = '/uploads/' + 'daily_poll.jpeg'
+                photo_uri = '/uploads/' + message_serialized['photo_uri']
+
         else:
-            message_serialized = None
+            # message_serialized = None
+            photo_uri = '/uploads/daily_poll.jpeg'
 
         resp = Resp(
             result_code=2000,
             result_msg="success",
-            data=message_serialized
+            data=photo_uri
         )
 
         return jsonify(resp.__dict__)
