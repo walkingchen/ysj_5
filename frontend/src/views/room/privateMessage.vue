@@ -123,7 +123,7 @@ export default {
       const ele = this.$refs.messageItem[index].$el
       const cloneEle = ele.cloneNode(true)
       cloneEle.classList.add('movingMessage')
-      cloneEle.style.width = (document.getElementsByClassName('topic-layout')[0].offsetWidth - 20) + 'px'
+      cloneEle.style.width = (document.getElementById('publicForum').offsetWidth - 32) + 'px'
       cloneEle.style.top = (ele.getBoundingClientRect().top + parentEle.scrollTop - 60) + 'px'
       cloneEle.style.left = ele.getBoundingClientRect().left + 'px'
       parentEle.appendChild(cloneEle)
@@ -145,7 +145,7 @@ export default {
           this.$bus.$emit('share-success', newPostId)
 
           const targetTop = document.getElementById('moments-ul').getBoundingClientRect().top + parentEle.scrollTop - 60
-          const targetLeft = document.getElementById('moments-ul').getBoundingClientRect().left
+          const targetLeft = document.getElementById('moments-ul').getBoundingClientRect().left + 16
           cloneEle.style.top = targetTop + 'px'
           cloneEle.style.left = targetLeft + 'px'
 
