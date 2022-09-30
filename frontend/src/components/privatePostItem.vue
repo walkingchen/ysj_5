@@ -1,7 +1,7 @@
 <template>
   <div class="privateMessageItem" :class="{unread: !item.read_status}">
     <div v-if="item.photo_uri" class="privateMessage-titleWithImage">
-      <img :src="item.photo_uri" class="post-photo" />
+      <img :src="item.photo_uri.small" class="post-photo" />
       <p class="message-title">
         <highlight :content="item.post_title" />
       </p>

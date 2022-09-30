@@ -15,7 +15,7 @@
         <highlight :content="item.abstract" />
         <span class="seeMore-btn" @click="showDetail(item.id)">See more</span>
       </p>
-      <img v-if="item.photo_uri" :src="item.photo_uri" class="post-photo" />
+      <img v-if="item.photo_uri" :src="item.photo_uri.small" class="post-photo" />
       <div class="actions">
         <span class="message-time">{{ formatDate(item.created_at) }}</span>
         <div class="moment-actions">
