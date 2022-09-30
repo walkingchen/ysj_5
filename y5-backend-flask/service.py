@@ -62,17 +62,19 @@ def process_photo(post):
     if post['photo_uri'] is not None:
         tmp = post['photo_uri']
 
-        post['photo_uri'] = '/uploads/' + tmp
+        post['photo_uri'] = {
+            'file': '/uploads/' + tmp,
+        }
 
-        # if not os.path.exists(config.UPLOAD_PATH + tmp.split('.')[0] + '_s.jpg'):
-        #     post['photo_uri']['small'] = '/uploads/' + tmp
-        # else:
-        #     post['photo_uri']['small'] = '/uploads/' + tmp.split('.')[0] + '_s.jpg'
-        #
-        # if not os.path.exists(config.UPLOAD_PATH + tmp.split('.')[0] + '_m.jpg'):
-        #     post['photo_uri']['medium'] = '/uploads/' + tmp
-        # else:
-        #     post['photo_uri']['medium'] = '/uploads/' + tmp.split('.')[0] + '_m.jpg'
+        if not os.path.exists(config.UPLOAD_PATH + tmp.split('.')[0] + '_s.jpg'):
+            post['photo_uri']['small'] = '/uploads/' + tmp
+        else:
+            post['photo_uri']['small'] = '/uploads/' + tmp.split('.')[0] + '_s.jpg'
+
+        if not os.path.exists(config.UPLOAD_PATH + tmp.split('.')[0] + '_m.jpg'):
+            post['photo_uri']['medium'] = '/uploads/' + tmp
+        else:
+            post['photo_uri']['medium'] = '/uploads/' + tmp.split('.')[0] + '_m.jpg'
 
 
 def process_post(post, user_id):
