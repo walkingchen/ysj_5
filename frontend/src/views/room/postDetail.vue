@@ -2,11 +2,12 @@
   <el-dialog
     :visible.sync="showDetailDialog"
     width="70%"
-    class="detail-dialog">
+    class="detail-dialog"
+  >
     <div v-loading="getPostDetailLoading">
       <div class="header">
         <div class="title">
-          <h2 class="nyt-title">
+          <h2 class="serif-font">
             <highlight :content="postDetailData.post_title" />
           </h2>
           <p class="createAt">{{ postDetailData.created_at }}</p>
@@ -21,7 +22,7 @@
       </div>
 
       <img v-if="postDetailData.photo_uri" :src="postDetailData.photo_uri.medium" />
-      <p class="nyt-content">
+      <p class="serif-font content">
         <highlight :content="postDetailData.post_content" />
       </p>
     </div>
@@ -94,6 +95,10 @@ export default {
 
     h2
       text-align center
+      font-size 40px
+      font-weight 700
+      line-height 48px
+      margin-bottom 16px
 
     .createAt
       text-align center
@@ -106,4 +111,11 @@ export default {
     margin 0 auto
     max-width 100%
     margin-bottom 10px
+
+  .content
+    font-size 23px
+    font-weight 300
+    line-height 30px
+    white-space pre-wrap
+    word-break break-word
 </style>

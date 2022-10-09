@@ -21,25 +21,25 @@
                   :class="{ fixed: feedTitleFixed }"
                   :style="{ width: feedTitleWidth }"
                   @click="handleSkip"
-                >Private Message</h2>
+                >Fact-check Picks for You</h2>
               </div>
 
               <div class="left-bottom">
-                <private-message />
+                <fact-check-picks />
                 <logos />
               </div>
             </el-card>
           </el-col>
 
           <el-col :span="12">
-            <add-public @on-success="addPostSuccess" />
-            <trends />
-            <public-forum ref="publicForum" />
+            <add-discussion @on-success="addPostSuccess" />
+            <review />
+            <group-discussion ref="publicForum" />
           </el-col>
           <el-col :span="6">
             <div class="right-wrapper">
-              <daily-digest />
-              <connections @start-chat="startChart" />
+              <daily-poll />
+              <friends @start-chat="startChart" />
             </div>
           </el-col>
         </el-row>
@@ -67,26 +67,26 @@ import { formatDate } from '@assets/utils.js'
 import { getRoomInfo } from '@api/room'
 import { getTopic } from '@api/post'
 import headerCom from './header'
-import dailyDigest from './dailyDigest'
-import privateMessage from './privateMessage'
-import addPublic from './addPublic'
-import trends from './trends'
+import dailyPoll from './dailyPoll'
+import factCheckPicks from './factCheckPicks'
+import addDiscussion from './addDiscussion'
+import review from './review'
 import logos from './logos'
-import publicForum from './publicTimeline'
-import connections from './connections'
+import groupDiscussion from './groupDiscussion'
+import friends from './friends'
 import postDetail from './postDetail'
 import instantChat from './instantChat'
 
 export default {
   components: {
     headerCom,
-    dailyDigest,
-    addPublic,
-    trends,
+    dailyPoll,
+    addDiscussion,
+    review,
     logos,
-    privateMessage,
-    publicForum,
-    connections,
+    factCheckPicks,
+    groupDiscussion,
+    friends,
     postDetail,
     instantChat
   },

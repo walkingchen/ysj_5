@@ -200,7 +200,7 @@ export default {
     .user-name
       display inline-block
       height 24px
-      font-size 18px
+      font-size 14px
       line-height 24px
 
     .shared-tip
@@ -216,6 +216,7 @@ export default {
 
     .public-message-content
       font-family EconSans
+      font-size 14px
 
 .shared-box
   border 1px solid #e4e7ed

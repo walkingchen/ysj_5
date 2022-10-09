@@ -1,5 +1,21 @@
 <template>
   <div class="comments-box">
+    <div class="post-comment">
+      <el-avatar
+        :size="32"
+        :src="user.avatar ? user.avatar : ''"
+        :icon="user.avatar ? '' : 'el-icon-user-solid'"
+        class="user-portrait" />
+      <div class="post-comment-input-box">
+        <input
+          v-model="comment_content"
+          placeholder="Write a comment..."
+          class="post-comment-input"
+          @keyup.enter="postComment" />
+        <p>Press Enter to post.</p>
+      </div>
+    </div>
+
     <ul>
       <comment-item
         v-for="comment in firstTwoComments"
@@ -17,22 +33,6 @@
           :comment="comment" />
       </div>
     </ul>
-
-    <div class="post-comment">
-      <el-avatar
-        :size="32"
-        :src="user.avatar ? user.avatar : ''"
-        :icon="user.avatar ? '' : 'el-icon-user-solid'"
-        class="user-portrait" />
-      <div class="post-comment-input-box">
-        <input
-          v-model="comment_content"
-          placeholder="Write a comment..."
-          class="post-comment-input"
-          @keyup.enter="postComment" />
-        <p>Press Enter to post.</p>
-      </div>
-    </div>
   </div>
 </template>
 

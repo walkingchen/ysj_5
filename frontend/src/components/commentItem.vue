@@ -114,7 +114,7 @@ export default {
     border-bottom 1px solid #dcdfe6
 
     .user-name
-      font-size 16px
+      font-size 12px
       line-height 22px
 
     .comment-time
@@ -124,7 +124,7 @@ export default {
 
     p
       line-height 1.5
-      font-size 14px
+      font-size 13px
 
 .comment-timeAndActions {
   display flex

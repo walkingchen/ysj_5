@@ -26,46 +26,24 @@ export default {
 
 <style lang="stylus">
 @font-face {
-  font-family: 'nyt-cheltenham';
-  src: url('./assets/cheltenham-italic-700.woff2') format('woff2');
-  font-style: italic;
-  font-weight: 700;
   font-display: swap;
-}
-@font-face {
-  font-family: 'nyt-cheltenham';
-  src: url('./assets/cheltenham-normal-300.woff2') format('woff2');
-  font-style: normal;
-  font-weight: 300;
-  font-display: swap;
-}
-@font-face {
-  font-display: swap;
-  font-family: EconSans;
+  font-family: Georgia;
   font-style: normal;
   font-weight: 400;
-  src: url('./assets/econsans-primary-subset-rg.woff2') format('woff2');
+  src: url('./assets/georgia-normal.ttf');
 }
 @font-face {
   font-display: swap;
-  font-family: EconSans;
+  font-family: Georgia;
   font-style: normal;
   font-weight: 700;
-  src: url(./assets/econsans-primary-subset-bd.woff2) format('woff2');
+  src: url('./assets/georgia-bold.ttf');
 }
 @font-face {
   font-display: swap;
-  font-family: Milo;
+  font-family: Apple;
   font-style: normal;
-  font-weight: 400;
-  src: url('./assets/milo-primary-subset-rg.woff2') format('woff2');
-}
-@font-face {
-  font-display: swap;
-  font-family: Milo;
-  font-style: normal;
-  font-weight: 700;
-  src: url(./assets/milo-primary-subset-bd.woff2) format('woff2');
+  src: url('./assets/apple.ttf');
 }
 
 :root {
@@ -78,7 +56,7 @@ export default {
 
 #app
   color #333
-  font-family Calibri, Arial, Helvetica, sans-serif
+  font-family Apple, Calibri, Arial, Helvetica, sans-serif
 
   .el-card__body
     padding 0
@@ -118,20 +96,8 @@ ul, li
       box-shadow rgba(0, 0, 0, .5) 0px 0px 10px
       z-index 11
 
-.nyt-title
-  font-size 40px
-  font-weight 700
-  line-height 48px
-  font-family nyt-cheltenham, georgia, 'times new roman', times, serif
-  margin-bottom 16px
-
-.nyt-content
-  font-size 23px
-  font-weight 300
-  line-height 30px
-  font-family nyt-cheltenham, georgia, 'times new roman', times, serif
-  white-space pre-wrap
-  word-break break-word
+.serif-font
+  font-family Georgia, 'times new roman', times, serif
 
 .message-title
   font-size 26px
