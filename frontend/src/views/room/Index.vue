@@ -18,8 +18,8 @@
                 </div>
                 <h2
                   class="module-title private-title"
-                  :class="{ fixed: feedTitleFixed }"
-                  :style="{ width: feedTitleWidth }"
+                  :class="{ fixed: factCheckPicksTitleFixed }"
+                  :style="{ width: factCheckPicksTitleWidth }"
                   @click="handleSkip"
                 >Fact-check Picks for You</h2>
               </div>
@@ -94,8 +94,8 @@ export default {
       socket: null,
       chatShow: false,
       startChatUser: {},
-      feedTitleFixed: false,
-      feedTitleWidth: '100%'
+      factCheckPicksTitleFixed: false,
+      factCheckPicksTitleWidth: '100%'
     }
   },
   computed: mapState([
@@ -191,9 +191,9 @@ export default {
 
       // 滚动到Feed标题位置时，将标题定位
       if (scrollTop >= 108) {
-        this.feedTitleFixed = true
+        this.factCheckPicksTitleFixed = true
       } else {
-        this.feedTitleFixed = false
+        this.factCheckPicksTitleFixed = false
       }
     }
   },
@@ -202,8 +202,8 @@ export default {
 
     // 处理 Private Message 标题栏宽度
     const erd = elementResizeDetectorMaker()
-    erd.listenTo(document.getElementById('feed'), element => {
-      this.feedTitleWidth = element.offsetWidth + 'px'
+    erd.listenTo(document.getElementById('factCheckPicks'), element => {
+      this.factCheckPicksTitleWidth = window.getComputedStyle(element).getPropertyValue('width')
     })
   },
   beforeDestroy() {

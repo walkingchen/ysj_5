@@ -147,7 +147,7 @@ export default {
     // 处理标题栏宽度
     const erd = elementResizeDetectorMaker()
     erd.listenTo(document.getElementById('review'), element => {
-      this.titleWidth = element.offsetWidth + 'px'
+      this.titleWidth = window.getComputedStyle(element).getPropertyValue('width')
     })
 
     this.$bus.$on('room-content-scroll', top => {

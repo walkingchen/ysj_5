@@ -130,7 +130,7 @@ export default {
 
     // 处理标题栏宽度
     elementResizeDetectorMaker().listenTo(document.getElementById('groupDiscussion'), element => {
-      this.titleWidth = element.offsetWidth + 'px'
+      this.titleWidth = window.getComputedStyle(element).getPropertyValue('width')
     })
 
     const appHeight = document.getElementById('app').offsetHeight
@@ -198,6 +198,7 @@ export default {
 
 <style lang="stylus" scoped>
 #groupDiscussion
+  border 0
   margin-top 20px
 
   .loading-layout

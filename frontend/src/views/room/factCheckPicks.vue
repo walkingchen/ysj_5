@@ -1,5 +1,5 @@
 <template>
-  <div id="feed" class="privateMessage-layout">
+  <div id="factCheckPicks" class="privateMessage-layout">
     <el-alert v-show="newCount > 0" type="info" center :closable="false" class="new-tip">
       <span slot="title">{{ newCount }} new messages, click <a href="javascript:;" @click="getNews">here</a> to update.</span>
     </el-alert>
@@ -189,6 +189,7 @@ export default {
 <style lang="stylus" scoped>
 .privateMessage-layout
   padding 10px 6px
+  box-sizing border-box
 
   .new-tip
     margin-top 10px
