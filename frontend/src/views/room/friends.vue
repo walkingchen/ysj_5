@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :style="{ paddingTop }">
     <el-card class="members-content">
       <h2 class="module-title">Friends</h2>
 
@@ -44,10 +44,12 @@ export default {
         new_flag_count: 0,
         new_like_count: 0,
         new_post_count: 0
-      }
+      },
+      paddingTop: 0
     }
   },
   computed: mapState([
+    'currentTopic',
     'user',
     'friends'
   ]),
@@ -56,6 +58,12 @@ export default {
       if (data.result_code === 2000) {
         this.statsData = data.data
       }
+    })
+  },
+  mounted () {
+    this.$bus.$on('dailyPollImgLoaded', () => {
+      console.log(11)
+      this.paddingTop = document.getElementById('dailyPoll').offsetHeight + 20 + 'px'
     })
   }
 }

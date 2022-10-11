@@ -1,8 +1,8 @@
 <template>
-  <el-card v-if="imgUrl" class="dailyDigest-layout">
+  <el-card v-if="imgUrl" id="dailyPoll">
     <h2 class="module-title">Daily poll</h2>
     <div class="img-box">
-      <img :src="imgUrl" />
+      <img ref="img" :src="imgUrl" />
     </div>
   </el-card>
 </template>
@@ -23,6 +23,13 @@ export default {
       getDailyPoll(localStorage.getItem('roomid'), this.currentTopic).then(({ data }) => {
         if (data.data && data.data.photo_uri) {
           this.imgUrl = data.data.photo_uri
+
+          this.$nextTick(() => {
+            this.$refs.img.onload = () => {
+              console.log(22)
+              this.$bus.$emit('dailyPollImgLoaded')
+            }
+          })
         }
       })
     }
@@ -39,9 +46,13 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.dailyDigest-layout
+#dailyPoll
+  position fixed
+  z-index 10
+  width calc(22.5% - 15px)
+  top 90px
+  right calc(5% + 5px)
   border 0
-  margin-bottom 20px
 
   .module-title
     border-bottom 1px solid #ebeef5

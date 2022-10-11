@@ -86,7 +86,7 @@ export default {
 
   .message-title
     position absolute
-    top 0
+    bottom 0
     width calc(100% - 20px)
     color #fff
 

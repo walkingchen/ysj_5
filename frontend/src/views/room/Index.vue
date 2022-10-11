@@ -34,13 +34,11 @@
           <el-col :span="12">
             <add-discussion @on-success="addPostSuccess" />
             <review />
-            <group-discussion ref="publicForum" />
+            <group-discussion ref="groupDiscussion" />
           </el-col>
           <el-col :span="6">
-            <div class="right-wrapper">
-              <daily-poll />
-              <friends @start-chat="startChart" />
-            </div>
+            <daily-poll />
+            <friends @start-chat="startChart" />
           </el-col>
         </el-row>
       </div>
@@ -164,7 +162,7 @@ export default {
       document.getElementsByClassName('room-content')[0].scrollTop = 105
     },
     addPostSuccess (id) {
-      this.$refs.publicForum.updatePost(id, 0)
+      this.$refs.groupDiscussion.updatePost(id, 0)
     },
     startChart(user) {
       this.chatShow = true
@@ -270,12 +268,6 @@ export default {
 
 .left-bottom
   background-color #90abda
-
-.right-wrapper
-  position fixed
-  width calc(22.5% - 15px)
-  top 90px
-  right calc(5% + 5px)
 </style>
 <style lang="stylus">
 .new-message

@@ -123,7 +123,7 @@ export default {
       const ele = this.$refs.messageItem[index].$el
       const cloneEle = ele.cloneNode(true)
       cloneEle.classList.add('movingMessage')
-      cloneEle.style.width = (document.getElementById('publicForum').offsetWidth - 32) + 'px'
+      cloneEle.style.width = (document.getElementById('groupDiscussion').offsetWidth - 32) + 'px'
       cloneEle.style.top = (ele.getBoundingClientRect().top + parentEle.scrollTop - 60) + 'px'
       cloneEle.style.left = ele.getBoundingClientRect().left + 'px'
       parentEle.appendChild(cloneEle)

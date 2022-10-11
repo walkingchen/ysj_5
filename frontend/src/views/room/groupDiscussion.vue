@@ -1,5 +1,5 @@
 <template>
-  <el-card id="publicForum">
+  <el-card id="groupDiscussion">
     <h2
       class="module-title public-title"
       :class="{ fixed: titleFixed }"
@@ -129,15 +129,16 @@ export default {
     })
 
     // 处理标题栏宽度
-    const erd = elementResizeDetectorMaker()
-    erd.listenTo(document.getElementById('publicForum'), element => {
+    elementResizeDetectorMaker().listenTo(document.getElementById('groupDiscussion'), element => {
       this.titleWidth = element.offsetWidth + 'px'
     })
 
     const appHeight = document.getElementById('app').offsetHeight
-    let reviewHeight = document.getElementById('review').offsetHeight
-    let postForumHeight = document.getElementById('postForum').offsetHeight
+    const reviewDom = document.getElementById('review')
+    let postForumHeight = document.getElementById('addDiscussion').offsetHeight
+    let reviewHeight = reviewDom.offsetHeight
     this.$bus.$on('room-content-scroll', top => {
+      console.log(reviewHeight)
       if (top < (20 + postForumHeight + 20 + reviewHeight + 20 + 62 - (appHeight - 70))) { // 向上滚动到 title 位置时，将 title 固定在底部
         this.titleFixed = true
         this.fixedTitleTop = appHeight - 62
@@ -150,7 +151,7 @@ export default {
       }
     })
 
-    // 监听 review 和 post dom 高度变化，判断是否将标题固定在底部
+    // 监听 review & add discussion dom 高度变化，判断是否将标题固定在底部
     const title = document.getElementsByClassName('public-title')[0]
     const fixedTitleOnBottom = () => {
       if (title.getBoundingClientRect().top > appHeight - 62) {
@@ -158,12 +159,25 @@ export default {
         this.fixedTitleTop = appHeight - 62
       }
     }
-    erd.listenTo(document.getElementById('review'), () => {
-      reviewHeight = document.getElementById('review').offsetHeight
+
+    // 监听 review dom 高度变化
+    const MutationObserver = window.MutationObserver || window.webkitMutationObserver || window.MozMutationObserver
+    const reviewMutationObserver = new MutationObserver(() => {
+      const height = reviewDom.offsetHeight
+      if (height === reviewHeight) return
+      reviewHeight = height
       fixedTitleOnBottom()
     })
-    erd.listenTo(document.getElementById('postForum'), () => {
-      postForumHeight = document.getElementById('postForum').offsetHeight
+    reviewMutationObserver.observe(reviewDom, {
+      childList: true, // 子节点的变动（新增、删除或者更改）
+      attributes: true, // 属性的变动
+      characterData: true, // 节点内容或节点文本的变动
+      subtree: true // 是否将观察器应用于该节点的所有后代节点
+    })
+
+    // 监听 add discussion dom 高度变化
+    elementResizeDetectorMaker().listenTo(document.getElementById('addDiscussion'), el => {
+      postForumHeight = el.offsetHeight
       fixedTitleOnBottom()
     })
   },
@@ -183,7 +197,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-#publicForum
+#groupDiscussion
   margin-top 20px
 
   .loading-layout

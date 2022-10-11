@@ -7,7 +7,7 @@
       @click="handleSkip"
     >Two Years in Review: Popular Post about COVID-19</h2>
 
-    <div v-for="(item, index) in topicList" :key="item.id + index" class="trend-item">
+    <div v-for="(item, index) in postList" :key="item.id + index" class="trend-item">
       <p class="message-title serif-font">
         <highlight :content="item.post_title" />
       </p>
@@ -64,7 +64,7 @@ export default {
   },
   data () {
     return {
-      topicList: [],
+      postList: [],
       titleFixed: false,
       titleWidth: '100%'
     }
@@ -79,18 +79,14 @@ export default {
     },
     updateTopicList () {
       getTopicContent(localStorage.getItem('roomid'), this.currentTopic).then(({ data }) => {
-        this.topicList = data.data.filter(item => item.topic === this.currentTopic)
-
-        if (this.topicList.length === 0) {
-          this.titleFixed = false
-        }
+        this.postList = data.data.filter(item => item.topic === this.currentTopic)
       })
     },
     updateTopic (id) {
-      const index = this.topicList.findIndex(ele => ele.id === id)
+      const index = this.postList.findIndex(ele => ele.id === id)
       if (index > -1) {
         getPost(id).then(res => {
-          this.topicList.splice(index, 1, res.data.data)
+          this.postList.splice(index, 1, res.data.data)
         })
       }
     },
@@ -136,7 +132,7 @@ export default {
       this.updateTopic(item.id)
     },
     toggleShowMoreComments (index) {
-      if (this.topicList[index].comments.length > 2) {
+      if (this.postList[index].comments.length > 2) {
         this.$refs.comments[index].toggleShowMoreComments()
       }
     }
@@ -156,7 +152,7 @@ export default {
 
     this.$bus.$on('room-content-scroll', top => {
       // 滚动到标题位置时，将标题定位
-      if (this.topicList.length > 0 && top >= 183) {
+      if (top >= 183) {
         this.titleFixed = true
       } else {
         this.titleFixed = false
@@ -166,7 +162,7 @@ export default {
   watch: {
     currentTopic (topic) {
       if (topic) {
-        this.topicList = []
+        this.postList = []
         this.updateTopicList()
       }
     }
