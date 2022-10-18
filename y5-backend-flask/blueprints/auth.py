@@ -90,6 +90,12 @@ def login():
         ).__dict__)
 
     room = Room.query.filter_by(id=member.room_id, activated=1).first()
+    if room is None:
+        return json.dumps(Resp(
+            result_code=2010,
+            result_msg='Room not activated, please wait for email notification',
+            data=None
+        ).__dict__)
 
     return json.dumps(Resp(
         result_code=2000,
