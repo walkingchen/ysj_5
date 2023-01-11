@@ -440,13 +440,19 @@ class TopicApi(Resource):
         updated_at = room.updated_at
         local_time = time.localtime(int(updated_at.timestamp()))
         activated_day = local_time.tm_yday
+        activated_year = local_time.tm_year
         print('activated_day = ' + str(activated_day))
 
         now = time.localtime(time.time())
         now_day = now.tm_yday
+        now_year = now.tm_year
         print('now_day = ' + str(now_day))
 
-        n = now_day - activated_day + 1
+        if now_year > activated_year:
+            n = now_day + 365 - activated_day + 1
+        else:
+            n = now_day - activated_day + 1
+
         if n > 8:
             n = 8
 
