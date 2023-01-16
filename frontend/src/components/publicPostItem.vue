@@ -91,7 +91,7 @@ export default {
       const _item = {
         id: item.id,
         unread: !item.read_status,
-        isShared: item.post_shared_id,
+        isShared: item.post_shared_id && item.post_shared,
         content: item.post_content,
         photo_uri: item.photo_uri,
         flagged: item.flagged,

@@ -26,7 +26,6 @@ export default {
 
           this.$nextTick(() => {
             this.$refs.img.onload = () => {
-              console.log(22)
               this.$bus.$emit('dailyPollImgLoaded')
             }
           })

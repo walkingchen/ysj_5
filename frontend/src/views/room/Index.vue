@@ -4,34 +4,29 @@
 
     <div class="room-content" ref="content-div">
       <div class="layout">
+        <div class="left-content">
+          <div class="left-top">
+            <div class="myself-box">
+              <el-avatar
+                :size="45"
+                :src="user.avatar ? user.avatar : ''"
+                :icon="user.avatar ? '' : 'el-icon-user-solid'"
+              />
+              <p>{{ user.nickname }}</p>
+            </div>
+            <h2 class="module-title private-title">Fact-check Picks for You</h2>
+          </div>
+
+          <div class="left-bottom">
+            <div class="left-bottom-content">
+              <fact-check-picks />
+              <logos />
+            </div>
+          </div>
+        </div>
+
         <el-row :gutter="20">
-          <el-col :span="6">
-            <el-card>
-              <div class="left-top">
-                <div class="myself-box">
-                  <el-avatar
-                    :size="45"
-                    :src="user.avatar ? user.avatar : ''"
-                    :icon="user.avatar ? '' : 'el-icon-user-solid'"
-                  />
-                  <p>{{ user.nickname }}</p>
-                </div>
-                <h2
-                  class="module-title private-title"
-                  :class="{ fixed: factCheckPicksTitleFixed }"
-                  :style="{ width: factCheckPicksTitleWidth }"
-                  @click="handleSkip"
-                >Fact-check Picks for You</h2>
-              </div>
-
-              <div class="left-bottom">
-                <fact-check-picks />
-                <logos />
-              </div>
-            </el-card>
-          </el-col>
-
-          <el-col :span="12">
+          <el-col :span="12" :offset="6">
             <add-discussion @on-success="addPostSuccess" />
             <review />
             <group-discussion ref="groupDiscussion" />
@@ -93,9 +88,7 @@ export default {
       roomInfo: [],
       socket: null,
       chatShow: false,
-      startChatUser: {},
-      factCheckPicksTitleFixed: false,
-      factCheckPicksTitleWidth: '100%'
+      startChatUser: {}
     }
   },
   computed: mapState([
@@ -188,13 +181,6 @@ export default {
     onScroll() {
       const scrollTop = this.$refs['content-div'].scrollTop
       this.$bus.$emit('room-content-scroll', scrollTop)
-
-      // 滚动到Feed标题位置时，将标题定位
-      if (scrollTop >= 108) {
-        this.factCheckPicksTitleFixed = true
-      } else {
-        this.factCheckPicksTitleFixed = false
-      }
     }
   },
   mounted() {
@@ -240,12 +226,22 @@ export default {
     &::-webkit-scrollbar-thumb
       background-color #ccc
 
+.left-content
+  position fixed
+  z-index 5
+  top 90px
+  left 5%
+  bottom 0
+  width calc(22.5% - 15px)
+  border-radius 4px
+  overflow hidden
+  display flex
+  flex-direction column
+
 .left-top
   background-image url('~@assets/left-top-bg.jpg')
   background-size cover
   color #fff
-  position relative
-  padding-bottom var(--module-title-height)
 
 .myself-box
   padding 20px
@@ -259,15 +255,24 @@ export default {
 
 .private-title
   box-sizing border-box
-  position absolute
-  bottom 0
-
-  &.fixed
-    background-color #6173a1
-    top 70px
 
 .left-bottom
-  background-color #90abda
+  flex 1
+  overflow auto
+
+  &::-webkit-scrollbar
+    width 6px
+
+  &::-webkit-scrollbar-track
+    background-color #90abda
+
+  &::-webkit-scrollbar-thumb
+    border-radius 3px
+    background-color rgba(255, 255, 255, .5)
+
+  &-content
+    background-color #90abda
+
 </style>
 <style lang="stylus">
 .new-message

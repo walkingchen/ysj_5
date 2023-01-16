@@ -239,4 +239,11 @@ export default {
 
   >>> .el-dialog__footer
     padding 0 0 15px
+
+  >>> .privateMessage-titleWithImage
+    width fit-content
+
+  >>> .privateMessage-titleWithImage img
+    width auto
+    max-width 100%
 </style>

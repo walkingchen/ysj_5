@@ -178,18 +178,18 @@ $light_gray = #eee
     font-weight bold
 
   .svg-container
-    padding 6px 5px 6px 15px
-    color $dark_gray
-    vertical-align middle
-    width 30px
-    display inline-block
+    padding-left 15px
+    fill $dark_gray
+    width 20px
+    position relative
+    top 4px
 
   .show-pwd
     position absolute
     right 10px
     top 7px
     font-size 16px
-    color $dark_gray
+    fill $dark_gray
     cursor pointer
     user-select none
 

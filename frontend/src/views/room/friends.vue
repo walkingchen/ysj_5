@@ -49,7 +49,6 @@ export default {
     }
   },
   computed: mapState([
-    'currentTopic',
     'user',
     'friends'
   ]),
@@ -62,7 +61,6 @@ export default {
   },
   mounted () {
     this.$bus.$on('dailyPollImgLoaded', () => {
-      console.log(11)
       this.paddingTop = document.getElementById('dailyPoll').offsetHeight + 20 + 'px'
     })
   }

@@ -183,7 +183,7 @@ export default {
         const fileForm = new FormData()
         fileForm.append('file', file)
 
-        const id = this.uploadList.length
+        const id = new Date().getTime()
         this.uploadList.push({
           id,
           name: file.name,
