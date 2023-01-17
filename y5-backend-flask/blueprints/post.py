@@ -8,6 +8,7 @@ from flasgger import swag_from
 from flask import Blueprint, request, json, jsonify, current_app
 from flask_login import current_user, login_required
 from flask_restful import Api, Resource
+from sqlalchemy.orm.exc import ObjectDeletedError
 
 import config
 from entity.Resp import Resp
@@ -923,8 +924,11 @@ def import_private_messages():
     # 清空pool
     messages_exisited = PrivateMessage.query.all()
     for message in messages_exisited:
-        db.session.delete(message)
-        db.session.commit()
+        try:
+            db.session.delete(message)
+            db.session.commit()
+        except ObjectDeletedError as e:
+            print('message already deleted')
 
     for key, line in enumerate(csv_input):
         if key == 0:

@@ -1,18 +1,15 @@
 import datetime
 import os
-import time
 
 from flasgger import Swagger
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from flask_apscheduler import APScheduler
 from flask_babelex import Babel
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
 from flask_cors import CORS
-from flask_login import current_user
-from flask_mail import Mail, Message
+from flask_mail import Message
 from git import Repo
 
 import config
@@ -21,11 +18,10 @@ from blueprints.mail import bp_mail
 from blueprints.post import bp_post
 from blueprints.room import bp_room
 from blueprints.user import bp_user
-from entity.Resp import Resp
 from room_socketio import RoomNamespace
 from extensions import db, cache, socketio, scheduler, mail
-from models import User, Room, RoomPrototype, RoomMember, Timeline, PublicPost, PostComment, PostLike, \
-    SystemMessage, PrivateMessage, PostFlag, PrivatePost, SystemPost, PollPost, CommentStatus, PostStatus, MailTemplate
+from models import User, Room, RoomPrototype, RoomMember, PublicPost, PostComment, PostLike, \
+    SystemMessage, PrivateMessage, PostFlag, PrivatePost, PollPost, MailTemplate
 
 app = Flask(__name__)
 
@@ -224,4 +220,4 @@ with app.app_context():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')
