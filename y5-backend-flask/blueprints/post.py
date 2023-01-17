@@ -922,13 +922,13 @@ def import_private_messages():
     csv_input = csv.reader(stream)
 
     # 清空pool
-    messages_exisited = PrivateMessage.query.all()
-    for message in messages_exisited:
-        try:
-            db.session.delete(message)
-            db.session.commit()
-        except ObjectDeletedError as e:
-            print('message already deleted')
+    # messages_exisited = PrivateMessage.query.all()
+    # for message in messages_exisited:
+    #     try:
+    #         db.session.delete(message)
+    #         db.session.commit()
+    #     except ObjectDeletedError as e:
+    #         print('message already deleted')
 
     for key, line in enumerate(csv_input):
         if key == 0:
