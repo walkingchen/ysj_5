@@ -932,8 +932,8 @@ def import_private_messages():
 
     for key, line in enumerate(csv_input):
         if key == 0:
-            if line != ['id', 'message_id', 'message_title', 'message_summary', 'message_content', 'photo_uri']:
-                return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
+            # if line != ['id', 'message_id', 'message_title', 'message_summary', 'message_content', 'photo_uri']:
+            #     return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
             continue
 
         message_id = line[1]
@@ -966,8 +966,8 @@ def import_members_with_messages():
     room_cleaned = []
     for key, line in enumerate(csv_input):
         if key == 0:
-            if line != ['id', 'user_id', 'room_type', 'room_id', 'seat_no', 'day', 'topic_no', 'message_id']:
-                return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
+            # if line != ['id', 'user_id', 'room_type', 'room_id', 'seat_no', 'day', 'topic_no', 'message_id']:
+            #     return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
             continue
         # id,user_id,room_type,room_id,seat_no,day,topic_no,message_id
         user_id = line[1]
@@ -1041,8 +1041,8 @@ def import_post_daily_pool():
 
     for key, line in enumerate(csv_input):
         if key == 0:
-            if line != ['id', 'message_id', 'message_title', 'message_summary', 'message_content', 'photo_uri']:
-                return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
+            # if line != ['id', 'message_id', 'message_title', 'message_summary', 'message_content', 'photo_uri']:
+            #     return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
             continue
 
         message_id = line[1]
@@ -1074,8 +1074,8 @@ def import_post_daily_by_room():
     room_cleaned = []
     for key, line in enumerate(csv_input):
         if key == 0:
-            if line != ['id', 'room_id', 'day', 'topic_no', 'message_id']:
-                return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
+            # if line != ['id', 'room_id', 'day', 'topic_no', 'message_id']:
+            #     return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
             continue
         room_id = line[1]
         topic = line[2]     # day
@@ -1164,8 +1164,8 @@ def import_poll_picture():
     room_cleaned = []
     for key, line in enumerate(csv_input):
         if key == 0:
-            if line != ['id', 'message_id', 'room_id', 'day', 'topic_no', 'photo_uri']:
-                return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
+            # if line != ['id', 'message_id', 'room_id', 'day', 'topic_no', 'photo_uri']:
+            #     return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
             continue
         room_id = line[2]
 
