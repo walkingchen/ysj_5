@@ -55,7 +55,6 @@
 <script>
 import { mapState } from 'vuex'
 import io from 'socket.io-client'
-import elementResizeDetectorMaker from 'element-resize-detector'
 import { formatDate } from '@assets/utils.js'
 import { getRoomInfo } from '@api/room'
 import { getTopic } from '@api/post'
@@ -185,12 +184,6 @@ export default {
   },
   mounted() {
     this.$refs['content-div'].addEventListener('scroll', this.onScroll)
-
-    // 处理 Private Message 标题栏宽度
-    const erd = elementResizeDetectorMaker()
-    erd.listenTo(document.getElementById('factCheckPicks'), element => {
-      this.factCheckPicksTitleWidth = window.getComputedStyle(element).getPropertyValue('width')
-    })
   },
   beforeDestroy() {
     this.$refs['content-div'].removeEventListener('scroll', this.onScroll)

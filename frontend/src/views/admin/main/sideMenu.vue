@@ -75,6 +75,10 @@ export default {
 .el-menu .fa-icon
   width 20px
   margin-right 5px
+  fill rgb(191, 203, 217)
+
+.el-menu-item.is-active .fa-icon
+  fill #409eff
 
 .el-menu-item-group__title
   padding 0 !important

@@ -84,6 +84,9 @@ ul, li
   padding 0 20px
   height var(--module-title-height)
   line-height var(--module-title-height)
+  text-overflow ellipsis
+  overflow hidden
+  white-space nowrap
 
   &.fixed
     cursor pointer

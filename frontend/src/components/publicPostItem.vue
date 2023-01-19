@@ -18,7 +18,8 @@
           </p>
           <img v-if="_item.photo_uri" :src="_item.photo_uri.small" class="post-photo" />
           <div v-if="_item.isShared" class="shared-box">
-            <private-post-item :item="_item.postSource" />
+            <private-post-item v-if="_item.postSource" :item="_item.postSource" />
+            <el-empty v-else description="Content deleted." :image-size="100" />
           </div>
         </div>
       </div>
@@ -91,7 +92,7 @@ export default {
       const _item = {
         id: item.id,
         unread: !item.read_status,
-        isShared: item.post_shared_id && item.post_shared,
+        isShared: item.post_shared_id,
         content: item.post_content,
         photo_uri: item.photo_uri,
         flagged: item.flagged,

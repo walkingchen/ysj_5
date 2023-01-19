@@ -113,7 +113,6 @@ import {
   importDailyPictures,
   importDailyAssign
 } from '@api/post.js'
-const path = require('path')
 
 export default {
   data () {
@@ -178,8 +177,9 @@ export default {
     },
     async uploadFile (e) {
       const file = e.target.files[0]
+      const extname = file.name.substring(file.name.lastIndexOf('.') + 1)
 
-      if (path.extname(file.name) === this.accept) {
+      if (extname === this.accept) {
         const fileForm = new FormData()
         fileForm.append('file', file)
 
@@ -259,6 +259,11 @@ export default {
   .fa-icon
     margin-right 5px
     height 14px
+    vertical-align bottom
+    fill #409eff
+
+  &:hover .fa-icon
+    fill #fff
 
 .uploadBtns
   display flex

@@ -1,5 +1,5 @@
 <template>
-  <div id="factCheckPicks" class="privateMessage-layout">
+  <div class="privateMessage-layout">
     <el-alert v-show="newCount > 0" type="info" center :closable="false" class="new-tip">
       <span slot="title">{{ newCount }} new messages, click <a href="javascript:;" @click="getNews">here</a> to update.</span>
     </el-alert>
@@ -23,6 +23,7 @@
     <el-dialog
       :visible.sync="showShareDialog"
       center
+      append-to-body
       class="share-dialog">
       <div class="moments-item">
         <div class="moments-item-content">
