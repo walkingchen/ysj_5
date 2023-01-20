@@ -177,7 +177,7 @@ export default {
     },
     async uploadFile (e) {
       const file = e.target.files[0]
-      const extname = file.name.substring(file.name.lastIndexOf('.') + 1)
+      const extname = file.name.substring(file.name.lastIndexOf('.'))
 
       if (extname === this.accept) {
         const fileForm = new FormData()
