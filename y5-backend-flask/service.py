@@ -1,4 +1,5 @@
 import csv
+import logging
 import os
 
 from flask import json
@@ -16,8 +17,9 @@ def get_friends(room, user_id):
     prototype = RoomPrototype.query.filter_by(prototype_id=room.room_type).first()
     friendship = json.loads(prototype.friendship)
     member = RoomMember.query.filter_by(room_id=room.id, user_id=user_id).first()
-    if member is None:
-        return None
+    # FIXME
+    logging.info("room id = %d" % room.id)
+    logging.info("user id = %d" % user_id)
 
     friend_seats = friendship[str(member.seat_no)]
     friends = RoomMember.query.filter_by(room_id=room.id).filter(RoomMember.seat_no.in_(friend_seats)).all()

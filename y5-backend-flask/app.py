@@ -1,4 +1,5 @@
 import datetime
+import logging
 import os
 
 from flasgger import Swagger
@@ -25,6 +26,10 @@ from models import User, Room, RoomPrototype, RoomMember, PublicPost, PostCommen
 
 app = Flask(__name__)
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logging.basicConfig()
+
 app.config.from_object('config')
 Swagger(app)
 babel = Babel(app)
@@ -33,6 +38,7 @@ cors = CORS(app)
 mail.init_app(app)
 Bootstrap(app)
 cache.init_app(app)
+
 socketio.init_app(app, engineio_logger=True)
 socketio.on_namespace(RoomNamespace('/'))
 login_manager.init_app(app)
