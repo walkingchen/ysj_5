@@ -15,9 +15,10 @@ from models import RoomPrototype, RoomMember, PostComment, Serializer, User, Pos
 def get_friends(room, user_id):
     prototype = RoomPrototype.query.filter_by(prototype_id=room.room_type).first()
     friendship = json.loads(prototype.friendship)
-    print("room_id = " + str(room.id))
-    print("user_id = " + str(user_id))
     member = RoomMember.query.filter_by(room_id=room.id, user_id=user_id).first()
+    if member is None:
+        return None
+
     friend_seats = friendship[str(member.seat_no)]
     friends = RoomMember.query.filter_by(room_id=room.id).filter(RoomMember.seat_no.in_(friend_seats)).all()
 
