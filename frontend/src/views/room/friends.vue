@@ -120,13 +120,10 @@ export default {
     justify-content center
     align-items center
     padding 25px 0
-
-    h4
-      font-size 20px
+    font-size 16px
 
     h5
-      margin-top 20px
-      font-size 18px
+      margin-top 18px
 
     span
       color #f56c6c

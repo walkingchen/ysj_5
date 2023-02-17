@@ -103,7 +103,7 @@ ul, li
   font-family Georgia, 'times new roman', times, serif
 
 .message-title
-  font-size 26px
+  font-size 24px
   line-height 30px
   font-weight 700
 
