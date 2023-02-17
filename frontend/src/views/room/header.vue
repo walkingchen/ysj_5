@@ -110,7 +110,7 @@ header
     display inline-block
     text-align center
     cursor pointer
-    font-size 24px
+    font-size 20px
     height 38px
     line-height 38px
     padding 0 25px

@@ -80,6 +80,7 @@ export default {
 
 .privateMessage-titleWithImage
   position relative
+  display flex
 
   img
     width 100%
@@ -89,6 +90,7 @@ export default {
     bottom 0
     width calc(100% - 20px)
     color #fff
+    background-color rgba(0, 0, 0, .5)
 
 .movingMessage
   position absolute !important

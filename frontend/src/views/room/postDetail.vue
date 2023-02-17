@@ -95,9 +95,9 @@ export default {
 
     h2
       text-align center
-      font-size 40px
+      font-size 32px
       font-weight 700
-      line-height 48px
+      line-height 44px
       margin-bottom 16px
 
     .createAt
@@ -113,9 +113,9 @@ export default {
     margin-bottom 10px
 
   .content
-    font-size 23px
+    font-size 20px
     font-weight 300
-    line-height 30px
+    line-height 28px
     white-space pre-wrap
     word-break break-word
 </style>

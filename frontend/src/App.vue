@@ -79,7 +79,7 @@ ul, li
   width auto
 
 .module-title
-  font-size 26px
+  font-size 20px
   font-weight bold
   padding 0 20px
   height var(--module-title-height)
@@ -110,7 +110,7 @@ ul, li
 .message-content
   font-size 16px
   font-weight 400
-  line-height 1.4
+  line-height 20px
   white-space pre-wrap
 
 .seeMore-btn
