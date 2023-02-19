@@ -929,6 +929,8 @@ def import_private_messages():
     #         db.session.commit()
     #     except ObjectDeletedError as e:
     #         print('message already deleted')
+    db.session.query(PrivateMessage).delete()
+    db.session.commit()
 
     for key, line in enumerate(csv_input):
         if key == 0:
@@ -982,10 +984,11 @@ def import_members_with_messages():
             room = Room.query.filter_by(id=room_id).first()     # id, not room_id
             if room.activated == 1:
                 return jsonify(Resp(result_code=4000, result_msg="room activated", data=room.serialize()).__dict__)
-            messages_existed = PrivatePost.query.filter_by(room_id=room_id).all()
-            for message in messages_existed:
-                db.session.delete(message)
-                db.session.commit()
+            # messages_existed = PrivatePost.query.filter_by(room_id=room_id).all()
+            # for message in messages_existed:
+            #     db.session.delete(message)
+            #     db.session.commit()
+            db.session.query(PrivateMessage).filter_by(room_id=room_id).delete()
             room_cleaned.append(room_id)
 
         user = User.query.filter_by(id=user_id).first()
@@ -1034,10 +1037,12 @@ def import_post_daily_pool():
     csv_input = csv.reader(stream)
 
     # 清空pool
-    messages_exisited = SystemMessage.query.all()
-    for message in messages_exisited:
-        db.session.delete(message)
-        db.session.commit()
+    # messages_exisited = SystemMessage.query.all()
+    # for message in messages_exisited:
+    #     db.session.delete(message)
+    #     db.session.commit()
+    db.session.query(SystemMessage).delete()
+    db.session.commit()
 
     for key, line in enumerate(csv_input):
         if key == 0:
@@ -1086,10 +1091,12 @@ def import_post_daily_by_room():
             room = Room.query.filter_by(id=room_id).first()  # id, not room_id
             if room.activated == 1:
                 return jsonify(Resp(result_code=4000, result_msg="room activated, room id: " + str(room_id), data=room.serialize()).__dict__)
-            messages_existed = PublicPost.query.filter_by(room_id=room_id, is_system_post=1).all()
-            for message in messages_existed:
-                db.session.delete(message)
-                db.session.commit()
+            # messages_existed = PublicPost.query.filter_by(room_id=room_id, is_system_post=1).all()
+            # for message in messages_existed:
+            #     db.session.delete(message)
+            #     db.session.commit()
+            db.session.query(PublicPost).filter_by(room_id=room_id, is_system_post=1).delete()
+            db.session.commit()
             room_cleaned.append(room_id)
 
         system_message = SystemMessage.query.filter_by(message_id=message_id).first()
