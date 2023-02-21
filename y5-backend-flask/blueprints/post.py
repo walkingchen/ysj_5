@@ -1079,12 +1079,13 @@ def import_post_daily_by_room():
     room_cleaned = []
     for key, line in enumerate(csv_input):
         if key == 0:
+            # fixed: id	user_id	room_type	room_id	seat_no	day	topic_no	message_id
             # if line != ['id', 'room_id', 'day', 'topic_no', 'message_id']:
             #     return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
             continue
-        room_id = line[1]
-        topic = line[2]     # day
-        message_id = line[4]
+        room_id = line[3]
+        topic = line[6]     # day
+        message_id = line[7]
 
         # clean by room_id
         if room_id not in room_cleaned:
