@@ -1171,10 +1171,11 @@ def import_poll_picture():
     room_cleaned = []
     for key, line in enumerate(csv_input):
         if key == 0:
+            # fixme 字段修改为：id room_id day topic_no photo_uri
             # if line != ['id', 'message_id', 'room_id', 'day', 'topic_no', 'photo_uri']:
             #     return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
             continue
-        room_id = line[2]
+        room_id = line[1]
 
         # clean by room_id
         if room_id not in room_cleaned:
@@ -1182,18 +1183,20 @@ def import_poll_picture():
             if room.activated == 1:
                 return jsonify(Resp(result_code=4000, result_msg="room activated, room id: " + str(room_id),
                                 data=room.serialize()).__dict__)
-            messages_existed = PollPost.query.filter_by(room_id=room_id).all()
-            for message in messages_existed:
-                db.session.delete(message)
-                db.session.commit()
+            # messages_existed = PollPost.query.filter_by(room_id=room_id).all()
+            # for message in messages_existed:
+            #     db.session.delete(message)
+            #     db.session.commit()
+            db.session.query(PollPost).filter_by(room_id=room_id).delete()
+            db.session.commit()
             room_cleaned.append(room_id)
 
         topic = line[3]     # day
-        message_id = line[1]
-        photo_uri = line[5]
+        # message_id = line[1]  # no message_id
+        photo_uri = line[4]
 
         post = PollPost(
-            message_id=message_id,
+            # message_id=message_id,
             # timeline_type=config.TIMELINE_PRI,
             # post_type=1,  # fixme
             # user_id=participant.id,
