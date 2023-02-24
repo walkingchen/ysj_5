@@ -13,7 +13,6 @@
       </p>
       <p class="message-content serif-font">
         <highlight :content="item.abstract" />
-        <span class="seeMore-btn" @click="showDetail(item.id)">See more</span>
       </p>
       <img v-if="item.photo_uri" :src="item.photo_uri.small" class="post-photo" />
       <div class="actions">
@@ -89,18 +88,6 @@ export default {
           this.postList.splice(index, 1, res.data.data)
         })
       }
-    },
-    showDetail (id) {
-      this.$bus.$emit('show-post-detail')
-      this.$store.commit('setGetPostDetailLoading', true)
-      getPost(id).then(({ data }) => {
-        this.$store.commit('setGetPostDetailLoading', false)
-        const detailData = data.data
-        Object.assign(detailData, {
-          created_at: formatDate(data.data.created_at)
-        })
-        this.$store.commit('setPostDetail', detailData)
-      })
     },
     flag(item) {
       this.$confirm(`Are you sure to ${item.flagged ? 'unflag ' : 'flag'} this post?`, '', {
