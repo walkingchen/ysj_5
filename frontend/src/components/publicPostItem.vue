@@ -221,4 +221,7 @@ export default {
   border 1px solid #e4e7ed
   border-radius 4px
   margin 5px 0
+
+  .privateMessage-titleWithImage
+    max-width 350px
 </style>
