@@ -6,12 +6,12 @@
           <v-icon name="sign-out-alt" />
         </el-button>
 
-        <el-input
+        <!-- <el-input
           placeholder="Search..."
           prefix-icon="el-icon-search"
           v-model="searchKey"
           @change="handleChangeSearchKey">
-        </el-input>
+        </el-input> -->
 
         <div class="topics-box">
           <el-badge v-for="(item, index) in _topics" :key="item" :is-dot="item !== currentTopic && hasNew[index]">

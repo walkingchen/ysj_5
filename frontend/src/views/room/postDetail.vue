@@ -95,7 +95,7 @@ export default {
 
     h2
       text-align center
-      font-size 32px
+      font-size 24px
       font-weight 700
       line-height 44px
       margin-bottom 16px
@@ -109,7 +109,7 @@ export default {
   img
     display block
     margin 0 auto
-    max-width 100%
+    max-width 30%
     margin-bottom 10px
 
   .content
