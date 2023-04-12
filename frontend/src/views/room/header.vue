@@ -102,6 +102,7 @@ header
     justify-content space-between
 
 .topics-box
+  margin-left: 40px
   flex 1
   display flex
   justify-content space-between

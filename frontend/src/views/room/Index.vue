@@ -232,7 +232,8 @@ export default {
   flex-direction column
 
 .left-top
-  background-image url('~@assets/left-top-bg.jpg')
+  // background-image url('~@assets/left-top-bg.jpg')
+  background-color: #658864
   background-size cover
   color #fff
 
@@ -257,14 +258,17 @@ export default {
     width 6px
 
   &::-webkit-scrollbar-track
-    background-color #90abda
+    background-color #B7B78A
 
   &::-webkit-scrollbar-thumb
     border-radius 3px
     background-color rgba(255, 255, 255, .5)
 
   &-content
-    background-color #90abda
+    background-color #B7B78A
+  
+.left-bottom-content
+  background-color: #B7B78A
 
 </style>
 <style lang="stylus">
