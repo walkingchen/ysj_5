@@ -32,8 +32,10 @@
             <group-discussion ref="groupDiscussion" />
           </el-col>
           <el-col :span="6">
-            <daily-poll />
-            <friends @start-chat="startChart" />
+            <div class="right-content">
+              <daily-poll />
+              <friends @start-chat="startChart" />
+            </div>
           </el-col>
         </el-row>
       </div>
@@ -232,9 +234,7 @@ export default {
   flex-direction column
 
 .left-top
-  // background-image url('~@assets/left-top-bg.jpg')
-  background-color: #658864
-  background-size cover
+  background-color #658864
   color #fff
 
 .myself-box
@@ -243,12 +243,17 @@ export default {
   align-items center
   justify-content center
 
+  .el-avatar
+    box-shadow 5px 0 5px #333
+
   p
     font-size 24px
     margin-left 15px
+    text-shadow 4px 0 5px #333
 
 .private-title
   box-sizing border-box
+  text-shadow 4px 0 5px #333
 
 .left-bottom
   flex 1
@@ -258,18 +263,21 @@ export default {
     width 6px
 
   &::-webkit-scrollbar-track
-    background-color #B7B78A
+    background-color #b7b78a
 
   &::-webkit-scrollbar-thumb
     border-radius 3px
     background-color rgba(255, 255, 255, .5)
 
   &-content
-    background-color #B7B78A
-  
-.left-bottom-content
-  background-color: #B7B78A
+    background-color #b7b78a
 
+.right-content
+  position fixed
+  z-index 10
+  width calc(22.5% - 15px)
+  top 90px
+  right calc(5% + 5px)
 </style>
 <style lang="stylus">
 .new-message

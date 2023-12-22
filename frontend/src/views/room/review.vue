@@ -8,6 +8,12 @@
     >Two Years in Review: Popular Post about COVID-19</h2>
 
     <div v-for="(item, index) in postList" :key="item.id + index" class="trend-item">
+      <div class="flag-box">
+        <button @click="flag(item)">
+          {{ item.flagged ? 'unflag' : 'flag' }} this post
+        </button>
+      </div>
+
       <p class="message-title serif-font">
         <highlight :content="item.post_title" />
       </p>
@@ -15,15 +21,12 @@
         <highlight :content="item.abstract" />
       </p>
       <img v-if="item.photo_uri" :src="item.photo_uri.small" class="post-photo" />
+
       <div class="actions">
         <span class="message-time">{{ formatDate(item.created_at) }}</span>
         <div class="moment-actions">
           <span class="count" v-if="item.comments.length > 0">{{ item.comments.length }}</span>
           <button @click="toggleShowMoreComments(index)"><v-icon name="comment-dots" /></button>
-          <span class="count">{{ item.flags.count }}</span>
-          <button @click="flag(item)" :class="{ done: item.flagged }">
-            <v-icon :name="item.flagged ? 'flag' : 'regular/flag'" />
-          </button>
           <span class="count">{{ item.likes.count }}</span>
           <button @click="like(item)" :class="{ done: item.liked }">
             <v-icon :name="item.liked ? 'thumbs-up' : 'regular/thumbs-up'" />
@@ -181,6 +184,21 @@ export default {
 
   &:last-child
     border-bottom 0
+
+  .flag-box
+    display flex
+    justify-content end
+    margin-bottom 15px
+
+    button
+      background-color #eef0f3
+      color #409eef
+      height 30px
+      padding 0 30px
+      border-radius 15px
+
+      &:hover
+        opacity .8
 
   .actions
     display flex

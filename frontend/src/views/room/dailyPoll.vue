@@ -46,12 +46,8 @@ export default {
 
 <style lang="stylus" scoped>
 #dailyPoll
-  position fixed
-  z-index 10
-  width calc(22.5% - 15px)
-  top 90px
-  right calc(5% + 5px)
   border 0
+  margin-bottom 20px
 
   .module-title
     border-bottom 1px solid #ebeef5
