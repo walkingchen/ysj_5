@@ -5,18 +5,9 @@
     <div class="room-content" ref="content-div">
       <div class="layout">
         <div class="left-content">
-          <div class="left-top">
-            <div class="myself-box">
-              <el-avatar
-                :size="45"
-                :src="user.avatar ? user.avatar : ''"
-                :icon="user.avatar ? '' : 'el-icon-user-solid'"
-              />
-              <p>{{ user.nickname }}</p>
-            </div>
-            <h2 class="module-title private-title">Fact-check Picks for You</h2>
-          </div>
+          <myself />
 
+          <h2 class="module-title private-title">Fact-check Picks for You</h2>
           <div class="left-bottom">
             <div class="left-bottom-content">
               <fact-check-picks />
@@ -25,19 +16,18 @@
           </div>
         </div>
 
-        <el-row :gutter="20">
+        <el-row>
           <el-col :span="12" :offset="6">
             <add-discussion @on-success="addPostSuccess" />
             <review />
             <group-discussion ref="groupDiscussion" />
           </el-col>
-          <el-col :span="6">
-            <div class="right-content">
-              <daily-poll />
-              <friends @start-chat="startChart" />
-            </div>
-          </el-col>
         </el-row>
+
+        <div class="right-content">
+          <daily-poll />
+          <friends @start-chat="startChart" />
+        </div>
       </div>
     </div>
 
@@ -61,6 +51,7 @@ import { formatDate } from '@assets/utils.js'
 import { getRoomInfo } from '@api/room'
 import { getTopic } from '@api/post'
 import headerCom from './header'
+import myself from './myself'
 import dailyPoll from './dailyPoll'
 import factCheckPicks from './factCheckPicks'
 import addDiscussion from './addDiscussion'
@@ -74,6 +65,7 @@ import instantChat from './instantChat'
 export default {
   components: {
     headerCom,
+    myself,
     dailyPoll,
     addDiscussion,
     review,
@@ -228,32 +220,15 @@ export default {
   left 5%
   bottom 0
   width calc(22.5% - 15px)
-  border-radius 4px
   overflow hidden
   display flex
   flex-direction column
 
-.left-top
-  background-color #658864
-  color #fff
-
-.myself-box
-  padding 20px
-  display flex
-  align-items center
-  justify-content center
-
-  .el-avatar
-    box-shadow 5px 0 5px #333
-
-  p
-    font-size 24px
-    margin-left 15px
-    text-shadow 4px 0 5px #333
-
 .private-title
+  background-color #658864
   box-sizing border-box
   text-shadow 4px 0 5px #333
+  color #fff
 
 .left-bottom
   flex 1
@@ -275,9 +250,14 @@ export default {
 .right-content
   position fixed
   z-index 10
-  width calc(22.5% - 15px)
-  top 90px
+  width calc(22.5% - 20px)
+  top 267px
   right calc(5% + 5px)
+  height calc(100vh - 267px)
+  overflow-y auto
+
+  &::-webkit-scrollbar
+    width 0
 </style>
 <style lang="stylus">
 .new-message
