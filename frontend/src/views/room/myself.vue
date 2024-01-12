@@ -33,7 +33,7 @@ export default {
 
 <style lang="stylus" scoped>
 .myself-box
-  background-color #648786
+  background-color #658864
   color #fff
   border-radius 4px
   display flex

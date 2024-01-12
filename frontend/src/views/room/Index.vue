@@ -225,7 +225,7 @@ export default {
   flex-direction column
 
 .private-title
-  background-color #658864
+  background-color #5a77a1
   box-sizing border-box
   text-shadow 4px 0 5px #333
   color #fff
@@ -251,9 +251,9 @@ export default {
   position fixed
   z-index 10
   width calc(22.5% - 20px)
-  top 267px
+  top 329px
   right calc(5% + 5px)
-  height calc(100vh - 267px)
+  height calc(100vh - 329px)
   overflow-y auto
 
   &::-webkit-scrollbar
