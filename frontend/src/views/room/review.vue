@@ -1,5 +1,6 @@
 <template>
-  <el-card id="review">
+  <div>
+    <el-card id="review">
     <h2
       class="module-title topic-title"
       :class="{ fixed: titleFixed }"
@@ -37,6 +38,8 @@
       <comments ref="comments" :comments="item.comments" :post-id="item.id" @action-success="updateTopic" />
     </div>
   </el-card>
+    <flag-dialog ref="flagDialog" @handleSubmit="handleSubmit" :selectItem="selectItem"/>
+  </div>
 </template>
 
 <script>
@@ -50,6 +53,7 @@ import 'vue-awesome/icons/comment-dots'
 import highlight from '@components/highlight'
 import comments from '@components/comments'
 import { formatDate } from '@assets/utils.js'
+import FlagDialog from '../../components/flagDialog.vue'
 import {
   getTopicContent,
   getPost,
@@ -62,13 +66,15 @@ import {
 export default {
   components: {
     highlight,
-    comments
+    comments,
+    FlagDialog
   },
   data () {
     return {
       postList: [],
       titleFixed: false,
-      titleWidth: '100%'
+      titleWidth: '100%',
+      selectItem: {}
     }
   },
   computed: mapState(['currentTopic']),
@@ -93,22 +99,43 @@ export default {
       }
     },
     flag(item) {
-      this.$confirm(`Are you sure to ${item.flagged ? 'unflag ' : 'flag'} this post?`, '', {
+      // this.$confirm(`Are you sure to ${item.flagged ? 'unflag ' : 'flag'} this post?`, '', {
+      //   confirmButtonText: 'OK',
+      //   cancelButtonText: 'Cancel',
+      //   type: 'warning'
+      // }).then(async () => {
+      //   if (item.flagged) {
+      //     await deleteFlag(item.flagged.id)
+      //   } else {
+      //     await flagPost(item.id).then(res => {
+      //       if (res.data.result_code === 2000) {
+      //         this.$message.success('You\'ve flagged the post, you can cancel it by reclicking the flag button.')
+      //       }
+      //     })
+      //   }
+      //   this.updateTopic(item.id)
+      // }).catch(_ => {})
+      if (item.flagged) {
+        this.$confirm(`Are you sure to ${item.flagged ? 'unflag ' : 'flag'} this post?`, '', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Cancel',
         type: 'warning'
-      }).then(async () => {
-        if (item.flagged) {
+        }).then(async () => {
           await deleteFlag(item.flagged.id)
-        } else {
-          await flagPost(item.id).then(res => {
-            if (res.data.result_code === 2000) {
-              this.$message.success('You\'ve flagged the post, you can cancel it by reclicking the flag button.')
-            }
-          })
+          this.updateTopic(item.id)
+        }).catch(_ => {})
+      } else {
+        this.$refs.flagDialog.dialogVisible = true
+        this.selectItem = item
+      }
+    },
+    async handleSubmit (item) {
+      await flagPost(item.id).then(res => {
+        if (res.data.result_code === 2000) {
+          this.$message.success('You\'ve flagged the post, you can cancel it by reclicking the flag button.')
         }
-        this.updateTopic(item.id)
-      }).catch(_ => {})
+      })
+      this.updateTopic(item.id)
     },
     async like(item) {
       if (item.liked) { // 已经赞了

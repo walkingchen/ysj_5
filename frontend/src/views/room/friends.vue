@@ -75,6 +75,10 @@ export default {
     display flex
     align-items center
 
+    .el-avatar 
+      width 20px
+      height 20px
+
     .user-portrait
       margin-right 8px
 

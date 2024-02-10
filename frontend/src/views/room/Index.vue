@@ -227,7 +227,7 @@ export default {
 .private-title
   background-color #5a77a1
   box-sizing border-box
-  text-shadow 4px 0 5px #333
+  // text-shadow 4px 0 5px #333
   color #fff
 
 .left-bottom

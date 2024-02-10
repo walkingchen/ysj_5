@@ -42,10 +42,10 @@ export default {
   margin-bottom 20px
 
   .el-avatar
-    box-shadow 5px 0 5px #333
+    // box-shadow 5px 0 5px #333
 
   p
     font-size 24px
     margin-left 15px
-    text-shadow 4px 0 5px #333
+    // text-shadow 4px 0 5px #333
 </style>

@@ -1,6 +1,6 @@
 <template>
   <el-card v-if="imgUrl" id="dailyPoll">
-    <h2 class="module-title">Daily poll</h2>
+    <h2 class="module-title">Daily Poll</h2>
     <div class="img-box">
       <img ref="img" :src="imgUrl" />
     </div>
