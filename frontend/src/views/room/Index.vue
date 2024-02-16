@@ -225,7 +225,7 @@ export default {
   flex-direction column
 
 .private-title
-  background-color #5a77a1
+  background-color #658864
   box-sizing border-box
   // text-shadow 4px 0 5px #333
   color #fff

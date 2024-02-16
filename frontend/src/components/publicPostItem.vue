@@ -138,13 +138,17 @@ export default {
         this.selectItem = item
       }
     },
-    async handleSubmit (item) {
-      await flagPost(item.id).then(res => {
+    async handleSubmit (data) {
+      let params = {
+        post_id: data.item.id,
+        flag_content: data.selectTag
+      }
+      await flagPost(params).then(res => {
         if (res.data.result_code === 2000) {
           this.$message.success('You\'ve flagged the post, you can cancel it by reclicking the flag button.')
         }
       })
-      this.$emit('action-success', item.id)
+      this.$emit('action-success', data.item.id)
     },
     async like(item) {
       if (item.liked) { // 已经赞了
@@ -254,6 +258,7 @@ export default {
       color #999
       font-size 14px
       line-height 24px
+      margin-left 52px
 
 .shared-box
   border 1px solid #e4e7ed

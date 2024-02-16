@@ -6,7 +6,7 @@
       :class="{ fixed: titleFixed }"
       :style="{ width: titleWidth }"
       @click="handleSkip"
-    >Two Years in Review: Popular Post about COVID-19</h2>
+    >COVID Flashbacks: Top Shares</h2>
 
     <div v-for="(item, index) in postList" :key="item.id + index" class="trend-item">
       <div class="flag-box">
@@ -129,13 +129,17 @@ export default {
         this.selectItem = item
       }
     },
-    async handleSubmit (item) {
-      await flagPost(item.id).then(res => {
+    async handleSubmit (data) {
+      let params = {
+        post_id: data.item.id,
+        flag_content: data.selectTag
+      }
+      await flagPost(params).then(res => {
         if (res.data.result_code === 2000) {
           this.$message.success('You\'ve flagged the post, you can cancel it by reclicking the flag button.')
         }
       })
-      this.updateTopic(item.id)
+      this.updateTopic(data.item.id)
     },
     async like(item) {
       if (item.liked) { // 已经赞了

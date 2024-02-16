@@ -11,7 +11,7 @@
             Thanks for looking out for yourself and your friends by reporting things that break the rules. Let us know what's happening.and we'll look into it.
         </div>
         <div>
-            <el-tag v-for="(item, key) in flagList" :key="key" style="margin-right: 10px; cursor: pointer;" @click="handleSelect(item)" :type="getIsSelect(item)">
+            <el-tag v-for="(item, key) in flagList" :key="key" style="margin-right: 10px; margin-bottom: 10px; cursor: pointer;" @click="handleSelect(item)" :type="getIsSelect(item)">
                 {{ item }}
             </el-tag>
         </div>
@@ -54,8 +54,12 @@
         },
         handleSubmit () {
             this.dialogVisible = false
+            let params = {
+                item: this.selectItem,
+                selectTag: this.selectFlagList.join(',')
+            }
+            this.$emit('handleSubmit', params)
             this.selectFlagList = []
-            this.$emit('handleSubmit', this.selectItem)
         }
     }
   };
