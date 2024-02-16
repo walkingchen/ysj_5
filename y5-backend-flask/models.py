@@ -279,6 +279,8 @@ class PostFlag(db.Model):
     post_id = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, nullable=False)
     flag = db.Column(db.Integer, server_default=db.FetchedValue())
+    flag_content = db.Column(db.Text, nullable=False)
+
     created_at = db.Column(db.DateTime, server_default=db.FetchedValue())
     updated_at = db.Column(db.DateTime, server_default=db.FetchedValue())
 
