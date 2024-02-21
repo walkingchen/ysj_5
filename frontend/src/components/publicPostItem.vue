@@ -12,7 +12,10 @@
             <span class="user-name">{{ _item.user.nickname }}</span>
             <span v-if="_item.isShared" class="shared-tip">shared:</span>
           </div>
-          <button @click="flag(_item)">{{ _item.flagged ? 'unflag' : 'flag' }} this post</button>
+          <button @click="flag(_item)" style="display: flex; align-items: center;">
+            <v-icon name="regular/flag" v-if="!_item.flagged" style="fill:#409eef; margin-right: 5px;" height="12" width="12"/>
+            <span>{{ _item.flagged ? 'unflag this post' : 'Report' }}</span>
+          </button>
         </div>
         <div>
           <p class="message-content">

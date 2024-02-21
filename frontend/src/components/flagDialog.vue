@@ -11,8 +11,24 @@
             Thanks for looking out for yourself and your friends by reporting things that break the rules. Let us know what's happening.and we'll look into it.
         </div>
         <div>
-            <el-tag v-for="(item, key) in flagList" :key="key" style="margin-right: 10px; margin-bottom: 10px; cursor: pointer;" @click="handleSelect(item)" :type="getIsSelect(item)">
+            <el-tag 
+                v-for="(item, key) in flagList" 
+                :key="key" 
+                style="margin-right: 10px; margin-bottom: 10px; cursor: pointer; border-radius: 20px;" 
+                @click="handleSelect(item)" 
+                :type="getIsSelect(item)">
                 {{ item }}
+            </el-tag>
+            <el-tag 
+                style="margin-right: 10px; margin-bottom: 10px; cursor: pointer; border-radius: 20px;" 
+                @click="handleSelect('others')" 
+                :type="getIsSelect(othersTag)">
+                <el-input
+                    size="mini"
+                    placeholder="others"
+                    class="other-tag"
+                    v-model.trim="othersTag">
+                </el-input>
             </el-tag>
         </div>
     </div>
@@ -29,8 +45,9 @@
     data() {
       return {
         dialogVisible: false,
-        flagList: ['hate harassment', 'misinformation', 'other'],
-        selectFlagList: []
+        flagList: ['hate', 'hate harassment', 'misinformation'],
+        selectFlagList: [],
+        othersTag: 'others'
       };
     },
     methods: {
@@ -42,12 +59,30 @@
             }
         },
         handleSelect (item) {
-            if (this.selectFlagList.includes(item)) {
-                let index = this.selectFlagList.indexOf(item)
-                this.selectFlagList.splice(index, 1)
+            // 清除以前的自定义tag
+            let list = this.selectFlagList.filter(item => {
+                return this.flagList.includes(item) || item === this.othersTag
+            })
+            this.selectFlagList = [].concat(list)
+            if (item === 'others') {
+                if (this.selectFlagList.includes(this.othersTag)) {
+                    let index = this.selectFlagList.indexOf(this.othersTag)
+                    this.selectFlagList.splice(index, 1)
+                } else {
+                    if (this.othersTag.length === 0) {
+                        this.othersTag = 'others'
+                    }
+                    this.selectFlagList.push(this.othersTag)
+                }
             } else {
-                this.selectFlagList.push(item)
+                if (this.selectFlagList.includes(item)) {
+                    let index = this.selectFlagList.indexOf(item)
+                    this.selectFlagList.splice(index, 1)
+                } else {
+                    this.selectFlagList.push(item)
+                }
             }
+            
         },
         handleClose () {
             this.selectFlagList = []
@@ -69,4 +104,12 @@
 >>>.flag-content
     .el-dialog__body 
         padding 10px 20px
+
+.other-tag
+    padding 0 10px
+    >>>.el-input__inner
+        border: 0px;
+        padding: 0px;
+        background: none;
+        width 60px
 </style>

@@ -27,6 +27,7 @@
         </div>
       </div>
     </div>
+    <flag-dialog ref="flagDialog" @handleSubmit="handleSubmit" :selectItem="selectItem"/>
   </li>
 </template>
 
@@ -36,6 +37,7 @@ import 'vue-awesome/icons/regular/flag'
 import 'vue-awesome/icons/thumbs-up'
 import 'vue-awesome/icons/regular/thumbs-up'
 import highlight from './highlight'
+import flagDialog from './flagDialog.vue'
 import {
   likeComment,
   deleteLike,
@@ -46,33 +48,71 @@ import {
 export default {
   props: ['comment'],
   components: {
-    highlight
+    highlight,
+    flagDialog
+  },
+  data () { 
+    return {
+      selectItem: {}
+    }
   },
   methods: {
     flag () {
       const item = this.comment
-      this.$confirm(`Are you sure to ${item.flagged ? 'unflag ' : 'flag'} this comment?`, '', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning'
-      }).then(() => {
-        if (item.flagged) {
-          deleteFlag(item.flagged.id).then(res => {
-            if (res.data.result_code === 2000) {
-              this.comment.flagged = null
-              this.comment.flags.count -= 1
-            }
-          })
-        } else {
-          flagComment(item.id).then(res => {
-            if (res.data.result_code === 2000) {
-              this.$message.success('You\'ve flagged the comment, you can cancel it by reclicking the flag button.')
-              this.comment.flagged = res.data.data
-              this.comment.flags.count += 1
-            }
-          })
+      if (item.flagged) {
+        this.$confirm(`Are you sure to ${item.flagged ? 'unflag ' : 'flag'} this comment?`, '', {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        }).then(() => {
+          if (item.flagged) {
+            deleteFlag(item.flagged.id).then(res => {
+              if (res.data.result_code === 2000) {
+                this.comment.flagged = null
+                this.comment.flags.count -= 1
+              }
+            })
+          }
+        }).catch(_ => {})
+      } else {
+        this.$refs.flagDialog.dialogVisible = true
+        this.selectItem = item
+      }
+      // this.$confirm(`Are you sure to ${item.flagged ? 'unflag ' : 'flag'} this comment?`, '', {
+      //   confirmButtonText: 'OK',
+      //   cancelButtonText: 'Cancel',
+      //   type: 'warning'
+      // }).then(() => {
+      //   if (item.flagged) {
+      //     deleteFlag(item.flagged.id).then(res => {
+      //       if (res.data.result_code === 2000) {
+      //         this.comment.flagged = null
+      //         this.comment.flags.count -= 1
+      //       }
+      //     })
+      //   } else {
+      //     flagComment(item.id).then(res => {
+      //       if (res.data.result_code === 2000) {
+      //         this.$message.success('You\'ve flagged the comment, you can cancel it by reclicking the flag button.')
+      //         this.comment.flagged = res.data.data
+      //         this.comment.flags.count += 1
+      //       }
+      //     })
+      //   }
+      // }).catch(_ => {})
+    },
+    handleSubmit (data) {
+      let params = {
+        comment_id: data.item.id,
+        flag_content: data.selectTag
+      }
+      flagComment(params).then(res => {
+        if (res.data.result_code === 2000) {
+          this.$message.success('You\'ve flagged the comment, you can cancel it by reclicking the flag button.')
+          this.comment.flagged = res.data.data
+          this.comment.flags.count += 1
         }
-      }).catch(_ => {})
+      })
     },
     like () {
       const item = this.comment

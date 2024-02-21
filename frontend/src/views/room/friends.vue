@@ -67,6 +67,8 @@ export default {
 
   .module-title
     border-bottom 1px solid #ebeef5
+    background-color: #5a77a1;
+    color #fff
 
   .members-item
     padding 10px
