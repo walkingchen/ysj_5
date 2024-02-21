@@ -7,7 +7,7 @@
     custom-class="flag-content"
     width="30%">
     <div class="main-content">
-        <div style="margin-bottom: 10px;">
+        <div style="margin-bottom: 10px; word-break: keep-all;">
             Thanks for looking out for yourself and your friends by reporting things that break the rules. Let us know what's happening.and we'll look into it.
         </div>
         <div>
