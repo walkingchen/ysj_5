@@ -838,9 +838,10 @@ class CommentFlagApi(Resource):
         data = request.get_json()
         try:
             comment_id = data['comment_id']
+            flag_content = data['flag_content']
         except KeyError:
             return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
-        flag = CommentFlag(comment_id=comment_id, user_id=user_id)
+        flag = CommentFlag(comment_id=comment_id, user_id=user_id, flag_content=flag_content)
         db.session.add(flag)
         db.session.commit()
 

@@ -207,6 +207,7 @@ class CommentFlag(db.Model):
     comment_id = db.Column(db.Integer)
     user_id = db.Column(db.Integer)
     flag = db.Column(db.Integer)
+    flag_content = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.FetchedValue())
     updated_at = db.Column(db.DateTime, server_default=db.FetchedValue())
 
