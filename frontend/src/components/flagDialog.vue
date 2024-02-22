@@ -19,7 +19,16 @@
                 :type="getIsSelect(item)">
                 {{ item }}
             </el-tag>
-            <el-tag 
+            <div>
+                <span>others: </span>
+                <el-input
+                    size="mini"
+                    placeholder=""
+                    style="width: 150px;"
+                    v-model.trim="othersTag">
+                </el-input>
+            </div>
+            <!-- <el-tag 
                 style="margin-right: 10px; margin-bottom: 10px; cursor: pointer; border-radius: 20px;" 
                 @click="handleSelect('others')" 
                 :type="getIsSelect(othersTag)">
@@ -29,7 +38,7 @@
                     class="other-tag"
                     v-model.trim="othersTag">
                 </el-input>
-            </el-tag>
+            </el-tag> -->
         </div>
     </div>
     <span slot="footer" class="dialog-footer">
@@ -47,7 +56,7 @@
         dialogVisible: false,
         flagList: ['hate', 'hate harassment', 'misinformation'],
         selectFlagList: [],
-        othersTag: 'others'
+        othersTag: ''
       };
     },
     methods: {
@@ -60,20 +69,20 @@
         },
         handleSelect (item) {
             // 清除以前的自定义tag
-            let list = this.selectFlagList.filter(item => {
-                return this.flagList.includes(item) || item === this.othersTag
-            })
-            this.selectFlagList = [].concat(list)
+            // let list = this.selectFlagList.filter(item => {
+            //     return this.flagList.includes(item) || item === this.othersTag
+            // })
+            // this.selectFlagList = [].concat(list)
             if (item === 'others') {
-                if (this.selectFlagList.includes(this.othersTag)) {
-                    let index = this.selectFlagList.indexOf(this.othersTag)
-                    this.selectFlagList.splice(index, 1)
-                } else {
-                    if (this.othersTag.length === 0) {
-                        this.othersTag = 'others'
-                    }
-                    this.selectFlagList.push(this.othersTag)
-                }
+                // if (this.selectFlagList.includes(this.othersTag)) {
+                //     let index = this.selectFlagList.indexOf(this.othersTag)
+                //     this.selectFlagList.splice(index, 1)
+                // } else {
+                //     if (this.othersTag.length === 0) {
+                //         this.othersTag = 'others'
+                //     }
+                //     this.selectFlagList.push(this.othersTag)
+                // }
             } else {
                 if (this.selectFlagList.includes(item)) {
                     let index = this.selectFlagList.indexOf(item)
@@ -86,15 +95,20 @@
         },
         handleClose () {
             this.selectFlagList = []
+            this.othersTag = ''
         },
         handleSubmit () {
             this.dialogVisible = false
+            if (this.othersTag.length) {
+                this.selectFlagList.push(this.othersTag)
+            }
             let params = {
                 item: this.selectItem,
                 selectTag: this.selectFlagList.join(',')
             }
             this.$emit('handleSubmit', params)
             this.selectFlagList = []
+            this.othersTag = ''
         }
     }
   };
