@@ -1,5 +1,6 @@
 <template>
   <div>
+    <el-button type="primary" size="medium" style="margin-bottom: 10px;" @click="handleClick">Send Mail</el-button>
     <el-table v-loading="loading" :data="tableData" border size="small">
       <el-table-column label="Title" prop="title" show-overflow-tooltip />
       <el-table-column
@@ -22,23 +23,27 @@
     </el-table>
 
     <edit-dialog :show.sync="editShow" :init-data="editRow" @success="setTableData" />
+    <post-mail-dialog :show.sync="sendShow"/>
   </div>
 </template>
 
 <script>
 import { getMails } from '@api/mail.js'
 import editDialog from './edit'
+import postMailDialog from './postMail.vue'
 
 export default {
   components: {
-    editDialog
+    editDialog,
+    postMailDialog
   },
   data() {
     return {
       loading: true,
       tableData: [],
       editShow: false,
-      editRow: {}
+      editRow: {},
+      sendShow: false
     }
   },
   created() {
@@ -59,6 +64,9 @@ export default {
     edit(row) {
       this.editShow = true
       this.editRow = row
+    },
+    handleClick () {
+      this.sendShow = true
     }
   }
 }
