@@ -59,25 +59,27 @@ export default {
   methods: {
     flag () {
       const item = this.comment
-      if (item.flagged) {
-        this.$confirm(`Are you sure to ${item.flagged ? 'unflag ' : 'flag'} this comment?`, '', {
-          confirmButtonText: 'OK',
-          cancelButtonText: 'Cancel',
-          type: 'warning'
-        }).then(() => {
-          if (item.flagged) {
-            deleteFlag(item.flagged.id).then(res => {
-              if (res.data.result_code === 2000) {
-                this.comment.flagged = null
-                this.comment.flags.count -= 1
-              }
-            })
-          }
-        }).catch(_ => {})
-      } else {
-        this.$refs.flagDialog.dialogVisible = true
-        this.selectItem = item
-      }
+      this.$refs.flagDialog.dialogVisible = true
+      this.selectItem = item
+      // if (item.flagged) {
+      //   this.$confirm(`Are you sure to ${item.flagged ? 'unflag ' : 'flag'} this comment?`, '', {
+      //     confirmButtonText: 'OK',
+      //     cancelButtonText: 'Cancel',
+      //     type: 'warning'
+      //   }).then(() => {
+      //     if (item.flagged) {
+      //       deleteFlag(item.flagged.id).then(res => {
+      //         if (res.data.result_code === 2000) {
+      //           this.comment.flagged = null
+      //           this.comment.flags.count -= 1
+      //         }
+      //       })
+      //     }
+      //   }).catch(_ => {})
+      // } else {
+      //   this.$refs.flagDialog.dialogVisible = true
+      //   this.selectItem = item
+      // }
       // this.$confirm(`Are you sure to ${item.flagged ? 'unflag ' : 'flag'} this comment?`, '', {
       //   confirmButtonText: 'OK',
       //   cancelButtonText: 'Cancel',
@@ -108,7 +110,8 @@ export default {
       }
       flagComment(params).then(res => {
         if (res.data.result_code === 2000) {
-          this.$message.success('You\'ve flagged the comment, you can cancel it by reclicking the flag button.')
+          // this.$message.success('You\'ve flagged the comment, you can cancel it by reclicking the flag button.')
+          this.$message.success('You\'ve reported the comment.')
           this.comment.flagged = res.data.data
           this.comment.flags.count += 1
         }

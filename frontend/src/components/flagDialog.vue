@@ -24,7 +24,7 @@
                 <el-input
                     size="mini"
                     placeholder=""
-                    style="width: 150px;"
+                    style="width: 180px;"
                     v-model.trim="othersTag">
                 </el-input>
             </div>
@@ -54,7 +54,7 @@
     data() {
       return {
         dialogVisible: false,
-        flagList: ['hate', 'hate harassment', 'misinformation'],
+        flagList: ['hate', 'threatening violence', 'misinformation'],
         selectFlagList: [],
         othersTag: ''
       };

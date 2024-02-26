@@ -407,6 +407,7 @@ class MailTemplate(db.Model):
     # room_id = Column(Integer)
     title = Column(String(2048))
     content = Column(Text)
+    day = Column(Integer)
     # created_at = Column(DateTime, server_default=FetchedValue())
     # updated_at = Column(DateTime, server_default=FetchedValue())
     mail_type = Column(Integer, info='1: morning;\\n2: night;')

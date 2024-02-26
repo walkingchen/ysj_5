@@ -11,8 +11,10 @@
     <div v-for="(item, index) in postList" :key="item.id + index" class="trend-item">
       <div class="flag-box">
         <button @click="flag(item)" style="display: flex; align-items: center;">
-          <v-icon name="regular/flag" v-if="!item.flagged" style="fill:#409eef; margin-right: 5px;" height="12" width="12"/>
-          {{ item.flagged ? 'unflag this post' : 'Report' }} 
+          <!-- <v-icon name="regular/flag" v-if="!item.flagged" style="fill:#409eef; margin-right: 5px;" height="12" width="12"/> -->
+          <!-- {{ item.flagged ? 'unflag this post' : 'Report' }}  -->
+          <v-icon name="regular/flag" style="fill:#409eef; margin-right: 5px;" height="12" width="12"/>
+          <span>Report</span>
         </button>
       </div>
 
@@ -116,19 +118,22 @@ export default {
       //   }
       //   this.updateTopic(item.id)
       // }).catch(_ => {})
-      if (item.flagged) {
-        this.$confirm(`Are you sure to ${item.flagged ? 'unflag ' : 'flag'} this post?`, '', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning'
-        }).then(async () => {
-          await deleteFlag(item.flagged.id)
-          this.updateTopic(item.id)
-        }).catch(_ => {})
-      } else {
-        this.$refs.flagDialog.dialogVisible = true
-        this.selectItem = item
-      }
+
+      // if (item.flagged) {
+      //   this.$confirm(`Are you sure to ${item.flagged ? 'unflag ' : 'flag'} this post?`, '', {
+      //   confirmButtonText: 'OK',
+      //   cancelButtonText: 'Cancel',
+      //   type: 'warning'
+      //   }).then(async () => {
+      //     await deleteFlag(item.flagged.id)
+      //     this.updateTopic(item.id)
+      //   }).catch(_ => {})
+      // } else {
+      //   this.$refs.flagDialog.dialogVisible = true
+      //   this.selectItem = item
+      // }
+      this.$refs.flagDialog.dialogVisible = true
+      this.selectItem = item
     },
     async handleSubmit (data) {
       let params = {
@@ -137,7 +142,8 @@ export default {
       }
       await flagPost(params).then(res => {
         if (res.data.result_code === 2000) {
-          this.$message.success('You\'ve flagged the post, you can cancel it by reclicking the flag button.')
+          // this.$message.success('You\'ve flagged the post, you can cancel it by reclicking the flag button.')
+          this.$message.success('You\'ve reported the post.')
         }
       })
       this.updateTopic(data.item.id)
