@@ -119,21 +119,19 @@ export default {
       //   this.updateTopic(item.id)
       // }).catch(_ => {})
 
-      // if (item.flagged) {
-      //   this.$confirm(`Are you sure to ${item.flagged ? 'unflag ' : 'flag'} this post?`, '', {
-      //   confirmButtonText: 'OK',
-      //   cancelButtonText: 'Cancel',
-      //   type: 'warning'
-      //   }).then(async () => {
-      //     await deleteFlag(item.flagged.id)
-      //     this.updateTopic(item.id)
-      //   }).catch(_ => {})
-      // } else {
-      //   this.$refs.flagDialog.dialogVisible = true
-      //   this.selectItem = item
-      // }
-      this.$refs.flagDialog.dialogVisible = true
-      this.selectItem = item
+      if (item.flagged) {
+        // this.$confirm(`Are you sure to ${item.flagged ? 'unflag ' : 'flag'} this post?`, '', {
+        // confirmButtonText: 'OK',
+        // cancelButtonText: 'Cancel',
+        // type: 'warning'
+        // }).then(async () => {
+        //   await deleteFlag(item.flagged.id)
+        //   this.updateTopic(item.id)
+        // }).catch(_ => {})
+      } else {
+        this.$refs.flagDialog.dialogVisible = true
+        this.selectItem = item
+      }
     },
     async handleSubmit (data) {
       let params = {
