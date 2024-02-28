@@ -29,12 +29,12 @@
       <div class="actions">
         <span class="message-time">{{ formatDate(item.created_at) }}</span>
         <div class="moment-actions">
-          <span class="count" v-if="item.comments.length > 0">{{ item.comments.length }}</span>
           <button @click="toggleShowMoreComments(index)"><v-icon name="comment-dots" /></button>
-          <span class="count">{{ item.likes.count }}</span>
+          <span class="count" v-if="item.comments.length > 0">{{ item.comments.length }}</span>
           <button @click="like(item)" :class="{ done: item.liked }">
             <v-icon :name="item.liked ? 'thumbs-up' : 'regular/thumbs-up'" />
           </button>
+          <span class="count">{{ item.likes.count }}</span>
         </div>
       </div>
 

@@ -15,14 +15,14 @@
         <div class="comment-timeAndActions">
           <span class="comment-time">{{ comment.created_at }}</span>
           <div class="moment-actions comment-actions">
-            <span class="count">{{ comment.flags.count }}</span>
+            <!-- <span class="count">{{ comment.flags.count }}</span> -->
             <button @click="flag" :class="{ done: comment.flagged }">
               <v-icon :name="comment.flagged ? 'flag' : 'regular/flag'" />
             </button>
-            <span class="count">{{ comment.likes.count }}</span>
             <button @click="like" :class="{ done: comment.liked }">
               <v-icon :name="comment.liked ? 'thumbs-up' : 'regular/thumbs-up'" />
             </button>
+            <span class="count">{{ comment.likes.count }}</span>
           </div>
         </div>
       </div>

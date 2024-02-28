@@ -285,6 +285,7 @@ export default {
 .moment-actions
   display flex
   flex-direction row-reverse
+  align-items: center;
 
   button
     padding 0 8px
@@ -298,7 +299,7 @@ export default {
       color #409eff
 
   .count
-    margin-right 8px
+    margin-left 8px
 
 .unread
   background-color #ff9

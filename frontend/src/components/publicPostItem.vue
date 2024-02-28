@@ -33,8 +33,8 @@
       <span class="moment-time">{{ _item.time }}</span>
       <div class="moment-actions">
         <!-- <button @click="factcheck(_item)" :class="{ done: _item.factcheck }"><v-icon name="exclamation-circle" /></button> -->
-        <span class="count" v-if="_item.comments.length > 0">{{ _item.comments.length }}</span>
         <button @click="toggleShowMoreComments"><v-icon name="comment-dots" /></button>
+        <span class="count" v-if="_item.comments.length > 0">{{ _item.comments.length }}</span>
         <!-- <span class="count">{{ _item.dislikeCount }}</span>
         <button @click="like(_item, 0)" :class="{ done: _item.disliked }">
           <v-icon :name="_item.disliked ? 'thumbs-down' : 'regular/thumbs-down'" />
@@ -43,10 +43,10 @@
         <button @click="flag(_item)" :class="{ done: _item.flagged }">
           <v-icon :name="_item.flagged ? 'flag' : 'regular/flag'" />
         </button> -->
-        <span class="count">{{ _item.likeCount }}</span>
         <button @click="like(_item)" :class="{ done: _item.liked }">
           <v-icon :name="_item.liked ? 'thumbs-up' : 'regular/thumbs-up'" />
         </button>
+        <span class="count">{{ _item.likeCount }}</span>
       </div>
     </div>
 
