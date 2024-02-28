@@ -13,8 +13,8 @@
         <button @click="flag(item)" style="display: flex; align-items: center;">
           <!-- <v-icon name="regular/flag" v-if="!item.flagged" style="fill:#409eef; margin-right: 5px;" height="12" width="12"/> -->
           <!-- {{ item.flagged ? 'unflag this post' : 'Report' }}  -->
-          <v-icon name="regular/flag" style="fill:#409eef; margin-right: 5px;" height="12" width="12"/>
-          <span>Report</span>
+          <v-icon :name="item.flagged ? 'flag' : 'regular/flag'" style="fill:#409eef; margin-right: 5px;" height="12" width="12"/>
+          <span>{{ item.flagged ? 'Reported' : 'Report' }}</span>
         </button>
       </div>
 
