@@ -25,6 +25,12 @@ parameters:
         send_hour:
           type: integer
           description: 发送时间
+        day:
+          type: integer
+          description: 天次
+        room_id:
+          type: integer
+          description: Room ID
 responses:
   200:
     description: return mail with details

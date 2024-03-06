@@ -39,22 +39,18 @@ class MailApi(Resource):
             mail_type = int(data['mail_type'])
             # 添加room和天次支持
             day = int(data['day'])
-            room_name = str(data['room_name'])
+            room_id = str(data['room_id'])
         except TypeError:
             return jsonify(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
         except KeyError:
             return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
-
-        room = Room.query.filter_by(room_name=room_name).first()
-        if room is None:
-            return jsonify(Resp(result_code=4000, result_msg='Room not found', data=None).__dict__)
 
         mail = MailTemplate(
             title=title,
             content=content,
             mail_type=mail_type,
             send_hour=send_hour,
-            room_id=room.room_id,
+            room_id=room_id,
             day=day
         )
         db.session.add(mail)
