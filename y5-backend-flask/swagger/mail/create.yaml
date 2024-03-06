@@ -14,7 +14,7 @@ parameters:
         - send_hour
       properties:
         mail_type:
-          type: string
+          type: integer
           description: 类型
         title:
           type: string
