@@ -1,0 +1,19 @@
+---
+tags:
+  - Room Member
+parameters:
+  - name: room_id
+    in: path
+    type: string
+    required: true
+    description: get room members by room ID
+responses:
+  200:
+    description: return room member list
+    schema:
+      id: Response
+      properties:
+        id:
+          type: string
+          description: Response
+          default: null

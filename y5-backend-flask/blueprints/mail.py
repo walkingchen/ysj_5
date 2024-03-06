@@ -1,11 +1,12 @@
 from flasgger import swag_from
 from flask import jsonify, request, Blueprint
 from flask_login import current_user
+from flask_mail import Message
 from flask_restful import Resource, Api
 
 from entity.Resp import Resp
-from extensions import db, scheduler
-from models import MailTemplate, Serializer, Room
+from extensions import db, scheduler, mail
+from models import MailTemplate, Serializer, Room, RoomMember, User
 
 bp_mail = Blueprint('/api/mail', __name__)
 api = Api(bp_mail, '/api/mail')
@@ -147,3 +148,43 @@ api.add_resource(
     '',
     methods=['GET'],
     endpoint='mail/list_retrieve')
+
+
+class EmergencyEmailApi(Resource):
+    @swag_from('../swagger/mail/emergency_mail.yaml')
+    def post(self):
+        data = request.get_json()
+        title = str(data['title'])
+        content = str(data['content'])
+        room_id = int(data['room_id'])
+        member_id = None
+        if 'member_id' in data:
+            member_id = data['member_id']
+
+        with mail.connect() as conn:
+            subject = title
+            if member_id is None:
+                members = RoomMember.query.filter_by(room_id=room_id).all()
+                for member in members:
+                    user = User.query.filter_by(id=member.id).first()
+                    msg = Message(recipients=[user.email],
+                                  body=content,
+                                  subject=subject,
+                                  sender=("Admin", "sijia.yang@alumni.upenn.edu"))
+            else:
+                user = User.query.filter_by(id=member_id).first()
+                msg = Message(recipients=[user.email],
+                              body=content,
+                              subject=subject,
+                              sender=("Admin", "sijia.yang@alumni.upenn.edu"))
+
+            conn.send(msg)
+
+        return jsonify(Resp(result_code=2000, result_msg='success', data=None).__dict__)
+
+
+api.add_resource(
+    EmergencyEmailApi,
+    '/emergency_mail',
+    methods=['POST'],
+    endpoint='mail/emergency_email')

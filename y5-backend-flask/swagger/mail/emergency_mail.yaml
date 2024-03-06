@@ -1,0 +1,38 @@
+---
+tags:
+  - Mail
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      id: mail_emergency
+      required:
+        - title
+        - content
+        - room_id
+      properties:
+        title:
+          type: string
+          description: 邮件标题
+        content:
+          type: string
+          description: 邮件正文
+        room_id:
+          type: integer
+          description: Room ID
+        member_id:
+          type: integer
+          description: 指定发送对象ID
+responses:
+  200:
+    description: return mail sent msg
+    schema:
+      id: Response
+      properties:
+        result_code:
+          type: string
+        result_msg:
+          type: string
+        data:
+          type: string
