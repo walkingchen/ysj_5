@@ -59,8 +59,10 @@ export default {
   methods: {
     flag () {
       const item = this.comment
-      this.$refs.flagDialog.dialogVisible = true
-      this.selectItem = item
+      if (!item.flagged) {
+        this.$refs.flagDialog.dialogVisible = true
+        this.selectItem = item
+      }
       // if (item.flagged) {
       //   this.$confirm(`Are you sure to ${item.flagged ? 'unflag ' : 'flag'} this comment?`, '', {
       //     confirmButtonText: 'OK',

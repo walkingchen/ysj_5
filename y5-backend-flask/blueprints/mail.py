@@ -5,7 +5,7 @@ from flask_restful import Resource, Api
 
 from entity.Resp import Resp
 from extensions import db, scheduler
-from models import MailTemplate, Serializer
+from models import MailTemplate, Serializer, Room
 
 bp_mail = Blueprint('/api/mail', __name__)
 api = Api(bp_mail, '/api/mail')
@@ -36,16 +36,25 @@ class MailApi(Resource):
             content = str(data['content'])
             send_hour = int(data['send_hour'])
             mail_type = int(data['mail_type'])
+            # 添加room和天次支持
+            day = int(data['day'])
+            room_name = str(data['room_name'])
         except TypeError:
             return jsonify(Resp(result_code=4000, result_msg='TypeError', data=None).__dict__)
         except KeyError:
             return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
 
+        room = Room.query.filter_by(room_name=room_name).first()
+        if room is None:
+            return jsonify(Resp(result_code=4000, result_msg='Room not found', data=None).__dict__)
+
         mail = MailTemplate(
             title=title,
             content=content,
             mail_type=mail_type,
-            send_hour=send_hour
+            send_hour=send_hour,
+            room_id=room.room_id,
+            day=day
         )
         db.session.add(mail)
         db.session.commit()

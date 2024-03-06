@@ -404,7 +404,7 @@ class MailTemplate(db.Model):
 
     id = Column(Integer, primary_key=True)
     # room_type = Column(Integer)
-    # room_id = Column(Integer)
+    room_id = Column(Integer)
     title = Column(String(2048))
     content = Column(Text)
     day = Column(Integer)
