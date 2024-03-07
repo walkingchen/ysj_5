@@ -5,6 +5,9 @@
     width="80%"
     @close="close">
     <el-form ref="form" :model="formData" :rules="rules" label-width="100px">
+      <el-form-item label="Room" prop="Room">
+        <span>{{ initData.room_id }}</span>
+      </el-form-item>
       <el-form-item label="Title" prop="title">
         <el-input v-model="formData.title" />
       </el-form-item>
@@ -30,6 +33,16 @@
       </el-form-item>
       <el-form-item label="Send Hour">
         <el-time-select v-model="formData.send_hour" :picker-options="{ start: '00:00', step: '01:00', end: '23:00' }" />
+      </el-form-item>
+      <el-form-item label="Day">
+        <el-select v-model="formData.day" placeholder="Select Day">
+          <el-option
+            v-for="item in options"
+            :key="item"
+            :label="item"
+            :value="item">
+          </el-option>
+        </el-select>
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -60,7 +73,8 @@ export default {
         title: [{ required: true, message: 'This field is required.', trigger: 'blur' }],
         content: [{ required: true, message: 'This field is required.', trigger: 'blur' }]
       },
-      loading: false
+      loading: false,
+      options: [1, 2, 3, 4, 5, 6, 7, 8]
     }
   },
   methods: {

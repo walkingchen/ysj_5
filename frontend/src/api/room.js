@@ -1,6 +1,7 @@
 import axios from 'axios'
 
 export const getRooms = () => axios.get('/room')
+export const getRoomMembers = id => axios.get('/room/members/' + id)
 export const getRoomInfo = id => axios.get('/room/' + id)
 export const deleteRoom = id => axios.delete('/room/' + id)
 export const createRoom = params => axios.post('/room', params)

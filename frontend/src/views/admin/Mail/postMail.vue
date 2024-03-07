@@ -1,15 +1,32 @@
 <template>
     <el-dialog
-      title="Send Mail"
+      title="Emergency Mail"
       :visible="show"
       width="80%"
       @close="close">
       <el-form ref="form" :model="formData" :rules="rules" label-width="100px">
-        <el-form-item label="recipients" prop="recipients">
-          <el-input v-model="formData.recipients" />
+        <el-form-item label="Room" prop="room">
+          <el-select v-model="formData.room" placeholder="Select Room" @change="handleSelectRoom" style="width: 100%"> 
+            <el-option
+              v-for="item in roomList"
+              :key="item.room_id"
+              :label="item.room_name"
+              :value="item.room_id">
+            </el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="subject" prop="subject">
-          <el-input v-model="formData.subject" />
+        <el-form-item label="Member" prop="member">
+          <el-select v-model="formData.member" placeholder="Select Member" style="width: 100%" clearable>
+            <el-option
+              v-for="item in membersList"
+              :key="item.user_id"
+              :label="item.user_info.email"
+              :value="item.user_id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Title" prop="title">
+          <el-input v-model="formData.title" />
         </el-form-item>
         <el-form-item label="Content" prop="content">
           <div class="content-editor">
@@ -37,29 +54,51 @@
   
   <script>
   import { VueEditor } from 'vue2-editor'
-  import { editMail } from '@api/mail.js'
+  import { emergencyMail  } from '@api/mail.js'
+  import { getRooms, getRoomMembers  } from '@api/room.js'
   
   export default {
     components: {
       VueEditor
     },
-    props: ['show', 'initData'],
+    props: ['show'],
     data() {
       return {
         formData: {
           content: '',
-          recipients: '',
-          subject: ''
+          title: '',
+          room: '',
+          member: ''
         },
         rules: {
-          recipients: [{ required: true, message: 'This field is required.', trigger: 'blur' }],
-          subject: [{ required: true, message: 'This field is required.', trigger: 'blur' }],
+          room: [{ required: true, message: 'This field is required.', trigger: 'change' }],
+          title: [{ required: true, message: 'This field is required.', trigger: 'blur' }],
           content: [{ required: true, message: 'This field is required.', trigger: 'blur' }]
         },
-        loading: false
+        loading: false,
+        roomList: [],
+        membersList: []
       }
     },
     methods: {
+      getRoomList () {
+        getRooms().then(res => {
+          if (res.data.result_code === 2000) {
+            this.roomList = res.data.data
+          } else {
+            this.$message.error(res.data.result_msg)
+          }
+        })
+      },
+      handleSelectRoom (val) {
+        getRoomMembers(val).then(res => {
+          if (res.data.result_code === 2000) {
+            this.membersList = res.data.data
+          } else {
+            this.$message.error(res.data.result_msg)
+          }
+        })
+      },
       close() {
         this.$emit('update:show', false)
       },
@@ -67,20 +106,23 @@
         this.$refs.form.validate(async valid => {
           if (valid) {
             this.loading = true
-
-            const submitData = JSON.parse(JSON.stringify(this.formData))
-            // await editMail(this.initData.id, submitData).then(res => {
-            //   if (res.data.result_code === 2000) {
-            //     this.$message.success('post mail succeeded!')
-            //     this.close()
-            //   } else {
-            //     this.$message.error(res.data.result_msg)
-            //   }
-            // }).catch(() => {
-            //   this.$message.error('Failed!')
-            // })
-  
-            this.loading = false
+            const submitData = {
+              content: this.formData.content,
+              member_id: this.formData.member,
+              room_id: this.formData.room,
+              title: this.formData.title
+            }
+            emergencyMail(submitData).then(res => {
+              this.loading = false
+              if (res.data.result_code === 2000) {
+                this.$message.success('post mail succeeded!')
+                this.close()
+              } else {
+                this.$message.error(res.data.result_msg)
+              }
+            }).catch(() => {
+              this.$message.error('Failed!')
+            })
           }
         })
       }
@@ -88,14 +130,13 @@
     watch: {
       show(val) {
         if (val) {
-          const { mail_type, title, content, send_hour } = this.initData
-          const _send_hour = send_hour ? ((send_hour > 9 ? send_hour : ('0' + send_hour)) + ':00') : '00:00'
           this.formData = {
-            mail_type,
-            title,
-            content,
-            send_hour: _send_hour
-          }
+            content: '',
+            title: '',
+            room: '',
+            member: ''
+          },
+          this.getRoomList()
         } else {
           this.$refs.form.resetFields()
         }

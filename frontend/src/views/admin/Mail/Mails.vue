@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-button type="primary" size="medium" style="margin-bottom: 10px;" @click="handleClick">Send Mail</el-button>
+    <el-button type="primary" size="medium" style="margin-bottom: 10px;" @click="handleClick">Emergency Mail</el-button>
     <el-table v-loading="loading" :data="tableData" border size="small">
       <el-table-column label="Title" prop="title" show-overflow-tooltip />
       <el-table-column
