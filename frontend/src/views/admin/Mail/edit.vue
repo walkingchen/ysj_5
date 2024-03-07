@@ -108,13 +108,14 @@ export default {
   watch: {
     show(val) {
       if (val) {
-        const { mail_type, title, content, send_hour } = this.initData
+        const { mail_type, title, content, send_hour, day } = this.initData
         const _send_hour = send_hour ? ((send_hour > 9 ? send_hour : ('0' + send_hour)) + ':00') : '00:00'
         this.formData = {
           mail_type,
           title,
           content,
-          send_hour: _send_hour
+          send_hour: _send_hour,
+          day
         }
       } else {
         this.$refs.form.resetFields()
