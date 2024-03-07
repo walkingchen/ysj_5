@@ -374,7 +374,7 @@ class RoomMemberListApi(Resource):
         room_member_serialized = []
         for member in room_members:
             member_serialized = Serializer.serialize(member)
-            user = User.query.get(member.user_id)
+            user = User.query.filter_by(id=member.user_id).first()
             member_serialized['user_info'] = {
                 'nickname': user.nickname,
                 'email': user.email
