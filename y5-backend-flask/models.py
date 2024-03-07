@@ -207,6 +207,7 @@ class CommentFlag(db.Model):
     comment_id = db.Column(db.Integer)
     user_id = db.Column(db.Integer)
     flag = db.Column(db.Integer)
+    flag_content = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.FetchedValue())
     updated_at = db.Column(db.DateTime, server_default=db.FetchedValue())
 
@@ -279,6 +280,8 @@ class PostFlag(db.Model):
     post_id = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, nullable=False)
     flag = db.Column(db.Integer, server_default=db.FetchedValue())
+    flag_content = db.Column(db.Text, nullable=False)
+
     created_at = db.Column(db.DateTime, server_default=db.FetchedValue())
     updated_at = db.Column(db.DateTime, server_default=db.FetchedValue())
 
@@ -401,9 +404,10 @@ class MailTemplate(db.Model):
 
     id = Column(Integer, primary_key=True)
     # room_type = Column(Integer)
-    # room_id = Column(Integer)
+    room_id = Column(Integer)
     title = Column(String(2048))
     content = Column(Text)
+    day = Column(Integer)
     # created_at = Column(DateTime, server_default=FetchedValue())
     # updated_at = Column(DateTime, server_default=FetchedValue())
     mail_type = Column(Integer, info='1: morning;\\n2: night;')

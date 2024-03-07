@@ -1,13 +1,23 @@
 <template>
-  <el-card id="review">
+  <div>
+    <el-card id="review">
     <h2
       class="module-title topic-title"
       :class="{ fixed: titleFixed }"
       :style="{ width: titleWidth }"
       @click="handleSkip"
-    >Two Years in Review: Popular Post about COVID-19</h2>
+    >COVID Flashbacks: Top Shares</h2>
 
     <div v-for="(item, index) in postList" :key="item.id + index" class="trend-item">
+      <div class="flag-box">
+        <button @click="flag(item)" style="display: flex; align-items: center;">
+          <!-- <v-icon name="regular/flag" v-if="!item.flagged" style="fill:#409eef; margin-right: 5px;" height="12" width="12"/> -->
+          <!-- {{ item.flagged ? 'unflag this post' : 'Report' }}  -->
+          <v-icon :name="item.flagged ? 'flag' : 'regular/flag'" style="fill:#409eef; margin-right: 5px;" height="12" width="12"/>
+          <span>{{ item.flagged ? 'Reported' : 'Report' }}</span>
+        </button>
+      </div>
+
       <p class="message-title serif-font">
         <highlight :content="item.post_title" />
       </p>
@@ -15,25 +25,24 @@
         <highlight :content="item.abstract" />
       </p>
       <img v-if="item.photo_uri" :src="item.photo_uri.small" class="post-photo" />
+
       <div class="actions">
         <span class="message-time">{{ formatDate(item.created_at) }}</span>
         <div class="moment-actions">
-          <span class="count" v-if="item.comments.length > 0">{{ item.comments.length }}</span>
           <button @click="toggleShowMoreComments(index)"><v-icon name="comment-dots" /></button>
-          <span class="count">{{ item.flags.count }}</span>
-          <button @click="flag(item)" :class="{ done: item.flagged }">
-            <v-icon :name="item.flagged ? 'flag' : 'regular/flag'" />
-          </button>
-          <span class="count">{{ item.likes.count }}</span>
+          <span class="count" v-if="item.comments.length > 0">{{ item.comments.length }}</span>
           <button @click="like(item)" :class="{ done: item.liked }">
             <v-icon :name="item.liked ? 'thumbs-up' : 'regular/thumbs-up'" />
           </button>
+          <span class="count">{{ item.likes.count }}</span>
         </div>
       </div>
 
       <comments ref="comments" :comments="item.comments" :post-id="item.id" @action-success="updateTopic" />
     </div>
   </el-card>
+    <flag-dialog ref="flagDialog" @handleSubmit="handleSubmit" :selectItem="selectItem"/>
+  </div>
 </template>
 
 <script>
@@ -47,6 +56,7 @@ import 'vue-awesome/icons/comment-dots'
 import highlight from '@components/highlight'
 import comments from '@components/comments'
 import { formatDate } from '@assets/utils.js'
+import FlagDialog from '../../components/flagDialog.vue'
 import {
   getTopicContent,
   getPost,
@@ -59,13 +69,15 @@ import {
 export default {
   components: {
     highlight,
-    comments
+    comments,
+    FlagDialog
   },
   data () {
     return {
       postList: [],
       titleFixed: false,
-      titleWidth: '100%'
+      titleWidth: '100%',
+      selectItem: {}
     }
   },
   computed: mapState(['currentTopic']),
@@ -90,22 +102,49 @@ export default {
       }
     },
     flag(item) {
-      this.$confirm(`Are you sure to ${item.flagged ? 'unflag ' : 'flag'} this post?`, '', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning'
-      }).then(async () => {
-        if (item.flagged) {
-          await deleteFlag(item.flagged.id)
-        } else {
-          await flagPost(item.id).then(res => {
-            if (res.data.result_code === 2000) {
-              this.$message.success('You\'ve flagged the post, you can cancel it by reclicking the flag button.')
-            }
-          })
+      // this.$confirm(`Are you sure to ${item.flagged ? 'unflag ' : 'flag'} this post?`, '', {
+      //   confirmButtonText: 'OK',
+      //   cancelButtonText: 'Cancel',
+      //   type: 'warning'
+      // }).then(async () => {
+      //   if (item.flagged) {
+      //     await deleteFlag(item.flagged.id)
+      //   } else {
+      //     await flagPost(item.id).then(res => {
+      //       if (res.data.result_code === 2000) {
+      //         this.$message.success('You\'ve flagged the post, you can cancel it by reclicking the flag button.')
+      //       }
+      //     })
+      //   }
+      //   this.updateTopic(item.id)
+      // }).catch(_ => {})
+
+      if (item.flagged) {
+        // this.$confirm(`Are you sure to ${item.flagged ? 'unflag ' : 'flag'} this post?`, '', {
+        // confirmButtonText: 'OK',
+        // cancelButtonText: 'Cancel',
+        // type: 'warning'
+        // }).then(async () => {
+        //   await deleteFlag(item.flagged.id)
+        //   this.updateTopic(item.id)
+        // }).catch(_ => {})
+      } else {
+        this.$refs.flagDialog.dialogVisible = true
+        this.selectItem = item
+      }
+    },
+    async handleSubmit (data) {
+      let params = {
+        post_id: data.item.id,
+        flag_content: data.selectTag
+      }
+      await flagPost(params).then(res => {
+        if (res.data.result_code === 2000) {
+          // this.$message.success('You\'ve flagged the post, you can cancel it by reclicking the flag button.')
+          this.$message.success('You\'ve reported the post.')
         }
-        this.updateTopic(item.id)
-      }).catch(_ => {})
+      })
+      this.updateTopic(data.item.id)
     },
     async like(item) {
       if (item.liked) { // 已经赞了
@@ -181,6 +220,21 @@ export default {
 
   &:last-child
     border-bottom 0
+
+  .flag-box
+    display flex
+    justify-content end
+    margin-bottom 15px
+
+    button
+      background-color #eef0f3
+      color #409eef
+      height 30px
+      padding 0 30px
+      border-radius 15px
+
+      &:hover
+        opacity .8
 
   .actions
     display flex

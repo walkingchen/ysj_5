@@ -1,5 +1,5 @@
 <template>
-  <div :style="{ paddingTop }">
+  <div>
     <el-card class="members-content">
       <h2 class="module-title">Friends</h2>
 
@@ -44,8 +44,7 @@ export default {
         new_flag_count: 0,
         new_like_count: 0,
         new_post_count: 0
-      },
-      paddingTop: 0
+      }
     }
   },
   computed: mapState([
@@ -58,11 +57,6 @@ export default {
         this.statsData = data.data
       }
     })
-  },
-  mounted () {
-    this.$bus.$on('dailyPollImgLoaded', () => {
-      this.paddingTop = document.getElementById('dailyPoll').offsetHeight + 20 + 'px'
-    })
   }
 }
 </script>
@@ -73,6 +67,8 @@ export default {
 
   .module-title
     border-bottom 1px solid #ebeef5
+    background-color: #5a77a1;
+    color #fff
 
   .members-item
     padding 10px
@@ -80,6 +76,10 @@ export default {
     cursor default
     display flex
     align-items center
+
+    .el-avatar 
+      width 20px
+      height 20px
 
     .user-portrait
       margin-right 8px

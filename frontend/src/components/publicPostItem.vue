@@ -7,10 +7,15 @@
         :icon="_item.user.avatar ? '' : 'el-icon-user-solid'"
         class="user-portrait" />
       <div class="moment-text">
-        <div>
-          <span class="user-name">{{ _item.user.nickname }}</span>
-          <span v-if="_item.isShared" class="shared-tip">shared:</span>
-          <span class="moment-time">{{ _item.time }}</span>
+        <div class="message-header">
+          <div>
+            <span class="user-name">{{ _item.user.nickname }}</span>
+            <span v-if="_item.isShared" class="shared-tip">shared:</span>
+          </div>
+          <button @click="flag(_item)" style="display: flex; align-items: center;">
+            <v-icon :name="_item.flagged ? 'flag' : 'regular/flag'" style="fill:#409eef; margin-right: 5px;" height="12" width="12"/>
+            <span>{{ _item.flagged ? 'Reported' : 'Report' }}</span>
+          </button>
         </div>
         <div>
           <p class="message-content">
@@ -24,22 +29,25 @@
         </div>
       </div>
     </div>
-    <div class="moment-actions">
-      <!-- <button @click="factcheck(_item)" :class="{ done: _item.factcheck }"><v-icon name="exclamation-circle" /></button> -->
-      <span class="count" v-if="_item.comments.length > 0">{{ _item.comments.length }}</span>
-      <button @click="toggleShowMoreComments"><v-icon name="comment-dots" /></button>
-      <!-- <span class="count">{{ _item.dislikeCount }}</span>
-      <button @click="like(_item, 0)" :class="{ done: _item.disliked }">
-        <v-icon :name="_item.disliked ? 'thumbs-down' : 'regular/thumbs-down'" />
-      </button> -->
-      <span class="count">{{ _item.flagCount }}</span>
-      <button @click="flag(_item)" :class="{ done: _item.flagged }">
-        <v-icon :name="_item.flagged ? 'flag' : 'regular/flag'" />
-      </button>
-      <span class="count">{{ _item.likeCount }}</span>
-      <button @click="like(_item)" :class="{ done: _item.liked }">
-        <v-icon :name="_item.liked ? 'thumbs-up' : 'regular/thumbs-up'" />
-      </button>
+    <div class="message-footer">
+      <span class="moment-time">{{ _item.time }}</span>
+      <div class="moment-actions">
+        <!-- <button @click="factcheck(_item)" :class="{ done: _item.factcheck }"><v-icon name="exclamation-circle" /></button> -->
+        <button @click="toggleShowMoreComments"><v-icon name="comment-dots" /></button>
+        <span class="count" v-if="_item.comments.length > 0">{{ _item.comments.length }}</span>
+        <!-- <span class="count">{{ _item.dislikeCount }}</span>
+        <button @click="like(_item, 0)" :class="{ done: _item.disliked }">
+          <v-icon :name="_item.disliked ? 'thumbs-down' : 'regular/thumbs-down'" />
+        </button> -->
+        <!-- <span class="count">{{ _item.flagCount }}</span>
+        <button @click="flag(_item)" :class="{ done: _item.flagged }">
+          <v-icon :name="_item.flagged ? 'flag' : 'regular/flag'" />
+        </button> -->
+        <button @click="like(_item)" :class="{ done: _item.liked }">
+          <v-icon :name="_item.liked ? 'thumbs-up' : 'regular/thumbs-up'" />
+        </button>
+        <span class="count">{{ _item.likeCount }}</span>
+      </div>
     </div>
 
     <comments
@@ -48,6 +56,7 @@
       :post-id="_item.id"
       style="margin-top: 10px"
       @action-success="$emit('action-success', _item.id)" />
+      <flag-dialog ref="flagDialog" @handleSubmit="handleSubmit" :selectItem="selectItem"/>
   </div>
 </template>
 
@@ -73,17 +82,20 @@ import highlight from './highlight'
 import privatePostItem from '@components/privatePostItem'
 import comments from '@components/comments'
 import { formatDate } from '@assets/utils.js'
+import FlagDialog from './flagDialog.vue'
 
 export default {
   props: ['item'],
   components: {
     highlight,
     privatePostItem,
-    comments
+    comments,
+    FlagDialog
   },
   data () {
     return {
-      comment_content: ''
+      comment_content: '',
+      selectItem: {}
     }
   },
   computed: {
@@ -115,22 +127,32 @@ export default {
   },
   methods: {
     flag(item) {
-      this.$confirm(`Are you sure to ${item.flagged ? 'unflag ' : 'flag'} this post?`, '', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning'
-      }).then(async () => {
-        if (item.flagged) {
-          await deleteFlag(item.flagged.id)
-        } else {
-          await flagPost(item.id).then(res => {
-            if (res.data.result_code === 2000) {
-              this.$message.success('You\'ve flagged the post, you can cancel it by reclicking the flag button.')
-            }
-          })
+      if (item.flagged) {
+        // this.$confirm(`Are you sure to ${item.flagged ? 'unflag ' : 'flag'} this post?`, '', {
+        // confirmButtonText: 'OK',
+        // cancelButtonText: 'Cancel',
+        // type: 'warning'
+        // }).then(async () => {
+        //   await deleteFlag(item.flagged.id)
+        //   this.$emit('action-success', item.id)
+        // }).catch(_ => {})
+      } else {
+        this.$refs.flagDialog.dialogVisible = true
+        this.selectItem = item
+      }
+    },
+    async handleSubmit (data) {
+      let params = {
+        post_id: data.item.id,
+        flag_content: data.selectTag
+      }
+      await flagPost(params).then(res => {
+        if (res.data.result_code === 2000) {
+          // this.$message.success('You\'ve flagged the post, you can cancel it by reclicking the flag button.')
+          this.$message.success('You\'ve reported the post.')
         }
-        this.$emit('action-success', item.id)
-      }).catch(_ => {})
+      })
+      this.$emit('action-success', data.item.id)
     },
     async like(item) {
       if (item.liked) { // 已经赞了
@@ -199,6 +221,21 @@ export default {
     width 0
     font-size 14px
 
+    .message-header 
+      display flex
+      align-items center
+      justify-content space-between
+      button
+        float right
+        background-color #eef0f3
+        color #409eef
+        height 30px
+        padding 0 30px
+        border-radius 15px
+
+        &:hover
+          opacity .8
+
     .user-name
       display inline-block
       height 24px
@@ -210,12 +247,22 @@ export default {
 
     .moment-time
       float right
-      color #666
-      font-size 12px
+      color #999
+      font-size 14px
       line-height 24px
 
     .message-content
       font-size 14px
+
+  .message-footer
+    display flex
+    justify-content space-between
+    align-items center
+    .moment-time
+      color #999
+      font-size 14px
+      line-height 24px
+      margin-left 52px
 
 .shared-box
   border 1px solid #e4e7ed

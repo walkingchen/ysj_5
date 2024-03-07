@@ -5,18 +5,9 @@
     <div class="room-content" ref="content-div">
       <div class="layout">
         <div class="left-content">
-          <div class="left-top">
-            <div class="myself-box">
-              <el-avatar
-                :size="45"
-                :src="user.avatar ? user.avatar : ''"
-                :icon="user.avatar ? '' : 'el-icon-user-solid'"
-              />
-              <p>{{ user.nickname }}</p>
-            </div>
-            <h2 class="module-title private-title">Fact-check Picks for You</h2>
-          </div>
+          <myself />
 
+          <h2 class="module-title private-title">Fact-check Picks for You</h2>
           <div class="left-bottom">
             <div class="left-bottom-content">
               <fact-check-picks />
@@ -25,17 +16,18 @@
           </div>
         </div>
 
-        <el-row :gutter="20">
+        <el-row>
           <el-col :span="12" :offset="6">
             <add-discussion @on-success="addPostSuccess" />
             <review />
             <group-discussion ref="groupDiscussion" />
           </el-col>
-          <el-col :span="6">
-            <daily-poll />
-            <friends @start-chat="startChart" />
-          </el-col>
         </el-row>
+
+        <div class="right-content">
+          <daily-poll />
+          <friends @start-chat="startChart" />
+        </div>
       </div>
     </div>
 
@@ -59,6 +51,7 @@ import { formatDate } from '@assets/utils.js'
 import { getRoomInfo } from '@api/room'
 import { getTopic } from '@api/post'
 import headerCom from './header'
+import myself from './myself'
 import dailyPoll from './dailyPoll'
 import factCheckPicks from './factCheckPicks'
 import addDiscussion from './addDiscussion'
@@ -72,6 +65,7 @@ import instantChat from './instantChat'
 export default {
   components: {
     headerCom,
+    myself,
     dailyPoll,
     addDiscussion,
     review,
@@ -226,29 +220,15 @@ export default {
   left 5%
   bottom 0
   width calc(22.5% - 15px)
-  border-radius 4px
   overflow hidden
   display flex
   flex-direction column
 
-.left-top
-  // background-image url('~@assets/left-top-bg.jpg')
-  background-color: #658864
-  background-size cover
-  color #fff
-
-.myself-box
-  padding 20px
-  display flex
-  align-items center
-  justify-content center
-
-  p
-    font-size 24px
-    margin-left 15px
-
 .private-title
+  background-color #658864
   box-sizing border-box
+  // text-shadow 4px 0 5px #333
+  color #fff
 
 .left-bottom
   flex 1
@@ -258,18 +238,26 @@ export default {
     width 6px
 
   &::-webkit-scrollbar-track
-    background-color #B7B78A
+    background-color #b7b78a
 
   &::-webkit-scrollbar-thumb
     border-radius 3px
     background-color rgba(255, 255, 255, .5)
 
   &-content
-    background-color #B7B78A
-  
-.left-bottom-content
-  background-color: #B7B78A
+    background-color #b7b78a
 
+.right-content
+  position fixed
+  z-index 10
+  width calc(22.5% - 20px)
+  top 329px
+  right calc(5% + 5px)
+  height calc(100vh - 329px)
+  overflow-y auto
+
+  &::-webkit-scrollbar
+    width 0
 </style>
 <style lang="stylus">
 .new-message
@@ -297,6 +285,7 @@ export default {
 .moment-actions
   display flex
   flex-direction row-reverse
+  align-items: center;
 
   button
     padding 0 8px
@@ -310,7 +299,7 @@ export default {
       color #409eff
 
   .count
-    margin-right 8px
+    margin-left 8px
 
 .unread
   background-color #ff9

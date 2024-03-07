@@ -365,6 +365,18 @@ api.add_resource(
 
 
 class RoomMemberListApi(Resource):
+    @swag_from('../swagger/room/member/list_retrieve.yaml')
+    def get(self, room_id):
+        room_members = RoomMember.query.filter_by(room_id=room_id).all()
+        if room_members is None:
+            return jsonify(Resp(result_code=4000, result_msg='not found', data=None).__dict__)
+
+        room_member_serialized = []
+        for member in room_members:
+            room_member_serialized.append(Serializer.serialize(member))
+
+        return jsonify(Resp(result_code=2000, result_msg='success', data=room_member_serialized).__dict__)
+
     @swag_from('../swagger/room/member/list_create.yaml')
     def post(self):
         data = request.get_json()
@@ -389,6 +401,13 @@ def create_member(room_id, user_id, seat_no):
     member = RoomMember(room_id=room_id, user_id=user_id, seat_no=seat_no)
     db.session.add(member)
     db.session.commit()
+
+
+api.add_resource(
+    RoomMemberListApi,
+    '/members/<int:room_id>',
+    methods=['GET'],
+    endpoint='member/list_retrieve')
 
 
 api.add_resource(

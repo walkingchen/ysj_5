@@ -6,34 +6,27 @@ parameters:
     in: body
     required: true
     schema:
-      id: mail_create
+      id: mail_emergency
       required:
-        - mail_type
         - title
         - content
-        - send_hour
+        - room_id
       properties:
-        mail_type:
-          type: integer
-          description: 类型
         title:
           type: string
           description: 邮件标题
         content:
           type: string
           description: 邮件正文
-        send_hour:
-          type: integer
-          description: 发送时间
-        day:
-          type: integer
-          description: 天次
         room_id:
           type: integer
           description: Room ID
+        member_id:
+          type: integer
+          description: 指定发送对象ID
 responses:
   200:
-    description: return mail with details
+    description: return mail sent msg
     schema:
       id: Response
       properties:

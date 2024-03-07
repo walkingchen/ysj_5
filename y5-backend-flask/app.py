@@ -201,7 +201,8 @@ def mail_night():
                     titles += post.post_title
                     titles += ', '
 
-                message_template = MailTemplate.query.filter_by(mail_type=2).first()    # type=2: night mail template
+                # 根据早晚类型及天数获取邮件模板
+                message_template = MailTemplate.query.filter_by(mail_type=2, day=day).first()    # type=2: night mail template
                 message = message_template.content % (titles, new_post_count, new_comment_count, new_like_count, new_flag_count)
 
                 subject = message_template.title

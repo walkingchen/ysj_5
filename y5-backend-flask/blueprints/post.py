@@ -787,10 +787,15 @@ class FlagApi(Resource):
         data = request.get_json()
         try:
             post_id = data['post_id']
+            flag_content = data['flag_content']
         except KeyError:
             return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
-        flag = PostFlag(post_id=post_id, user_id=user_id, flag=1)
-        db.session.add(flag)
+        flag = PostFlag.query.filter_by(user_id=user_id, post_id=post_id).first()
+        if not flag:
+            flag = PostFlag(post_id=post_id, user_id=user_id, flag=1, flag_content=flag_content)
+            db.session.add(flag)
+        else:
+            flag.flag_content = flag_content
         db.session.commit()
 
         return jsonify(Resp(result_code=2000, result_msg="success", data=Serializer.serialize(flag)).__dict__)
@@ -837,10 +842,15 @@ class CommentFlagApi(Resource):
         data = request.get_json()
         try:
             comment_id = data['comment_id']
+            flag_content = data['flag_content']
         except KeyError:
             return jsonify(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
-        flag = CommentFlag(comment_id=comment_id, user_id=user_id)
-        db.session.add(flag)
+        flag = CommentFlag.query.filter_by(user_id=user_id, comment_id=comment_id).first()
+        if flag is None:
+            flag = CommentFlag(comment_id=comment_id, user_id=user_id, flag_content=flag_content)
+            db.session.add(flag)
+        else:
+            flag.flag_content = flag_content
         db.session.commit()
 
         return jsonify(Resp(result_code=2000, result_msg="success", data=Serializer.serialize(flag)).__dict__)

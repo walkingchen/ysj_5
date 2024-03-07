@@ -1,6 +1,6 @@
 <template>
   <el-card v-if="imgUrl" id="dailyPoll">
-    <h2 class="module-title">Daily poll</h2>
+    <h2 class="module-title">Poll Digest</h2>
     <div class="img-box">
       <img ref="img" :src="imgUrl" />
     </div>
@@ -46,15 +46,20 @@ export default {
 
 <style lang="stylus" scoped>
 #dailyPoll
-  position fixed
-  z-index 10
-  width calc(22.5% - 15px)
-  top 90px
-  right calc(5% + 5px)
   border 0
+  margin-bottom 20px
+  border-top-right-radius 0
+  border-top-left-radius 0
 
   .module-title
-    border-bottom 1px solid #ebeef5
+    color #fff
+    background-color #5a77a1
+    position fixed
+    z-index 11
+    width calc(22.5% - 60px)
+    top 267px
+    border-top-right-radius 4px
+    border-top-left-radius 4px
 
   .img-box
     padding 10px
