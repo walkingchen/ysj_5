@@ -6,19 +6,19 @@
       @close="close">
       <el-form ref="form" :model="formData" :rules="rules" label-width="100px">
         <el-form-item label="Room" prop="room">
-          <el-select v-model="formData.room" placeholder="Select Room" @change="handleSelectRoom" style="width: 100%"> 
+          <el-select v-model="formData.room" placeholder="Select Room" @change="handleRoomChange" style="width: 100%"> 
             <el-option
-              v-for="item in roomList"
-              :key="item.room_id"
+              v-for="item in rooms"
+              :key="item.id"
               :label="item.room_name"
-              :value="item.room_id">
+              :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="Member" prop="member">
           <el-select v-model="formData.member" placeholder="Select Member" style="width: 100%" clearable>
             <el-option
-              v-for="item in membersList"
+              v-for="item in members"
               :key="item.user_id"
               :label="item.user_info.email"
               :value="item.user_id">
@@ -54,8 +54,8 @@
   
   <script>
   import { VueEditor } from 'vue2-editor'
-  import { emergencyMail  } from '@api/mail.js'
-  import { getRooms, getRoomMembers  } from '@api/room.js'
+  import { emergencyMail } from '@api/mail.js'
+  import { getRooms, getRoomMembers } from '@api/room.js'
   
   export default {
     components: {
@@ -64,6 +64,8 @@
     props: ['show'],
     data() {
       return {
+        rooms: [],
+        members: [],
         formData: {
           content: '',
           title: '',
@@ -75,25 +77,14 @@
           title: [{ required: true, message: 'This field is required.', trigger: 'blur' }],
           content: [{ required: true, message: 'This field is required.', trigger: 'blur' }]
         },
-        loading: false,
-        roomList: [],
-        membersList: []
+        loading: false
       }
     },
     methods: {
-      getRoomList () {
-        getRooms().then(res => {
-          if (res.data.result_code === 2000) {
-            this.roomList = res.data.data
-          } else {
-            this.$message.error(res.data.result_msg)
-          }
-        })
-      },
-      handleSelectRoom (val) {
+      handleRoomChange (val) {
         getRoomMembers(val).then(res => {
           if (res.data.result_code === 2000) {
-            this.membersList = res.data.data
+            this.members = res.data.data
           } else {
             this.$message.error(res.data.result_msg)
           }
@@ -135,8 +126,14 @@
             title: '',
             room: '',
             member: ''
-          },
-          this.getRoomList()
+          }
+          getRooms().then(res => {
+            if (res.data.result_code === 2000) {
+              this.rooms = res.data.data
+            } else {
+              this.$message.error(res.data.result_msg)
+            }
+          })
         } else {
           this.$refs.form.resetFields()
         }

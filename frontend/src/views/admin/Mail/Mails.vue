@@ -1,8 +1,19 @@
 <template>
   <div>
-    <el-button type="primary" size="medium" style="margin-bottom: 10px;" @click="handleClick">Emergency Mail</el-button>
+    <div style="margin-bottom: 20px;">
+      <el-button type="primary" @click="emergencyShow = true">Emergency Mail</el-button>
+      <el-button
+        type="primary"
+        icon="el-icon-plus"
+        plain
+        style="float: right"
+        @click="create">
+        Create
+      </el-button>
+    </div>
+
     <el-table v-loading="loading" :data="tableData" border size="small">
-      <el-table-column label="Title" prop="title" show-overflow-tooltip />
+      <el-table-column label="Template Title" prop="title" show-overflow-tooltip />
       <el-table-column
         label="Type"
         prop="mail_type"
@@ -15,35 +26,42 @@
         align="center"
         :formatter="(row, column, cellValue) => (cellValue > 9 ? cellValue : ('0' + cellValue)) + ':00'"
       />
-      <el-table-column label="Actions" align="center" width="90">
+      <el-table-column label="Actions" align="center" width="150">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" plain @click="edit(scope.row)">Edit</el-button>
+          <el-button size="mini" type="primary" plain style="margin-right: 8px" @click="edit(scope.row)">Edit</el-button>
+          <el-popconfirm
+            title="Are you sure to delete this mail template?"
+            confirmButtonText="Ok"
+            cancelButtonText="Cancel"
+            @confirm="deleteMail(scope.row.id)">
+            <el-button slot="reference" size="mini" type="danger" plain>Delete</el-button>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
 
-    <edit-dialog :show.sync="editShow" :init-data="editRow" @success="setTableData" />
-    <post-mail-dialog :show.sync="sendShow"/>
+    <form-dialog :show.sync="formShow" :init-data="editRow" @success="setTableData" />
+    <emergency-dialog :show.sync="emergencyShow"/>
   </div>
 </template>
 
 <script>
-import { getMails } from '@api/mail.js'
-import editDialog from './edit'
-import postMailDialog from './postMail.vue'
+import { getMails, deleteMail } from '@api/mail.js'
+import formDialog from './form'
+import emergencyDialog from './emergency'
 
 export default {
   components: {
-    editDialog,
-    postMailDialog
+    formDialog,
+    emergencyDialog
   },
   data() {
     return {
       loading: true,
       tableData: [],
-      editShow: false,
+      formShow: false,
       editRow: {},
-      sendShow: false
+      emergencyShow: false
     }
   },
   created() {
@@ -61,12 +79,22 @@ export default {
         }
       })
     },
+    create() {
+      this.formShow = true
+      this.editRow = null
+    },
     edit(row) {
-      this.editShow = true
+      this.formShow = true
       this.editRow = row
     },
-    handleClick () {
-      this.sendShow = true
+    async deleteMail(id) {
+      try {
+        const res = deleteMail(id)
+        if (res.data.result_code === 2000) this.setTableData()
+        else this.$message.error(res.data.result_msg)
+      } catch (error) {
+        this.$message.error('Failed!')
+      }
     }
   }
 }

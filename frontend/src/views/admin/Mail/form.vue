@@ -1,12 +1,20 @@
 <template>
   <el-dialog
-    title="Edit Room"
     :visible="show"
+    :title="initData ? 'Edit Template' : 'Add Mail Template'"
     width="80%"
-    @close="close">
+    @close="close"
+  >
     <el-form ref="form" :model="formData" :rules="rules" label-width="100px">
-      <el-form-item label="Room" prop="Room">
-        <span>{{ initData.room_id }}</span>
+      <el-form-item label="Room" prop="room_id">
+        <el-select v-model="formData.room_id" placeholder="Select Room" style="width: 100%"> 
+          <el-option
+            v-for="item in rooms"
+            :key="item.id"
+            :label="item.room_name"
+            :value="item.id">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="Title" prop="title">
         <el-input v-model="formData.title" />
@@ -54,7 +62,8 @@
 
 <script>
 import { VueEditor } from 'vue2-editor'
-import { editMail } from '@api/mail.js'
+import { getRooms } from '@api/room.js'
+import { createMail, editMail } from '@api/mail.js'
 
 export default {
   components: {
@@ -63,13 +72,17 @@ export default {
   props: ['show', 'initData'],
   data() {
     return {
+      rooms: [],
       formData: {
+        room_id: '',
         content: '',
         mail_type: 1,
         title: '',
-        send_hour: ''
+        send_hour: '',
+        day: 1
       },
       rules: {
+        room_id: [{ required: true, message: 'This field is required.', trigger: 'blur' }],
         title: [{ required: true, message: 'This field is required.', trigger: 'blur' }],
         content: [{ required: true, message: 'This field is required.', trigger: 'blur' }]
       },
@@ -88,17 +101,22 @@ export default {
 
           const submitData = JSON.parse(JSON.stringify(this.formData))
           submitData.send_hour = Number(this.formData.send_hour.split(':')[0])
-          await editMail(this.initData.id, submitData).then(res => {
+
+          try {
+            const res = this.initData
+              ? await editMail(this.initData.id, submitData)
+              : await createMail(submitData)
+              
             if (res.data.result_code === 2000) {
-              this.$message.success('Edit mail succeeded!')
+              this.$message.success((this.initData ? 'Edit' : 'Add') + ' template succeeded!')
               this.close()
               this.$emit('success')
             } else {
               this.$message.error(res.data.result_msg)
             }
-          }).catch(() => {
+          } catch (error) {
             this.$message.error('Failed!')
-          })
+          }
 
           this.loading = false
         }
@@ -108,14 +126,34 @@ export default {
   watch: {
     show(val) {
       if (val) {
-        const { mail_type, title, content, send_hour, day } = this.initData
-        const _send_hour = send_hour ? ((send_hour > 9 ? send_hour : ('0' + send_hour)) + ':00') : '00:00'
-        this.formData = {
-          mail_type,
-          title,
-          content,
-          send_hour: _send_hour,
-          day
+        getRooms().then(res => {
+          if (res.data.result_code === 2000) {
+            this.rooms = res.data.data
+          } else {
+            this.$message.error(res.data.result_msg)
+          }
+        })
+
+        if (this.initData) {
+          const { room_id, mail_type, title, content, send_hour, day } = this.initData
+          const _send_hour = send_hour ? ((send_hour > 9 ? send_hour : ('0' + send_hour)) + ':00') : '00:00'
+          this.formData = {
+            room_id,
+            mail_type,
+            title,
+            content,
+            send_hour: _send_hour,
+            day: day === null ? 1 : day
+          }
+        } else {
+          this.formData = {
+            room_id: '',
+            content: '',
+            mail_type: 1,
+            title: '',
+            send_hour: '',
+            day: 1
+          }
         }
       } else {
         this.$refs.form.resetFields()
