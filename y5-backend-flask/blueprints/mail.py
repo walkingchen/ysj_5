@@ -1,3 +1,4 @@
+from apscheduler.triggers.cron import CronTrigger
 from flasgger import swag_from
 from flask import jsonify, request, Blueprint
 from flask_login import current_user
@@ -93,11 +94,20 @@ class MailApi(Resource):
             mail.send_hour = send_hour
 
             # reconfigure mail scheduler
-            hour = '*/' + str(send_hour)
+            # hour = '*/' + str(send_hour)  # '*/'表示每隔多少时间
+            hour = str(send_hour)
             if mail.mail_type == 1:
-                scheduler.modify_job('job_mail_morning', trigger='cron', hour=hour)
+                scheduler.scheduler.reschedule_job(
+                    job_id='job_mail_morning',
+                    trigger=CronTrigger(hour=hour)
+                )
+                # scheduler.modify_job('job_mail_morning', trigger='cron', hour=hour)
             if mail.mail_type == 2:
-                scheduler.modify_job('job_mail_night', trigger='cron', hour=hour)
+                scheduler.scheduler.reschedule_job(
+                    job_id='job_mail_night',
+                    trigger=CronTrigger(hour=hour)
+                )
+                # scheduler.modify_job('job_mail_night', trigger='cron', hour=hour)
 
         db.session.commit()
 
