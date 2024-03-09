@@ -109,6 +109,14 @@ class MailApi(Resource):
                 )
                 # scheduler.modify_job('job_mail_night', trigger='cron', hour=hour)
 
+        if 'day' in data:
+            day = int(data['day'])
+            mail.day = day
+        
+        if 'room_id' in data:
+            room_id = int(data['room_id'])
+            mail.room_id = room_id
+
         db.session.commit()
 
         return jsonify(Resp(

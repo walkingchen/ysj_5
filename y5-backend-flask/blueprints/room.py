@@ -373,7 +373,14 @@ class RoomMemberListApi(Resource):
 
         room_member_serialized = []
         for member in room_members:
-            room_member_serialized.append(Serializer.serialize(member))
+            member_serialized = Serializer.serialize(member)
+            user = User.query.filter_by(id=member.user_id).first()
+            if user is not None:
+                member_serialized['user_info'] = {
+                    'nickname': user.nickname,
+                    'email': user.email
+                }
+                room_member_serialized.append(member_serialized)
 
         return jsonify(Resp(result_code=2000, result_msg='success', data=room_member_serialized).__dict__)
 
