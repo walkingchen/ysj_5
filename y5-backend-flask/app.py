@@ -145,7 +145,7 @@ def mail_morning():
                 user = User.query.filter_by(id=member.user_id).first()
                 if user.email is not None:
                     msg = Message(recipients=['cenux1987@163.com'],
-                                  body=message,
+                                  body=message + ' : ' + str(room.id),
                                   subject=subject,
                                   sender=("Admin", "sijia.yang@alumni.upenn.edu"))
 
