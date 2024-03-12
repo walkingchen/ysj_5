@@ -1,6 +1,7 @@
 import datetime
 import logging
 import os
+import time
 
 from flasgger import Swagger
 from flask import Flask, render_template, request
@@ -133,19 +134,41 @@ def git_pull():
 # @scheduler.task('cron', id='job_mail_morning', day='*', hour='8', minute='0', second='0')
 def mail_morning():
     with app.app_context():
-        message = 'mail_morning'
-        subject = "mail_morning"
+        subject = 'mail_morning'
+
         rooms = Room.query.filter_by(activated=1).all()
         for room in rooms:
-            day_activated = room.activated_at
-            # day = today - day_activated
-            day = 8
+            # get topics
+            room = Room.query.get(room.id)
+            updated_at = room.updated_at
+            local_time = time.localtime(int(updated_at.timestamp()))
+            activated_day = local_time.tm_yday
+            activated_year = local_time.tm_year
+            print('activated_day = ' + str(activated_day))
+
+            now = time.localtime(time.time())
+            now_day = now.tm_yday
+            now_year = now.tm_year
+            print('now_day = ' + str(now_day))
+
+            if now_year > activated_year:
+                n = now_day + 365 - activated_day + 1
+            else:
+                n = now_day - activated_day + 1
+
+            if n > 8:
+                n = 8
+
+            mail = MailTemplate.query.filter_by(room_id=room.id).filter_by(day=n).first()
+            if mail is None:
+                return
+
             room_members = RoomMember.query.filter_by(room_id=room.id).all()
             for member in room_members:
                 user = User.query.filter_by(id=member.user_id).first()
                 if user.email is not None:
                     msg = Message(recipients=['cenux1987@163.com'],
-                                  body=message + ' : ' + str(room.id),
+                                  body=mail + ' : ' + str(room.id),
                                   subject=subject,
                                   sender=("Admin", "sijia.yang@alumni.upenn.edu"))
 
