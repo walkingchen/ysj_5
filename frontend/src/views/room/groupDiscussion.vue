@@ -54,7 +54,7 @@ export default {
   },
   methods: {
     handleSkip () {
-      document.getElementsByClassName('room-content')[0].scrollTop = document.getElementById('review').offsetHeight + 130
+      document.getElementsByClassName('room-content')[0].scrollTop = document.getElementById('review').offsetHeight + 110
     },
     async getMomentList() {
       this.getPostLoading = true
@@ -140,10 +140,10 @@ export default {
     this.$bus.$on('room-content-scroll', top => {
       if (top < (20 + postForumHeight + 20 + reviewHeight + 20 + 62 - (appHeight - 70))) { // 向上滚动到 title 位置时，将 title 固定在底部
         this.titleFixed = true
-        this.fixedTitleTop = appHeight - 62
-      } else if (top >= (reviewHeight + 131)) { // 向下滚动到 title 位置时，将 title 固定在顶部
+        this.fixedTitleTop = appHeight - 47
+      } else if (top >= (reviewHeight + 116)) { // 向下滚动到 title 位置时，将 title 固定在顶部
         this.titleFixed = true
-        this.fixedTitleTop = 132
+        this.fixedTitleTop = 117
       } else { // title 出现在可视区域内时取消上下固定
         this.titleFixed = false
         this.fixedTitleTop = 0
@@ -153,9 +153,9 @@ export default {
     // 监听 review & add discussion dom 高度变化，判断是否将标题固定在底部
     const title = document.getElementsByClassName('public-title')[0]
     const fixedTitleOnBottom = () => {
-      if (title.getBoundingClientRect().top > appHeight - 62) {
+      if (title.getBoundingClientRect().top > appHeight - 46) {
         this.titleFixed = true
-        this.fixedTitleTop = appHeight - 62
+        this.fixedTitleTop = appHeight - 46
       }
     }
 

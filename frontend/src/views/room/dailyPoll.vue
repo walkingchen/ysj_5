@@ -62,7 +62,6 @@ export default {
     border-top-left-radius 4px
 
   .img-box
-    padding 10px
 
   img
     max-width 100%

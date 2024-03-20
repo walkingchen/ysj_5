@@ -86,7 +86,7 @@ export default {
       return formatDate(date)
     },
     handleSkip () {
-      document.getElementsByClassName('room-content')[0].scrollTop = 180
+      document.getElementsByClassName('room-content')[0].scrollTop = 200
     },
     updateTopicList () {
       getTopicContent(localStorage.getItem('roomid'), this.currentTopic).then(({ data }) => {
