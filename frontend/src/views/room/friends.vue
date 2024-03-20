@@ -18,7 +18,7 @@
         </ul>
 
         <div class="forum-update">
-          <h4>Forum Update</h4>
+          <!-- <h4>Forum Update</h4> -->
           <h5>New Post</h5>
           <span>{{ statsData.new_post_count }}</span>
           <h5>New Comment</h5>
@@ -85,6 +85,7 @@ export default {
       margin-right 8px
 
     .username
+      font-size: 12px
       flex 1
       overflow hidden
       text-overflow ellipsis
@@ -107,7 +108,7 @@ export default {
 
 .friends-content-wrapper
   display flex
-  padding 20px
+  padding 5px
 
   .friends
     width 50%
@@ -119,11 +120,11 @@ export default {
     flex-direction column
     justify-content center
     align-items center
-    padding 25px 0
+    padding 5px 0
     font-size 16px
 
     h5
-      margin-top 18px
+      margin-top 5px
 
     span
       color #f56c6c

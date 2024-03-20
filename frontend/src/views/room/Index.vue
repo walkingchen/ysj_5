@@ -251,9 +251,9 @@ export default {
   position fixed
   z-index 10
   width calc(22.5% - 20px)
-  top 329px
+  top 300px
   right calc(5% + 5px)
-  height calc(100vh - 329px)
+  height calc(100vh - 300px)
   overflow-y auto
 
   &::-webkit-scrollbar
