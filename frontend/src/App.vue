@@ -47,7 +47,7 @@ export default {
 }
 
 :root {
-  --module-title-height: 62px;
+  --module-title-height: 50px;
 }
 
 *
@@ -72,14 +72,14 @@ ul, li
 
 .layout
   width 90%
-  min-width 1200px
+  min-width 800px
   margin 0 auto
 
 .fa-icon
   width auto
 
 .module-title
-  font-size 20px
+  font-size 18px
   font-weight bold
   padding 0 20px
   height var(--module-title-height)
@@ -103,9 +103,9 @@ ul, li
   font-family Georgia, 'times new roman', times, serif
 
 .message-title
-  font-size 24px
-  line-height 30px
-  font-weight 700
+  font-size 18px
+  line-height 24px
+  font-weight 600
 
 .message-content
   font-size 16px

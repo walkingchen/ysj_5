@@ -1,7 +1,7 @@
 <template>
   <el-card id="addDiscussion" class="post-create-layout">
     <textarea
-      rows="5"
+      rows="3"
       class="post-create-content"
       placeholder="What's on your mind?"
       v-model="postContent"
