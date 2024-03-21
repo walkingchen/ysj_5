@@ -13,13 +13,16 @@
     </div>
 
     <el-table v-loading="loading" :data="tableData" border size="small">
-      <el-table-column label="Template Title" prop="title" show-overflow-tooltip />
+      <el-table-column label="Room" prop="room" align="center" show-overflow-tooltip />
+      <el-table-column label="Template Title" prop="title" align="center" show-overflow-tooltip />
       <el-table-column
         label="Type"
         prop="mail_type"
+        align="center" 
         :formatter="(row, column, cellValue) => cellValue === 1 ? 'morning mail' : 'night mail'"
       />
-      <el-table-column label="Content" prop="content" show-overflow-tooltip />
+      <el-table-column label="Content" prop="content" align="center" show-overflow-tooltip />
+      <el-table-column label="Day" prop="day" align="center" show-overflow-tooltip />
       <el-table-column
         label="Send Hour"
         prop="send_hour"

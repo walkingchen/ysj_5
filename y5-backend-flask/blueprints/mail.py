@@ -152,7 +152,12 @@ class MailListApi(Resource):
         mails = MailTemplate.query.all()
         mail_serialized_list = []
         for mail in mails:
-            mail_serialized_list.append(Serializer.serialize(mail))
+            room = Room.query.get(mail.room_id)
+            if room is None:
+                continue
+            mail_serialized = Serializer.serialize(mail)
+            mail_serialized['room_name'] = room.room_name
+            mail_serialized_list.append(mail_serialized)
 
         return jsonify(Resp(result_code=2000, result_msg='success', data=mail_serialized_list).__dict__)
 
