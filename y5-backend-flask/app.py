@@ -202,9 +202,9 @@ def mail_night():
             public_posts = PublicPost.query.filter_by(
                 room_id=room.id).filter_by(topic=day).order_by(desc(PublicPost.created_at)).limit(5).all()
 
-            if len(public_post_count) > 0:
+            if public_post_count > 0:
                 post_str = '''<div class="container">'''
-                post_str += '<p class="title">New post count: %d</p>' % len(public_post_count)
+                post_str += '<p class="title">New post count: %d</p>' % public_post_count
                 for post in public_posts:
                     user = User.query.filter_by(id=post.user_id).first()
                     post_str += "<p>" + user.nickname + ": " + post.post_content[:50] + "......</p>"
