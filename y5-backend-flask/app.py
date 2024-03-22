@@ -224,7 +224,7 @@ def mail_night():
             comment_str = ""
             if len(new_comments) > 0:
                 comment_str = '''<div class="container">'''
-                comment_str += '<p class="title">New comments: %d"</p>' % len(new_comments)
+                comment_str += '<p class="title">New comments: %d</p>' % len(new_comments)
                 for comment in new_comments:
                     user = User.query.filter_by(id=comment.user_id).first()
                     comment_str += "<p>" + user.nickname + ": " + comment.comment_content[:30] + "......</p>"
@@ -285,7 +285,8 @@ def mail_night():
                       .login-button {
                         background-color: #007bff;
                         color: white;
-                        padding: 20px;
+                        margin-top: 20px;
+                        padding: 15px;
                         border: none;
                         border-radius: 5px;
                         cursor: pointer;
