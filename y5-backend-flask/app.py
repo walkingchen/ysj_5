@@ -215,17 +215,13 @@ def mail_night():
             #         post_str += "\n" + user.nickname + ": " + post.content[:30] + "......"
 
             # comments
-            new_comment_count = PostComment.query.filter(PostComment.user_id.in_(tuple(member_ids))).filter(
-                PostComment.created_at >= today,
-                PostComment.created_at < tomorrow
-            ).count()
             new_comments = PostComment.query.filter(PostComment.user_id.in_(tuple(member_ids))).filter(
                 PostComment.created_at >= today,
                 PostComment.created_at < tomorrow
             ).all()
             comment_str = ""
-            if new_comment_count > 0:
-                comment_str += "\n\nNew comments: " + new_comment_count
+            if len(new_comments) > 0:
+                comment_str += "\n\nNew comments: " + len(new_comments)
                 for comment in new_comments:
                     user = User.query.filter_by(id=comment.user_id).first()
                     comment_str += "\n" + user.nickname + ": " + comment.comment_content[:30] + "......"
