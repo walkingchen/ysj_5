@@ -191,7 +191,6 @@ def mail_night():
             if day > 8:
                 # return
                 day = 8
-            print("day = %d" % day)
             room_members = RoomMember.query.filter_by(room_id=room.id).all()
             member_ids = []
             post_str = ""
@@ -256,6 +255,8 @@ def mail_night():
                 # 根据早晚类型及天数获取邮件模板
                 message_template = MailTemplate.query.filter_by(mail_type=2, day=day).first()    # type=2: night mail template
                 message = message_template.content + post_str + comment_str + like_str
+
+                logging.log(logging.DEBUG, "day=%d" % day)
 
                 subject = message_template.title
                 user = User.query.filter_by(id=member.user_id).first()
