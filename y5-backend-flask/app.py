@@ -319,7 +319,7 @@ def mail_night():
                 subject = message_template.title
                 user = User.query.filter_by(id=member.user_id).first()
                 if user.email is not None:
-                    msg = Message(recipients=['cenux1987@163.com'],
+                    msg = Message(recipients=['xining.liao@wisc.edu'],
                                   body=message,
                                   subject=subject,
                                   sender=("Admin", "sijia.yang@alumni.upenn.edu"))
