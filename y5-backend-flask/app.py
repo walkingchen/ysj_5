@@ -176,6 +176,7 @@ def mail_morning():
 
 
 # @scheduler.task('cron', id='job_mail_night', day='*', hour='20', minute='0', second='0')
+@app.route('/test_mail', methods=['GET'])
 def mail_night():
     with app.app_context():
         today = datetime.datetime.today().date()
