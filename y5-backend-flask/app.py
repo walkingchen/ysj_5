@@ -200,7 +200,7 @@ def mail_night():
                     room_id=room.id).filter_by(topic=day).all()
 
                 if len(private_posts) > 0:
-                    post_str += '''<p class="title">New post count: %d" % len(private_posts)</p>'''
+                    post_str += '<p class="title">New post count: %d"</p>' % len(private_posts)
                     for post in private_posts:
                         user = User.query.filter_by(id=post.user_id).first()
                         post_str += "</p>" + user.nickname + ": " + post.content[:30] + "......</p>"
@@ -222,7 +222,7 @@ def mail_night():
             ).all()
             comment_str = '''<div class="container">'''
             if len(new_comments) > 0:
-                comment_str += '''<p class="title">New comments: %d" % len(new_comments)</p>'''
+                comment_str += '<p class="title">New comments: %d"</p>' % len(new_comments)
                 for comment in new_comments:
                     user = User.query.filter_by(id=comment.user_id).first()
                     comment_str += "<p>" + user.nickname + ": " + comment.comment_content[:30] + "......</p>"
@@ -235,12 +235,12 @@ def mail_night():
             ).all()
             like_str = '''<div class="container">'''
             if len(new_likes) > 0:
-                like_str += "<p>New likes: %d" % len(new_likes)
+                like_str += '<p class="title">New likes: %d"</p>' % len(new_likes)
                 for like in new_likes:
                     user = User.query.filter_by(id=like.user_id).first()
                     post = PublicPost.query.filter_by(id=like.post_id).first()
                     post_author = User.query.filter_by(id=post.user_id).first()
-                    like_str += "\n" + user.nickname + " likes " + post_author.nickname + "'s post.</p>"
+                    like_str += "<p>" + user.nickname + " likes " + post_author.nickname + "'s post.</p>"
                 like_str += "</div>"
 
             # # flags
@@ -269,7 +269,7 @@ def mail_night():
                         background-color: #f9f9f9;
                         border-radius: 10px;
                         padding: 20px;
-                        margin-bottom: 20px;
+                        margin: 20px;
                       }
                       strong {
                         font-weight: bold;
