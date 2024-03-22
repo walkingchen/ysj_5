@@ -93,7 +93,7 @@ def login():
     if room is None:
         return json.dumps(Resp(
             result_code=2010,
-            result_msg='Room not activated, please wait for email notification',
+            result_msg='Room not activated, please wait for email notification, room id: %d' % member.room_id,
             data=None
         ).__dict__)
 
