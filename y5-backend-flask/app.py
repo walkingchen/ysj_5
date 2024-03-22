@@ -192,7 +192,7 @@ def mail_night():
                 return
             room_members = RoomMember.query.filter_by(room_id=room.id).all()
             member_ids = []
-            post_str = '''<div class="container">'''
+            post_str = ""
             for member in room_members:
                 member_ids.append(member.user_id)
 
@@ -200,6 +200,7 @@ def mail_night():
                     room_id=room.id).filter_by(topic=day).all()
 
                 if len(private_posts) > 0:
+                    post_str = '''<div class="container">'''
                     post_str += '<p class="title">New post count: %d"</p>' % len(private_posts)
                     for post in private_posts:
                         user = User.query.filter_by(id=post.user_id).first()
@@ -220,8 +221,9 @@ def mail_night():
                 PostComment.created_at >= today,
                 PostComment.created_at < tomorrow
             ).all()
-            comment_str = '''<div class="container">'''
+            comment_str = ""
             if len(new_comments) > 0:
+                comment_str = '''<div class="container">'''
                 comment_str += '<p class="title">New comments: %d"</p>' % len(new_comments)
                 for comment in new_comments:
                     user = User.query.filter_by(id=comment.user_id).first()
@@ -233,8 +235,9 @@ def mail_night():
                 PostLike.created_at >= today,
                 PostLike.created_at < tomorrow
             ).all()
-            like_str = '''<div class="container">'''
+            like_str = ""
             if len(new_likes) > 0:
+                like_str = '''<div class="container">'''
                 like_str += '<p class="title">New likes: %d"</p>' % len(new_likes)
                 for like in new_likes:
                     user = User.query.filter_by(id=like.user_id).first()
