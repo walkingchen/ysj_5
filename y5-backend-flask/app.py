@@ -305,7 +305,7 @@ def mail_night():
                       %s
                     <!-- likes -->
                       %s
-                    <div style="margin: 20px;">
+                    <div style="margin: 15px 30px;">
                       <a class="login-button" href="http://camer-covid.journalism.wisc.edu/">Click to login back</a>
                     </div>
                     </body>
