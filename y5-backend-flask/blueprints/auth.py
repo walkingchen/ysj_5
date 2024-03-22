@@ -82,7 +82,7 @@ def login():
     # return redirect('/admin/')
 
     members = RoomMember.query.filter_by(user_id=user.id, activated=1).all()
-    if len(member) == 0:
+    if len(members) == 0:
         return json.dumps(Resp(
             result_code=2010,
             result_msg='Please wait for email notification',
