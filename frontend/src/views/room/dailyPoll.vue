@@ -57,7 +57,7 @@ export default {
     position fixed
     z-index 11
     width calc(22.5% - 60px)
-    top 230px
+    top 228px
     border-top-right-radius 4px
     border-top-left-radius 4px
 

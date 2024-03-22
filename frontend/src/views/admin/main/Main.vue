@@ -59,7 +59,7 @@ export default {
 
     header
       height 50px
-      box-shadow 0 1px 4px rgba(0, 21, 41, .08)
+      // box-shadow 0 1px 4px rgba(0, 21, 41, .08)
 
       button
         padding 0 15px

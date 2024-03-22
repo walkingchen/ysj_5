@@ -91,7 +91,7 @@ export default {
 header
   background-color #fff
   height 70px
-  box-shadow 0 2px 3px rgba(0,0,0,.08)
+  // box-shadow 0 2px 3px rgba(0,0,0,.08)
   position relative
   z-index 1
 
