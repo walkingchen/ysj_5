@@ -200,7 +200,7 @@ def mail_night():
                     room_id=room.id).filter_by(topic=day).all()
 
                 if len(private_posts) > 0:
-                    post_str += "\n\nNew post count: " + len(private_posts)
+                    post_str += "\n\nNew post count: %d" % len(private_posts)
                     for post in private_posts:
                         user = User.query.filter_by(id=post.user_id).first()
                         post_str += "\n" + user.nickname + ": " + post.content[:30] + "......"
@@ -221,7 +221,7 @@ def mail_night():
             ).all()
             comment_str = ""
             if len(new_comments) > 0:
-                comment_str += "\n\nNew comments: " + len(new_comments)
+                comment_str += "\n\nNew comments: %d" % len(new_comments)
                 for comment in new_comments:
                     user = User.query.filter_by(id=comment.user_id).first()
                     comment_str += "\n" + user.nickname + ": " + comment.comment_content[:30] + "......"
@@ -233,7 +233,7 @@ def mail_night():
             ).all()
             like_str = ""
             if len(new_likes) > 0:
-                like_str += "\n\nNew likes: " + len(new_likes)
+                like_str += "\n\nNew likes: %d" % len(new_likes)
                 for like in new_likes:
                     user = User.query.filter_by(id=like.user_id).first()
                     post = PrivatePost.query.filter_by(id=like.post_id).first()
