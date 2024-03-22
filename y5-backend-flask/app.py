@@ -191,6 +191,7 @@ def mail_night():
             if day > 8:
                 # return
                 day = 8
+            print("day = %d" % day)
             room_members = RoomMember.query.filter_by(room_id=room.id).all()
             member_ids = []
             post_str = ""
