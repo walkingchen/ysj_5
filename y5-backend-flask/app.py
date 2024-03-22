@@ -236,7 +236,7 @@ def mail_night():
                 like_str += "\n\nNew likes: %d" % len(new_likes)
                 for like in new_likes:
                     user = User.query.filter_by(id=like.user_id).first()
-                    post = PrivatePost.query.filter_by(id=like.post_id).first()
+                    post = PublicPost.query.filter_by(id=like.post_id).first()
                     post_author = User.query.filter_by(id=post.user_id).first()
                     like_str += "\n" + user.nickname + " likes " + post_author.nickname + "'s post.'"
 
