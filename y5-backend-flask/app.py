@@ -192,7 +192,7 @@ def mail_night():
                 return
             room_members = RoomMember.query.filter_by(room_id=room.id).all()
             member_ids = []
-            post_str = ""
+            post_str = '''<div class="container">'''
             for member in room_members:
                 member_ids.append(member.user_id)
 
@@ -200,10 +200,11 @@ def mail_night():
                     room_id=room.id).filter_by(topic=day).all()
 
                 if len(private_posts) > 0:
-                    post_str += "\n\nNew post count: %d" % len(private_posts)
+                    post_str += '''<p class="title">New post count: %d" % len(private_posts)</p>'''
                     for post in private_posts:
                         user = User.query.filter_by(id=post.user_id).first()
-                        post_str += "\n" + user.nickname + ": " + post.content[:30] + "......"
+                        post_str += "</p>" + user.nickname + ": " + post.content[:30] + "......</p>"
+                    post_str += "</div>"
 
             # public posts
             # new_post_count = PublicPost.query.filter_by(room_id=room.id).filter_by(topic=day).count()
@@ -219,26 +220,28 @@ def mail_night():
                 PostComment.created_at >= today,
                 PostComment.created_at < tomorrow
             ).all()
-            comment_str = ""
+            comment_str = '''<div class="container">'''
             if len(new_comments) > 0:
-                comment_str += "\n\nNew comments: %d" % len(new_comments)
+                comment_str += '''<p class="title">New comments: %d" % len(new_comments)</p>'''
                 for comment in new_comments:
                     user = User.query.filter_by(id=comment.user_id).first()
-                    comment_str += "\n" + user.nickname + ": " + comment.comment_content[:30] + "......"
+                    comment_str += "<p>" + user.nickname + ": " + comment.comment_content[:30] + "......</p>"
+                comment_str += "</div>"
 
             # likes
             new_likes = PostLike.query.filter(PostLike.user_id.in_(tuple(member_ids))).filter(
                 PostLike.created_at >= today,
                 PostLike.created_at < tomorrow
             ).all()
-            like_str = ""
+            like_str = '''<div class="container">'''
             if len(new_likes) > 0:
-                like_str += "\n\nNew likes: %d" % len(new_likes)
+                like_str += "<p>New likes: %d" % len(new_likes)
                 for like in new_likes:
                     user = User.query.filter_by(id=like.user_id).first()
                     post = PublicPost.query.filter_by(id=like.post_id).first()
                     post_author = User.query.filter_by(id=post.user_id).first()
-                    like_str += "\n" + user.nickname + " likes " + post_author.nickname + "'s post.'"
+                    like_str += "\n" + user.nickname + " likes " + post_author.nickname + "'s post.</p>"
+                like_str += "</div>"
 
             # # flags
             # new_flag_count = PostFlag.query.filter(PostFlag.user_id.in_(tuple(member_ids))).filter(
@@ -249,7 +252,63 @@ def mail_night():
             for member in room_members:
                 # 根据早晚类型及天数获取邮件模板
                 message_template = MailTemplate.query.filter_by(mail_type=2, day=day).first()    # type=2: night mail template
-                message = message_template.content + post_str + comment_str + like_str
+                message_html = '''
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Notification</title>
+                    <style>
+                      body {
+                        font-family: Arial, sans-serif;
+                        background-color: #f2f2f2;
+                        padding: 20px;
+                      }
+                      .container {
+                        background-color: #f9f9f9;
+                        border-radius: 10px;
+                        padding: 20px;
+                        margin-bottom: 20px;
+                      }
+                      strong {
+                        font-weight: bold;
+                      }
+                      .title {
+                        font-weight: bold;
+                        font-size: 16px;
+                        margin-bottom: 10px;
+                      }
+                      .login-button {
+                        background-color: #007bff;
+                        color: white;
+                        padding: 10px 20px;
+                        border: none;
+                        border-radius: 5px;
+                        cursor: pointer;
+                      }
+                      .login-button:hover {
+                        background-color: #0056b3;
+                      }
+                    </style>
+                    </head>
+                    <body>
+                    <div class="container">
+                      %s
+                    </div>
+                    <!-- posts -->
+                      %s
+                    <!-- comments -->
+                      %s
+                    <!-- likes -->
+                      %s
+                    <div>
+                      <a class="login-button" href="http://camer-covid.journalism.wisc.edu/">Click to login back</a>
+                    </div>
+                    </body>
+                    </html>
+                '''
+                message = message_html % (message_template.content, post_str, comment_str, like_str)
 
                 subject = message_template.title
                 user = User.query.filter_by(id=member.user_id).first()
