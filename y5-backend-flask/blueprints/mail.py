@@ -125,6 +125,21 @@ class MailApi(Resource):
             data=None
         ).__dict__)
 
+    # @swag_from('../swagger/mail/delete.yaml')
+    def delete(self, id):
+        if not current_user.is_authenticated:
+            return jsonify(Resp(result_code=4001, result_msg='need to login', data=None).__dict__)
+
+        mail = MailTemplate.query.get(id)
+        db.session.delete(mail)
+        db.session.commit()
+
+        return jsonify(Resp(
+            result_code=2000,
+            result_msg='Mail template deleted',
+            data=None
+        ).__dict__)
+
 
 api.add_resource(
     MailApi,
@@ -141,6 +156,11 @@ api.add_resource(
     '/<int:id>',
     methods=['PUT'],
     endpoint='mail/update')
+api.add_resource(
+    MailApi,
+    '/<int:id>',
+    methods=['DELETE'],
+    endpoint='mail/delete')
 
 
 class MailListApi(Resource):
