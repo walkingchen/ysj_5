@@ -252,7 +252,7 @@ def mail_night():
             # ).count()
 
             for member in room_members:
-                logging.log(logging.DEBUG, "day=%d" % day)
+                logging.log(logging.INFO, "day=%d" % day)
                 # 根据早晚类型及天数获取邮件模板
                 message_template = MailTemplate.query.filter_by(mail_type=2, day=day).first()    # type=2: night mail template
                 message = message_template.content + post_str + comment_str + like_str
