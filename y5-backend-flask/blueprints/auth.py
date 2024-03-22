@@ -81,26 +81,27 @@ def login():
     # fixme 判断是否管理员
     # return redirect('/admin/')
 
-    member = RoomMember.query.filter_by(user_id=user.id, activated=1).first()
-    if member is None:
+    members = RoomMember.query.filter_by(user_id=user.id, activated=1).all()
+    if len(member) == 0:
         return json.dumps(Resp(
             result_code=2010,
             result_msg='Please wait for email notification',
             data=None
         ).__dict__)
 
-    room = Room.query.filter_by(id=member.room_id, activated=1).first()
-    if room is None:
-        return json.dumps(Resp(
-            result_code=2010,
-            result_msg='Room not activated, please wait for email notification, room id: %d' % member.room_id,
-            data=None
-        ).__dict__)
+    for member in members:
+        room = Room.query.filter_by(id=member.room_id, activated=1).first()
+        if room is not None:
+            return json.dumps(Resp(
+                result_code=2000,
+                result_msg='success',
+                data=Serializer.serialize(room)
+            ).__dict__)
 
     return json.dumps(Resp(
-        result_code=2000,
-        result_msg='success',
-        data=Serializer.serialize(room)
+        result_code=2010,
+        result_msg='Room not activated, please wait for email notification, room id: %d' % member.room_id,
+        data=None
     ).__dict__)
 
 
