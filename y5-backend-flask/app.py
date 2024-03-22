@@ -285,7 +285,6 @@ def mail_night():
                       .login-button {
                         background-color: #007bff;
                         color: white;
-                        margin-top: 20px;
                         padding: 15px;
                         border: none;
                         border-radius: 5px;
@@ -306,7 +305,7 @@ def mail_night():
                       %s
                     <!-- likes -->
                       %s
-                    <div>
+                    <div style="margin: 20px;">
                       <a class="login-button" href="http://camer-covid.journalism.wisc.edu/">Click to login back</a>
                     </div>
                     </body>
