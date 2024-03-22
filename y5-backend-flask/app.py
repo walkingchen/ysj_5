@@ -251,7 +251,7 @@ def mail_night():
             #     PostFlag.created_at < tomorrow
             # ).count()
 
-            return day
+            return "day = %d" % day
 
             for member in room_members:
                 # 根据早晚类型及天数获取邮件模板
