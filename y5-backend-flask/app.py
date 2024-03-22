@@ -13,6 +13,7 @@ from flask_ckeditor import CKEditor
 from flask_cors import CORS
 from flask_mail import Message
 from git import Repo
+from sqlalchemy import desc
 
 import config
 from blueprints.auth import bp_auth, login_manager
@@ -197,7 +198,7 @@ def mail_night():
                 member_ids.append(member.user_id)
 
             public_posts = PublicPost.query.filter_by(
-                room_id=room.id).filter_by(topic=day).limit(5).all()
+                room_id=room.id).filter_by(topic=day).order_by(desc(PublicPost.created_at)).limit(5).all()
 
             if len(public_posts) > 0:
                 post_str = '''<div class="container">'''
