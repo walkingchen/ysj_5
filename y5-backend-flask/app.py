@@ -189,8 +189,7 @@ def mail_night():
             day = today - day_activated.date()
             day = day.days
             if day > 8:
-                # return
-                day = 8
+                return
             room_members = RoomMember.query.filter_by(room_id=room.id).all()
             member_ids = []
             post_str = ""
@@ -250,8 +249,6 @@ def mail_night():
             #     PostFlag.created_at >= today,
             #     PostFlag.created_at < tomorrow
             # ).count()
-
-            return "day = %d" % day
 
             for member in room_members:
                 # 根据早晚类型及天数获取邮件模板
