@@ -266,13 +266,13 @@ def mail_night():
                       body {
                         font-family: Arial, sans-serif;
                         background-color: #f2f2f2;
-                        padding: 20px;
+                        padding: 15px;
                       }
                       .container {
                         background-color: #f9f9f9;
                         border-radius: 10px;
-                        padding: 20px;
-                        margin: 20px;
+                        padding: 10px;
+                        margin: 10px;
                       }
                       strong {
                         font-weight: bold;
@@ -285,7 +285,7 @@ def mail_night():
                       .login-button {
                         background-color: #007bff;
                         color: white;
-                        padding: 10px 20px;
+                        padding: 20px;
                         border: none;
                         border-radius: 5px;
                         cursor: pointer;
