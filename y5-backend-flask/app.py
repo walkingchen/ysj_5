@@ -187,51 +187,78 @@ def mail_night():
             day_activated = room.activated_at
             day = today - day_activated.date()
             day = day.days
+            # if day > 8:
+            #     return
             # day = 8
             room_members = RoomMember.query.filter_by(room_id=room.id).all()
             member_ids = []
+            post_str = ""
             for member in room_members:
                 member_ids.append(member.user_id)
 
-            # room level
-            new_post_count = PublicPost.query.filter_by(room_id=room.id).filter_by(topic=day).count()
+                private_posts = PrivatePost.query.filter_by(user_id=member.id).filter_by(
+                    room_id=room.id).filter_by(topic=day).all()
+
+                if len(private_posts) > 0:
+                    post_str += "\n\nNew post count: " + len(private_posts)
+                    for post in private_posts:
+                        user = User.query.filter_by(id=post.user_id).first()
+                        post_str += "\n" + user.nickname + ": " + post.content[:30] + "......"
+
+            # public posts
+            # new_post_count = PublicPost.query.filter_by(room_id=room.id).filter_by(topic=day).count()
+            # new_posts = PublicPost.query.filter_by(room_id=room.id).filter_by(topic=day).all()
+            # if new_post_count > 0:
+            #     post_str = "\n\nNew post count: " + new_post_count
+            #     for post in new_posts:
+            #         user = User.query.filter_by(id=post.user_id).first()
+            #         post_str += "\n" + user.nickname + ": " + post.content[:30] + "......"
 
             # comments
             new_comment_count = PostComment.query.filter(PostComment.user_id.in_(tuple(member_ids))).filter(
                 PostComment.created_at >= today,
                 PostComment.created_at < tomorrow
             ).count()
+            new_comments = PostComment.query.filter(PostComment.user_id.in_(tuple(member_ids))).filter(
+                PostComment.created_at >= today,
+                PostComment.created_at < tomorrow
+            ).all()
+            comment_str = ""
+            if new_comment_count > 0:
+                comment_str += "\n\nNew comments: " + new_comment_count
+                for comment in new_comments:
+                    user = User.query.filter_by(id=comment.user_id).first()
+                    comment_str += "\n" + user.nickname + ": " + comment.comment_content[:30] + "......"
 
             # likes
-            new_like_count = PostLike.query.filter(PostLike.user_id.in_(tuple(member_ids))).filter(
+            new_likes = PostLike.query.filter(PostLike.user_id.in_(tuple(member_ids))).filter(
                 PostLike.created_at >= today,
                 PostLike.created_at < tomorrow
-            ).count()
+            ).all()
+            like_str = ""
+            if len(new_likes) > 0:
+                like_str += "\n\nNew likes: " + len(new_likes)
+                for like in new_likes:
+                    user = User.query.filter_by(id=like.user_id).first()
+                    post = PrivatePost.query.filter_by(id=like.post_id).first()
+                    post_author = User.query.filter_by(id=post.user_id).first()
+                    like_str += "\n" + user.nickname + " likes " + post_author.nickname + "'s post.'"
 
-            # flags
-            new_flag_count = PostFlag.query.filter(PostFlag.user_id.in_(tuple(member_ids))).filter(
-                PostFlag.created_at >= today,
-                PostFlag.created_at < tomorrow
-            ).count()
+            # # flags
+            # new_flag_count = PostFlag.query.filter(PostFlag.user_id.in_(tuple(member_ids))).filter(
+            #     PostFlag.created_at >= today,
+            #     PostFlag.created_at < tomorrow
+            # ).count()
 
-            # user level
             for member in room_members:
-                private_posts = PrivatePost.query.filter_by(user_id=member.id).filter_by(
-                    room_id=room.id).filter_by(topic=day).all()
-                # titles
-                titles = ''
-                for post in private_posts:
-                    titles += post.post_title
-                    titles += ', '
-
                 # 根据早晚类型及天数获取邮件模板
                 message_template = MailTemplate.query.filter_by(mail_type=2, day=day).first()    # type=2: night mail template
-                message = message_template.content % (titles, new_post_count, new_comment_count, new_like_count, new_flag_count)
+                message = message_template.content + post_str + comment_str + like_str
 
                 subject = message_template.title
                 user = User.query.filter_by(id=member.user_id).first()
                 if user.email is not None:
-                    msg = Message(recipients=[user.email],
+                    msg = Message(recipients=['cenux1987@163.com'],
                                   body=message,
                                   subject=subject,
                                   sender=("Admin", "sijia.yang@alumni.upenn.edu"))
