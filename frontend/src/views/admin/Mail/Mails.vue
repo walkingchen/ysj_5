@@ -53,6 +53,11 @@ import { getMails, deleteMail } from '@api/mail.js'
 import formDialog from './form'
 import emergencyDialog from './emergency'
 
+function mysort (a, b) {
+  if (a.room_name !== b.room_name) return a.room_name < b.room_name ? -1 : 1
+  else if (a.day !== b.day) return a.day < b.day ? -1 : 1
+}
+
 export default {
   components: {
     formDialog,
@@ -76,7 +81,7 @@ export default {
       getMails().then(res => {
         this.loading = false
         if (res.data.result_code === 2000) {
-          this.tableData = res.data.data
+          this.tableData = res.data.data.sort(mysort)
         } else {
           this.$message.error(res.data.result_msg)
         }
@@ -92,7 +97,7 @@ export default {
     },
     async deleteMail(id) {
       try {
-        const res = deleteMail(id)
+        const res = await deleteMail(id)
         if (res.data.result_code === 2000) this.setTableData()
         else this.$message.error(res.data.result_msg)
       } catch (error) {
