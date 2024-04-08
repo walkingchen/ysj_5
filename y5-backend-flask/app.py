@@ -207,7 +207,8 @@ def mail_night():
                 post_str += '<p class="title">New post count: %d</p>' % public_post_count
                 for post in public_posts:
                     user = User.query.filter_by(id=post.user_id).first()
-                    post_str += "<p>" + user.nickname + ": " + post.post_content[:50] + "......</p>"
+                    post_words = post.post_content.split()
+                    post_str += "<p>" + user.nickname + ": " + ' '.join(post_words[:10]) + "......</p>"
                 post_str += "</div>"
 
             # public posts
@@ -230,7 +231,8 @@ def mail_night():
                 comment_str += '<p class="title">New comments: %d</p>' % len(new_comments)
                 for comment in new_comments:
                     user = User.query.filter_by(id=comment.user_id).first()
-                    comment_str += "<p>" + user.nickname + ": " + comment.comment_content[:30] + "......</p>"
+                    comment_words = comment.split()
+                    comment_str += "<p>" + user.nickname + ": " + ' '.join(comment_words[:10]) + "......</p>"
                 comment_str += "</div>"
 
             # likes
