@@ -19,6 +19,6 @@ yarn build
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ### explain
-private = "Fact-check Picks for You" -> timeline_type:1   
+private = "Fact Check Picks for You" -> timeline_type:1   
 public = "Group Discussion" -> timeline_type:0   
 timeline_type:2 is shared
