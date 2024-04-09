@@ -56,8 +56,8 @@ export default {
     background-color #5a77a1
     position fixed
     z-index 11
-    width calc(22.5% - 60px)
-    top 228px
+    width calc(22.5% - 58px) // 侧边宽度calc(22.5% - 18px) - 40px的左右内边距
+    top 229px // 229px = 70px的头部高度 + 20px与头部的边距 + 119px logo的高度 + 20px与logo的边距
     border-top-right-radius 4px
     border-top-left-radius 4px
 

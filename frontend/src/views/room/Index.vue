@@ -19,14 +19,17 @@
         <el-row>
           <el-col :span="12" :offset="6">
             <add-discussion @on-success="addPostSuccess" />
-            <review />
+            <top-shares />
             <group-discussion ref="groupDiscussion" />
           </el-col>
         </el-row>
 
         <div class="right-content">
-          <daily-poll />
-          <friends @start-chat="startChart" />
+          <img class="logo" src="@/assets/logo.png" />
+          <div class="right-scroll">
+            <daily-poll />
+            <friends @start-chat="startChart" />
+          </div>
         </div>
       </div>
     </div>
@@ -55,7 +58,7 @@ import myself from './myself'
 import dailyPoll from './dailyPoll'
 import factCheckPicks from './factCheckPicks'
 import addDiscussion from './addDiscussion'
-import review from './review'
+import topShares from './topShares'
 import logos from './logos'
 import groupDiscussion from './groupDiscussion'
 import friends from './friends'
@@ -68,7 +71,7 @@ export default {
     myself,
     dailyPoll,
     addDiscussion,
-    review,
+    topShares,
     logos,
     factCheckPicks,
     groupDiscussion,
@@ -186,6 +189,9 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+sider-width = calc(22.5% - 18px) // 左右侧边栏的宽度 = (50%的剩余宽度 ÷ 2) - 15px的间距 - (6px滚动条宽度 ÷ 2)
+sider-top = 90px // 左右侧边栏的top = 70px的头部高度 + 20px的上边距
+
 .room-layout
   height 100vh
   overflow hidden
@@ -196,7 +202,7 @@ export default {
   padding 20px 0
   height calc(100vh - 100px)
   width 100%
-  overflow auto
+  overflow scroll
 
   &::-webkit-scrollbar
     width 6px
@@ -216,10 +222,10 @@ export default {
 .left-content
   position fixed
   z-index 5
-  top 90px
+  top sider-top
   left 5%
   bottom 0
-  width calc(22.5% - 15px)
+  width sider-width
   overflow hidden
   display flex
   flex-direction column
@@ -227,7 +233,6 @@ export default {
 .private-title
   background-color #658864
   box-sizing border-box
-  // text-shadow 4px 0 5px #333
   color #fff
 
 .left-bottom
@@ -250,14 +255,23 @@ export default {
 .right-content
   position fixed
   z-index 10
-  width calc(22.5% - 20px)
-  top 278px
-  right calc(5% + 5px)
-  height calc(100vh - 300px)
-  overflow-y auto
+  width sider-width
+  top sider-top
+  right calc(5% + 6px) // 6px是滚动条的宽度
 
-  &::-webkit-scrollbar
-    width 0
+  .logo
+    display block
+    box-sizing border-box
+    width 100%
+    height 119px
+    object-fit contain
+    margin-bottom 20px
+
+  .right-scroll
+    height calc(100vh - 279px) // 278px = 70px的头部高度 + 20px与头部的边距 + 119px logo的高度 + 20px与logo的边距 + 50px“Poll Digest”title的高度
+    padding-top 50px
+    overflow auto
+    scrollbar-width none
 </style>
 <style lang="stylus">
 .new-message
