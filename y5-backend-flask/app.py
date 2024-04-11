@@ -210,9 +210,9 @@ def mail_morning():
                 <body>
                 <div class="container">
                     %s
-                    <div>
-                      <img src="%s"/>
-                    </div>
+                </div>
+                <div>
+                  <img src="%s" alt="">
                 </div>
                 <div style="margin: 30px 15px;">
                   <a class="login-button" href="https://camer-covid.journalism.wisc.edu/">Click to login back</a>
@@ -258,6 +258,7 @@ def mail_night():
         rooms = Room.query.filter_by(activated=1).all()
         for room in rooms:
             day_activated = room.activated_at
+            # FIXME 解决本地时间和服务器时间不一致问题
             day = today - day_activated.date()
             day = day.days
             print('day = ' + str(day))
