@@ -7,7 +7,7 @@
         <div class="left-content">
           <myself />
 
-          <h2 class="module-title private-title">Fact-check Picks for You</h2>
+          <h2 class="module-title private-title">Fact Check Picks for You</h2>
           <div class="left-bottom">
             <div class="left-bottom-content">
               <fact-check-picks />
