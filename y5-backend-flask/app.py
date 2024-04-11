@@ -243,7 +243,7 @@ def mail_morning():
                                   body=message,
                                   subject=subject,
                                   sender=("Admin", "sijia.yang@alumni.upenn.edu"))
-
+                    msg.html = message
                     mail.send(msg)
 
 
