@@ -389,6 +389,7 @@ def mail_night():
                 message_template = MailTemplate.query.filter_by(room_id=room.id, mail_type=2,
                                                                 day=day).first()  # type=2: night mail template
                 if message_template is None:
+                    print("No mail template for room %d" % room.id)
                     continue
                 message = message_html % (message_template.content, post_str, comment_str, like_str)
 
