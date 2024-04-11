@@ -43,7 +43,7 @@ def register():
     db.session.add(user)
     db.session.commit()
 
-    message = "Congratulations, you've successfully registered on the camer-covid platform."
+    message = "Congratulations! You have successfully registered on the Chattera platform. We will let you know when your group is ready to go! Stay tuned."
     subject = "Register Confirmation"
     if user.email is not None:
         msg = Message(recipients=[user.email],
