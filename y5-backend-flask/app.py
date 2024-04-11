@@ -227,9 +227,9 @@ def mail_morning():
             ).first()
 
             if message is not None:
-                photo_uri = 'https://ysj_5.soulfar.com/uploads/' + message.photo_uri
+                photo_uri = 'http://ysj_5.soulfar.com/uploads/' + message.photo_uri
             else:
-                photo_uri = 'https://ysj_5.soulfar.com/uploads/daily_poll.jpeg'
+                photo_uri = 'http://ysj_5.soulfar.com/uploads/daily_poll.jpeg'
 
             img_str = photo_uri
 
