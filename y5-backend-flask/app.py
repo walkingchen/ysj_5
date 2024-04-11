@@ -140,8 +140,10 @@ def mail_morning():
         for room in rooms:
             # get topics
             room = Room.query.get(room.id)
-            updated_at = room.updated_at
-            local_time = time.localtime(int(updated_at.timestamp()))
+            activated_at = room.activated_at
+            if activated_at is None:
+                continue
+            local_time = time.localtime(int(activated_at.timestamp()))
             activated_day = local_time.tm_yday
             activated_year = local_time.tm_year
             print('activated_day = ' + str(activated_day))
@@ -159,8 +161,6 @@ def mail_morning():
             # if n > 8:
             #     return
 
-            print('room_id = ' + str(room.id))
-            print('n = ' + str(n))
             mail_template_morning = MailTemplate.query.filter_by(room_id=room.id).filter_by(day=n).filter_by(mail_type=1).first()
             # if mail_template_morning is None:
             #     return
