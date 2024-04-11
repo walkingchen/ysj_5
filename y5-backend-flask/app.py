@@ -210,9 +210,9 @@ def mail_morning():
                 <body>
                 <div class="container">
                     %s
-                </div>
-                <div>
-                  <img src="%s" alt="">
+                    <div>
+                      <img src="%s" alt="">
+                    </div>
                 </div>
                 <div style="margin: 30px 15px;">
                   <a class="login-button" href="https://camer-covid.journalism.wisc.edu/">Click to login back</a>
