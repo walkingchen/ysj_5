@@ -260,6 +260,7 @@ def mail_night():
             day_activated = room.activated_at
             day = today - day_activated.date()
             day = day.days
+            print('day = ' + str(day))
             if day > 8:
                 return
             room_members = RoomMember.query.filter_by(room_id=room.id).all()
