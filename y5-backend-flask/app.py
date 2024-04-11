@@ -50,7 +50,6 @@ db.init_app(app)
 scheduler.init_app(app)
 scheduler.start()
 
-
 from views import RoomModelView, PostModelView, YModelView, UserModelView, RoomMemberModelView, PublicPostModelView
 
 admin = Admin(app=app, name=config.ADMIN_TITLE, template_mode='bootstrap3')
@@ -74,7 +73,6 @@ admin.add_view(YModelView(SystemMessage, db.session, name=u'System Message Pool'
 # admin.add_view(YModelView(SystemPost, db.session, name=u'System Message Assign', category='System Message'))
 
 admin.add_view(YModelView(PollPost, db.session, name=u'Daily Poll Assign', category='Daily Poll'))
-
 
 app.register_blueprint(bp_room)
 app.register_blueprint(bp_post)
@@ -111,7 +109,7 @@ def reload():
 
         # if json['sender']['login'] == 'codingchan':
         git_pull()
-        
+
         print("reload success", str(datetime.datetime.now())[:19])
         return "reload success"
 
@@ -132,6 +130,7 @@ def git_pull():
     print("拉取修改 {0} 成功！".format(remote_name))
 
 
+@app.route('/test_mail_morning')
 # @scheduler.task('cron', id='job_mail_morning', day='*', hour='8', minute='0', second='0')
 def mail_morning():
     with app.app_context():
@@ -158,18 +157,86 @@ def mail_morning():
                 n = now_day - activated_day + 1
 
             if n > 8:
-                n = 8
-
-            mail = MailTemplate.query.filter_by(room_id=room.id).filter_by(day=n).first()
-            if mail is None:
                 return
 
+            mail_template_morning = MailTemplate.query.filter_by(room_id=room.id).filter_by(day=n).filter_by(mail_type=1).first()
+            if mail_template_morning is None:
+                return
+
+            message_html = '''
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Notification</title>
+                <style>
+                  body {
+                    font-family: Arial, sans-serif;
+                    background-color: #f2f2f2;
+                    padding: 15px;
+                  }
+                  .container {
+                    background-color: #f9f9f9;
+                    border-radius: 10px;
+                    padding: 10px;
+                    margin: 10px;
+                  }
+                  strong {
+                    font-weight: bold;
+                  }
+                  .title {
+                    font-weight: bold;
+                    font-size: 16px;
+                    margin-bottom: 10px;
+                  }
+                  .login-button {
+                    background-color: #007bff;
+                    color: white;
+                    padding: 15px;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                  }
+                  .login-button:hover {
+                    background-color: #0056b3;
+                  }
+                </style>
+                </head>
+                <body>
+                <div class="container">
+                    %s
+                    <div>
+                      <img src="%s"/>
+                    </div>
+                </div>
+                <div style="margin: 30px 15px;">
+                  <a class="login-button" href="https://camer-covid.journalism.wisc.edu/">Click to login back</a>
+                </div>
+                </body>
+                </html>
+            '''
+
+            message = PollPost.query.filter_by(
+                room_id=room.id,
+                topic=n
+            ).first()
+
+            if message is not None:
+                photo_uri = 'https://ysj_5.soulfar.com/uploads/' + message.photo_uri
+            else:
+                photo_uri = 'https://ysj_5.soulfar.com/uploads/daily_poll.jpeg'
+
+            img_str = photo_uri
+
+            message = message_html % (mail_template_morning.content, img_str)
             room_members = RoomMember.query.filter_by(room_id=room.id).all()
             for member in room_members:
                 user = User.query.filter_by(id=member.user_id).first()
                 if user.email is not None:
+                    # msg = Message(recipients=[user.email],
                     msg = Message(recipients=['cenux1987@163.com'],
-                                  body=mail + ' : ' + str(room.id),
+                                  body=message,
                                   subject=subject,
                                   sender=("Admin", "sijia.yang@alumni.upenn.edu"))
 
@@ -257,71 +324,75 @@ def mail_night():
             #     PostFlag.created_at < tomorrow
             # ).count()
 
+            message_html = '''
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Notification</title>
+                <style>
+                  body {
+                    font-family: Arial, sans-serif;
+                    background-color: #f2f2f2;
+                    padding: 15px;
+                  }
+                  .container {
+                    background-color: #f9f9f9;
+                    border-radius: 10px;
+                    padding: 10px;
+                    margin: 10px;
+                  }
+                  strong {
+                    font-weight: bold;
+                  }
+                  .title {
+                    font-weight: bold;
+                    font-size: 16px;
+                    margin-bottom: 10px;
+                  }
+                  .login-button {
+                    background-color: #007bff;
+                    color: white;
+                    padding: 15px;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                  }
+                  .login-button:hover {
+                    background-color: #0056b3;
+                  }
+                </style>
+                </head>
+                <body>
+                <div class="container">
+                  %s
+                </div>
+                <!-- posts -->
+                  %s
+                <!-- comments -->
+                  %s
+                <!-- likes -->
+                  %s
+                <div style="margin: 30px 15px;">
+                  <a class="login-button" href="https://camer-covid.journalism.wisc.edu/">Click to login back</a>
+                </div>
+                </body>
+                </html>
+            '''
             for member in room_members:
                 # 根据早晚类型及天数获取邮件模板
-                message_template = MailTemplate.query.filter_by(mail_type=2, day=day).first()    # type=2: night mail template
-                message_html = '''
-                    <!DOCTYPE html>
-                    <html lang="en">
-                    <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Notification</title>
-                    <style>
-                      body {
-                        font-family: Arial, sans-serif;
-                        background-color: #f2f2f2;
-                        padding: 15px;
-                      }
-                      .container {
-                        background-color: #f9f9f9;
-                        border-radius: 10px;
-                        padding: 10px;
-                        margin: 10px;
-                      }
-                      strong {
-                        font-weight: bold;
-                      }
-                      .title {
-                        font-weight: bold;
-                        font-size: 16px;
-                        margin-bottom: 10px;
-                      }
-                      .login-button {
-                        background-color: #007bff;
-                        color: white;
-                        padding: 15px;
-                        border: none;
-                        border-radius: 5px;
-                        cursor: pointer;
-                      }
-                      .login-button:hover {
-                        background-color: #0056b3;
-                      }
-                    </style>
-                    </head>
-                    <body>
-                    <div class="container">
-                      %s
-                    </div>
-                    <!-- posts -->
-                      %s
-                    <!-- comments -->
-                      %s
-                    <!-- likes -->
-                      %s
-                    <div style="margin: 30px 15px;">
-                      <a class="login-button" href="http://camer-covid.journalism.wisc.edu/">Click to login back</a>
-                    </div>
-                    </body>
-                    </html>
-                '''
+                message_template = MailTemplate.query.filter_by(room_id=room.id, mail_type=2,
+                                                                day=day).first()  # type=2: night mail template
+                if message_template is None:
+                    continue
                 message = message_html % (message_template.content, post_str, comment_str, like_str)
 
                 subject = message_template.title
                 user = User.query.filter_by(id=member.user_id).first()
                 if user.email is not None:
-                    msg = Message(recipients=['xining.liao@wisc.edu'],
+                    # msg = Message(recipients=[user.email],
+                    msg = Message(recipients=['cenux1987@163.com'],
                                   body=message,
                                   subject=subject,
                                   sender=("Admin", "sijia.yang@alumni.upenn.edu"))
@@ -336,7 +407,6 @@ with app.app_context():
 
     mail_template_night = MailTemplate.query.filter_by(mail_type=2).first()
     scheduler.add_job(func=mail_night, trigger='cron', hour=mail_template_night.send_hour, id='job_mail_night')
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
