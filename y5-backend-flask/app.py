@@ -280,7 +280,7 @@ def mail_night():
                 post_str += '<p class="title">New post count: %d</p>' % public_post_count
                 for post in public_posts:
                     user = User.query.filter_by(id=post.user_id).first()
-                    post_words = post.post_content.split()
+                    post_words = post.post_content.split(' ')
                     print(post_words[:10])
                     post_str += "<p>" + user.nickname + ": " + ' '.join(post_words[:10]) + "......</p>"
                 post_str += "</div>"
