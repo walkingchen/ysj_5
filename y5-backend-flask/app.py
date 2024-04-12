@@ -281,6 +281,7 @@ def mail_night():
                 for post in public_posts:
                     user = User.query.filter_by(id=post.user_id).first()
                     post_words = post.post_content.split()
+                    print(post_words[:10])
                     post_str += "<p>" + user.nickname + ": " + ' '.join(post_words[:10]) + "......</p>"
                 post_str += "</div>"
 
