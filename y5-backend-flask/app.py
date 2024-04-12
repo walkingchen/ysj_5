@@ -287,7 +287,6 @@ def mail_night():
                 for post in public_posts:
                     user = User.query.filter_by(id=post.user_id).first()
                     post_words = post.post_content.split()
-                    print(post.post_content)
                     print(post_words[:10])
                     post_str += "<p>" + user.nickname + ": " + ' '.join(post_words[:10]) + "......</p>"
 
@@ -303,20 +302,10 @@ def mail_night():
             ).order_by(desc(PublicPost.created_at)).limit(1).all()
             if system_post_count > 0:
                 for post in system_posts:
-                    post_words = post.post_content.split()
-                    print(post.post_content)
+                    post_words = post.abstract.split()
                     print(post_words[:10])
                     post_str += "<p>COVID Flashbacks:" + ' '.join(post_words[:10]) + "......</p>"
             post_str += "</div>"
-
-            # public posts
-            # new_post_count = PublicPost.query.filter_by(room_id=room.id).filter_by(topic=day).count()
-            # new_posts = PublicPost.query.filter_by(room_id=room.id).filter_by(topic=day).all()
-            # if new_post_count > 0:
-            #     post_str = "\n\nNew post count: " + new_post_count
-            #     for post in new_posts:
-            #         user = User.query.filter_by(id=post.user_id).first()
-            #         post_str += "\n" + user.nickname + ": " + post.content[:30] + "......"
 
             # comments
             new_comments = PostComment.query.filter(PostComment.user_id.in_(tuple(member_ids))).filter(
