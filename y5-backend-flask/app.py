@@ -304,7 +304,7 @@ def mail_night():
                 for post in system_posts:
                     post_words = post.abstract.split()
                     print(post_words[:10])
-                    post_str += "<p>COVID Flashbacks:" + ' '.join(post_words[:10]) + "......</p>"
+                    post_str += "<p>COVID Flashbacks: " + ' '.join(post_words[:10]) + "......</p>"
             post_str += "</div>"
 
             # comments
