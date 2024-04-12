@@ -236,10 +236,11 @@ def mail_morning():
             message = message_html % (mail_template_morning.content, img_str)
             room_members = RoomMember.query.filter_by(room_id=room.id).all()
             for member in room_members:
+                subject = mail_template_morning.title
                 user = User.query.filter_by(id=member.user_id).first()
                 if user.email is not None:
-                    # msg = Message(recipients=[user.email],
-                    msg = Message(recipients=['cenux1987@163.com'],
+                    msg = Message(recipients=[user.email],
+                    # msg = Message(recipients=['cenux1987@163.com'],
                                   body=message,
                                   subject=subject,
                                   sender=("Admin", "sijia.yang@alumni.upenn.edu"))
@@ -412,8 +413,8 @@ def mail_night():
                 subject = message_template.title
                 user = User.query.filter_by(id=member.user_id).first()
                 if user.email is not None:
-                    # msg = Message(recipients=[user.email],
-                    msg = Message(recipients=['cenux1987@163.com'],
+                    msg = Message(recipients=[user.email],
+                    # msg = Message(recipients=['cenux1987@163.com'],
                                   body=message,
                                   subject=subject,
                                   sender=("Admin", "sijia.yang@alumni.upenn.edu"))
