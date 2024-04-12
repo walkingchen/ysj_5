@@ -271,20 +271,43 @@ def mail_night():
                 member_ids.append(member.user_id)
 
             public_post_count = PublicPost.query.filter_by(
-                room_id=room.id).filter_by(topic=day).count()
+                room_id=room.id,
+                topic=day,
+                is_system_post=0
+            ).filter_by().count()
             public_posts = PublicPost.query.filter_by(
-                room_id=room.id).filter_by(topic=day).order_by(desc(PublicPost.created_at)).limit(5).all()
+                room_id=room.id,
+                topic=day,
+                is_system_post=0
+            ).order_by(desc(PublicPost.created_at)).limit(5).all()
 
+            post_str = '''<div class="container">'''
             if public_post_count > 0:
-                post_str = '''<div class="container">'''
                 post_str += '<p class="title">New post count: %d</p>' % public_post_count
                 for post in public_posts:
                     user = User.query.filter_by(id=post.user_id).first()
-                    post_words = post.post_content.split(' ')
+                    post_words = post.post_content.split()
                     print(post.post_content)
                     print(post_words[:10])
                     post_str += "<p>" + user.nickname + ": " + ' '.join(post_words[:10]) + "......</p>"
-                post_str += "</div>"
+
+            system_post_count = PublicPost.query.filter_by(
+                room_id=room.id,
+                topic=day,
+                is_system_post=1
+            ).filter_by().count()
+            system_posts = PublicPost.query.filter_by(
+                room_id=room.id,
+                topic=day,
+                is_system_post=1
+            ).order_by(desc(PublicPost.created_at)).limit(1).all()
+            if system_post_count > 0:
+                for post in system_posts:
+                    post_words = post.post_content.split()
+                    print(post.post_content)
+                    print(post_words[:10])
+                    post_str += "<p>COVID Flashbacks:" + ' '.join(post_words[:10]) + "......</p>"
+            post_str += "</div>"
 
             # public posts
             # new_post_count = PublicPost.query.filter_by(room_id=room.id).filter_by(topic=day).count()
