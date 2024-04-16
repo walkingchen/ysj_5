@@ -78,8 +78,7 @@
 
       <el-button :loading="loading" type="primary" class="register-btn" @click.native.prevent="submit">Submit</el-button>
 
-      <el-alert v-show="error_show" title="Registration failed, please try again later." type="error" show-icon :closable="false" />
-
+      <el-alert v-show="error_show" :title="errorMessage" type="error" show-icon :closable="false" />
     </el-form>
   </div>
 </template>
@@ -173,9 +172,23 @@ export default {
           }
           Object.assign(submitData, this.registerForm)
           delete submitData.checkPassword
-          register(submitData).then(() => {
+          register(submitData).then(res => {
             this.loading = false
-            this.$router.push({ name: 'Login' })
+
+            let message = 'Registration failed, please try again later.'
+            if (res.data && res.data.result_code) {
+              switch (res.data.result_code) {
+                case 2000: // 注册成功
+                  this.$router.push({ name: 'Login' })
+                  break
+                case 4010: // 用户已存在
+                  message = 'User already exists.'
+                  break
+                default: break
+              }
+            }
+            this.errorMessage = message
+            this.error_show = true
           }).catch(() => {
             this.loading = false
             this.error_show = true
