@@ -139,6 +139,8 @@ class RoomApi(Resource):
             room.activated = activated
 
             if activated == 1:
+                # 更新room的activated_at字段，设置其value为最新时间
+                room.activated_at = datetime.datetime.now()
                 members = RoomMember.query.filter_by(room_id=room.id).all()
                 for member in members:
                     user = User.query.get(member.user_id)
