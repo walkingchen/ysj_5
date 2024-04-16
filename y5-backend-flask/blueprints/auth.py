@@ -31,7 +31,7 @@ def register():
 
     user = User.query.filter_by(email=email).first()
     if user is not None:
-        return json.dumps(Resp(result_code=4010, result_msg='User already exists.', data=None).__dict__)
+        return json.dumps(Resp(result_code=4010, result_msg='Email already exists.', data=None).__dict__)
 
     user = User(
         email=email,
