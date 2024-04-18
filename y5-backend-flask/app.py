@@ -239,8 +239,8 @@ def mail_morning():
                 subject = mail_template_morning.title
                 user = User.query.filter_by(id=member.user_id).first()
                 if user.email is not None:
-                    # msg = Message(recipients=[user.email],
-                    msg = Message(recipients=['cenux1987@163.com'],
+                    msg = Message(recipients=[user.email],
+                    # msg = Message(recipients=['cenux1987@163.com'],
                                   body=message,
                                   subject=subject,
                                   sender=("Admin", "sijia.yang@alumni.upenn.edu"))
