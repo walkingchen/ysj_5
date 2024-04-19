@@ -428,7 +428,7 @@ with app.app_context():
     scheduler.add_job(func=mail_morning, trigger='cron', hour=mail_template_morning.send_hour, id='job_mail_morning')
 
     mail_template_night = MailTemplate.query.filter_by(mail_type=2).first()
-    print("mail_template_night.id" % mail_template_night.id)
+    print("mail_template_night.id = %s" % str(mail_template_night.id))
     scheduler.add_job(func=mail_night, trigger='cron', hour=mail_template_night.send_hour, id='job_mail_night')
 
 if __name__ == '__main__':
