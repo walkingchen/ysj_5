@@ -105,7 +105,7 @@ header
   margin-left: 40px
   flex 1
   display flex
-  justify-content space-between
+  gap 10px
 
   .day-tag
     display inline-block
