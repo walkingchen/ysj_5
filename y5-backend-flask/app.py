@@ -413,8 +413,8 @@ def mail_night():
                 subject = message_template.title
                 user = User.query.filter_by(id=member.user_id).first()
                 if user.email is not None:
-                    # msg = Message(recipients=[user.email],
-                    msg = Message(recipients=['cenux1987@163.com'],
+                    msg = Message(recipients=[user.email],
+                    # msg = Message(recipients=['cenux1987@163.com'],
                                   body=message,
                                   subject=subject,
                                   sender=("Admin", "sijia.yang@alumni.upenn.edu"))
@@ -428,6 +428,7 @@ with app.app_context():
     scheduler.add_job(func=mail_morning, trigger='cron', hour=mail_template_morning.send_hour, id='job_mail_morning')
 
     mail_template_night = MailTemplate.query.filter_by(mail_type=2).first()
+    print("mail_template_night.id" % mail_template_night.id)
     scheduler.add_job(func=mail_night, trigger='cron', hour=mail_template_night.send_hour, id='job_mail_night')
 
 if __name__ == '__main__':
