@@ -319,7 +319,7 @@ def mail_night():
                 comment_str += '<p class="title">New comments: %d</p>' % len(new_comments)
                 for comment in new_comments:
                     user = User.query.filter_by(id=comment.user_id).first()
-                    comment_words = comment.split()
+                    comment_words = comment.comment_content.split()
                     comment_str += "<p>" + user.nickname + ": " + ' '.join(comment_words[:10]) + "......</p>"
                 comment_str += "</div>"
 
