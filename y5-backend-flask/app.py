@@ -3,6 +3,7 @@ import logging
 import os
 import time
 
+import pytz
 from flasgger import Swagger
 from flask import Flask, render_template, request
 from flask_admin import Admin
@@ -252,17 +253,35 @@ def mail_morning():
 @app.route('/test_mail', methods=['GET'])
 def mail_night():
     with app.app_context():
-        today = datetime.datetime.today().date()
-        tomorrow = datetime.datetime.today().date() + datetime.timedelta(days=1)
+        # 指定服务器时区
+        server_timezone = pytz.timezone('America/Chicago')
+
+        # 获取当前服务器时间
+        server_time = datetime.datetime.now(server_timezone)
+
+        # 获取日期部分
+        today = server_time.date()
+        tomorrow = today + datetime.timedelta(days=1)
 
         # room activate day
         rooms = Room.query.filter_by(activated=1).all()
         for room in rooms:
             day_activated = room.activated_at
             # FIXME 解决本地时间和服务器时间不一致问题
-            day = today - day_activated.date()
-            day = day.days
-            print('day = ' + str(day))
+            local_time = time.localtime(int(day_activated.timestamp()))
+            activated_day = local_time.tm_yday
+            activated_year = local_time.tm_year
+            print('activated_day = ' + str(activated_day))
+
+            now = time.localtime(time.time())
+            now_day = now.tm_yday
+            now_year = now.tm_year
+            print('now_day = ' + str(now_day))
+
+            if now_year > activated_year:
+                day = now_day + 365 - activated_day + 1
+            else:
+                day = now_day - activated_day + 1
             if day > 8:
                 return
             room_members = RoomMember.query.filter_by(room_id=room.id).all()
