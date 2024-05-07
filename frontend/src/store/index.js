@@ -26,18 +26,10 @@ export default new Vuex.Store({
     },
     setTopic (state, data) {
       state.topics = data
-
-      const localTopic = Number(localStorage.getItem('currentTopic'))
-      if (localTopic && data.findIndex(ele => ele.topic === localTopic) > -1) {
-        state.currentTopic = localTopic
-      } else {
-        state.currentTopic = data[data.length - 1].topic
-      }
-      localStorage.setItem('currentTopic', state.currentTopic)
+      state.currentTopic = data[data.length - 1].topic
     },
     setCurrentTopic (state, data) {
       state.currentTopic = data
-      localStorage.setItem('currentTopic', data)
     },
     setSearchKey (state, data) {
       state.searchKey = data

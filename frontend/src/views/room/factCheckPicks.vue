@@ -18,8 +18,6 @@
       </private-post-item>
     </div>
 
-    <div class="nomore-layout">no more</div>
-
     <el-dialog
       :visible.sync="showShareDialog"
       center
@@ -230,9 +228,6 @@ export default {
     &:hover
       background-color #409eff
       color #fff
-
-  .nomore-layout
-    color #fff
 
 .share-dialog
   >>> .el-dialog__body

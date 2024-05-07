@@ -126,8 +126,4 @@ ul, li
   text-align center
   font-size 20px
   color #409eff
-
-.nomore-layout
-  text-align center
-  padding 10px 0
 </style>

@@ -161,6 +161,7 @@ export default {
     .user-name
       font-size 12px
       line-height 22px
+      font-weight bold
 
     .comment-time
       color #666

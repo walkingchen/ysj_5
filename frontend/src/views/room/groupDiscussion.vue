@@ -20,7 +20,6 @@
     </ul>
 
     <div v-if="getPostLoading" class="loading-layout"><i class="el-icon-loading"></i></div>
-    <div v-else class="nomore-layout">no more</div>
   </el-card>
 </template>
 
@@ -54,7 +53,7 @@ export default {
   },
   methods: {
     handleSkip () {
-      document.getElementsByClassName('room-content')[0].scrollTop = document.getElementById('review').offsetHeight + 110
+      document.getElementsByClassName('room-content')[0].scrollTop = document.getElementById('topShares').offsetHeight + 110
     },
     async getMomentList() {
       this.getPostLoading = true
@@ -133,24 +132,25 @@ export default {
       this.titleWidth = window.getComputedStyle(element).getPropertyValue('width')
     })
 
-    const appHeight = document.getElementById('app').offsetHeight
-    const reviewDom = document.getElementById('review')
-    let postForumHeight = document.getElementById('addDiscussion').offsetHeight
-    let reviewHeight = reviewDom.offsetHeight
+    const topSharesDom = document.getElementById('topShares')
     this.$bus.$on('room-content-scroll', top => {
-      if (top < (20 + postForumHeight + 20 + reviewHeight + 20 + 62 - (appHeight - 70))) { // 向上滚动到 title 位置时，将 title 固定在底部
+      const appHeight = document.getElementById('app').offsetHeight
+      const postForumHeight = document.getElementById('addDiscussion').offsetHeight
+      const topSharesHeight = topSharesDom.offsetHeight
+
+      if (top < (20 + postForumHeight + 20 + topSharesHeight + 20 + 62 - (appHeight - 70))) { // 向上滚动到 title 位置时，将 title 固定在底部
         this.titleFixed = true
-        this.fixedTitleTop = appHeight - 47
-      } else if (top >= (reviewHeight + 116)) { // 向下滚动到 title 位置时，将 title 固定在顶部
+        this.fixedTitleTop = appHeight - 50
+      } else if (top >= (20 + postForumHeight + 20 + topSharesHeight + 20 - (50 + 38))) { // 向下滚动到 title 位置时，将 title 固定在顶部
         this.titleFixed = true
-        this.fixedTitleTop = 117
+        this.fixedTitleTop = 158 // 70header + 50'COVID Flashbacks: Top Shares' + 38alert
       } else { // title 出现在可视区域内时取消上下固定
         this.titleFixed = false
         this.fixedTitleTop = 0
       }
     })
 
-    // 监听 review & add discussion dom 高度变化，判断是否将标题固定在底部
+    // 监听 topShares & add discussion dom 高度变化，判断是否将标题固定在底部
     const title = document.getElementsByClassName('public-title')[0]
     const fixedTitleOnBottom = () => {
       if (title.getBoundingClientRect().top > appHeight - 46) {
@@ -159,15 +159,15 @@ export default {
       }
     }
 
-    // 监听 review dom 高度变化
+    // 监听 topShares dom 高度变化
     const MutationObserver = window.MutationObserver || window.webkitMutationObserver || window.MozMutationObserver
-    const reviewMutationObserver = new MutationObserver(() => {
-      const height = reviewDom.offsetHeight
-      if (height === reviewHeight) return
-      reviewHeight = height
+    const topSharesMutationObserver = new MutationObserver(() => {
+      const height = topSharesDom.offsetHeight
+      if (height === topSharesHeight) return
+      topSharesHeight = height
       fixedTitleOnBottom()
     })
-    reviewMutationObserver.observe(reviewDom, {
+    topSharesMutationObserver.observe(topSharesDom, {
       childList: true, // 子节点的变动（新增、删除或者更改）
       attributes: true, // 属性的变动
       characterData: true, // 节点内容或节点文本的变动
@@ -224,9 +224,6 @@ export default {
 
       &:hover
         text-decoration underline
-
-  .nomore-layout
-    color #999
 
 #moments-ul > li
   margin-top 20px

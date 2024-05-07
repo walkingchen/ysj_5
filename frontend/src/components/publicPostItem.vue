@@ -240,6 +240,7 @@ export default {
       display inline-block
       height 24px
       line-height 24px
+      font-weight bold
 
     .shared-tip
       font-weight 900
