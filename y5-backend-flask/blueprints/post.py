@@ -3,6 +3,7 @@ import io
 import os
 import time
 import zipfile
+from random import shuffle
 
 from flasgger import swag_from
 from flask import Blueprint, request, json, jsonify, current_app
@@ -302,6 +303,8 @@ class PrivatePostApi(Resource):
 
         post_serialized = Serializer.serialize(post)
         process_post(post_serialized, user_id)
+        # 随机排列post_serialized
+        shuffle(post_serialized)
 
         return jsonify(Resp(
             result_code=2000,
@@ -375,6 +378,8 @@ class SystemMessageApi(Resource):
             message_serialized = Serializer.serialize(message)
             process_post(message_serialized, current_user.id)
             message_serialized_list.append(message_serialized)
+
+        shuffle(message_serialized_list)
 
         resp = Resp(
             result_code=2000,
