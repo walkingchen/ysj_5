@@ -244,7 +244,7 @@ def mail_morning():
                     # msg = Message(recipients=['cenux1987@163.com'],
                                   body=message,
                                   subject=subject,
-                                  sender=("Admin", "sijia.yang@alumni.upenn.edu"))
+                                  sender=("Chattera", "sijia.yang@alumni.upenn.edu"))
                     msg.html = message
                     mail.send(msg)
 
@@ -436,7 +436,7 @@ def mail_night():
                     # msg = Message(recipients=['cenux1987@163.com'],
                                   body=message,
                                   subject=subject,
-                                  sender=("Admin", "sijia.yang@alumni.upenn.edu"))
+                                  sender=("Chattera", "sijia.yang@alumni.upenn.edu"))
                     msg.html = message
 
                     mail.send(msg)

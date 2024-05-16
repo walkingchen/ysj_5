@@ -86,7 +86,7 @@ def process_post(post, user_id):
     author = query_user(user_id=post['user_id'])
     post['user'] = author._asdict()
     post['comments_all_read'] = True
-    comments = PostComment.query.filter_by(post_id=post['id']).order_by(PostComment.created_at.desc()).all()
+    comments = PostComment.query.filter_by(post_id=post['id']).order_by(PostComment.created_at.asc()).all()
     comments_serialized = []
     for comment in comments:
         comment_serialized = Serializer.serialize(comment)
