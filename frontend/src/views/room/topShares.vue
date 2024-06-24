@@ -26,7 +26,7 @@
         <img v-if="item.photo_uri" :src="item.photo_uri.small" class="post-photo" />
 
         <div class="actions">
-          <span class="message-time">{{ formatDate(item.created_at) }}</span>
+          <!-- <span class="message-time">{{ formatDate(item.created_at) }}</span> -->
           <div class="moment-actions">
             <button @click="toggleShowMoreComments(index)"><v-icon name="comment-dots" /></button>
             <span class="count" v-if="item.comments.length > 0">{{ item.comments.length }}</span>
