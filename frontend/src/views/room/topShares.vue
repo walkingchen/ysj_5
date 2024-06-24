@@ -4,7 +4,8 @@
       <div class="topic-title-box" :class="{ fixed: titleFixed }" :style="{ width: titleWidth }">
         <h2 class="module-title" @click="handleSkip">COVID Flashbacks: Top Shares</h2>
 
-        <el-alert title="These messages do not imply an endorsement by the Chattera team." type="info" :closable="false" />
+        <el-alert title="* These posts were selected based on their popularity and some may contain misinformation. They do not imply endorsement of the Chattera team.
+" type="info" :closable="false" />
       </div>
 
       <div v-for="(item, index) in postList" :key="item.id + index" class="trend-item">

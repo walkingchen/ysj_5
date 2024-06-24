@@ -291,8 +291,8 @@ sider-top = 90px // 左右侧边栏的top = 70px的头部高度 + 20px的上边�
     white-space nowrap
 
 .post-photo
-  max-width 100%
-  max-height 300px
+  max-width 85%
+  max-height 100%
   display block
   margin 5px 0
 

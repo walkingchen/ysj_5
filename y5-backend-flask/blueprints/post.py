@@ -460,7 +460,7 @@ class TopicApi(Resource):
             n = now_day - activated_day + 1
 
         if n > 8:
-            n = 8
+            n = 9
 
         data = []
         for i in range(n):
