@@ -4,33 +4,36 @@
 
     <div class="room-content" ref="content-div">
       <div class="layout">
-        <div class="left-content">
-          <myself />
+        <final v-if="currentTopic === 9" />
+        <template v-else-if="currentTopic !== null">
+          <div class="left-content">
+            <myself />
 
-          <h2 class="module-title private-title">Fact Check Picks for You</h2>
-          <div class="left-bottom">
-            <div class="left-bottom-content">
-              <fact-check-picks />
-              <logos />
+            <h2 class="module-title private-title">Fact Check Picks for You</h2>
+            <div class="left-bottom">
+              <div class="left-bottom-content">
+                <fact-check-picks />
+                <logos />
+              </div>
             </div>
           </div>
-        </div>
 
-        <el-row>
-          <el-col :span="12" :offset="6">
-            <add-discussion @on-success="addPostSuccess" />
-            <top-shares />
-            <group-discussion ref="groupDiscussion" />
-          </el-col>
-        </el-row>
+          <el-row>
+            <el-col :span="12" :offset="6">
+              <add-discussion @on-success="addPostSuccess" />
+              <top-shares />
+              <group-discussion ref="groupDiscussion" />
+            </el-col>
+          </el-row>
 
-        <div class="right-content">
-          <img class="logo" src="@/assets/logo.png" />
-          <div class="right-scroll">
-            <daily-poll />
-            <friends @start-chat="startChart" />
+          <div class="right-content">
+            <img class="logo" src="@/assets/logo.png" />
+            <div class="right-scroll">
+              <daily-poll />
+              <friends @start-chat="startChart" />
+            </div>
           </div>
-        </div>
+        </template>
       </div>
     </div>
 
@@ -63,6 +66,7 @@ import logos from './logos'
 import groupDiscussion from './groupDiscussion'
 import friends from './friends'
 import postDetail from './postDetail'
+import final from './final'
 import instantChat from './instantChat'
 
 export default {
@@ -77,6 +81,7 @@ export default {
     groupDiscussion,
     friends,
     postDetail,
+    final,
     instantChat
   },
   data() {

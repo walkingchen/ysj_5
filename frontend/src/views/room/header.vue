@@ -19,7 +19,7 @@
               class="day-tag"
               :class="{ actived: item === currentTopic }"
               @click="changeTopic(item, index)"
-            >Day {{ item }}</span>
+            >{{ item === 9 ? 'Final Survey' : `Day ${item}` }}</span>
           </el-badge>
         </div>
       </div>
@@ -31,6 +31,7 @@
 import { mapState } from 'vuex'
 import 'vue-awesome/icons/sign-out-alt'
 import { logout } from '@api/auth'
+import router from '@/router'
 
 export default {
   data () {

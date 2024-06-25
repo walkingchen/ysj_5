@@ -8,7 +8,7 @@
 " type="info" :closable="false" />
       </div>
 
-      <div v-for="(item, index) in postList" :key="item.id + index" class="trend-item">
+      <div v-for="(item, index) in postList" :key="`${item.id}-${index}`" class="trend-item">
         <div class="flag-box">
           <button @click="flag(item)" style="display: flex; align-items: center;">
             <!-- <v-icon name="regular/flag" v-if="!item.flagged" style="fill:#409eef; margin-right: 5px;" height="12" width="12"/> -->

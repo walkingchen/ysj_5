@@ -133,10 +133,10 @@ export default {
     })
 
     const topSharesDom = document.getElementById('topShares')
+    let appHeight = document.getElementById('app').offsetHeight
+    let postForumHeight = document.getElementById('addDiscussion').offsetHeight
+    let topSharesHeight = topSharesDom.offsetHeight
     this.$bus.$on('room-content-scroll', top => {
-      const appHeight = document.getElementById('app').offsetHeight
-      const postForumHeight = document.getElementById('addDiscussion').offsetHeight
-      const topSharesHeight = topSharesDom.offsetHeight
 
       if (top < (20 + postForumHeight + 20 + topSharesHeight + 20 + 62 - (appHeight - 70))) { // 向上滚动到 title 位置时，将 title 固定在底部
         this.titleFixed = true
