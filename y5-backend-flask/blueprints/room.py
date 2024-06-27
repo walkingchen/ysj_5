@@ -151,7 +151,7 @@ class RoomApi(Resource):
                         msg = Message(recipients=[user.email],
                                       body=message,
                                       subject=subject,
-                                      sender=("Admin", "sijia.yang@alumni.upenn.edu"))
+                                      sender=("Chattera", "sijia.yang@alumni.upenn.edu"))
 
                         mail.send(msg)
 

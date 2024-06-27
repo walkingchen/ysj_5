@@ -3,7 +3,7 @@ import logging
 import os
 
 from flask import json
-from sqlalchemy import inspect
+from sqlalchemy import inspect, func
 
 import config
 from extensions import db
@@ -183,6 +183,91 @@ def process_post(post, user_id):
         db.session.commit()
     else:
         post['read_status'] = True   # read
+
+
+def get_top_participants(room_id):
+    # 获取每个参与者在每个房间的发帖数量
+    post_counts = db.session.query(
+        PublicPost.room_id,
+        func.date(PublicPost.created_at).label('date'),
+        PublicPost.user_id,
+        func.count(PublicPost.id).label('post_count')
+    ).filter(
+        PublicPost.room_id == room_id
+    ).group_by(
+        PublicPost.room_id,
+        func.date(PublicPost.created_at),
+        PublicPost.user_id
+    ).subquery()
+
+    # 获取每个参与者在每个房间的评论数量
+    comment_counts = db.session.query(
+        PublicPost.room_id,
+        func.date(PostComment.created_at).label('date'),
+        PostComment.user_id,
+        func.count(PostComment.id).label('comment_count')
+    ).join(
+        PublicPost, PostComment.post_id == PublicPost.id
+    ).filter(
+        PublicPost.room_id == room_id
+    ).group_by(
+        PublicPost.room_id,
+        func.date(PostComment.created_at),
+        PostComment.user_id
+    ).subquery()
+
+    # 合并帖子和评论数量
+    merged_counts = db.session.query(
+        post_counts.c.room_id,
+        post_counts.c.date,
+        post_counts.c.user_id,
+        (post_counts.c.post_count + func.coalesce(comment_counts.c.comment_count, 0)).label('total_count')
+    ).outerjoin(
+        comment_counts,
+        (post_counts.c.room_id == comment_counts.c.room_id) &
+        (post_counts.c.date == comment_counts.c.date) &
+        (post_counts.c.user_id == comment_counts.c.user_id)
+    ).union_all(
+        db.session.query(
+            comment_counts.c.room_id,
+            comment_counts.c.date,
+            comment_counts.c.user_id,
+            (comment_counts.c.comment_count).label('total_count')
+        ).outerjoin(
+            post_counts,
+            (comment_counts.c.room_id == post_counts.c.room_id) &
+            (comment_counts.c.date == post_counts.c.date) &
+            (comment_counts.c.user_id == post_counts.c.user_id)
+        ).filter(post_counts.c.user_id == None)
+    ).subquery()
+
+    # 获取每个房间每天发帖和评论数量最多的前两位参与者
+    result = db.session.query(
+        merged_counts.c.room_id,
+        merged_counts.c.date,
+        merged_counts.c.user_id,
+        merged_counts.c.total_count
+    ).order_by(
+        merged_counts.c.room_id,
+        merged_counts.c.date,
+        merged_counts.c.total_count.desc()
+    ).all()
+
+    # 处理结果，获取前两位参与者
+    from collections import defaultdict
+
+    top_n_results = defaultdict(list)
+    n = 2
+
+    for row in result:
+        key = (row.room_id, row.date)
+        if len(top_n_results[key]) < n:
+            top_n_results[key].append({
+                'user_id': row.user_id,
+                'total_count': row.total_count
+            })
+
+    return top_n_results
 
 
 def object_as_dict(obj):

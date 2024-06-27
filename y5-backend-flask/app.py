@@ -26,6 +26,7 @@ from room_socketio import RoomNamespace
 from extensions import db, cache, socketio, scheduler, mail
 from models import User, Room, RoomPrototype, RoomMember, PublicPost, PostComment, PostLike, \
     SystemMessage, PrivateMessage, PostFlag, PrivatePost, PollPost, MailTemplate
+from service import get_top_participants
 
 app = Flask(__name__)
 
@@ -440,6 +441,24 @@ def mail_night():
                     msg.html = message
 
                     mail.send(msg)
+
+
+@app.route('/top', methods=['GET'])
+def test_count():
+    room_id = request.args.get('room_id')
+
+    top_n_results = get_top_participants(room_id)
+
+    # 格式化输出
+    output = []
+    for key, value in top_n_results.items():
+        output.append({
+            'room_id': key[0],
+            'date': key[1],
+            'top_participants': value
+        })
+
+    return {'results': output}
 
 
 with app.app_context():
