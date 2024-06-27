@@ -5,7 +5,7 @@ import time
 
 import pytz
 from flasgger import Swagger
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_babelex import Babel
@@ -25,7 +25,7 @@ from blueprints.user import bp_user
 from room_socketio import RoomNamespace
 from extensions import db, cache, socketio, scheduler, mail
 from models import User, Room, RoomPrototype, RoomMember, PublicPost, PostComment, PostLike, \
-    SystemMessage, PrivateMessage, PostFlag, PrivatePost, PollPost, MailTemplate
+    SystemMessage, PrivateMessage, PostFlag, PrivatePost, PollPost, MailTemplate, Serializer
 from service import get_top_participants
 
 app = Flask(__name__)
@@ -449,16 +449,7 @@ def test_count():
 
     top_n_results = get_top_participants(room_id)
 
-    # 格式化输出
-    output = []
-    for key, value in top_n_results.items():
-        output.append({
-            'room_id': key[0],
-            'date': key[1],
-            'top_participants': value
-        })
-
-    return {'results': output}
+    return jsonify(top_n_results)
 
 
 with app.app_context():

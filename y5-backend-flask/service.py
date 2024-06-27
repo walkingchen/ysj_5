@@ -218,9 +218,9 @@ def get_top_participants(room_id):
 
     # 合并帖子和评论数量
     merged_counts = db.session.query(
-        post_counts.c.room_id,
-        post_counts.c.date,
-        post_counts.c.user_id,
+        post_counts.c.room_id.label('room_id'),
+        post_counts.c.date.label('date'),
+        post_counts.c.user_id.label('user_id'),
         (post_counts.c.post_count + func.coalesce(comment_counts.c.comment_count, 0)).label('total_count')
     ).outerjoin(
         comment_counts,
@@ -229,9 +229,9 @@ def get_top_participants(room_id):
         (post_counts.c.user_id == comment_counts.c.user_id)
     ).union_all(
         db.session.query(
-            comment_counts.c.room_id,
-            comment_counts.c.date,
-            comment_counts.c.user_id,
+            comment_counts.c.room_id.label('room_id'),
+            comment_counts.c.date.label('date'),
+            comment_counts.c.user_id.label('user_id'),
             comment_counts.c.comment_count.label('total_count')
         ).outerjoin(
             post_counts,
