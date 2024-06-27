@@ -188,9 +188,9 @@ def process_post(post, user_id):
 def get_top_participants(room_id):
     # 获取每个参与者在指定房间的发帖数量
     post_counts = db.session.query(
-        PublicPost.room_id,
+        PublicPost.room_id.label('room_id'),
         func.date(PublicPost.created_at).label('date'),
-        PublicPost.user_id,
+        PublicPost.user_id.label('user_id'),
         func.count(PublicPost.id).label('post_count')
     ).filter(
         PublicPost.room_id == room_id
@@ -202,9 +202,9 @@ def get_top_participants(room_id):
 
     # 获取每个参与者在指定房间的评论数量
     comment_counts = db.session.query(
-        PublicPost.room_id,
+        PublicPost.room_id.label('room_id'),
         func.date(PostComment.created_at).label('date'),
-        PostComment.user_id,
+        PostComment.user_id.label('user_id'),
         func.count(PostComment.id).label('comment_count')
     ).join( # Join with PublicPost to get room_id
         PublicPost, PostComment.post_id == PublicPost.id
@@ -232,7 +232,7 @@ def get_top_participants(room_id):
             comment_counts.c.room_id,
             comment_counts.c.date,
             comment_counts.c.user_id,
-            (comment_counts.c.comment_count).label('total_count')
+            comment_counts.c.comment_count.label('total_count')
         ).outerjoin(
             post_counts,
             (comment_counts.c.room_id == post_counts.c.room_id) &
