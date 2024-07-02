@@ -291,6 +291,16 @@ def mail_night():
             for member in room_members:
                 member_ids.append(member.user_id)
 
+            top = get_top_participants(room.id, today, tomorrow)
+            top_str = '''<div class="container">'''
+            if len(top) > 0:
+                for i in range(len(top)):
+                    top_str += '<p class="title">Top Participants</p>'
+                    user_id = top[i]['user_id']
+                    user = User.query.filter_by(id=user_id).first()
+                    top_str += '<p>' + user.nickname + ': ' + str(top[i]['total_count']) + ' Post/Comment</p>'
+            top_str += '</div>'
+
             public_post_count = PublicPost.query.filter_by(
                 room_id=room.id,
                 topic=day,
@@ -409,6 +419,8 @@ def mail_night():
                 <div class="container">
                   %s
                 </div>
+                <!-- Top data -->
+                  %s
                 <!-- posts -->
                   %s
                 <!-- comments -->
@@ -428,13 +440,13 @@ def mail_night():
                 if message_template is None:
                     print("No mail template for room %d" % room.id)
                     continue
-                message = message_html % (message_template.content, post_str, comment_str, like_str)
+                message = message_html % (message_template.content, top, post_str, comment_str, like_str)
 
                 subject = message_template.title
                 user = User.query.filter_by(id=member.user_id).first()
                 if user.email is not None:
-                    msg = Message(recipients=[user.email],
-                    # msg = Message(recipients=['cenux1987@163.com'],
+                    # msg = Message(recipients=[user.email],
+                    msg = Message(recipients=['cenux1987@163.com'],
                                   body=message,
                                   subject=subject,
                                   sender=("Chattera", "sijia.yang@alumni.upenn.edu"))

@@ -185,7 +185,7 @@ def process_post(post, user_id):
         post['read_status'] = True   # read
 
 
-def get_top_participants(room_id):
+def get_top_participants(room_id, today, tomorrow):
     # 获取每个参与者在指定房间的发帖数量
     post_counts = db.session.query(
         PublicPost.room_id.label('room_id'),
@@ -251,23 +251,20 @@ def get_top_participants(room_id):
         merged_counts.c.room_id,
         merged_counts.c.date,
         merged_counts.c.total_count.desc()
+    ).filter_by(
+        merged_counts.c.date >= today,
+        merged_counts.c.date < tomorrow
     ).all()
 
-    # 处理结果，获取前两位参与者
-    from collections import defaultdict
-
-    top_n_results = defaultdict(list)
-    n = 2
-
+    top = []
     for row in result:
-        key = (row.room_id, row.date)
-        if len(top_n_results[key]) < n:
-            top_n_results[key].append({
+        if len(top) < 2:
+            top.append({
                 'user_id': row.user_id,
                 'total_count': row.total_count
             })
 
-    return top_n_results
+    return top
 
 
 def object_as_dict(obj):
