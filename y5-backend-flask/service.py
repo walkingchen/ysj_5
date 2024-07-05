@@ -251,7 +251,7 @@ def get_top_participants(room_id, today, tomorrow):
         merged_counts.c.room_id,
         merged_counts.c.date,
         merged_counts.c.total_count.desc()
-    ).filter_by(
+    ).filter(
         merged_counts.c.date >= today,
         merged_counts.c.date < tomorrow
     ).all()
