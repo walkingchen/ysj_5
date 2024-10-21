@@ -144,12 +144,79 @@ class RoomApi(Resource):
                 members = RoomMember.query.filter_by(room_id=room.id).all()
                 for member in members:
                     user = User.query.get(member.user_id)
+
+                    #TODO update message
+                    message_html = '''
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Notification</title>
+                        <style>
+                          body {
+                            font-family: Arial, sans-serif;
+                            background-color: #f2f2f2;
+                            padding: 15px;
+                          }
+                          .container {
+                            background-color: #f9f9f9;
+                            border-radius: 10px;
+                            padding: 10px;
+                            margin: 10px;
+                          }
+                          strong {
+                            font-weight: bold;
+                          }
+                          .title {
+                            font-weight: bold;
+                            font-size: 16px;
+                            margin-bottom: 10px;
+                          }
+                          .login-button {
+                            background-color: #007bff;
+                            color: white;
+                            padding: 15px;
+                            border: none;
+                            border-radius: 5px;
+                            cursor: pointer;
+                          }
+                          .login-button:hover {
+                            background-color: #0056b3;
+                          }
+                        </style>
+                        </head>
+                        <body>
+                        <div>
+                          <img src="%s" alt="">
+                        </div>
+                        <div class="container">
+                            <p>Hi %s,</p>
+                            <p>Your Chattera room is now active!</p>
+                            <p>The COVID-19 pandemic has significantly impacted our lives over the past few years. Although the pandemic has ended, reflecting on our experiences can provide valuable insights. We all went through this unprecedented time together, and your feelings matter. We invite you to join the conversation on Chattera and share your collective memories of the COVID-19 pandemic.</p>
+                            <p></p>
+                            <p>What You Will Do:</p>
+                            <p></p>
+                            <p>Your engagement with Chattera will last for 8 days. Each day, you are invited to read posts on the platform, share your thoughts, and interact with other room members.</p>
+                            <p>You’ll find a variety of popular social media posts about COVID-19 on Chattera. Some of these posts may contain information that differs from what you currently know. Note that they do not imply endorsement of the Chattera team. </p>
+                            <p>In today’s complex information environment, it’s important to verify the accuracy of what we read and share, and individual efforts are particularly vital in maintaining a well-informed community. Therefore, we encourage you to fact-check the information on the platform and share your opinions with others. As you participate in discussions, please remember to stay civil, respect differing viewpoints, and foster a supportive and constructive dialogue.</p>
+                            <p></p>
+                            <p>What You Will Receive:</p>
+                            <p></p>
+                            <p>We encourage you to dive into the conversation on Chattera! Each day, if you contribute at least one thoughtful post, comment, or share, you’ll earn $0.25 as a reward. Plus, if you’re one of the two most active users in your Chattera room for the day, you’ll score an extra $1 per day. Stay engaged, share your insights. The top participants in your room will earn up to $10 and we hope you would be one of them!</p>
+                            <p></p>
+                            <p>Join your <a href="https://camer-covid.journalism.wisc.edu/">Chattera room</a> right now and start sharing your experiences!</p>
+                        </div>
+                        </body>
+                        </html>
+                    '''
+
                     message = "Hi " + user.nickname + ", your platform has already been activated. " \
                               + "Login url: http://camer-covid.journalism.wisc.edu/#/login"
                     subject = "Room Activated"
                     if user.email is not None:
                         msg = Message(recipients=[user.email],
-                                      body=message,
+                                      body=message_html % user.nickname,
                                       subject=subject,
                                       sender=("Chattera", "sijia.yang@alumni.upenn.edu"))
 
