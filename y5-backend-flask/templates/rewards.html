@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reward Summary</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h2 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #f4f4f4; }
+        .form-section { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Chattera Room Reward Summary</h1>
+
+    <!-- Room and Date Selection Form -->
+    <div>
+        <label for="room_id">Room ID:</label>
+        <input type="text" id="room_id" name="room_id" required>
+
+        <label for="date_start">Start Date (YYYY-MM-DD):</label>
+        <input type="date" id="date_start" name="date_start" required>
+
+        <label for="date_end">End Date (YYYY-MM-DD):</label>
+        <input type="date" id="date_end" name="date_end" required>
+
+        <button id="calculate_rewards">Calculate Rewards</button>
+    </div>
+
+    <!-- Total Rewards Summary Table -->
+    <h2>Total Rewards Summary</h2>
+    <table id="total_rewards_table" border="1">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Total Reward</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <!-- Daily Reward Summary Table -->
+    <h2>Daily Reward Details</h2>
+    <table id="reward_summary_table" border="1">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>User ID</th>
+                <th>Post Count</th>
+                <th>Comment Count</th>
+                <th>Total Count</th>
+                <th>Is Top 2</th>
+                <th>Daily Reward</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        document.getElementById('calculate_rewards').addEventListener('click', async function() {
+            const room_id = document.getElementById('room_id').value;
+            const start_date = document.getElementById('date_start').value;
+            const end_date = document.getElementById('date_end').value;
+
+            // Send fetch request
+            try {
+                const response = await fetch(`/api/payment/calculate_rewards?room_id=${room_id}&start_date=${start_date}&end_date=${end_date}`);
+                if (!response.ok) throw new Error("Failed to fetch data");
+
+                const data = await response.json();
+
+                // Clear previous table data
+                document.querySelector('#total_rewards_table tbody').innerHTML = '';
+                document.querySelector('#reward_summary_table tbody').innerHTML = '';
+
+                // Populate Total Rewards Summary Table
+                for (const user_id in data.total_rewards) {
+                    const row = `<tr>
+                        <td>${user_id}</td>
+                        <td>$${data.total_rewards[user_id].toFixed(2)}</td>
+                    </tr>`;
+                    document.querySelector('#total_rewards_table tbody').insertAdjacentHTML('beforeend', row);
+                }
+
+                // Populate Daily Reward Summary Table
+                for (const date in data.reward_summary) {
+                    data.reward_summary[date].forEach(user => {
+                        const row = `<tr>
+                            <td>${date}</td>
+                            <td>${user.user_id}</td>
+                            <td>${user.post_count}</td>
+                            <td>${user.comment_count}</td>
+                            <td>${user.total_count}</td>
+                            <td>${user.is_top_two ? 'Yes' : 'No'}</td>
+                            <td>$${user.daily_reward.toFixed(2)}</td>
+                        </tr>`;
+                        document.querySelector('#reward_summary_table tbody').insertAdjacentHTML('beforeend', row);
+                    });
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Failed to retrieve rewards. Please check your inputs and try again.");
+            }
+        });
+    </script>
+</body>
+</html>

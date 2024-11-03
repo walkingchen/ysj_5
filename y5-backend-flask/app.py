@@ -19,6 +19,7 @@ from sqlalchemy import desc
 import config
 from blueprints.auth import bp_auth, login_manager
 from blueprints.mail import bp_mail
+from blueprints.payment import bp_payment
 from blueprints.post import bp_post
 from blueprints.room import bp_room
 from blueprints.user import bp_user
@@ -81,6 +82,7 @@ app.register_blueprint(bp_post)
 app.register_blueprint(bp_auth)
 app.register_blueprint(bp_user)
 app.register_blueprint(bp_mail)
+app.register_blueprint(bp_payment)
 
 
 @app.route('/chat', methods=['GET'])

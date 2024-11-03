@@ -1,5 +1,7 @@
 import os
 
+from dotenv import dotenv_values
+
 # from sshtunnel import SSHTunnelForwarder
 
 # SSH server configuration
@@ -27,7 +29,52 @@ import os
 # SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{mysql_user}:{mysql_password}@{tunnel.local_bind_host}:{tunnel.local_bind_port}/{mysql_database}"
 # print(SQLALCHEMY_DATABASE_URI)
 
-SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://admin:maxwit@ysj_5.soulfar.com:3306/ysj_5?charset=utf8mb4'
+# 从 .env 文件中读取预设值
+env_vars = dotenv_values(".env")
+FLASK_ENV = env_vars.get("FLASK_ENV")
+
+PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_PATH = os.path.join(PROJECT_PATH, 'uploads')
+BASE_DIR = os.path.dirname(PROJECT_PATH)
+
+if FLASK_ENV == 'production':  # 生产环境配置
+    HOST_URL = 'http://ysj_5.soulfar.com'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://admin:maxwit@127.0.0.1:3306/ysj_5?charset=utf8mb4'
+elif FLASK_ENV == 'testing':  # 测试环境配置
+    HOST_URL = 'http://ysj_5.soulfar.com'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://admin:maxwit@127.0.0.1:3306/ysj_5?charset=utf8mb4'
+    FLASK_DEBUG = True
+else:  # 本地环境
+    HOST_URL = 'http://ysj_5.soulfar.com'
+    # SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost:3307/reddit_like?charset=utf8mb4'
+    from sshtunnel import SSHTunnelForwarder
+
+    # SSH server configuration
+    ssh_host = 'ysj_5.soulfar.com'
+    ssh_port = 22
+    ssh_user = 'zhuoqi'
+    ssh_private_key = '/Users/codingchan/.ssh/id_rsa'
+
+    # MySQL server configuration
+    mysql_host = '127.0.0.1'  # Localhost, as the tunnel endpoint
+    mysql_port = 3306
+    mysql_user = 'admin'
+    mysql_password = 'maxwit'
+    mysql_database = 'ysj_5'
+
+    # Establish SSH tunnel
+    tunnel = SSHTunnelForwarder(
+        (ssh_host, ssh_port),
+        ssh_username=ssh_user,
+        ssh_pkey=ssh_private_key,
+        remote_bind_address=(mysql_host, mysql_port)
+    )
+    tunnel.start()
+    # Configure SQLAlchemy to use the SSH tunnel for connections
+    SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{mysql_user}:{mysql_password}@{tunnel.local_bind_host}:{tunnel.local_bind_port}/{mysql_database}"
+    print(SQLALCHEMY_DATABASE_URI)
+
+# SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://admin:maxwit@ysj_5.soulfar.com:3306/ysj_5?charset=utf8mb4'
 # SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://admin:maxwit@tmp.soulfar.com:3306/ysj_5?charset=utf8mb4'     # aliyun
 # SQLALCHEMY_ECHO = True
 SQLALCHEMY_POOL_RECYCLE = 300
