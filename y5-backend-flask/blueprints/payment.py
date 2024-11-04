@@ -87,6 +87,83 @@ def calculate_data(room_id, date_start, date_end):
         ORDER BY mc.room_id, mc.date, mc.total_count DESC;
     """)
 
+    query = '''
+    SELECT mc.room_id, mc.date, mc.user_id, mc.total_count, mc.post_count, mc.comment_count, mc.share_post_count
+FROM (
+    SELECT
+        pc.room_id,
+        pc.date,
+        pc.user_id,
+        ((pc.post_count - pc.share_post_count) + COALESCE(cc.comment_count, 0)) AS total_count,  -- 更新total_count的计算
+        (pc.post_count - pc.share_post_count) AS post_count,  -- 使用post_count - share_post_count
+        COALESCE(cc.comment_count, 0) AS comment_count,
+        pc.share_post_count
+    FROM (
+        SELECT
+            pp.room_id,
+            DATE(pp.created_at) AS date,
+            pp.user_id,
+            COUNT(pp.id) AS post_count,
+            COUNT(pp.post_shared_id) AS share_post_count  -- 使用正确的字段名 post_shared_id
+        FROM tb_post_public pp
+        WHERE pp.room_id = :room_id
+        GROUP BY pp.room_id, DATE(pp.created_at), pp.user_id
+    ) AS pc
+    LEFT JOIN (
+        SELECT
+            pp.room_id,
+            DATE(pc.created_at) AS date,
+            pc.user_id,
+            COUNT(pc.id) AS comment_count
+        FROM tb_post_comment pc
+        JOIN tb_post_public pp ON pc.post_id = pp.id
+        WHERE pp.room_id = :room_id
+        GROUP BY pp.room_id, DATE(pc.created_at), pc.user_id
+    ) AS cc
+    ON pc.room_id = cc.room_id
+    AND pc.date = cc.date
+    AND pc.user_id = cc.user_id
+
+    UNION ALL
+
+    SELECT
+        cc.room_id,
+        cc.date,
+        cc.user_id,
+        cc.comment_count AS total_count,
+        0 AS post_count,
+        cc.comment_count,
+        0 AS share_post_count  -- 没有post的情况，设置分享数为0
+    FROM (
+        SELECT
+            pp.room_id,
+            DATE(pc.created_at) AS date,
+            pc.user_id,
+            COUNT(pc.id) AS comment_count
+        FROM tb_post_comment pc
+        JOIN tb_post_public pp ON pc.post_id = pp.id
+        WHERE pp.room_id = :room_id
+        GROUP BY pp.room_id, DATE(pc.created_at), pc.user_id
+    ) AS cc
+    LEFT JOIN (
+        SELECT
+            pp.room_id,
+            DATE(pp.created_at) AS date,
+            pp.user_id,
+            COUNT(pp.id) AS post_count
+        FROM tb_post_public pp
+        WHERE pp.room_id = :room_id
+        GROUP BY pp.room_id, DATE(pp.created_at), pp.user_id
+    ) AS pc
+    ON cc.room_id = pc.room_id
+    AND cc.date = pc.date
+    AND cc.user_id = pc.user_id
+    WHERE pc.user_id IS NULL
+) AS mc
+WHERE mc.date >= :date_start AND mc.date < :date_end
+ORDER BY mc.room_id, mc.date, mc.total_count DESC;
+    '''
+
     # 执行 SQL 查询
     results = db.session.execute(query, {'room_id': room_id, 'date_start': date_start, 'date_end': date_end}).fetchall()
 
@@ -114,7 +191,8 @@ def calculate_rewards():
             'user_id': row.user_id,
             'total_count': row.total_count,
             'post_count': row.post_count,
-            'comment_count': row.comment_count
+            'comment_count': row.comment_count,
+            'share_count': row.share_post_count
         })
 
     # 初始化奖励计算
@@ -132,8 +210,8 @@ def calculate_rewards():
                 user_id = user['user_id']
                 daily_reward = 0.0
 
-                # 基础奖励：至少一篇帖子或评论
-                if user['post_count'] > 0 or user['comment_count'] > 0:
+                # 奖励规则：至少一篇帖子、评论或分享
+                if user['post_count'] > 0 or user['comment_count'] > 0 or user['share_count'] > 0:
                     daily_reward += 0.25
 
                 # 检查用户是否为最活跃的前两名
@@ -153,10 +231,11 @@ def calculate_rewards():
                 reward_summary[date].append({
                     'user_id': user_id,
                     'post_count': user['post_count'],
+                    'share_count': user['share_count'],
                     'comment_count': user['comment_count'],
                     'total_count': user['total_count'],
                     'daily_reward': daily_reward,
-                    'is_top_two': is_top_two  # 新增字段
+                    'is_top_two': is_top_two
                 })
 
     formatted_reward_summary = {date: users for date, users in reward_summary.items()}
