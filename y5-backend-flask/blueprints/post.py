@@ -303,8 +303,6 @@ class PrivatePostApi(Resource):
 
         post_serialized = Serializer.serialize(post)
         process_post(post_serialized, user_id)
-        # 随机排列post_serialized
-        shuffle(post_serialized)
 
         return jsonify(Resp(
             result_code=2000,

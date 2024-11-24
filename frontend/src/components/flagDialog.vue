@@ -8,7 +8,8 @@
     width="30%">
     <div class="main-content">
         <div style="margin-bottom: 10px; word-break: keep-all;">
-            Thanks for looking out for yourself and your friends by reporting things that break the rules. Let us know what's happening.and we'll look into it.
+            Thanks for looking out for your Chattera friends and yourself by reporting cases that might have violated our community rules. 
+What type of issue(s) are you reporting? 
         </div>
         <div>
             <el-tag 
@@ -54,7 +55,7 @@
     data() {
       return {
         dialogVisible: false,
-        flagList: ['hate', 'threatening violence', 'misinformation'],
+        flagList: ['Hate speech', 'Violent Speech', 'Misinformation', 'Other'],
         selectFlagList: [],
         othersTag: ''
       };
