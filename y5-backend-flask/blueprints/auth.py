@@ -43,8 +43,19 @@ def register():
     db.session.add(user)
     db.session.commit()
 
-    message = "Congratulations! You have successfully registered on the Chattera platform. We will let you know when your group is ready to go! Stay tuned."
-    subject = "Register Confirmation"
+    # TODO html message
+    message = '''
+    Thank you for registering for Chattera and we’re excited to have you on board! 
+We are currently working on setting up the platform for your participation. Once everything is ready, we will send you another email with the details for log-in and other logistic issues. At that point, you’ll be able to interact with other participants and start chatting!
+
+If you have questions about this study, please reply to this email or contact us at chattera.platform@gmail.com
+
+Thank you again for your participation, and we’ll be in touch soon!
+
+Best regards,
+Your Chattera Team
+    '''
+    subject = "Registration Confirmation"
     if user.email is not None:
         msg = Message(recipients=[user.email],
                       body=message,

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Compensation Summary</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #f2f2f2; }
+        .right-align { text-align: right; }
+    </style>
+</head>
+<body>
+
+<p>Dear {{ data.user_name }},</p>
+
+<p>Thank you for wrapping up your journey with Chattera! We truly appreciate your time and effort throughout the past eight days.</p>
+
+<p>Here’s a brief summary of your activities and compensation:</p>
+
+<table>
+    <tr>
+        <th>Activity</th>
+        <th>Base</th>
+        <th>Bonus</th>
+    </tr>
+    <tr>
+        <td>Take pre-survey</td>
+        <td>${{ data.pre_survey_base }}</td>
+        <td>/</td>
+    </tr>
+    <tr>
+        <td>Interact with your Chattera friends</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Take post-survey</td>
+        <td>${{ data.post_survey_base }}</td>
+        <td>/</td>
+    </tr>
+    <tr>
+        <td>Total</td>
+        <td>${{ data.total_compensation }}</td>
+        <td></td>
+    </tr>
+</table>
+
+<h3>Interact with your Chattera friends</h3>
+<table>
+    <tr>
+        <th>Day</th>
+        <th>Post</th>
+        <th>Share</th>
+        <th>Comment</th>
+        <th>Base</th>
+        <th>Bonus</th>
+        <th>Total</th>
+    </tr>
+    {% for day in data.days %}
+    <tr>
+        <td>{{ day.day }}</td>
+        <td>{{ day.post }}</td>
+        <td>{{ day.share }}</td>
+        <td>{{ day.comment }}</td>
+        <td>${{ day.base }}</td>
+        <td>${{ day.bonus }}</td>
+        <td>${{ day.total }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<p>As part of your compensation, you will receive a total of ${{ data.total_compensation }}. This amount will be issued as a Prolific bonus and should be reflected in your account shortly.</p>
+
+<p>Once again, thank you for your valuable contribution to our research. If you have any questions or need further assistance, feel free to reach out to us at chattera.platform@gmail.com.</p>
+
+<p>Best regards,<br>
+Your Chattera Team</p>
+
+</body>
+</html>

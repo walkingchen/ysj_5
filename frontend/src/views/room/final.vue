@@ -4,10 +4,9 @@
       <img src="@/assets/logo.png" alt="Site Logo">
     </div>
     <h1>Thank You!</h1>
-    <p>Thank you for your participation in this study! Your contribution is invaluable to our research.</p>
-    <p>To help us further understand your experience, please complete the <a href="link" target="_blank">post-experiment survey</a>. Your feedback is essential to us and greatly appreciated.</p>
-    <p>Please use the unique code <strong>EXP12345</strong> to access the survey.</p>
-    <p>You will receive $xx as compensation for participating in this study. Upon completion of the survey, your payment will be processed within xx business days. If you have any questions or concerns regarding your payment, please contact our team at <a href="mailto:support@example.com">support@example.com</a>.</p>
+    <p>Thank you for sharing your opinions and experiences on Chattera! Before you leave, we’d appreciate it a lot if you could complete our exit survey. </p>
+    <p>Your feedback will help us tremendously in revising Chattera to make it a better experience for others. It is essential to us and greatly appreciated.</p>
+    <p>We are happy to compensate your precious time with another $5 for completing this survey. If you have any questions or concerns regarding your payment, please contact our team at chattera.platform@gmail.com.</p>
     <p>Thank you once again for your time and effort!</p>
   </div>
 </template>

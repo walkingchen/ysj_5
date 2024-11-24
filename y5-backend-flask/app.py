@@ -457,6 +457,45 @@ def mail_night():
                     mail.send(msg)
 
 
+@app.route('/post_experiment_mail', methods=['GET'])
+def post_experiment_mail():
+    # 外部参数示例，可以通过数据库或API获取实际数据
+    data = {
+        "user_name": "User Name",
+        "pre_survey_base": 1,
+        "post_survey_base": 0,
+        "days": [
+            {"day": "Day 1", "post": "", "share": "", "comment": "", "base": 0.25, "bonus": 1, "total": 1.25},
+            {"day": "Day 2", "post": "", "share": "", "comment": "", "base": 0.25, "bonus": 0, "total": 0.25},
+            {"day": "Day 3", "post": "", "share": "", "comment": "", "base": 0.25, "bonus": 0, "total": 0.25},
+            {"day": "Day 4", "post": "", "share": "", "comment": "", "base": 0.25, "bonus": 0, "total": 0.25},
+            {"day": "Day 5", "post": "", "share": "", "comment": "", "base": 0.25, "bonus": 0, "total": 0.25},
+            {"day": "Day 6", "post": "", "share": "", "comment": "", "base": 0.25, "bonus": 0, "total": 0.25},
+            {"day": "Day 7", "post": "", "share": "", "comment": "", "base": 0.25, "bonus": 0, "total": 0.25},
+            # 添加其他天数的活动数据
+        ],
+        "total_compensation": 0  # 可以根据days中的total字段计算总数
+    }
+
+    # 计算总补偿
+    data["total_compensation"] = sum(day["total"] for day in data["days"]) + data["pre_survey_base"] + data[
+        "post_survey_base"]
+
+    return render_template("payment_mail.html", data=data)
+
+    message = email_html
+
+    subject = 'test'
+    msg = Message(recipients='cenux1987@163.com',
+                  # msg = Message(recipients=['cenux1987@163.com'],
+                  body=message,
+                  subject=subject,
+                  sender=("Chattera", "sijia.yang@alumni.upenn.edu"))
+    msg.html = message
+
+    mail.send(msg)
+
+
 @app.route('/top', methods=['GET'])
 def test_count():
     room_id = request.args.get('room_id')

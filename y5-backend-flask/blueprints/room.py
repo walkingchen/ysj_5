@@ -144,9 +144,119 @@ class RoomApi(Resource):
                 members = RoomMember.query.filter_by(room_id=room.id).all()
                 for member in members:
                     user = User.query.get(member.user_id)
+                    # TODO html message
                     message = "Hi " + user.nickname + ", your platform has already been activated. " \
                               + "Login url: http://camer-covid.journalism.wisc.edu/#/login"
-                    subject = "Room Activated"
+                    message = '''
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Chattera Participation Information</title>
+                        <style>
+                            body {
+                                font-family: Arial, sans-serif;
+                                line-height: 1.6;
+                                margin: 20px;
+                                color: #333;
+                            }
+                            table {
+                                width: 80%;
+                                border-collapse: collapse;
+                                margin: 20px auto;
+                            }
+                            th, td {
+                                border: 1px solid #ddd;
+                                text-align: left;
+                                padding: 8px;
+                            }
+                            th {
+                                background-color: #f4f4f4;
+                            }
+                            .content {
+                                max-width: 800px;
+                                margin: 0 auto;
+                            }
+                            .content p {
+                                margin: 10px 0;
+                            }
+                            .button {
+                                display: inline-block;
+                                padding: 10px 20px;
+                                font-size: 16px;
+                                color: #fff;
+                                background-color: #007bff; /* Blue button color */
+                                text-align: center;
+                                text-decoration: none;
+                                border: none;
+                                border-radius: 5px;
+                                cursor: pointer;
+                            }
+                            .button:hover {
+                                background-color: #0056b3; /* Darker blue on hover */
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="content">
+                            <p><strong>Your Chattera room is now active!</strong></p>
+                            <p>The COVID-19 pandemic has significantly impacted our lives over the past few years. Although the pandemic has ended, reflecting on our experiences can provide valuable insights. We all went through this unprecedented time together, and your feelings matter. We invite you to join the conversation on Chattera and share your memories of the COVID-19 pandemic.</p>
+                            <p><strong>What You Will Do:</strong></p>
+                            <p>Your Chattera room will be open for at least eight days. Each day, you will be invited to read and respond to posts on the platform, share your thoughts, and interact with your Chattera buddies.</p>
+                            <p>You’ll find a variety of popular social media posts about COVID-19 on Chattera. Some of these posts may contain information that differs from what you currently know or contradict the best available evidence. Note that they do not imply endorsement of the Chattera team.</p>
+                            <p>In today’s complex information environment, it’s important to verify the accuracy of what we read and share, and individual efforts are particularly vital in maintaining a well-informed community. Therefore, we encourage you to fact-check the information on the platform and share your opinions with others. As you participate in discussions, please remember to stay civil, respect differing viewpoints, and foster a supportive and constructive community.</p>
+                            <p><strong>What You Will Receive:</strong></p>
+                            <p>We encourage you to dive into the conversations on Chattera! Each day, if you contribute at least one thoughtful post, comment, or share, you’ll earn $0.25 as a reward. Plus, if you’re one of the two most active users in your Chattera room for a particular day, you’ll score an extra $1 for that day.</p>
+                            <p>Stay engaged and share your insights! The top participants in your room will earn up to $10 and we hope you will be one of them!</p>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Activity</th>
+                                    <th>Compensation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Take pre-survey</td>
+                                    <td>
+                                        <strong>Base:</strong> $1
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Interact with your Chattera friends</td>
+                                    <td>
+                                        <strong>Base:</strong>
+                                        <ul>
+                                            <li>Earn $0.25 per day for contributing at least one thoughtful post, comment, or share.</li>
+                                            <li>Earn up to $2 over the course of your participation on Chattera.</li>
+                                        </ul>
+                                        <strong>Bonus:</strong>
+                                        <ul>
+                                            <li>Earn a $1 bonus per day if you are one of the two most active users in your Chattera group.</li>
+                                            <li>Earn up to an $8 bonus over the course of your participation on Chattera.</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Take post-survey</td>
+                                    <td>
+                                        <strong>Base:</strong> $5
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Total</td>
+                                    <td>Up to $16</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p>Join your Chattera room now and start sharing your experiences!</p>
+                        <a type="button" class="button" href="https://camer-covid.journalism.wisc.edu/#/login"></a>
+                        </div>
+                    </body>
+                    </html>
+                    '''
+                    subject = "Your Room is Now Active – Welcome to Chattera!"
                     if user.email is not None:
                         msg = Message(recipients=[user.email],
                                       body=message,
