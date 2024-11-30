@@ -264,7 +264,10 @@ def get_top_participants(room_id, today, tomorrow):
                 'total_count': row.total_count
             })
 
-    return top
+    if len(top) > 0:
+        return top
+
+    return None
 
 
 def object_as_dict(obj):

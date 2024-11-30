@@ -19,7 +19,7 @@ from sqlalchemy import desc
 import config
 from blueprints.auth import bp_auth, login_manager
 from blueprints.mail import bp_mail
-from blueprints.payment import bp_payment
+from blueprints.payment import bp_payment, calculate_func
 from blueprints.post import bp_post
 from blueprints.room import bp_room
 from blueprints.user import bp_user
@@ -221,6 +221,17 @@ def mail_morning():
                 <div style="margin: 30px 15px;">
                   <a class="login-button" href="https://camer-covid.journalism.wisc.edu/">Click to login back</a>
                 </div>
+                <div>
+                    <p>Topic summary:</p>
+                    <p>1. COVID-19 survival rate</p>
+                    <p>2. doctors report COVID-19</p>
+                    <p>3. hydroxychloroquine</p>
+                    <p>4. COVID-19 and infertility</p>
+                    <p>5. COVID-19 vaccines and myocarditis</p>
+                    <p>6. COVID-19 vaccine side effects</p>
+                    <p>7. face masks</p>
+                    <p>8. Dr.Fauci's background</p>
+                </div>
                 </body>
                 </html>
             '''
@@ -294,14 +305,15 @@ def mail_night():
                 member_ids.append(member.user_id)
 
             top = get_top_participants(room.id, today, tomorrow)
-            top_str = '''<div class="container">'''
+            top_str = ''''''
             if len(top) > 0:
+                top_str += '<div class="container">'
                 for i in range(len(top)):
                     top_str += '<p class="title">Top Participants</p>'
                     user_id = top[i]['user_id']
                     user = User.query.filter_by(id=user_id).first()
                     top_str += '<p>' + user.nickname + ': ' + str(top[i]['total_count']) + ' Post/Comment</p>'
-            top_str += '</div>'
+                top_str += '</div>'
 
             public_post_count = PublicPost.query.filter_by(
                 room_id=room.id,
@@ -419,7 +431,8 @@ def mail_night():
                 </head>
                 <body>
                 <div class="container">
-                  %s
+                <div>Good evening! Thank you for staying with us on Chattera. So far, you have earned $%s. Let's take a look at what is trendy on Chattera today—please log back to join these conversations!</div>
+                <div>%s</div>
                 </div>
                 <!-- Top data -->
                   %s
@@ -435,6 +448,12 @@ def mail_night():
                 </body>
                 </html>
             '''
+
+            date_start = room.activated_at
+            # date_start = datetime.datetime(2024, 1, 1, 0, 0)
+            date_end = datetime.datetime.now()
+            payments = calculate_func(room.id, date_start, date_end)
+
             for member in room_members:
                 # 根据早晚类型及天数获取邮件模板
                 message_template = MailTemplate.query.filter_by(room_id=room.id, mail_type=2,
@@ -442,9 +461,74 @@ def mail_night():
                 if message_template is None:
                     print("No mail template for room %d" % room.id)
                     continue
-                message = message_html % (message_template.content, top, post_str, comment_str, like_str)
+                # TODO add payment
+                if member.user_id in payments['total_rewards']:
+                    payment = payments['total_rewards'][member.user_id]
+                else:
+                    payment = 0
 
+                message = message_html % (payment, message_template.content, top_str, post_str, comment_str, like_str)
                 subject = message_template.title
+
+                # Day 8 Post-survey promotion email
+                if day == 8:
+                    subject = "Post-survey promotion email"
+                    message = '''
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Notification</title>
+                    <style>
+                      body {
+                        font-family: Arial, sans-serif;
+                        background-color: #f2f2f2;
+                        padding: 15px;
+                      }
+                      .container {
+                        background-color: #f9f9f9;
+                        border-radius: 10px;
+                        padding: 10px;
+                        margin: 10px;
+                      }
+                      strong {
+                        font-weight: bold;
+                      }
+                      .title {
+                        font-weight: bold;
+                        font-size: 16px;
+                        margin-bottom: 10px;
+                      }
+                      .login-button {
+                        background-color: #007bff;
+                        color: white;
+                        padding: 15px;
+                        border: none;
+                        border-radius: 5px;
+                        cursor: pointer;
+                      }
+                      .login-button:hover {
+                        background-color: #0056b3;
+                      }
+                    </style>
+                    </head>
+                    <body>
+                    <div class="container">
+                        <p>Thank you for participating on Chattera! We wanted to remind you that there is a post-survey available for you to complete. By completing this post-survey, you will earn an additional $5 as part of your compensation.</p>
+                        <p>To access the post-survey, simply click the button below.</p>
+                        <div style="margin: 30px 15px;">
+                          <a class="login-button" href="https://uwmadison.co1.qualtrics.com/jfe/form/SV_bQ3Ngp6xOKpXbds">Click to login back</a>
+                        </div>
+                        <p>We greatly appreciate your time and participation so far, and your responses to the post-survey will be incredibly valuable to our team.</p>
+                        <p>Thank you once again!</p>
+                        </br>
+                        <p>Best regards,</p>
+                        <p>Your Chattera Team</p>
+                    </div>
+                    </body>
+                    </html>
+                    '''
                 user = User.query.filter_by(id=member.user_id).first()
                 if user.email is not None:
                     msg = Message(recipients=[user.email],
@@ -495,6 +579,213 @@ def post_experiment_mail():
 
     mail.send(msg)
 
+
+@app.route('/test_night_mail_content', methods=['GET'])
+def test_night_mail_content():
+    # 指定服务器时区
+    server_timezone = pytz.timezone('America/Chicago')
+
+    # 获取当前服务器时间
+    server_time = datetime.datetime.now(server_timezone)
+
+    # 获取日期部分
+    today = server_time.date()
+    tomorrow = today + datetime.timedelta(days=1)
+
+    # room activate day
+    room = Room.query.get(46)
+    day_activated = room.activated_at
+    # FIXME 解决本地时间和服务器时间不一致问题
+    local_time = time.localtime(int(day_activated.timestamp()))
+    activated_day = local_time.tm_yday
+    activated_year = local_time.tm_year
+    print('activated_day = ' + str(activated_day))
+
+    now = time.localtime(time.time())
+    now_day = now.tm_yday
+    now_year = now.tm_year
+    print('now_day = ' + str(now_day))
+
+    if now_year > activated_year:
+        day = now_day + 365 - activated_day + 1
+    else:
+        day = now_day - activated_day + 1
+
+    room_members = RoomMember.query.filter_by(room_id=room.id).all()
+    member_ids = []
+    post_str = ""
+    for member in room_members:
+        member_ids.append(member.user_id)
+
+    top = get_top_participants(room.id, today, tomorrow)
+    top_str = '''<div class="container">'''
+    if top is not None and len(top) > 0:
+        for i in range(len(top)):
+            top_str += '<p class="title">Top Participants</p>'
+            user_id = top[i]['user_id']
+            user = User.query.filter_by(id=user_id).first()
+            top_str += '<p>' + user.nickname + ': ' + str(top[i]['total_count']) + ' Post/Comment</p>'
+    top_str += '</div>'
+
+    public_post_count = PublicPost.query.filter_by(
+        room_id=room.id,
+        topic=day,
+        is_system_post=0
+    ).filter_by().count()
+    public_posts = PublicPost.query.filter_by(
+        room_id=room.id,
+        topic=day,
+        is_system_post=0
+    ).order_by(desc(PublicPost.created_at)).limit(5).all()
+
+    post_str = '''<div class="container">'''
+    if public_post_count > 0:
+        post_str += '<p class="title">New post count: %d</p>' % public_post_count
+        for post in public_posts:
+            user = User.query.filter_by(id=post.user_id).first()
+            post_words = post.post_content.split()
+            print(post_words[:10])
+            post_str += "<p>" + user.nickname + ": " + ' '.join(post_words[:10]) + "......</p>"
+
+    system_post_count = PublicPost.query.filter_by(
+        room_id=room.id,
+        topic=day,
+        is_system_post=1
+    ).filter_by().count()
+    system_posts = PublicPost.query.filter_by(
+        room_id=room.id,
+        topic=day,
+        is_system_post=1
+    ).order_by(desc(PublicPost.created_at)).limit(1).all()
+    if system_post_count > 0:
+        for post in system_posts:
+            post_words = post.abstract.split()
+            print(post_words[:10])
+            post_str += "<p>COVID Flashbacks: " + ' '.join(post_words[:10]) + "......</p>"
+    post_str += "</div>"
+
+    # comments
+    new_comments = PostComment.query.filter(PostComment.user_id.in_(tuple(member_ids))).filter(
+        PostComment.created_at >= today,
+        PostComment.created_at < tomorrow
+    ).all()
+    comment_str = ""
+    if len(new_comments) > 0:
+        comment_str = '''<div class="container">'''
+        comment_str += '<p class="title">New comments: %d</p>' % len(new_comments)
+        for comment in new_comments:
+            user = User.query.filter_by(id=comment.user_id).first()
+            comment_words = comment.comment_content.split()
+            comment_str += "<p>" + user.nickname + ": " + ' '.join(comment_words[:10]) + "......</p>"
+        comment_str += "</div>"
+
+    # likes
+    new_likes = PostLike.query.filter(PostLike.user_id.in_(tuple(member_ids))).filter(
+        PostLike.created_at >= today,
+        PostLike.created_at < tomorrow
+    ).all()
+    like_str = ""
+    if len(new_likes) > 0:
+        like_str = '''<div class="container">'''
+        like_str += '<p class="title">New likes: %d</p>' % len(new_likes)
+        for like in new_likes:
+            user = User.query.filter_by(id=like.user_id).first()
+            post = PublicPost.query.filter_by(id=like.post_id).first()
+            post_author = User.query.filter_by(id=post.user_id).first()
+            like_str += "<p>" + user.nickname + " likes " + post_author.nickname + "'s post.</p>"
+        like_str += "</div>"
+
+    # # flags
+    # new_flag_count = PostFlag.query.filter(PostFlag.user_id.in_(tuple(member_ids))).filter(
+    #     PostFlag.created_at >= today,
+    #     PostFlag.created_at < tomorrow
+    # ).count()
+
+    message_html = '''
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Notification</title>
+                <style>
+                  body {
+                    font-family: Arial, sans-serif;
+                    background-color: #f2f2f2;
+                    padding: 15px;
+                  }
+                  .container {
+                    background-color: #f9f9f9;
+                    border-radius: 10px;
+                    padding: 10px;
+                    margin: 10px;
+                  }
+                  strong {
+                    font-weight: bold;
+                  }
+                  .title {
+                    font-weight: bold;
+                    font-size: 16px;
+                    margin-bottom: 10px;
+                  }
+                  .login-button {
+                    background-color: #007bff;
+                    color: white;
+                    padding: 15px;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                  }
+                  .login-button:hover {
+                    background-color: #0056b3;
+                  }
+                </style>
+                </head>
+                <body>
+                <div class="container">
+                <div>Good evening! Thank you for staying with us on Chattera. So far, you have earned %s. Let's take a look at what is trendy on Chattera today—please log back to join these conversations!</div>
+                <div>%s</div>
+                </div>
+                <!-- Top data -->
+                  %s
+                <!-- posts -->
+                  %s
+                <!-- comments -->
+                  %s
+                <!-- likes -->
+                  %s
+                <div style="margin: 30px 15px;">
+                  <a class="login-button" href="https://camer-covid.journalism.wisc.edu/">Click to login back</a>
+                </div>
+                </body>
+                </html>
+            '''
+
+    # day_start: activate day
+    # day_end: today
+
+    # room.activated_at get date
+    date_start = room.activated_at
+    # date_start = datetime.datetime(2024, 1, 1, 0, 0)
+    date_end = datetime.datetime.now()
+    payments = calculate_func(room.id, date_start, date_end)
+
+    for member in room_members:
+        # 根据早晚类型及天数获取邮件模板
+        message_template = MailTemplate.query.filter_by(room_id=room.id, mail_type=2).first()  # type=2: night mail template
+        if message_template is None:
+            print("No mail template for room %d" % room.id)
+            continue
+        # TODO add payment
+        if member.user_id in payments['total_rewards']:
+            payment = payments['total_rewards'][member.user_id]
+        else:
+            payment = 0
+        print('payment: %s, user id: %s' % (payment, member.user_id))
+
+        message = message_html % (payment, message_template.content, top_str, post_str, comment_str, like_str)
+
+        return message
 
 @app.route('/top', methods=['GET'])
 def test_count():
