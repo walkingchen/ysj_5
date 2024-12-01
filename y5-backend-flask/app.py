@@ -134,7 +134,7 @@ def git_pull():
     print("拉取修改 {0} 成功！".format(remote_name))
 
 
-@app.route('/test_mail_morning')
+@app.route('/mail_morning')
 # @scheduler.task('cron', id='job_mail_morning', day='*', hour='8', minute='0', second='0')
 def mail_morning():
     with app.app_context():
@@ -264,7 +264,7 @@ def mail_morning():
 
 
 # @scheduler.task('cron', id='job_mail_night', day='*', hour='20', minute='0', second='0')
-@app.route('/test_mail', methods=['GET'])
+@app.route('/mail_night', methods=['GET'])
 def mail_night():
     with app.app_context():
         # 指定服务器时区
@@ -541,43 +541,145 @@ def mail_night():
                     mail.send(msg)
 
 
-@app.route('/post_experiment_mail', methods=['GET'])
-def post_experiment_mail():
-    # 外部参数示例，可以通过数据库或API获取实际数据
+@app.route('/post_experiment_summary_mail', methods=['GET'])
+def post_experiment_summary_mail():
+    with app.app_context():
+        # 指定服务器时区
+        server_timezone = pytz.timezone('America/Chicago')
+        # 获取当前服务器时间
+        server_time = datetime.datetime.now(server_timezone)
+        # 获取日期部分
+        rooms = Room.query.filter_by(activated=1).all()
+        for room in rooms:
+            day_activated = room.activated_at
+            # FIXME 解决本地时间和服务器时间不一致问题
+            local_time = time.localtime(int(day_activated.timestamp()))
+
+            room_members = RoomMember.query.filter_by(room_id=room.id).all()
+            member_ids = []
+            post_str = ""
+            for member in room_members:
+                member_ids.append(member.user_id)
+
+            date_start = local_time
+            date_end = datetime.datetime.now()
+            payments = calculate_func(room.id, date_start, date_end)
+
+            for member in room_members:
+                # TODO add payment
+                if member.user_id not in payments['total_rewards']:
+                    continue
+
+                calculate_result = calculate_func(room_id, date_start, date_end)
+                reward_summary = calculate_result['reward_summary']
+                total_rewards = calculate_result['total_rewards']
+                formatted_data = format_data_for_user(
+                    user_name="User Name",
+                    pre_survey_base=1,
+                    post_survey_base=0,
+                    reward_summary=reward_summary,
+                    total_rewards=total_rewards
+                )
+
+                subject = 'Post-experiment summary'
+                message = render_template("payment_mail.html", data=formatted_data)
+
+                return render_template("payment_mail.html", data=formatted_data)
+
+                user = User.query.filter_by(id=member.user_id).first()
+                if user.email is not None:
+                    msg = Message(recipients=[user.email],
+                    # msg = Message(recipients=['cenux1987@163.com'],
+                                  body=message,
+                                  subject=subject,
+                                  sender=("Chattera", "sijia.yang@alumni.upenn.edu"))
+                    msg.html = message
+
+                    mail.send(msg)
+
+
+@app.route('/test_post_experiment_summary_mail', methods=['GET'])
+def test_post_experiment_summary_mail():
+        # 指定服务器时区
+        server_timezone = pytz.timezone('America/Chicago')
+        # 获取当前服务器时间
+        server_time = datetime.datetime.now(server_timezone)
+        # 获取日期部分
+        room = Room.query.get(45)
+        day_activated = room.activated_at
+        # FIXME 解决本地时间和服务器时间不一致问题
+        local_time = time.localtime(int(day_activated.timestamp()))
+
+        room_members = RoomMember.query.filter_by(room_id=room.id).all()
+        member_ids = []
+        post_str = ""
+        for member in room_members:
+            member_ids.append(member.user_id)
+
+        date_start = datetime.datetime(2024, 1, 1)
+        date_end = datetime.datetime.now()
+        payments = calculate_func(room.id, date_start, date_end)
+
+        for member in room_members:
+            # TODO add payment
+            if member.user_id not in payments['total_rewards']:
+                continue
+
+            print('member\'s user id is %s' % member.user_id)
+            calculate_result = calculate_func(room.id, date_start, date_end)
+            reward_summary = calculate_result['reward_summary']
+            total_rewards = calculate_result['total_rewards']
+            user = User.query.filter_by(id=member.user_id).first()
+            formatted_data = format_data_for_user(
+                nickname=user.nickname,
+                user_name=member.user_id,
+                pre_survey_base=1,
+                post_survey_base=0,
+                reward_summary=reward_summary,
+                total_rewards=total_rewards
+            )
+
+            subject = 'Post-experiment summary'
+            message = render_template("payment_mail.html", data=formatted_data)
+
+            return render_template("payment_mail.html", data=formatted_data)
+
+
+def format_data_for_user(nickname, user_name, pre_survey_base, post_survey_base, reward_summary, total_rewards):
+    # 初始化 data 结构
     data = {
-        "user_name": "User Name",
-        "pre_survey_base": 1,
-        "post_survey_base": 0,
-        "days": [
-            {"day": "Day 1", "post": "", "share": "", "comment": "", "base": 0.25, "bonus": 1, "total": 1.25},
-            {"day": "Day 2", "post": "", "share": "", "comment": "", "base": 0.25, "bonus": 0, "total": 0.25},
-            {"day": "Day 3", "post": "", "share": "", "comment": "", "base": 0.25, "bonus": 0, "total": 0.25},
-            {"day": "Day 4", "post": "", "share": "", "comment": "", "base": 0.25, "bonus": 0, "total": 0.25},
-            {"day": "Day 5", "post": "", "share": "", "comment": "", "base": 0.25, "bonus": 0, "total": 0.25},
-            {"day": "Day 6", "post": "", "share": "", "comment": "", "base": 0.25, "bonus": 0, "total": 0.25},
-            {"day": "Day 7", "post": "", "share": "", "comment": "", "base": 0.25, "bonus": 0, "total": 0.25},
-            # 添加其他天数的活动数据
-        ],
-        "total_compensation": 0  # 可以根据days中的total字段计算总数
+        "user_name": nickname,
+        "pre_survey_base": pre_survey_base,
+        "total_rewards": 0,
+        "post_survey_base": post_survey_base,
+        "days": [],
+        "total_compensation": 0
     }
 
-    # 计算总补偿
-    data["total_compensation"] = sum(day["total"] for day in data["days"]) + data["pre_survey_base"] + data[
-        "post_survey_base"]
+    # 遍历 reward_summary 填充 daily 数据
+    for date, users in reward_summary.items():
+        for user in users:
+            if user['user_id'] == user_name:  # 匹配当前用户
+                data['total_rewards'] = total_rewards[user['user_id']]
+                day_data = {
+                    "day": date,
+                    "post": user['post_count'],
+                    "share": user['share_count'],
+                    "comment": user['comment_count'],
+                    "base": 0.25 if user['daily_reward'] > 0 else 0.0,
+                    "bonus": 1 if user['is_top_two'] else 0,
+                    "total": user['daily_reward']
+                }
+                data["days"].append(day_data)
 
-    return render_template("payment_mail.html", data=data)
+    # 计算总补偿值
+    data["total_compensation"] = (
+        sum(day["total"] for day in data["days"]) +
+        pre_survey_base +
+        post_survey_base
+    )
 
-    message = email_html
-
-    subject = 'test'
-    msg = Message(recipients='cenux1987@163.com',
-                  # msg = Message(recipients=['cenux1987@163.com'],
-                  body=message,
-                  subject=subject,
-                  sender=("Chattera", "sijia.yang@alumni.upenn.edu"))
-    msg.html = message
-
-    mail.send(msg)
+    return data
 
 
 @app.route('/test_night_mail_content', methods=['GET'])
