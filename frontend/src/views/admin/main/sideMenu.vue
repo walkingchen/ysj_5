@@ -34,6 +34,10 @@
         <v-icon name="table" />
         <span slot="title">Data</span>
       </el-menu-item>
+      <el-menu-item @click="toRewardSummary">
+        <v-icon name="table" />
+        <span slot="title">Reward Summary</span>
+      </el-menu-item>
     </el-menu>
   </div>
 </template>
@@ -51,6 +55,9 @@ export default {
   methods: {
     toDataManage () {
       window.open('http://ysj_5.soulfar.com/admin')
+    },
+    toRewardSummary () {
+      window.open('http://ysj_5.soulfar.com/api/payment/rewards_summary')
     }
   }
 }
