@@ -23,6 +23,7 @@ from blueprints.payment import bp_payment, calculate_func
 from blueprints.post import bp_post
 from blueprints.room import bp_room
 from blueprints.user import bp_user
+from entity.Resp import Resp
 from room_socketio import RoomNamespace
 from extensions import db, cache, socketio, scheduler, mail
 from models import User, Room, RoomPrototype, RoomMember, PublicPost, PostComment, PostLike, \
@@ -604,6 +605,8 @@ def post_experiment_summary_mail():
                     msg.html = message
 
                     mail.send(msg)
+
+        return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
 
 
 @app.route('/test_post_experiment_summary_mail', methods=['GET'])
