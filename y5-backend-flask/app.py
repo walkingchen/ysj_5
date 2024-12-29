@@ -541,16 +541,20 @@ def mail_night():
                     mail.send(msg)
 
 
-@app.route('/post_experiment_summary_mail', methods=['GET'])
+@app.route('/post_experiment_summary_mail', methods=['POST'])
 def post_experiment_summary_mail():
+    data = request.get_json()
+    room_ids = data['rooms']
     with app.app_context():
         # 指定服务器时区
         server_timezone = pytz.timezone('America/Chicago')
         # 获取当前服务器时间
         server_time = datetime.datetime.now(server_timezone)
-        # 获取日期部分
-        rooms = Room.query.filter_by(activated=1).all()
-        for room in rooms:
+
+        for room_id in room_ids:
+            room = Room.query.filter_by(id=room_id).first()
+            if room is None:
+                continue
             day_activated = room.activated_at
             # FIXME 解决本地时间和服务器时间不一致问题
             local_time = time.localtime(int(day_activated.timestamp()))
@@ -573,8 +577,10 @@ def post_experiment_summary_mail():
                 calculate_result = calculate_func(room_id, date_start, date_end)
                 reward_summary = calculate_result['reward_summary']
                 total_rewards = calculate_result['total_rewards']
+                user = User.query.filter_by(id=member.user_id).first()
                 formatted_data = format_data_for_user(
-                    user_name="User Name",
+                    nickname=user.nickname,
+                    user_id=member.user_id,
                     pre_survey_base=1,
                     post_survey_base=0,
                     reward_summary=reward_summary,
@@ -584,12 +590,14 @@ def post_experiment_summary_mail():
                 subject = 'Post-experiment summary'
                 message = render_template("payment_mail.html", data=formatted_data)
 
-                return render_template("payment_mail.html", data=formatted_data)
+                # print(formatted_data)
+
+                # return render_template("payment_mail.html", data=formatted_data)
 
                 user = User.query.filter_by(id=member.user_id).first()
                 if user.email is not None:
-                    msg = Message(recipients=[user.email],
-                    # msg = Message(recipients=['cenux1987@163.com'],
+                    # msg = Message(recipients=[user.email],
+                    msg = Message(recipients=['cenux1987@163.com'],
                                   body=message,
                                   subject=subject,
                                   sender=("Chattera", "sijia.yang@alumni.upenn.edu"))
@@ -632,7 +640,7 @@ def test_post_experiment_summary_mail():
             user = User.query.filter_by(id=member.user_id).first()
             formatted_data = format_data_for_user(
                 nickname=user.nickname,
-                user_name=member.user_id,
+                user_id=member.user_id,
                 pre_survey_base=1,
                 post_survey_base=0,
                 reward_summary=reward_summary,
@@ -645,7 +653,7 @@ def test_post_experiment_summary_mail():
             return render_template("payment_mail.html", data=formatted_data)
 
 
-def format_data_for_user(nickname, user_name, pre_survey_base, post_survey_base, reward_summary, total_rewards):
+def format_data_for_user(nickname, user_id, pre_survey_base, post_survey_base, reward_summary, total_rewards):
     # 初始化 data 结构
     data = {
         "user_name": nickname,
@@ -659,7 +667,7 @@ def format_data_for_user(nickname, user_name, pre_survey_base, post_survey_base,
     # 遍历 reward_summary 填充 daily 数据
     for date, users in reward_summary.items():
         for user in users:
-            if user['user_id'] == user_name:  # 匹配当前用户
+            if user['user_id'] == user_id:  # 匹配当前用户
                 data['total_rewards'] = total_rewards[user['user_id']]
                 day_data = {
                     "day": date,

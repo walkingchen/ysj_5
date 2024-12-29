@@ -1,11 +1,13 @@
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime
+from time import strptime
 
 from flask import Blueprint, request, jsonify, render_template
 from flask_restful import Api
 from sqlalchemy import text
 
 from extensions import db
+from models import Room, Serializer
 
 bp_payment = Blueprint('api/payment', __name__, url_prefix='/api/payment')
 # api = Api(bp_payment, '/api/payment')
@@ -328,12 +330,14 @@ def calculate_rewards():
     room_id = data.get('room_id', type=int)
     date_start_str = data.get('start_date')  # 假设日期格式为 YYYY-MM-DD
     date_end_str = data.get('end_date')  # 假设日期格式为 YYYY-MM-DD
-    date_start = datetime.strptime(date_start_str, '%Y-%m-%d')
-    date_end = datetime.strptime(date_end_str, '%Y-%m-%d')
+    date_start = strptime(date_start_str, '%Y-%m-%d')
+    date_end = strptime(date_end_str, '%Y-%m-%d')
 
     return jsonify(calculate_func(room_id, date_start, date_end))
 
 
 @bp_payment.route('/rewards_summary')
 def rewards_summary():
-    return render_template('rewards.html')
+    rooms = Room.query.filter_by(activated=1).all()
+    rooms_serialized = Serializer.serialize_list(rooms)
+    return render_template('rewards.html', rooms=rooms_serialized)
