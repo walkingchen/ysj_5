@@ -45,7 +45,7 @@ def register():
 
     # TODO html message
     message = '''
-    Thank you for registering for Chattera and we’re excited to have you on board! 
+Thank you for registering for Chattera and we’re excited to have you on board! 
 We are currently working on setting up the platform for your participation. Once everything is ready, we will send you another email with the details for log-in and other logistic issues. At that point, you’ll be able to interact with other participants and start chatting!
 
 If you have questions about this study, please reply to this email or contact us at chattera.platform@gmail.com
