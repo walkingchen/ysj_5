@@ -78,7 +78,7 @@
 
       <el-button :loading="loading" type="primary" class="register-btn" @click.native.prevent="submit">Submit</el-button>
 
-      <el-alert v-show="error_show" :title="errorMessage" type="error" show-icon :closable="false" />
+      <el-alert v-show="error_show" :title="errorMessage" type="info" show-icon :closable="false" />
     </el-form>
   </div>
 </template>
@@ -179,7 +179,10 @@ export default {
             if (res.data && res.data.result_code) {
               switch (res.data.result_code) {
                 case 2000: // 注册成功
-                  this.$router.push({ name: 'Login' })
+                  message = 'Congratulations! User registration is complete and you are now redirected to the login page.'
+                  setTimeout(() => {
+                    this.$router.push({ name: 'Login' });
+                  }, 2000);
                   break
                 case 4010: // 用户已存在
                   message = 'User already exists.'

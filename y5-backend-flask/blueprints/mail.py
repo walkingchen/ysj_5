@@ -209,13 +209,13 @@ class EmergencyEmailApi(Resource):
                     msg = Message(recipients=[user.email],
                                   body=content,
                                   subject=subject,
-                                  sender=("Admin", "sijia.yang@alumni.upenn.edu"))
+                                  sender=("Chattera Team", "chattera.platform@gmail.com"))
             else:
                 user = User.query.filter_by(id=member_id).first()
                 msg = Message(recipients=[user.email],
                               body=content,
                               subject=subject,
-                              sender=("Admin", "sijia.yang@alumni.upenn.edu"))
+                              sender=("Chattera Team", "chattera.platform@gmail.com"))
 
             conn.send(msg)
 
