@@ -264,7 +264,7 @@ class RoomApi(Resource):
                                       body=message,
                                       subject=subject,
                                       sender=("Chattera", "sijia.yang@alumni.upenn.edu"))
-
+                        msg.html = message
                         mail.send(msg)
 
         if 'publish_time' in data:
