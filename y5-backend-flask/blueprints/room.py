@@ -253,7 +253,7 @@ class RoomApi(Resource):
                             </tbody>
                         </table>
                         <p>Join your Chattera room now and start sharing your experiences!</p>
-                        <a type="button" class="button" href="https://camer-covid.journalism.wisc.edu/#/login"></a>
+                        <a type="button" class="button" href="https://camer-covid.journalism.wisc.edu/#/login">Log in</a>
                         </div>
                     </body>
                     </html>
