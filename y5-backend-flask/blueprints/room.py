@@ -209,8 +209,8 @@ class RoomApi(Resource):
                             <p>Here is a video to walk you through Chattera: </p>
                             <p>https://www.youtube.com/watch?v=JextVuol2cc</p>
                             <p><strong>What You Will Receive:</strong></p>
-                            <p>We encourage you to dive into the conversations on Chattera! Each day, if you contribute at least one thoughtful post, comment, or share, you’ll earn $0.25 as a reward. Plus, if you’re one of the two most active users in your Chattera room for a particular day, you’ll score an extra $1 for that day.</p>
-                            <p>Stay engaged and share your insights! The top participants in your room will earn up to $10 and we hope you will be one of them!</p>
+                            <p>We encourage you to dive into the conversations on Chattera! Each day, if you contribute at least one thoughtful post, comment, or share, you’ll earn <strong><u>$0.25</u></strong> as a reward. Plus, if you’re one of the two most active users in your Chattera room for a particular day, you’ll score an extra <strong><u>$1</u></strong> for that day.</p>
+                            <p>Stay engaged and share your insights! The top participants in your room will earn up to <strong><u>$10</u></strong> and we hope you will be one of them!</p>
                         <table>
                             <thead>
                                 <tr>
