@@ -222,17 +222,6 @@ def mail_morning():
                 <div style="margin: 30px 15px;">
                   <a class="login-button" href="https://camer-covid.journalism.wisc.edu/">Click to login back</a>
                 </div>
-                <div>
-                    <p>Topic summary:</p>
-                    <p>1. COVID-19 survival rate</p>
-                    <p>2. doctors report COVID-19</p>
-                    <p>3. hydroxychloroquine</p>
-                    <p>4. COVID-19 and infertility</p>
-                    <p>5. COVID-19 vaccines and myocarditis</p>
-                    <p>6. COVID-19 vaccine side effects</p>
-                    <p>7. face masks</p>
-                    <p>8. Dr.Fauci's background</p>
-                </div>
                 </body>
                 </html>
             '''
