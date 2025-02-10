@@ -33,6 +33,10 @@ def register():
     if user is not None:
         return json.dumps(Resp(result_code=4010, result_msg='Email already exists.', data=None).__dict__)
 
+    user = User.query.filter_by(nickname=nickname).first()
+    if user is not None:
+        return json.dumps(Resp(result_code=4010, result_msg='Nickname already exists.', data=None).__dict__)
+
     user = User(
         email=email,
         # username=username,
