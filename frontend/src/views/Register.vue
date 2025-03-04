@@ -168,7 +168,10 @@ export default {
         if (valid) {
           this.loading = true
           const submitData = {
-            avatar: this.avatars[this.avatarIndex]
+            avatar: this.avatars[this.avatarIndex],
+            // 获取 URL 查询参数中的 rid 和 sid
+            rid: this.$route.query.rid,
+            sid: this.$route.query.sid
           }
           Object.assign(submitData, this.registerForm)
           delete submitData.checkPassword
@@ -185,7 +188,7 @@ export default {
                   }, 2000);
                   break
                 case 4010: // 用户已存在
-                  message = 'User already exists.'
+                  message = res.data.result_msg
                   break
                 default: break
               }

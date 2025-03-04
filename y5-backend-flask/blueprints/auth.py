@@ -24,6 +24,8 @@ def register():
         nickname = data['nickname']
         avatar = data['avatar']
         password = data['password']
+        rid = data.get('rid', None)
+        sid = data.get('sid', None)
     except KeyError:
         return json.dumps(Resp(result_code=4000, result_msg='KeyError', data=None).__dict__)
     except TypeError:
@@ -42,7 +44,9 @@ def register():
         # username=username,
         nickname=nickname,
         avatar=avatar,
-        password=password
+        password=password,
+        rid=rid,
+        sid=sid
     )
     db.session.add(user)
     db.session.commit()
