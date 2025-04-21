@@ -15,7 +15,7 @@ def mail_notify(users, status):
             msg = Message(recipients=[user.email],
                           body=message,
                           subject=subject,
-                          sender=("Admin", "admin@soulfar.com"))
+                          sender=("Chattera Team", "chattera.platform@gmail.com"))
 
             conn.send(msg)
 
@@ -30,7 +30,7 @@ def mail_morning(users):
             msg = Message(recipients=[user.email],
                           body=message,
                           subject=subject,
-                          sender=("Admin", "admin@soulfar.com"))
+                          sender=("Chattera Team", "chattera.platform@gmail.com"))
 
             conn.send(msg)
 
@@ -45,6 +45,6 @@ def mail_night(users):
             msg = Message(recipients=[user.email],
                           body=message,
                           subject=subject,
-                          sender=("Admin", "admin@soulfar.com"))
+                          sender=("Chattera Team", "chattera.platform@gmail.com"))
 
             conn.send(msg)

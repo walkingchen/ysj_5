@@ -248,7 +248,7 @@ def mail_morning():
                     # msg = Message(recipients=['cenux1987@163.com'],
                                   body=message,
                                   subject=subject,
-                                  sender=("Chattera", "sijia.yang@alumni.upenn.edu"))
+                                  sender=("Chattera Team", "chattera.platform@gmail.com"))
                     msg.html = message
                     mail.send(msg)
 
@@ -525,7 +525,7 @@ def mail_night():
                     # msg = Message(recipients=['cenux1987@163.com'],
                                   body=message,
                                   subject=subject,
-                                  sender=("Chattera", "sijia.yang@alumni.upenn.edu"))
+                                  sender=("Chattera Team", "chattera.platform@gmail.com"))
                     msg.html = message
 
                     mail.send(msg)
@@ -590,7 +590,7 @@ def post_experiment_summary_mail():
                     msg = Message(recipients=['cenux1987@163.com'],
                                   body=message,
                                   subject=subject,
-                                  sender=("Chattera", "sijia.yang@alumni.upenn.edu"))
+                                  sender=("Chattera Team", "chattera.platform@gmail.com"))
                     msg.html = message
 
                     mail.send(msg)

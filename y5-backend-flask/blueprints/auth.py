@@ -68,7 +68,7 @@ Your Chattera Team
         msg = Message(recipients=[user.email],
                       body=message,
                       subject=subject,
-                      sender=("Admin", "sijia.yang@alumni.upenn.edu"))
+                      sender=("Chattera Team", "chattera.platform@gmail.com"))
 
         mail.send(msg)
 
