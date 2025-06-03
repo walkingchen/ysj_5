@@ -181,15 +181,18 @@ export default {
     })
   },
   watch: {
-    currentTopic (topic) {
-      if (topic) {
-        this.me_post_moments = []
-        this.moments = []
-        this.newCount = 0
-        this.titleFixed = false
-        this.fixedTitleTop = 0
-        this.getMomentList()
-      }
+    currentTopic: {
+      handler (topic) {
+        if (topic) {
+          this.me_post_moments = []
+          this.moments = []
+          this.newCount = 0
+          this.titleFixed = false
+          this.fixedTitleTop = 0
+          this.getMomentList()
+        }
+      },
+      immediate: true
     }
   }
 }

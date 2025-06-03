@@ -34,11 +34,14 @@ export default {
     }
   },
   watch: {
-    currentTopic (topic) {
-      if (topic) {
-        this.imgUrl = ''
-        this.updateDailyPoll()
-      }
+    currentTopic: {
+      handler (topic) {
+        if (topic) {
+          this.imgUrl = ''
+          this.updateDailyPoll()
+        }
+      },
+      immediate: true
     }
   }
 }

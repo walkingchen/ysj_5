@@ -214,10 +214,8 @@ def mail_morning():
                 </head>
                 <body>
                 <div class="container">
-                    %s
-                </div>
-                <div>
-                  <img src="%s" alt="">
+                    <p>Good morning! Welcome back to Chattera! We value your contributions and encourage you to log in, join the discussion, and connect with the community.</p>
+                    <p>%s</p>
                 </div>
                 <div style="margin: 30px 15px;">
                   <a class="login-button" href="https://camer-covid.journalism.wisc.edu/">Click to login back</a>
@@ -226,22 +224,24 @@ def mail_morning():
                 </html>
             '''
 
-            message = PollPost.query.filter_by(
-                room_id=room.id,
-                topic=n
-            ).first()
+            # message = PollPost.query.filter_by(
+            #     room_id=room.id,
+            #     topic=n
+            # ).first()
 
-            if message is not None:
-                photo_uri = 'http://ysj_5.soulfar.com/uploads/' + message.photo_uri
-            else:
-                photo_uri = 'http://ysj_5.soulfar.com/uploads/daily_poll.jpeg'
+            # if message is not None:
+            #     photo_uri = 'http://ysj_5.soulfar.com/uploads/' + message.photo_uri
+            # else:
+            #     photo_uri = 'http://ysj_5.soulfar.com/uploads/daily_poll.jpeg'
 
-            img_str = photo_uri
+            # img_str = photo_uri
 
-            message = message_html % (mail_template_morning.content, img_str)
+            # message = message_html % (mail_template_morning.content)
+            message = message_html % (mail_template_morning.content)
             room_members = RoomMember.query.filter_by(room_id=room.id).all()
             for member in room_members:
-                subject = mail_template_morning.title
+                # subject = mail_template_morning.title
+                subject = 'Chattera Morning Digest - DAY ' + str(n)
                 user = User.query.filter_by(id=member.user_id).first()
                 if user.email is not None:
                     msg = Message(recipients=[user.email],

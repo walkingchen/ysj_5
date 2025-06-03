@@ -175,11 +175,14 @@ export default {
     })
   },
   watch: {
-    currentTopic (topic) {
-      if (topic) {
-        this.messages = []
-        this.getMessageList()
-      }
+    currentTopic: {
+      handler (topic) {
+        if (topic) {
+          this.messages = []
+          this.getMessageList()
+        }
+      },
+      immediate: true
     }
   }
 }

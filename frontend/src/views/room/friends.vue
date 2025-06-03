@@ -49,14 +49,30 @@ export default {
   },
   computed: mapState([
     'user',
-    'friends'
+    'friends',
+    'currentTopic'
   ]),
+  methods: {
+    updateStats() {
+      getRoomStats(localStorage.getItem('roomid')).then(({ data }) => {
+        if (data.result_code === 2000) {
+          this.statsData = data.data
+        }
+      })
+    }
+  },
   created () {
-    getRoomStats(localStorage.getItem('roomid')).then(({ data }) => {
-      if (data.result_code === 2000) {
-        this.statsData = data.data
-      }
-    })
+    this.updateStats()
+  },
+  watch: {
+    currentTopic: {
+      handler (topic) {
+        if (topic) {
+          this.updateStats()
+        }
+      },
+      immediate: true
+    }
   }
 }
 </script>

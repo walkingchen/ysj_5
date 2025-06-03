@@ -188,11 +188,14 @@ export default {
     })
   },
   watch: {
-    currentTopic (topic) {
-      if (topic) {
-        this.postList = []
-        this.updateTopicList()
-      }
+    currentTopic: {
+      handler (topic) {
+        if (topic) {
+          this.postList = []
+          this.updateTopicList()
+        }
+      },
+      immediate: true
     }
   }
 }
