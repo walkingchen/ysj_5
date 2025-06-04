@@ -150,19 +150,19 @@ export default {
           href = '/api/user/export_user'
           break
         case 'privateMessage':
-          href = 'http://ysj_5.soulfar.com/static/templates/private_message_pool.csv'
+          href = 'https://camer-covid.journalism.wisc.edu/static/private_message_pool.csv'
           break
         case 'privateMessageAssign':
-          href = 'http://ysj_5.soulfar.com/static/templates/private_message_assign.csv'
+          href = 'https://camer-covid.journalism.wisc.edu/static/private_message_assign.csv'
           break
         case 'systemMessage':
-          href = 'http://ysj_5.soulfar.com/static/templates/system_message_pool.csv'
+          href = 'https://camer-covid.journalism.wisc.edu/static/system_message_pool.csv'
           break
         case 'systemMessageAssign':
-          href = 'http://ysj_5.soulfar.com/static/templates/system_message_assign.csv'
+          href = 'https://camer-covid.journalism.wisc.edu/static/system_message_assign.csv'
           break
         case 'dailyAssign':
-          href = 'http://ysj_5.soulfar.com/static/templates/daily_poll_assign.csv'
+          href = 'https://camer-covid.journalism.wisc.edu/static/daily_poll_assign.csv'
           break
         default:
           break
