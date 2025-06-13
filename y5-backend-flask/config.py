@@ -46,7 +46,6 @@ elif FLASK_ENV == 'testing':  # 测试环境配置
     FLASK_DEBUG = True
 else:  # 本地环境
     HOST_URL = 'http://ysj_5.soulfar.com'
-    # SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost:3307/reddit_like?charset=utf8mb4'
     from sshtunnel import SSHTunnelForwarder
 
     # SSH server configuration
@@ -74,9 +73,6 @@ else:  # 本地环境
     SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{mysql_user}:{mysql_password}@{tunnel.local_bind_host}:{tunnel.local_bind_port}/{mysql_database}"
     print(SQLALCHEMY_DATABASE_URI)
 
-# SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://admin:maxwit@ysj_5.soulfar.com:3306/ysj_5?charset=utf8mb4'
-# SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://admin:maxwit@tmp.soulfar.com:3306/ysj_5?charset=utf8mb4'     # aliyun
-# SQLALCHEMY_ECHO = True
 SQLALCHEMY_POOL_RECYCLE = 300
 SQLALCHEMY_POOL_SIZE = 100
 SQLALCHEMY_TRACK_MODIFICATIONS = False
