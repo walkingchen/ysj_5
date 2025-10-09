@@ -28,8 +28,8 @@
 
           <div class="right-content">
             <img class="logo" src="@/assets/logo.png" />
-            <div class="right-scroll">
-              <daily-poll />
+            <daily-poll />
+            <div class="friends-scroll-container">
               <friends @start-chat="startChart" />
             </div>
           </div>
@@ -263,6 +263,9 @@ sider-top = 90px // 左右侧边栏的top = 70px的头部高度 + 20px的上边�
   width sider-width
   top sider-top
   right calc(5% + 6px) // 6px是滚动条的宽度
+  bottom 0
+  display flex
+  flex-direction column
 
   .logo
     display block
@@ -271,12 +274,23 @@ sider-top = 90px // 左右侧边栏的top = 70px的头部高度 + 20px的上边�
     height 119px
     object-fit contain
     margin-bottom 20px
+    flex-shrink 0
 
-  .right-scroll
-    height calc(100vh - 279px) // 278px = 70px的头部高度 + 20px与头部的边距 + 119px logo的高度 + 20px与logo的边距 + 50px“Poll Digest”title的高度
-    padding-top 50px
-    overflow auto
+  >>> #dailyPoll {
+    flex-shrink: 0;
+  }
+  
+  .friends-scroll-container
+    flex-grow 1
+    min-height 0 // Prevents flexbox overflow issues
+    overflow-y auto
     scrollbar-width none
+    &::-webkit-scrollbar
+      width 4px
+    &::-webkit-scrollbar-thumb
+      background-color #ccc
+      border-radius 2px
+
 </style>
 <style lang="stylus">
 .new-message
