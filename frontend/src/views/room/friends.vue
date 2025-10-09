@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-card class="members-content">
-      <h2 class="module-title">Friends</h2>
+      <!-- <h2 class="module-title">Friends</h2> -->
 
       <div class="friends-content-wrapper">
         <ul class="friends">
