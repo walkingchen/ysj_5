@@ -89,6 +89,11 @@ class RoomApi(Resource):
         else:
             publish_time = 7
 
+        if 'condition' in data:
+            condition = data['condition']
+        else:
+            condition = None
+
         # 检查prototype是否存在
         prototype = RoomPrototype.query.filter_by(id=room_type).first()
         if prototype is None:
@@ -104,7 +109,8 @@ class RoomApi(Resource):
                 people_limit=people_limit,
                 room_desc=room_desc,
                 activated=activated,
-                publish_time=publish_time
+                publish_time=publish_time,
+                condition=condition
             )
             db.session.add(room)
             db.session.commit()
@@ -271,6 +277,10 @@ class RoomApi(Resource):
         if 'publish_time' in data:
             publish_time = data['publish_time']
             room.publish_time = publish_time
+
+        if 'condition' in data:
+            condition = data['condition']
+            room.condition = condition
 
         db.session.add(room)
         db.session.commit()
