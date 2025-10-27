@@ -25,6 +25,9 @@
       <el-form-item label="Description">
         <el-input type="textarea" v-model="formData.room_desc"></el-input>
       </el-form-item>
+      <el-form-item label="Condition">
+        <el-input v-model="formData.condition" />
+      </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="close">Cancel</el-button>
@@ -46,7 +49,8 @@ export default {
         room_name: '',
         room_type: '',
         activated: 1,
-        publish_time: '00:00'
+        publish_time: '00:00',
+        condition: ''
       },
       rules: {
         room_name: [{ required: true, message: 'This field is required.', trigger: 'blur' }]
@@ -85,7 +89,7 @@ export default {
   watch: {
     show(val) {
       if (val) {
-        const { people_limit, room_desc, room_name, room_type, activated, publish_time } = this.initData
+        const { people_limit, room_desc, room_name, room_type, activated, publish_time, condition } = this.initData
         const _publish_time = publish_time ? ((publish_time > 9 ? publish_time : ('0' + publish_time)) + ':00') : '00:00'
         this.formData = {
           people_limit,
@@ -93,7 +97,8 @@ export default {
           room_name,
           room_type,
           activated,
-          publish_time: _publish_time
+          publish_time: _publish_time,
+          condition: condition || ''
         }
       } else {
         this.$refs.form.resetFields()

@@ -9,7 +9,7 @@
     <p>We are happy to compensate your precious time with another $5 for completing this survey. If you have any questions or concerns regarding your payment, please contact our team at chattera.platform@gmail.com.</p>
     <p>Thank you once again for your time and effort!</p>
     <div style="margin: 30px 15px;">
-      <a class="button" href="https://uwmadison.co1.qualtrics.com/jfe/form/SV_bQ3Ngp6xOKpXbds">Qualtrics Survey</a>
+      <a class="button" href="https://uwmadison.co1.qualtrics.com/jfe/form/SV_07lsaaJk3CiOU0m">Qualtrics Survey</a>
     </div>
   </div>
 </template>
