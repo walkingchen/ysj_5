@@ -255,7 +255,7 @@ def mail_morning():
             
             # 异步批量发送邮件
             if email_list:
-                from utils.mail_async import send_bulk_emails_async
+                from mail_async import send_bulk_emails_async
                 send_bulk_emails_async(email_list)
 
 
@@ -528,7 +528,7 @@ def mail_night():
                 user = User.query.filter_by(id=member.user_id).first()
                 if user.email is not None:
                     # 异步发送邮件
-                    from utils.mail_async import send_email_async
+                    from mail_async import send_email_async
                     send_email_async([user.email], subject, message, message)
 
 
@@ -588,7 +588,7 @@ def post_experiment_summary_mail():
                 user = User.query.filter_by(id=member.user_id).first()
                 if user.email is not None:
                     # 异步发送邮件
-                    from utils.mail_async import send_email_async
+                    from mail_async import send_email_async
                     # 注意：这里保持测试邮箱，如果需要发送给真实用户，改为 [user.email]
                     send_email_async(['cenux1987@163.com'], subject, message, message)
 

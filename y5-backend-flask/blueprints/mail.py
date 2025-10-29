@@ -7,7 +7,7 @@ from flask_restful import Resource, Api
 from entity.Resp import Resp
 from extensions import db, scheduler
 from models import MailTemplate, Serializer, Room, RoomMember, User
-from utils.mail_async import send_bulk_emails_async
+from mail_async import send_bulk_emails_async
 
 bp_mail = Blueprint('/api/mail', __name__)
 api = Api(bp_mail, '/api/mail')
@@ -200,32 +200,31 @@ class EmergencyEmailApi(Resource):
         if 'member_id' in data:
             member_id = data['member_id']
 
-        with mail.connect() as conn:
-            subject = title
-            email_list = []
-            
-            if member_id is None:
-                members = RoomMember.query.filter_by(room_id=room_id).all()
-                for member in members:
-                    user = User.query.filter_by(id=member.id).first()
-                    if user and user.email:
-                        email_list.append({
-                            'recipients': [user.email],
-                            'subject': subject,
-                            'body': content
-                        })
-            else:
-                user = User.query.filter_by(id=member_id).first()
+        subject = title
+        email_list = []
+        
+        if member_id is None:
+            members = RoomMember.query.filter_by(room_id=room_id).all()
+            for member in members:
+                user = User.query.filter_by(id=member.id).first()
                 if user and user.email:
                     email_list.append({
                         'recipients': [user.email],
                         'subject': subject,
                         'body': content
                     })
-            
-            # 异步批量发送邮件
-            if email_list:
-                send_bulk_emails_async(email_list)
+        else:
+            user = User.query.filter_by(id=member_id).first()
+            if user and user.email:
+                email_list.append({
+                    'recipients': [user.email],
+                    'subject': subject,
+                    'body': content
+                })
+        
+        # 异步批量发送邮件
+        if email_list:
+            send_bulk_emails_async(email_list)
 
         return jsonify(Resp(result_code=2000, result_msg='success', data=None).__dict__)
 

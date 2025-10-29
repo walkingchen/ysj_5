@@ -15,7 +15,7 @@ from extensions import db, socketio
 from models import Room, Timeline, RoomMember, RoomPrototype, Serializer, User, Redspot, PublicPost, PostComment, \
     PostLike, PostFlag
 from service import get_friends, query_membership
-from utils.mail_async import send_room_activation_email_async
+from mail_async import send_room_activation_email_async as send_activation_email_async
 
 # error code: 401x
 

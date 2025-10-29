@@ -1,4 +1,4 @@
-from utils.mail_async import send_email_async
+from mail_async import send_email_async
 
 
 def mail_notify(users, status):
@@ -23,7 +23,7 @@ def mail_notify(users, status):
     
     # 异步批量发送邮件
     if email_list:
-        from utils.mail_async import send_bulk_emails_async
+        from mail_async import send_bulk_emails_async
         send_bulk_emails_async(email_list)
 
 
@@ -46,7 +46,7 @@ def mail_morning(users):
     
     # 异步批量发送邮件
     if email_list:
-        from utils.mail_async import send_bulk_emails_async
+        from mail_async import send_bulk_emails_async
         send_bulk_emails_async(email_list)
 
 
@@ -69,5 +69,5 @@ def mail_night(users):
     
     # 异步批量发送邮件
     if email_list:
-        from utils.mail_async import send_bulk_emails_async
+        from mail_async import send_bulk_emails_async
         send_bulk_emails_async(email_list)
