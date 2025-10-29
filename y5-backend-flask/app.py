@@ -239,18 +239,24 @@ def mail_morning():
             # message = message_html % (mail_template_morning.content)
             message = message_html % (mail_template_morning.content)
             room_members = RoomMember.query.filter_by(room_id=room.id).all()
+            
+            # 准备批量邮件列表
+            email_list = []
             for member in room_members:
-                # subject = mail_template_morning.title
                 subject = 'Chattera Morning Digest - DAY ' + str(n)
                 user = User.query.filter_by(id=member.user_id).first()
                 if user.email is not None:
-                    msg = Message(recipients=[user.email],
-                    # msg = Message(recipients=['cenux1987@163.com'],
-                                  body=message,
-                                  subject=subject,
-                                  sender=("Chattera Team", "chattera.platform@gmail.com"))
-                    msg.html = message
-                    mail.send(msg)
+                    email_list.append({
+                        'recipients': [user.email],
+                        'subject': subject,
+                        'body': message,
+                        'html_body': message
+                    })
+            
+            # 异步批量发送邮件
+            if email_list:
+                from utils.mail_async import send_bulk_emails_async
+                send_bulk_emails_async(email_list)
 
 
 # @scheduler.task('cron', id='job_mail_night', day='*', hour='20', minute='0', second='0')
@@ -521,14 +527,9 @@ def mail_night():
                     '''
                 user = User.query.filter_by(id=member.user_id).first()
                 if user.email is not None:
-                    msg = Message(recipients=[user.email],
-                    # msg = Message(recipients=['cenux1987@163.com'],
-                                  body=message,
-                                  subject=subject,
-                                  sender=("Chattera Team", "chattera.platform@gmail.com"))
-                    msg.html = message
-
-                    mail.send(msg)
+                    # 异步发送邮件
+                    from utils.mail_async import send_email_async
+                    send_email_async([user.email], subject, message, message)
 
 
 @app.route('/post_experiment_summary_mail', methods=['POST'])
@@ -586,14 +587,10 @@ def post_experiment_summary_mail():
 
                 user = User.query.filter_by(id=member.user_id).first()
                 if user.email is not None:
-                    # msg = Message(recipients=[user.email],
-                    msg = Message(recipients=['cenux1987@163.com'],
-                                  body=message,
-                                  subject=subject,
-                                  sender=("Chattera Team", "chattera.platform@gmail.com"))
-                    msg.html = message
-
-                    mail.send(msg)
+                    # 异步发送邮件
+                    from utils.mail_async import send_email_async
+                    # 注意：这里保持测试邮箱，如果需要发送给真实用户，改为 [user.email]
+                    send_email_async(['cenux1987@163.com'], subject, message, message)
 
         return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
 

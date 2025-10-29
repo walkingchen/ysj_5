@@ -1,12 +1,12 @@
 from flasgger import swag_from
 from flask import Blueprint, request, redirect, current_app, flash, json
 from flask_login import login_required, logout_user, login_user, LoginManager, current_user
-from flask_mail import Message
 from flask_principal import identity_changed, Identity
 
 from entity.Resp import Resp
-from extensions import db, mail
-from models import User, RoomMember, Room, Serializer
+from extensions import db
+from models import User
+from utils.mail_async import send_registration_email_async
 
 bp_auth = Blueprint('api/auth', __name__, url_prefix='/api/auth')
 
@@ -63,14 +63,9 @@ Thank you again for your participation, and we’ll be in touch soon!
 Best regards,
 Your Chattera Team
     '''
-    subject = "Registration Confirmation"
+    # 异步发送注册确认邮件
     if user.email is not None:
-        msg = Message(recipients=[user.email],
-                      body=message,
-                      subject=subject,
-                      sender=("Chattera Team", "chattera.platform@gmail.com"))
-
-        mail.send(msg)
+        send_registration_email_async(user.email, user.nickname)
 
     return json.dumps(Resp(result_code=2000, result_msg='register success', data=None).__dict__)
 
