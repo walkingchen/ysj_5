@@ -165,7 +165,8 @@ class RoomApi(Resource):
             for member in members:
                 user = User.query.get(member.user_id)
                 if user and user.email is not None:
-                    send_activation_email_async(user.email, user.nickname)
+                    # 传入 room.condition 以决定视频链接
+                    send_activation_email_async(user.email, user.nickname, room.condition)
 
         return jsonify(Resp(result_code=2000, result_msg='success', data=None).__dict__)
 

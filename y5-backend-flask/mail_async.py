@@ -132,12 +132,20 @@ def send_bulk_emails_async(email_list):
         logger.exception(f"[mail_async] Failed to submit bulk email task: {str(e)}")
         return None
 
-def send_room_activation_email_async(user_email, user_nickname):
+def send_room_activation_email_async(user_email, user_nickname, condition=None):
     """
     异步发送房间激活邮件
     """
     message = "Hi " + user_nickname + ", your platform has already been activated. " \
               + "Login url: http://camer-covid.journalism.wisc.edu/#/login"
+
+    # 根据 condition 选择视频链接
+    partisan = False
+    try:
+        partisan = condition in ('1', 1)
+    except Exception:
+        partisan = False
+    video_url = "https://youtu.be/38L93ENyGAU" if partisan else "https://youtu.be/ke6C6hCFqfU"
     
     html_message = '''
     <!DOCTYPE html>
@@ -199,8 +207,7 @@ def send_room_activation_email_async(user_email, user_nickname):
             <p>You'll find a variety of popular social media posts about COVID-19 on Chattera. Some of these posts may contain information that differs from what you currently know or contradict the best available evidence. Note that they do not imply endorsement of the Chattera team.</p>
             <p>In today's complex information environment, it's important to verify the accuracy of what we read and share, and individual efforts are particularly vital in maintaining a well-informed community. Therefore, we encourage you to fact-check the information on the platform and share your opinions with others. As you participate in discussions, please remember to stay civil, respect differing viewpoints, and foster a supportive and constructive community.</p>
             <p>Here is a video to walk you through Chattera: </p>
-            <p>(without partisan cue) : https://youtu.be/ke6C6hCFqfU</p>
-            <p>(with partisan cue) : https://youtu.be/38L93ENyGAU</p>
+            <p>{video_url}</p>
             <p><strong>What You Will Receive:</strong></p>
             <p>We encourage you to dive into the conversations on Chattera! Each day, if you contribute at least one thoughtful post, comment, or share, you'll earn <strong><u>$0.25</u></strong> as a reward. Plus, if you're one of the two most active users in your Chattera room for a particular day, you'll score an extra <strong><u>$1</u></strong> for that day.</p>
             <p>Stay engaged and share your insights! The top participants in your room will earn up to <strong><u>$10</u></strong> and we hope you will be one of them!</p>
