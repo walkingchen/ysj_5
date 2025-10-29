@@ -3,6 +3,7 @@
 提供统一的异步邮件发送功能
 """
 import threading
+import logging
 from concurrent.futures import ThreadPoolExecutor
 from flask import current_app
 from flask_mail import Message
@@ -10,6 +11,7 @@ from extensions import mail
 
 # 创建线程池用于异步邮件发送
 mail_executor = ThreadPoolExecutor(max_workers=5, thread_name_prefix="mail_sender")
+logger = logging.getLogger(__name__)
 
 def send_email_async(recipients, subject, body, html_body=None, sender=("Chattera Team", "chattera.platform@gmail.com")):
     """
@@ -32,6 +34,7 @@ def send_email_async(recipients, subject, body, html_body=None, sender=("Chatter
     def send_email():
         try:
             def _do_send():
+                logger.info(f"[mail_async] Preparing email: recipients={recipients}, subject='{subject}'")
                 msg = Message(
                     recipients=recipients,
                     body=body,
@@ -41,18 +44,26 @@ def send_email_async(recipients, subject, body, html_body=None, sender=("Chatter
                 if html_body:
                     msg.html = html_body
                 mail.send(msg)
-                print(f"Successfully sent email to {recipients} with subject: {subject}")
+                logger.info(f"[mail_async] Successfully sent email to {recipients}, subject='{subject}'")
 
             if app is not None:
+                logger.info("[mail_async] Using captured Flask app context in background thread")
                 with app.app_context():
                     _do_send()
             else:
+                logger.warning("[mail_async] No Flask app context available; attempting to send without context")
                 _do_send()
         except Exception as e:
-            print(f"Failed to send email to {recipients}: {str(e)}")
+            logger.exception(f"[mail_async] Failed to send email to {recipients}: {str(e)}")
     
     # 提交到线程池异步执行
-    mail_executor.submit(send_email)
+    try:
+        future = mail_executor.submit(send_email)
+        logger.info(f"[mail_async] Submitted email task to thread pool, thread_name_prefix='mail_sender'")
+        return future
+    except Exception as e:
+        logger.exception(f"[mail_async] Failed to submit email task: {str(e)}")
+        return None
 
 def send_bulk_emails_async(email_list):
     """
@@ -81,6 +92,7 @@ def send_bulk_emails_async(email_list):
             html_body = email_info.get('html_body')
             sender = email_info.get('sender', ("Chattera Team", "chattera.platform@gmail.com"))
 
+            logger.info(f"[mail_async] Preparing bulk email: recipients={recipients}, subject='{subject}'")
             msg = Message(
                 recipients=recipients,
                 body=body,
@@ -90,27 +102,35 @@ def send_bulk_emails_async(email_list):
             if html_body:
                 msg.html = html_body
             mail.send(msg)
-            print(f"Successfully sent email to {recipients} with subject: {subject}")
+            logger.info(f"[mail_async] Successfully sent email to {recipients}, subject='{subject}'")
 
         try:
             if app is not None:
+                logger.info("[mail_async] Using captured Flask app context for bulk email in background thread")
                 with app.app_context():
                     for email_info in email_list:
                         try:
                             _do_send_one(email_info)
                         except Exception as e:
-                            print(f"Failed to send email to {email_info.get('recipients', 'unknown')}: {str(e)}")
+                            logger.exception(f"[mail_async] Failed to send email to {email_info.get('recipients', 'unknown')}: {str(e)}")
             else:
+                logger.warning("[mail_async] No Flask app context available for bulk email; attempting to send without context")
                 for email_info in email_list:
                     try:
                         _do_send_one(email_info)
                     except Exception as e:
-                        print(f"Failed to send email to {email_info.get('recipients', 'unknown')}: {str(e)}")
+                        logger.exception(f"[mail_async] Failed to send email to {email_info.get('recipients', 'unknown')}: {str(e)}")
         except Exception as e:
-            print(f"Failed bulk email sending due to context error: {str(e)}")
+            logger.exception(f"[mail_async] Failed bulk email sending due to context error: {str(e)}")
     
     # 提交到线程池异步执行
-    mail_executor.submit(send_bulk_emails)
+    try:
+        future = mail_executor.submit(send_bulk_emails)
+        logger.info(f"[mail_async] Submitted bulk email task to thread pool, size={len(email_list)}")
+        return future
+    except Exception as e:
+        logger.exception(f"[mail_async] Failed to submit bulk email task: {str(e)}")
+        return None
 
 def send_room_activation_email_async(user_email, user_nickname):
     """
