@@ -4,6 +4,7 @@
 """
 import threading
 from concurrent.futures import ThreadPoolExecutor
+from flask import current_app
 from flask_mail import Message
 from extensions import mail
 
@@ -21,19 +22,32 @@ def send_email_async(recipients, subject, body, html_body=None, sender=("Chatter
         html_body: HTML格式邮件正文（可选）
         sender: 发件人信息
     """
+    # 抓取当前应用实例，供后台线程使用应用上下文
+    app = None
+    try:
+        app = current_app._get_current_object()
+    except Exception:
+        app = None
+
     def send_email():
         try:
-            msg = Message(
-                recipients=recipients,
-                body=body,
-                subject=subject,
-                sender=sender
-            )
-            if html_body:
-                msg.html = html_body
-            
-            mail.send(msg)
-            print(f"Successfully sent email to {recipients} with subject: {subject}")
+            def _do_send():
+                msg = Message(
+                    recipients=recipients,
+                    body=body,
+                    subject=subject,
+                    sender=sender
+                )
+                if html_body:
+                    msg.html = html_body
+                mail.send(msg)
+                print(f"Successfully sent email to {recipients} with subject: {subject}")
+
+            if app is not None:
+                with app.app_context():
+                    _do_send()
+            else:
+                _do_send()
         except Exception as e:
             print(f"Failed to send email to {recipients}: {str(e)}")
     
@@ -52,28 +66,48 @@ def send_bulk_emails_async(email_list):
             - html_body: HTML格式邮件正文（可选）
             - sender: 发件人信息（可选）
     """
+    # 抓取当前应用实例，供后台线程使用应用上下文
+    app = None
+    try:
+        app = current_app._get_current_object()
+    except Exception:
+        app = None
+
     def send_bulk_emails():
-        for email_info in email_list:
-            try:
-                recipients = email_info.get('recipients')
-                subject = email_info.get('subject')
-                body = email_info.get('body')
-                html_body = email_info.get('html_body')
-                sender = email_info.get('sender', ("Chattera Team", "chattera.platform@gmail.com"))
-                
-                msg = Message(
-                    recipients=recipients,
-                    body=body,
-                    subject=subject,
-                    sender=sender
-                )
-                if html_body:
-                    msg.html = html_body
-                
-                mail.send(msg)
-                print(f"Successfully sent email to {recipients} with subject: {subject}")
-            except Exception as e:
-                print(f"Failed to send email to {email_info.get('recipients', 'unknown')}: {str(e)}")
+        def _do_send_one(email_info):
+            recipients = email_info.get('recipients')
+            subject = email_info.get('subject')
+            body = email_info.get('body')
+            html_body = email_info.get('html_body')
+            sender = email_info.get('sender', ("Chattera Team", "chattera.platform@gmail.com"))
+
+            msg = Message(
+                recipients=recipients,
+                body=body,
+                subject=subject,
+                sender=sender
+            )
+            if html_body:
+                msg.html = html_body
+            mail.send(msg)
+            print(f"Successfully sent email to {recipients} with subject: {subject}")
+
+        try:
+            if app is not None:
+                with app.app_context():
+                    for email_info in email_list:
+                        try:
+                            _do_send_one(email_info)
+                        except Exception as e:
+                            print(f"Failed to send email to {email_info.get('recipients', 'unknown')}: {str(e)}")
+            else:
+                for email_info in email_list:
+                    try:
+                        _do_send_one(email_info)
+                    except Exception as e:
+                        print(f"Failed to send email to {email_info.get('recipients', 'unknown')}: {str(e)}")
+        except Exception as e:
+            print(f"Failed bulk email sending due to context error: {str(e)}")
     
     # 提交到线程池异步执行
     mail_executor.submit(send_bulk_emails)
