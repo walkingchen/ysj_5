@@ -259,8 +259,6 @@ def send_room_activation_email_async(user_email, user_nickname, condition=None):
     </body>
     </html>
     '''
-    # 将占位符替换为实际链接，避免使用 f-string 造成 CSS 花括号冲突
-    html_message = html_message.replace('{video_url}', str(video_url))
     
     subject = "Your Room is Now Active – Welcome to Chattera!"
     send_email_async([user_email], subject, message, html_message)
