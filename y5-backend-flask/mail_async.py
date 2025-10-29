@@ -146,7 +146,7 @@ def send_room_activation_email_async(user_email, user_nickname, condition=None):
     except Exception:
         partisan = False
     video_url = "https://youtu.be/38L93ENyGAU" if partisan else "https://youtu.be/ke6C6hCFqfU"
-    
+    video_url = '<p>' + video_url + '</p>'
     html_message = '''
     <!DOCTYPE html>
     <html lang="en">
@@ -206,8 +206,9 @@ def send_room_activation_email_async(user_email, user_nickname, condition=None):
             <p>Your Chattera room will be open for at least eight days. Each day, you will be invited to read and respond to posts on the platform, share your thoughts, and interact with your Chattera buddies.</p>
             <p>You'll find a variety of popular social media posts about COVID-19 on Chattera. Some of these posts may contain information that differs from what you currently know or contradict the best available evidence. Note that they do not imply endorsement of the Chattera team.</p>
             <p>In today's complex information environment, it's important to verify the accuracy of what we read and share, and individual efforts are particularly vital in maintaining a well-informed community. Therefore, we encourage you to fact-check the information on the platform and share your opinions with others. As you participate in discussions, please remember to stay civil, respect differing viewpoints, and foster a supportive and constructive community.</p>
-            <p>Here is a video to walk you through Chattera: </p>
-            <p>%s</p>
+            <p>Here is a video to walk you through Chattera: </p>'''
+    html_message = html_message + video_url
+    html_message = html_message + '''
             <p><strong>What You Will Receive:</strong></p>
             <p>We encourage you to dive into the conversations on Chattera! Each day, if you contribute at least one thoughtful post, comment, or share, you'll earn <strong><u>$0.25</u></strong> as a reward. Plus, if you're one of the two most active users in your Chattera room for a particular day, you'll score an extra <strong><u>$1</u></strong> for that day.</p>
             <p>Stay engaged and share your insights! The top participants in your room will earn up to <strong><u>$10</u></strong> and we hope you will be one of them!</p>
@@ -258,7 +259,8 @@ def send_room_activation_email_async(user_email, user_nickname, condition=None):
     </body>
     </html>
     '''
-    html_message = html_message % (video_url)
+    # 将占位符替换为实际链接，避免使用 f-string 造成 CSS 花括号冲突
+    html_message = html_message.replace('{video_url}', str(video_url))
     
     subject = "Your Room is Now Active – Welcome to Chattera!"
     send_email_async([user_email], subject, message, html_message)
