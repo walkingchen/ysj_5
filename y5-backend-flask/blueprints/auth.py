@@ -5,7 +5,7 @@ from flask_principal import identity_changed, Identity
 
 from entity.Resp import Resp
 from extensions import db
-from models import User, RoomMember
+from models import User, RoomMember, Room
 from mail_async import send_registration_email_async
 
 bp_auth = Blueprint('api/auth', __name__, url_prefix='/api/auth')
