@@ -160,13 +160,14 @@ class RoomApi(Resource):
         db.session.commit()
 
         # 邮件发送移到数据库事务之外，异步执行
-        if 'activated' in data and data['activated'] == 1:
-            members = RoomMember.query.filter_by(room_id=room.id).all()
-            for member in members:
-                user = User.query.get(member.user_id)
-                if user and user.email is not None:
-                    # 传入 room.condition 以决定视频链接
-                    send_activation_email_async(user.email, user.nickname, room.condition)
+        # TODO(restore): 暂停通过 Room API 激活时触发邮件发送，待人工确认恢复
+        # if 'activated' in data and data['activated'] == 1:
+        #     members = RoomMember.query.filter_by(room_id=room.id).all()
+        #     for member in members:
+        #         user = User.query.get(member.user_id)
+        #         if user and user.email is not None:
+        #             # 传入 room.condition 以决定视频链接
+        #             send_activation_email_async(user.email, user.nickname, room.condition)
 
         return jsonify(Resp(result_code=2000, result_msg='success', data=None).__dict__)
 
