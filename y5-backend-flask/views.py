@@ -70,17 +70,17 @@ class RoomModelView(ModelView):
             room.updated_at = None
             db.session.commit()
 
-    def after_model_change(self, form, model, is_created):
-        # if activated, send mail
-        # if form._obj.activated == 1:
-        status = form._obj.activated
-        # send mail
-        members = RoomMember.query.filter_by(room_id=form._obj.id, activated=1).all()
-        users = []
-        for member in members:
-            user = User.query.filter_by(id=member.user_id).first()
-            users.append(user)
-        mail_notify(users, status)
+    # def after_model_change(self, form, model, is_created):
+    #     # if activated, send mail
+    #     # if form._obj.activated == 1:
+    #     status = form._obj.activated
+    #     # send mail
+    #     members = RoomMember.query.filter_by(room_id=form._obj.id, activated=1).all()
+    #     users = []
+    #     for member in members:
+    #         user = User.query.filter_by(id=member.user_id).first()
+    #         users.append(user)
+    #     mail_notify(users, status)
 
 
 class PostModelView(ModelView):
