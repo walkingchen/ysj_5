@@ -986,8 +986,8 @@ def import_members_with_messages():
             continue
         # id,user_id,room_type,room_id,seat_no,day,topic_no,message_id
         user_id = line[1]
-        room_id = line[3]
-        seat_no = line[4]
+        room_id = int(line[3])
+        seat_no = int(line[4])  # 转换为整数
         day = line[5]
         topic_no = line[6]
         message_id = line[7]
@@ -1016,6 +1016,10 @@ def import_members_with_messages():
                 seat_no=seat_no
             )
             db.session.add(member)
+            db.session.commit()
+        else:
+            # 如果member已存在，更新其seat_no
+            member.seat_no = seat_no
             db.session.commit()
 
         participant = User.query.filter_by(id=user.id).first()
