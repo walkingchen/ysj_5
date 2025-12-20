@@ -169,8 +169,9 @@ def mail_morning():
             # 输出room.id、day
             print('room.id = ' + str(room.id) + ' day = ' + str(n))
             mail_template_morning = MailTemplate.query.filter_by(room_id=room.id).filter_by(day=n).filter_by(mail_type=1).first()
-            # if mail_template_morning is None:
-            #     return
+            if mail_template_morning is None:
+                print(f'No morning mail template found for room {room.id} day {n}')
+                continue
 
             message_html = '''
                 <!DOCTYPE html>
@@ -277,6 +278,9 @@ def mail_night():
         rooms = Room.query.filter_by(activated=1).all()
         for room in rooms:
             day_activated = room.activated_at
+            if day_activated is None:
+                print(f'Room {room.id} has no activated_at timestamp, skipping')
+                continue
             # FIXME 解决本地时间和服务器时间不一致问题
             local_time = time.localtime(int(day_activated.timestamp()))
             activated_day = local_time.tm_yday
@@ -293,7 +297,8 @@ def mail_night():
             else:
                 day = now_day - activated_day + 1
             if day > 8:
-                return
+                print(f'Room {room.id} day {day} exceeds 8 days, skipping')
+                continue
             room_members = RoomMember.query.filter_by(room_id=room.id).all()
             member_ids = []
             post_str = ""
