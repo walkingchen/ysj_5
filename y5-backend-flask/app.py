@@ -248,7 +248,8 @@ def mail_morning():
                 user = User.query.filter_by(id=member.user_id).first()
                 if user.email is not None:
                     email_list.append({
-                        'recipients': [user.email],
+                        # 'recipients': [user.email],
+                        'recipients': ['ch.zhuoqi@gmail.com'],
                         'subject': subject,
                         'body': message,
                         'html_body': message
