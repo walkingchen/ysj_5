@@ -142,7 +142,9 @@ def mail_morning():
         subject = 'mail_morning'
 
         rooms = Room.query.filter_by(activated=1).all()
+        print(f'Found {len(rooms)} rooms')
         for room in rooms:
+            print(f'Processing room {room.id}')
             # get topics
             room = Room.query.get(room.id)
             activated_at = room.activated_at
