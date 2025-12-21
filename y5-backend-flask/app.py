@@ -1,7 +1,9 @@
 import datetime
 import logging
 import os
+import sys
 import time
+from logging.handlers import RotatingFileHandler
 
 import pytz
 from flasgger import Swagger
@@ -32,9 +34,58 @@ from service import get_top_participants
 
 app = Flask(__name__)
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-logging.basicConfig()
+# 配置日志系统
+def setup_logging(app):
+    """配置应用日志系统"""
+    # 创建logs目录
+    log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs')
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+    
+    # 设置日志格式
+    log_format = logging.Formatter(
+        '[%(asctime)s] %(levelname)s in %(module)s (%(filename)s:%(lineno)d): %(message)s'
+    )
+    
+    # 文件处理器 - 记录所有日志
+    file_handler = RotatingFileHandler(
+        os.path.join(log_dir, 'app.log'),
+        maxBytes=10 * 1024 * 1024,  # 10MB
+        backupCount=10
+    )
+    file_handler.setLevel(logging.INFO)
+    file_handler.setFormatter(log_format)
+    
+    # 错误日志文件处理器
+    error_file_handler = RotatingFileHandler(
+        os.path.join(log_dir, 'error.log'),
+        maxBytes=10 * 1024 * 1024,  # 10MB
+        backupCount=10
+    )
+    error_file_handler.setLevel(logging.ERROR)
+    error_file_handler.setFormatter(log_format)
+    
+    # 控制台处理器
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setLevel(logging.INFO)
+    console_handler.setFormatter(log_format)
+    
+    # 配置应用logger
+    app.logger.setLevel(logging.INFO)
+    app.logger.addHandler(file_handler)
+    app.logger.addHandler(error_file_handler)
+    app.logger.addHandler(console_handler)
+    
+    # 配置根logger
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.INFO)
+    root_logger.addHandler(file_handler)
+    root_logger.addHandler(error_file_handler)
+    root_logger.addHandler(console_handler)
+    
+    return app.logger
+
+logger = setup_logging(app)
 
 app.config.from_object('config')
 Swagger(app)
@@ -115,7 +166,7 @@ def reload():
         # if json['sender']['login'] == 'codingchan':
         git_pull()
 
-        print("reload success", str(datetime.datetime.now())[:19])
+        logger.info("reload success %s", str(datetime.datetime.now())[:19])
         return "reload success"
 
 
@@ -123,16 +174,16 @@ def git_pull():
     repo = Repo(config.BASE_DIR)
     git = repo.git
 
-    print("当前未跟踪文件:", repo.untracked_files)
-    print("当前本地git仓库状态:", git.status())
-    print("当前本地git仓库是否有文件更新:", repo.is_dirty())
-    print("当前本地分支:", git.branch())
-    print("当前远程仓库:", git.remote())
+    logger.info("当前未跟踪文件: %s", repo.untracked_files)
+    logger.info("当前本地git仓库状态: %s", git.status())
+    logger.info("当前本地git仓库是否有文件更新: %s", repo.is_dirty())
+    logger.info("当前本地分支: %s", git.branch())
+    logger.info("当前远程仓库: %s", git.remote())
 
     remote_name = "origin"
-    print("正在 git pull {0} master".format(remote_name))
+    logger.info("正在 git pull %s master", remote_name)
     git.pull(remote_name, "master")
-    print("拉取修改 {0} 成功！".format(remote_name))
+    logger.info("拉取修改 %s 成功！", remote_name)
 
 
 @app.route('/mail_morning')
@@ -142,9 +193,9 @@ def mail_morning():
         subject = 'mail_morning'
 
         rooms = Room.query.filter_by(activated=1).all()
-        print(f'Found {len(rooms)} rooms')
+        logger.info(f'Found {len(rooms)} rooms')
         for room in rooms:
-            print(f'Processing room {room.id}')
+            logger.info(f'Processing room {room.id}')
             # get topics
             room = Room.query.get(room.id)
             activated_at = room.activated_at
@@ -153,12 +204,12 @@ def mail_morning():
             local_time = time.localtime(int(activated_at.timestamp()))
             activated_day = local_time.tm_yday
             activated_year = local_time.tm_year
-            print('activated_day = ' + str(activated_day))
+            logger.info('activated_day = %d', activated_day)
 
             now = time.localtime(time.time())
             now_day = now.tm_yday
             now_year = now.tm_year
-            print('now_day = ' + str(now_day))
+            logger.info('now_day = %d', now_day)
 
             if now_year > activated_year:
                 n = now_day + 365 - activated_day + 1
@@ -169,10 +220,10 @@ def mail_morning():
                 continue
 
             # 输出room.id、day
-            print('room.id = ' + str(room.id) + ' day = ' + str(n))
+            logger.info('room.id = %d day = %d', room.id, n)
             mail_template_morning = MailTemplate.query.filter_by(room_id=room.id).filter_by(day=n).filter_by(mail_type=1).first()
             if mail_template_morning is None:
-                print(f'No morning mail template found for room {room.id} day {n}')
+                logger.warning(f'No morning mail template found for room {room.id} day {n}')
                 continue
 
             message_html = '''
@@ -250,8 +301,8 @@ def mail_morning():
                 user = User.query.filter_by(id=member.user_id).first()
                 if user.email is not None:
                     email_list.append({
-                        # 'recipients': [user.email],
-                        'recipients': ['ch.zhuoqi@gmail.com'],
+                        'recipients': [user.email],
+                        # 'recipients': ['ch.zhuoqi@gmail.com'],
                         'subject': subject,
                         'body': message,
                         'html_body': message
@@ -282,25 +333,25 @@ def mail_night():
         for room in rooms:
             day_activated = room.activated_at
             if day_activated is None:
-                print(f'Room {room.id} has no activated_at timestamp, skipping')
+                logger.warning(f'Room {room.id} has no activated_at timestamp, skipping')
                 continue
             # FIXME 解决本地时间和服务器时间不一致问题
             local_time = time.localtime(int(day_activated.timestamp()))
             activated_day = local_time.tm_yday
             activated_year = local_time.tm_year
-            print('activated_day = ' + str(activated_day))
+            logger.info('activated_day = %d', activated_day)
 
             now = time.localtime(time.time())
             now_day = now.tm_yday
             now_year = now.tm_year
-            print('now_day = ' + str(now_day))
+            logger.info('now_day = %d', now_day)
 
             if now_year > activated_year:
                 day = now_day + 365 - activated_day + 1
             else:
                 day = now_day - activated_day + 1
             if day > 8:
-                print(f'Room {room.id} day {day} exceeds 8 days, skipping')
+                logger.info(f'Room {room.id} day {day} exceeds 8 days, skipping')
                 continue
             room_members = RoomMember.query.filter_by(room_id=room.id).all()
             member_ids = []
@@ -336,7 +387,7 @@ def mail_night():
                 for post in public_posts:
                     user = User.query.filter_by(id=post.user_id).first()
                     post_words = post.post_content.split()
-                    print(post_words[:10])
+                    logger.debug('post_words[:10] = %s', post_words[:10])
                     post_str += "<p>" + user.nickname + ": " + ' '.join(post_words[:10]) + "......</p>"
 
             system_post_count = PublicPost.query.filter_by(
@@ -352,7 +403,7 @@ def mail_night():
             if system_post_count > 0:
                 for post in system_posts:
                     post_words = post.abstract.split()
-                    print(post_words[:10])
+                    logger.debug('system post_words[:10] = %s', post_words[:10])
                     post_str += "<p>COVID Flashbacks: " + ' '.join(post_words[:10]) + "......</p>"
             post_str += "</div>"
 
@@ -463,7 +514,7 @@ def mail_night():
                 message_template = MailTemplate.query.filter_by(room_id=room.id, mail_type=2,
                                                                 day=day).first()  # type=2: night mail template
                 if message_template is None:
-                    print("No mail template for room %d" % room.id)
+                    logger.warning("No mail template for room %d", room.id)
                     continue
                 # TODO add payment
                 if member.user_id in payments['total_rewards']:
@@ -589,7 +640,7 @@ def post_experiment_summary_mail():
                 subject = 'Post-experiment summary'
                 message = render_template("payment_mail.html", data=formatted_data)
 
-                # print(formatted_data)
+                # logger.debug('formatted_data: %s', formatted_data)
 
                 # return render_template("payment_mail.html", data=formatted_data)
 
@@ -630,7 +681,7 @@ def test_post_experiment_summary_mail():
             if member.user_id not in payments['total_rewards']:
                 continue
 
-            print('member\'s user id is %s' % member.user_id)
+            logger.info('member\'s user id is %s', member.user_id)
             calculate_result = calculate_func(room.id, date_start, date_end)
             reward_summary = calculate_result['reward_summary']
             total_rewards = calculate_result['total_rewards']
@@ -706,12 +757,12 @@ def test_night_mail_content():
     local_time = time.localtime(int(day_activated.timestamp()))
     activated_day = local_time.tm_yday
     activated_year = local_time.tm_year
-    print('activated_day = ' + str(activated_day))
+    logger.info('activated_day = %d', activated_day)
 
     now = time.localtime(time.time())
     now_day = now.tm_yday
     now_year = now.tm_year
-    print('now_day = ' + str(now_day))
+    logger.info('now_day = %d', now_day)
 
     if now_year > activated_year:
         day = now_day + 365 - activated_day + 1
@@ -751,7 +802,7 @@ def test_night_mail_content():
         for post in public_posts:
             user = User.query.filter_by(id=post.user_id).first()
             post_words = post.post_content.split()
-            print(post_words[:10])
+            logger.debug('post_words[:10] = %s', post_words[:10])
             post_str += "<p>" + user.nickname + ": " + ' '.join(post_words[:10]) + "......</p>"
 
     system_post_count = PublicPost.query.filter_by(
@@ -767,7 +818,7 @@ def test_night_mail_content():
     if system_post_count > 0:
         for post in system_posts:
             post_words = post.abstract.split()
-            print(post_words[:10])
+            logger.debug('system post_words[:10] = %s', post_words[:10])
             post_str += "<p>COVID Flashbacks: " + ' '.join(post_words[:10]) + "......</p>"
     post_str += "</div>"
 
@@ -881,14 +932,14 @@ def test_night_mail_content():
         # 根据早晚类型及天数获取邮件模板
         message_template = MailTemplate.query.filter_by(room_id=room.id, mail_type=2).first()  # type=2: night mail template
         if message_template is None:
-            print("No mail template for room %d" % room.id)
+            logger.warning("No mail template for room %d", room.id)
             continue
         # TODO add payment
         if member.user_id in payments['total_rewards']:
             payment = payments['total_rewards'][member.user_id]
         else:
             payment = 0
-        print('payment: %s, user id: %s' % (payment, member.user_id))
+        logger.info('payment: %s, user id: %s', payment, member.user_id)
 
         message = message_html % (payment, message_template.content, top_str, post_str, comment_str, like_str)
 
