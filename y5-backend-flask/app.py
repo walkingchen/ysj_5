@@ -391,7 +391,7 @@ def mail_night():
 
             top = get_top_participants(room.id, today, tomorrow)
             top_str = ''''''
-            if len(top) > 0:
+            if top and len(top) > 0:
                 top_str += '<div class="container">'
                 for i in range(len(top)):
                     top_str += '<p class="title">Top Participants</p>'
