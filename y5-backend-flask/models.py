@@ -191,7 +191,7 @@ class PostComment(db.Model):
     id = Column(Integer, primary_key=True)
     post_id = Column(Integer)
     user_id = Column(Integer)
-    comment_content = Column(String(140))
+    comment_content = Column(Text)
     created_at = Column(DateTime, server_default=FetchedValue())
     updated_at = Column(DateTime)
 
