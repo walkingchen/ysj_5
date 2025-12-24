@@ -186,14 +186,20 @@ def git_pull():
     logger.info("拉取修改 %s 成功！", remote_name)
 
 
-@app.route('/mail_morning')
-# @scheduler.task('cron', id='job_mail_morning', day='*', hour='8', minute='0', second='0')
 def mail_morning():
-    with app.app_context():
+    """
+    Morning mail定时任务函数
+    注意：此函数由APScheduler调度器调用，不需要Flask request上下文
+    """
+    try:
+        logger.info("=" * 80)
+        logger.info("Morning mail task started")
+        logger.info("=" * 80)
+        
         subject = 'mail_morning'
 
         rooms = Room.query.filter_by(activated=1).all()
-        logger.info(f'Found {len(rooms)} rooms')
+        logger.info(f'Found {len(rooms)} activated rooms')
         for room in rooms:
             logger.info(f'Processing room {room.id}')
             # get topics
@@ -310,14 +316,37 @@ def mail_morning():
             
             # 异步批量发送邮件
             if email_list:
+                logger.info(f'Sending {len(email_list)} morning emails for room {room.id}')
                 from mail_async import send_bulk_emails_async
                 send_bulk_emails_async(email_list)
+            else:
+                logger.warning(f'No valid emails to send for room {room.id}')
+        
+        logger.info("Morning mail task completed successfully")
+        logger.info("=" * 80)
+    except Exception as e:
+        logger.exception(f"Error in morning mail task: {str(e)}")
+        raise
 
 
-# @scheduler.task('cron', id='job_mail_night', day='*', hour='20', minute='0', second='0')
-@app.route('/mail_night', methods=['GET'])
-def mail_night():
+@app.route('/mail_morning')
+def mail_morning_route():
+    """HTTP路由版本的morning mail，用于手动触发测试"""
     with app.app_context():
+        mail_morning()
+        return jsonify({"status": "success", "message": "Morning mail sent"})
+
+
+def mail_night():
+    """
+    Night mail定时任务函数
+    注意：此函数由APScheduler调度器调用，不需要Flask request上下文
+    """
+    try:
+        logger.info("=" * 80)
+        logger.info("Night mail task started")
+        logger.info("=" * 80)
+        
         # 指定服务器时区
         server_timezone = pytz.timezone('America/Chicago')
 
@@ -330,6 +359,7 @@ def mail_night():
 
         # room activate day
         rooms = Room.query.filter_by(activated=1).all()
+        logger.info(f'Found {len(rooms)} activated rooms')
         for room in rooms:
             day_activated = room.activated_at
             if day_activated is None:
@@ -589,6 +619,20 @@ def mail_night():
                     # 异步发送邮件
                     from mail_async import send_email_async
                     send_email_async([user.email], subject, message, message)
+        
+        logger.info("Night mail task completed successfully")
+        logger.info("=" * 80)
+    except Exception as e:
+        logger.exception(f"Error in night mail task: {str(e)}")
+        raise
+
+
+@app.route('/mail_night', methods=['GET'])
+def mail_night_route():
+    """HTTP路由版本的night mail，用于手动触发测试"""
+    with app.app_context():
+        mail_night()
+        return jsonify({"status": "success", "message": "Night mail sent"})
 
 
 @app.route('/post_experiment_summary_mail', methods=['POST'])
@@ -956,10 +1000,48 @@ def test_count():
 
 with app.app_context():
     mail_template_morning = MailTemplate.query.filter_by(mail_type=1).first()
-    scheduler.add_job(func=mail_morning, trigger='cron', hour=mail_template_morning.send_hour, id='job_mail_morning')
-
-    # mail_template_night = MailTemplate.query.filter_by(mail_type=2).first()
-    scheduler.add_job(func=mail_night, trigger='cron', hour=22, id='job_mail_night')
+    
+    # 创建带有app context的包装函数
+    def mail_morning_job():
+        """包装函数，确保在app context中执行"""
+        with app.app_context():
+            mail_morning()
+    
+    def mail_night_job():
+        """包装函数，确保在app context中执行"""
+        with app.app_context():
+            mail_night()
+    
+    # 注册定时任务
+    logger.info("=" * 80)
+    logger.info("Registering scheduled jobs...")
+    
+    scheduler.add_job(
+        func=mail_morning_job,
+        trigger='cron',
+        hour=mail_template_morning.send_hour,
+        id='job_mail_morning',
+        name='Morning Mail Task',
+        replace_existing=True
+    )
+    logger.info(f"✓ Morning mail job registered: trigger at hour {mail_template_morning.send_hour}")
+    
+    scheduler.add_job(
+        func=mail_night_job,
+        trigger='cron',
+        hour=22,
+        id='job_mail_night',
+        name='Night Mail Task',
+        replace_existing=True
+    )
+    logger.info(f"✓ Night mail job registered: trigger at hour 22")
+    
+    # 打印所有注册的任务
+    jobs = scheduler.get_jobs()
+    logger.info(f"Total scheduled jobs: {len(jobs)}")
+    for job in jobs:
+        logger.info(f"  - Job ID: {job.id}, Next run: {job.next_run_time}")
+    logger.info("=" * 80)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
