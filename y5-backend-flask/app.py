@@ -615,6 +615,8 @@ def mail_night():
                     </html>
                     '''
                 user = User.query.filter_by(id=member.user_id).first()
+                if user is None:
+                    continue
                 if user.email is not None:
                     # 异步发送邮件
                     from mail_async import send_email_async
