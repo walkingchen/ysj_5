@@ -106,7 +106,7 @@ FROM (
         pc.date,
         pc.user_id,
         (pc.post_count + COALESCE(cc.comment_count, 0)) AS total_count,  -- total = 原创帖 + 分享帖 + 评论
-        (pc.post_count - pc.share_post_count) AS post_count,  -- 原创帖子数（不包括分享）
+        (pc.post_count - pc.share_git post_count) AS post_count,  -- 原创帖子数（不包括分享）
         COALESCE(cc.comment_count, 0) AS comment_count,
         pc.share_post_count
     FROM (
