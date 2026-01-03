@@ -31,7 +31,7 @@ def calculate_data_by_user(room_id, user_id, date_start, date_end):
                     DATE(pp.created_at) AS date,
                     pp.user_id,
                     COUNT(pp.id) AS post_count,
-                    SUM(CASE WHEN pp.post_shared_id IS NOT NULL THEN 1 ELSE 0 END) AS share_post_count  -- 正确计算分享帖数量
+                    CAST(SUM(CASE WHEN pp.post_shared_id IS NOT NULL THEN 1 ELSE 0 END) AS SIGNED) AS share_post_count  -- 转换为整数避免 Decimal 类型
                 FROM tb_post_public pp
                 WHERE pp.room_id = :room_id
                 GROUP BY pp.room_id, DATE(pp.created_at), pp.user_id
@@ -106,7 +106,7 @@ FROM (
         pc.date,
         pc.user_id,
         (pc.post_count + COALESCE(cc.comment_count, 0)) AS total_count,  -- total = 原创帖 + 分享帖 + 评论
-        (pc.post_count - pc.share_post_count) AS post_count,  -- 原创帖子数（不包括分享）
+        (pc.post_count - pc.share_git post_count) AS post_count,  -- 原创帖子数（不包括分享）
         COALESCE(cc.comment_count, 0) AS comment_count,
         pc.share_post_count
     FROM (
@@ -115,7 +115,7 @@ FROM (
             DATE(pp.created_at) AS date,
             pp.user_id,
             COUNT(pp.id) AS post_count,
-            SUM(CASE WHEN pp.post_shared_id IS NOT NULL THEN 1 ELSE 0 END) AS share_post_count  -- 正确计算分享帖数量
+            CAST(SUM(CASE WHEN pp.post_shared_id IS NOT NULL THEN 1 ELSE 0 END) AS SIGNED) AS share_post_count  -- 转换为整数避免 Decimal 类型
         FROM tb_post_public pp
         WHERE pp.room_id = :room_id
         GROUP BY pp.room_id, DATE(pp.created_at), pp.user_id
