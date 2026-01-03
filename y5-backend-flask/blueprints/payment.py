@@ -21,8 +21,8 @@ def calculate_data_by_user(room_id, user_id, date_start, date_end):
                 pc.room_id,
                 pc.date,
                 pc.user_id,
-                ((pc.post_count - pc.share_post_count) + COALESCE(cc.comment_count, 0)) AS total_count,  -- 更新total_count的计算
-                (pc.post_count - pc.share_post_count) AS post_count,  -- 使用post_count - share_post_count
+                (pc.post_count + COALESCE(cc.comment_count, 0)) AS total_count,  -- total = 原创帖 + 分享帖 + 评论
+                (pc.post_count - pc.share_post_count) AS post_count,  -- 原创帖子数（不包括分享）
                 COALESCE(cc.comment_count, 0) AS comment_count,
                 pc.share_post_count
             FROM (
@@ -31,7 +31,7 @@ def calculate_data_by_user(room_id, user_id, date_start, date_end):
                     DATE(pp.created_at) AS date,
                     pp.user_id,
                     COUNT(pp.id) AS post_count,
-                    COUNT(pp.post_shared_id) AS share_post_count  -- 使用正确的字段名 post_shared_id
+                    SUM(CASE WHEN pp.post_shared_id IS NOT NULL THEN 1 ELSE 0 END) AS share_post_count  -- 正确计算分享帖数量
                 FROM tb_post_public pp
                 WHERE pp.room_id = :room_id
                 GROUP BY pp.room_id, DATE(pp.created_at), pp.user_id
@@ -57,10 +57,10 @@ def calculate_data_by_user(room_id, user_id, date_start, date_end):
                 cc.room_id,
                 cc.date,
                 cc.user_id,
-                cc.comment_count AS total_count,
-                0 AS post_count,
+                cc.comment_count AS total_count,  -- 只有评论的情况，total = comment
+                0 AS post_count,  -- 没有原创帖子
                 cc.comment_count,
-                0 AS share_post_count  -- 没有post的情况，设置分享数为0
+                0 AS share_post_count  -- 没有分享帖
             FROM (
                 SELECT
                     pp.room_id,
@@ -98,89 +98,15 @@ def calculate_data_by_user(room_id, user_id, date_start, date_end):
 
 def calculate_data(room_id, date_start, date_end):
     # 定义 SQL 查询语句
-    query = text("""
-        SELECT mc.room_id, mc.date, mc.user_id, mc.total_count, mc.post_count, mc.comment_count
-        FROM (
-            SELECT
-                pc.room_id,
-                pc.date,
-                pc.user_id,
-                (pc.post_count + COALESCE(cc.comment_count, 0)) AS total_count,
-                pc.post_count,
-                COALESCE(cc.comment_count, 0) AS comment_count
-            FROM (
-                SELECT 
-                    pp.room_id,
-                    DATE(pp.created_at) AS date,
-                    pp.user_id,
-                    COUNT(pp.id) AS post_count
-                FROM tb_post_public pp
-                WHERE pp.room_id = :room_id
-                GROUP BY pp.room_id, DATE(pp.created_at), pp.user_id
-            ) AS pc
-            LEFT JOIN (
-                SELECT 
-                    pp.room_id,
-                    DATE(pc.created_at) AS date,
-                    pc.user_id,
-                    COUNT(pc.id) AS comment_count
-                FROM tb_post_comment pc
-                JOIN tb_post_public pp ON pc.post_id = pp.id
-                WHERE pp.room_id = :room_id
-                GROUP BY pp.room_id, DATE(pc.created_at), pc.user_id
-            ) AS cc
-            ON pc.room_id = cc.room_id 
-            AND pc.date = cc.date 
-            AND pc.user_id = cc.user_id
-
-            UNION ALL
-
-            SELECT
-                cc.room_id,
-                cc.date,
-                cc.user_id,
-                cc.comment_count AS total_count,
-                0 AS post_count,
-                cc.comment_count
-            FROM (
-                SELECT 
-                    pp.room_id,
-                    DATE(pc.created_at) AS date,
-                    pc.user_id,
-                    COUNT(pc.id) AS comment_count
-                FROM tb_post_comment pc
-                JOIN tb_post_public pp ON pc.post_id = pp.id
-                WHERE pp.room_id = :room_id
-                GROUP BY pp.room_id, DATE(pc.created_at), pc.user_id
-            ) AS cc
-            LEFT JOIN (
-                SELECT 
-                    pp.room_id,
-                    DATE(pp.created_at) AS date,
-                    pp.user_id,
-                    COUNT(pp.id) AS post_count
-                FROM tb_post_public pp
-                WHERE pp.room_id = :room_id
-                GROUP BY pp.room_id, DATE(pp.created_at), pp.user_id
-            ) AS pc
-            ON cc.room_id = pc.room_id 
-            AND cc.date = pc.date 
-            AND cc.user_id = pc.user_id
-            WHERE pc.user_id IS NULL
-        ) AS mc
-        WHERE mc.date >= :date_start AND mc.date < :date_end
-        ORDER BY mc.room_id, mc.date, mc.total_count DESC;
-    """)
-
-    query = '''
+    query = text('''
     SELECT mc.room_id, mc.date, mc.user_id, mc.total_count, mc.post_count, mc.comment_count, mc.share_post_count
 FROM (
     SELECT
         pc.room_id,
         pc.date,
         pc.user_id,
-        ((pc.post_count - pc.share_post_count) + COALESCE(cc.comment_count, 0)) AS total_count,  -- 更新total_count的计算
-        (pc.post_count - pc.share_post_count) AS post_count,  -- 使用post_count - share_post_count
+        (pc.post_count + COALESCE(cc.comment_count, 0)) AS total_count,  -- total = 原创帖 + 分享帖 + 评论
+        (pc.post_count - pc.share_post_count) AS post_count,  -- 原创帖子数（不包括分享）
         COALESCE(cc.comment_count, 0) AS comment_count,
         pc.share_post_count
     FROM (
@@ -189,7 +115,7 @@ FROM (
             DATE(pp.created_at) AS date,
             pp.user_id,
             COUNT(pp.id) AS post_count,
-            COUNT(pp.post_shared_id) AS share_post_count  -- 使用正确的字段名 post_shared_id
+            SUM(CASE WHEN pp.post_shared_id IS NOT NULL THEN 1 ELSE 0 END) AS share_post_count  -- 正确计算分享帖数量
         FROM tb_post_public pp
         WHERE pp.room_id = :room_id
         GROUP BY pp.room_id, DATE(pp.created_at), pp.user_id
@@ -215,10 +141,10 @@ FROM (
         cc.room_id,
         cc.date,
         cc.user_id,
-        cc.comment_count AS total_count,
-        0 AS post_count,
+        cc.comment_count AS total_count,  -- 只有评论的情况，total = comment
+        0 AS post_count,  -- 没有原创帖子
         cc.comment_count,
-        0 AS share_post_count  -- 没有post的情况，设置分享数为0
+        0 AS share_post_count  -- 没有分享帖
     FROM (
         SELECT
             pp.room_id,
@@ -247,7 +173,7 @@ FROM (
 ) AS mc
 WHERE mc.date >= :date_start AND mc.date < :date_end
 ORDER BY mc.room_id, mc.date, mc.total_count DESC;
-    '''
+    ''')
 
     # 执行 SQL 查询
     results = db.session.execute(query, {'room_id': room_id, 'date_start': date_start, 'date_end': date_end}).fetchall()
