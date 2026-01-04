@@ -695,7 +695,8 @@ def post_experiment_summary_mail():
                     # 异步发送邮件
                     from mail_async import send_email_async
                     # 注意：这里保持测试邮箱，如果需要发送给真实用户，改为 [user.email]
-                    send_email_async(['cenux1987@163.com'], subject, message, message)
+                    # send_email_async(['cenux1987@163.com'], subject, message, message)
+                    send_email_async([user.email], subject, message, message)
 
         return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
 
