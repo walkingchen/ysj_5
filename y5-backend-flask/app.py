@@ -105,7 +105,8 @@ db.init_app(app)
 scheduler.init_app(app)
 scheduler.start()
 
-from views import RoomModelView, PostModelView, YModelView, UserModelView, RoomMemberModelView, PublicPostModelView
+from views import (RoomModelView, PostModelView, YModelView, UserModelView, 
+                   RoomMemberModelView, PublicPostModelView, DataExportView)
 
 admin = Admin(app=app, name=config.ADMIN_TITLE, template_mode='bootstrap3')
 admin.add_view(UserModelView(User, db.session, name=u'User'))
@@ -128,6 +129,9 @@ admin.add_view(YModelView(SystemMessage, db.session, name=u'System Message Pool'
 # admin.add_view(YModelView(SystemPost, db.session, name=u'System Message Assign', category='System Message'))
 
 admin.add_view(YModelView(PollPost, db.session, name=u'Daily Poll Assign', category='Daily Poll'))
+
+# 添加数据导出视图
+admin.add_view(DataExportView(name='数据导出', endpoint='dataexport', category='System'))
 
 app.register_blueprint(bp_room)
 app.register_blueprint(bp_post)

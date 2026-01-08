@@ -1,10 +1,15 @@
 import ast
 import time
+import io
+import zipfile
+import csv
+from datetime import datetime
 
 from PIL import Image
-from flask import url_for
+from flask import url_for, send_file, flash, redirect
 from flask_admin.actions import action
 from flask_admin.contrib.sqla import ModelView
+from flask_admin import BaseView, expose
 from markupsafe import Markup
 from wtforms.widgets import html_params, HTMLString
 from wtforms.utils import unset_value
@@ -14,7 +19,8 @@ from flask_admin._compat import string_types, urljoin
 
 from extensions import db
 from mail import mail_notify
-from models import RoomMember, User, Room
+from models import (RoomMember, User, Room, PublicPost, PostComment, 
+                   PostLike, PostFlag, PostFactcheck)
 
 
 class YModelView(ModelView):
@@ -243,3 +249,98 @@ class ModelViewHasMultipleImages(ModelView):
                                                            base_path="static/images/uploads/",
                                                            url_relative_path="images/uploads/",
                                                            thumbnail_size=(60, 60, True))}
+
+
+class DataExportView(BaseView):
+    """数据导出视图 - 导出数据库表数据为 CSV 并打包为 ZIP"""
+    
+    @expose('/')
+    def index(self):
+        """显示数据导出页面"""
+        return self.render('admin/data_export.html')
+    
+    @expose('/export')
+    def export(self):
+        """执行数据导出"""
+        try:
+            # 创建内存中的 ZIP 文件
+            memory_file = io.BytesIO()
+            
+            with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zf:
+                # 导出各个表
+                self._export_table(zf, 'tb_post_public', PublicPost)
+                self._export_table(zf, 'tb_post_comment', PostComment)
+                self._export_table(zf, 'tb_post_like', PostLike)
+                self._export_table(zf, 'tb_post_flag', PostFlag)
+                self._export_table(zf, 'tb_post_factcheck', PostFactcheck)
+                self._export_table(zf, 'tb_room', Room)
+                self._export_table(zf, 'tb_room_member', RoomMember)
+                self._export_table(zf, 'tb_user', User, exclude_fields=['password'])
+            
+            # 重置文件指针
+            memory_file.seek(0)
+            
+            # 生成文件名（带时间戳）
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            filename = f'chattera_data_export_{timestamp}.zip'
+            
+            # Flask 1.x 使用 attachment_filename，Flask 2.x 使用 download_name
+            return send_file(
+                memory_file,
+                mimetype='application/zip',
+                as_attachment=True,
+                attachment_filename=filename
+            )
+            
+        except Exception as e:
+            flash(f'数据导出失败: {str(e)}', 'error')
+            return redirect(url_for('.index'))
+    
+    def _export_table(self, zipfile_obj, table_name, model_class, exclude_fields=None):
+        """
+        导出单个表到 CSV
+        
+        Args:
+            zipfile_obj: ZipFile 对象
+            table_name: 表名
+            model_class: SQLAlchemy 模型类
+            exclude_fields: 要排除的字段列表（如 password）
+        """
+        exclude_fields = exclude_fields or []
+        
+        # 查询所有数据
+        records = model_class.query.all()
+        
+        if not records:
+            # 如果表为空，创建一个空的 CSV 文件
+            csv_content = f"# {table_name} - No data\n"
+            zipfile_obj.writestr(f'{table_name}.csv', csv_content)
+            return
+        
+        # 获取所有列名（排除指定字段）
+        columns = [col.name for col in model_class.__table__.columns 
+                   if col.name not in exclude_fields]
+        
+        # 创建 CSV 内容
+        output = io.StringIO()
+        writer = csv.DictWriter(output, fieldnames=columns)
+        writer.writeheader()
+        
+        # 写入数据
+        for record in records:
+            row_data = {}
+            for col in columns:
+                value = getattr(record, col, None)
+                # 处理特殊类型
+                if value is None:
+                    row_data[col] = ''
+                elif isinstance(value, datetime):
+                    row_data[col] = value.strftime('%Y-%m-%d %H:%M:%S')
+                else:
+                    row_data[col] = str(value)
+            writer.writerow(row_data)
+        
+        # 将 CSV 内容添加到 ZIP
+        csv_content = output.getvalue()
+        zipfile_obj.writestr(f'{table_name}.csv', csv_content.encode('utf-8-sig'))  # 使用 BOM 以支持 Excel
+        output.close()
