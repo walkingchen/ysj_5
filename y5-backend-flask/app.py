@@ -227,7 +227,8 @@ def mail_morning():
 
             # 输出room.id、day
             logger.info('room.id = %d day = %d', room.id, n)
-            mail_template_morning = MailTemplate.query.filter_by(room_id=room.id).filter_by(day=n).filter_by(mail_type=1).first()
+            # mail_template_morning = MailTemplate.query.filter_by(room_id=room.id).filter_by(day=n).filter_by(mail_type=1).first()
+            mail_template_morning = MailTemplate.query.filter_by(mail_type=1, day=n).first()
             if mail_template_morning is None:
                 logger.warning(f'No morning mail template found for room {room.id} day {n}')
                 continue
@@ -541,7 +542,9 @@ def mail_night():
 
             for member in room_members:
                 # 根据早晚类型及天数获取邮件模板
-                message_template = MailTemplate.query.filter_by(room_id=room.id, mail_type=2,
+                # message_template = MailTemplate.query.filter_by(room_id=room.id, mail_type=2,
+                #                                                 day=day).first()  # type=2: night mail template
+                message_template = MailTemplate.query.filter_by(mail_type=2,
                                                                 day=day).first()  # type=2: night mail template
                 if message_template is None:
                     logger.warning("No mail template for room %d", room.id)
@@ -977,7 +980,8 @@ def test_night_mail_content():
 
     for member in room_members:
         # 根据早晚类型及天数获取邮件模板
-        message_template = MailTemplate.query.filter_by(room_id=room.id, mail_type=2).first()  # type=2: night mail template
+        # message_template = MailTemplate.query.filter_by(room_id=room.id, mail_type=2).first()  # type=2: night mail template
+        message_template = MailTemplate.query.filter_by(mail_type=2, day=day).first()  # type=2: night mail template
         if message_template is None:
             logger.warning("No mail template for room %d", room.id)
             continue
