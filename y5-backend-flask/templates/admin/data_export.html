@@ -4,29 +4,29 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            <h1>数据导出</h1>
+            <h1>Data Export</h1>
             <hr>
             
             <div class="panel panel-info">
                 <div class="panel-heading">
-                    <h3 class="panel-title">导出说明</h3>
+                    <h3 class="panel-title">Export Instructions</h3>
                 </div>
                 <div class="panel-body">
-                    <p>点击下方按钮将导出以下数据库表的数据，并打包为 ZIP 文件供下载：</p>
+                    <p>Click the button below to export data from the following database tables, packaged as a ZIP file:</p>
                     <ul>
-                        <li><strong>tb_post_public</strong> - 公开帖子数据</li>
-                        <li><strong>tb_post_comment</strong> - 评论数据</li>
-                        <li><strong>tb_post_like</strong> - 点赞数据</li>
-                        <li><strong>tb_post_flag</strong> - 举报数据</li>
-                        <li><strong>tb_post_factcheck</strong> - Fact Check 数据</li>
-                        <li><strong>tb_room</strong> - 房间数据</li>
-                        <li><strong>tb_room_member</strong> - 房间成员数据</li>
-                        <li><strong>tb_user</strong> - 用户数据（不包含密码字段）</li>
+                        <li><strong>tb_post_public</strong> - Public posts data</li>
+                        <li><strong>tb_post_comment</strong> - Comments data</li>
+                        <li><strong>tb_post_like</strong> - Likes data</li>
+                        <li><strong>tb_post_flag</strong> - Flags data</li>
+                        <li><strong>tb_post_factcheck</strong> - Fact check data</li>
+                        <li><strong>tb_room</strong> - Rooms data</li>
+                        <li><strong>tb_room_member</strong> - Room members data</li>
+                        <li><strong>tb_user</strong> - Users data (password field excluded)</li>
                     </ul>
                     <p class="text-muted">
                         <small>
                             <i class="glyphicon glyphicon-info-sign"></i>
-                            注意：导出的数据为 CSV 格式，使用 UTF-8 编码（带 BOM），可在 Excel 中直接打开。
+                            Note: Exported data is in CSV format with UTF-8 encoding (BOM), compatible with Excel.
                         </small>
                     </p>
                 </div>
@@ -36,13 +36,13 @@
                 <div class="panel-body text-center">
                     <a href="{{ url_for('.export') }}" class="btn btn-primary btn-lg">
                         <i class="glyphicon glyphicon-download-alt"></i>
-                        开始导出数据
+                        Start Data Export
                     </a>
                 </div>
             </div>
             
             <div class="alert alert-warning" role="alert">
-                <strong>警告：</strong> 导出的数据包含敏感信息，请妥善保管！
+                <strong>Warning:</strong> Exported data contains sensitive information. Please handle with care!
             </div>
         </div>
     </div>

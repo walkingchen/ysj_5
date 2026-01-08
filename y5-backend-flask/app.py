@@ -130,8 +130,8 @@ admin.add_view(YModelView(SystemMessage, db.session, name=u'System Message Pool'
 
 admin.add_view(YModelView(PollPost, db.session, name=u'Daily Poll Assign', category='Daily Poll'))
 
-# 添加数据导出视图
-admin.add_view(DataExportView(name='数据导出', endpoint='dataexport', category='System'))
+# Add data export view
+admin.add_view(DataExportView(name='Data Export', endpoint='dataexport', category='System'))
 
 app.register_blueprint(bp_room)
 app.register_blueprint(bp_post)

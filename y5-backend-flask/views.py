@@ -252,22 +252,22 @@ class ModelViewHasMultipleImages(ModelView):
 
 
 class DataExportView(BaseView):
-    """数据导出视图 - 导出数据库表数据为 CSV 并打包为 ZIP"""
+    """Data Export View - Export database tables to CSV and package as ZIP"""
     
     @expose('/')
     def index(self):
-        """显示数据导出页面"""
+        """Display data export page"""
         return self.render('admin/data_export.html')
     
     @expose('/export')
     def export(self):
-        """执行数据导出"""
+        """Execute data export"""
         try:
-            # 创建内存中的 ZIP 文件
+            # Create in-memory ZIP file
             memory_file = io.BytesIO()
             
             with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zf:
-                # 导出各个表
+                # Export each table
                 self._export_table(zf, 'tb_post_public', PublicPost)
                 self._export_table(zf, 'tb_post_comment', PostComment)
                 self._export_table(zf, 'tb_post_like', PostLike)
@@ -277,14 +277,14 @@ class DataExportView(BaseView):
                 self._export_table(zf, 'tb_room_member', RoomMember)
                 self._export_table(zf, 'tb_user', User, exclude_fields=['password'])
             
-            # 重置文件指针
+            # Reset file pointer
             memory_file.seek(0)
             
-            # 生成文件名（带时间戳）
+            # Generate filename with timestamp
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             filename = f'chattera_data_export_{timestamp}.zip'
             
-            # Flask 1.x 使用 attachment_filename，Flask 2.x 使用 download_name
+            # Flask 1.x uses attachment_filename, Flask 2.x uses download_name
             return send_file(
                 memory_file,
                 mimetype='application/zip',
@@ -293,7 +293,7 @@ class DataExportView(BaseView):
             )
             
         except Exception as e:
-            flash(f'数据导出失败: {str(e)}', 'error')
+            flash(f'Data export failed: {str(e)}', 'error')
             return redirect(url_for('.index'))
     
     def _export_table(self, zipfile_obj, table_name, model_class, exclude_fields=None):
