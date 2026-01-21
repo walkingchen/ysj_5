@@ -190,6 +190,83 @@ def git_pull():
     logger.info("拉取修改 %s 成功！", remote_name)
 
 
+def send_post_survey_emails_for_room(room):
+    message = '''
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Take the Exit Survey and Earn an Additional $5</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            padding: 15px;
+          }
+          .container {
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 10px;
+          }
+          strong {
+            font-weight: bold;
+          }
+          .title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 10px;
+          }
+          .login-button {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+          }
+          .login-button:hover {
+            background-color: #0056b3;
+          }
+        </style>
+        </head>
+        <body>
+        <div class="container">
+            <p>Thank you for participating on Chattera! We wanted to remind you that there is a post-survey available for you to complete. By completing this post-survey, you will earn an additional $5 as part of your compensation.</p>
+            <p>To access the post-survey, simply click the button below.</p>
+            <div style="margin: 30px 15px;">
+              <a class="login-button" href="https://uwmadison.co1.qualtrics.com/jfe/form/SV_bQ3Ngp6xOKpXbds">Start the Survey</a>
+            </div>
+            <p>We greatly appreciate your time and participation so far, and your responses to the post-survey will be incredibly valuable to our team.</p>
+            <p>Thank you once again!</p>
+            </br>
+            <p>Best regards,</p>
+            <p>Your Chattera Team</p>
+        </div>
+        </body>
+        </html>
+        '''
+    room_members = RoomMember.query.filter_by(room_id=room.id).all()
+    email_list = []
+    for member in room_members:
+        user = User.query.filter_by(id=member.user_id).first()
+        if user.email is not None:
+            email_list.append({
+                'recipients': [user.email],
+                'subject': "Take the Exit Survey and Earn an Additional $5",
+                'body': message,
+                'html_body': message
+            })
+
+    if email_list:
+        logger.info(f'Sending {len(email_list)} post-survey emails for room {room.id}')
+        from mail_async import send_bulk_emails_async
+        send_bulk_emails_async(email_list)
+    else:
+        logger.warning(f'No valid emails to send for room {room.id}')
+
+
 def mail_morning():
     """
     Morning mail定时任务函数
@@ -226,11 +303,14 @@ def mail_morning():
             else:
                 n = now_day - activated_day + 1
 
-            if n > 8:
+            if n > 9:
                 continue
 
             # 输出room.id、day
             logger.info('room.id = %d day = %d', room.id, n)
+            if n == 9:
+                continue
+
             # mail_template_morning = MailTemplate.query.filter_by(room_id=room.id).filter_by(day=n).filter_by(mail_type=1).first()
             mail_template_morning = MailTemplate.query.filter_by(mail_type=1, day=n).first()
             if mail_template_morning is None:
@@ -283,7 +363,7 @@ def mail_morning():
                     <p>%s</p>
                 </div>
                 <div style="margin: 30px 15px;">
-                  <a class="login-button" href="https://camer-covid.journalism.wisc.edu/">Click to login back</a>
+                  <a class="login-button" href="https://camer-covid.journalism.wisc.edu/">Return to Chattera</a>
                 </div>
                 </body>
                 </html>
@@ -342,6 +422,49 @@ def mail_morning_route():
         return jsonify({"status": "success", "message": "Morning mail sent"})
 
 
+def mail_morning_day9():
+    """
+    Day 9 post-survey mail定时任务函数
+    注意：此函数由APScheduler调度器调用，不需要Flask request上下文
+    """
+    try:
+        logger.info("=" * 80)
+        logger.info("Morning day 9 post-survey mail task started")
+        logger.info("=" * 80)
+
+        rooms = Room.query.filter_by(activated=1).all()
+        logger.info(f'Found {len(rooms)} activated rooms')
+        for room in rooms:
+            logger.info(f'Processing room {room.id}')
+            room = Room.query.get(room.id)
+            activated_at = room.activated_at
+            if activated_at is None:
+                continue
+            local_time = time.localtime(int(activated_at.timestamp()))
+            activated_day = local_time.tm_yday
+            activated_year = local_time.tm_year
+
+            now = time.localtime(time.time())
+            now_day = now.tm_yday
+            now_year = now.tm_year
+
+            if now_year > activated_year:
+                n = now_day + 365 - activated_day + 1
+            else:
+                n = now_day - activated_day + 1
+
+            if n != 9:
+                continue
+
+            send_post_survey_emails_for_room(room)
+
+        logger.info("Morning day 9 post-survey mail task completed successfully")
+        logger.info("=" * 80)
+    except Exception as e:
+        logger.exception(f"Error in morning day 9 post-survey mail task: {str(e)}")
+        raise
+
+
 def mail_night():
     """
     Night mail定时任务函数
@@ -398,18 +521,18 @@ def mail_night():
             top_str = ''''''
             if top and len(top) > 0:
                 top_str += '<div class="container">'
+                top_str += '<p class="title">Top Participants</p>'
                 for i in range(len(top)):
-                    top_str += '<p class="title">Top Participants</p>'
                     user_id = top[i]['user_id']
                     user = User.query.filter_by(id=user_id).first()
                     top_str += '<p>' + user.nickname + ': ' + str(top[i]['total_count']) + ' Post/Comment</p>'
                 top_str += '</div>'
 
-            public_post_count = PublicPost.query.filter_by(
-                room_id=room.id,
-                topic=day,
-                is_system_post=0
-            ).filter_by().count()
+            public_post_count = PublicPost.query.filter(
+                PublicPost.room_id == room.id,
+                PublicPost.topic == day,
+                PublicPost.is_system_post != 1
+            ).count()
             public_posts = PublicPost.query.filter_by(
                 room_id=room.id,
                 topic=day,
@@ -418,7 +541,7 @@ def mail_night():
 
             post_str = '''<div class="container">'''
             if public_post_count > 0:
-                post_str += '<p class="title">New post count: %d</p>' % public_post_count
+                post_str += '<p class="title">New posts: %d</p>' % public_post_count
                 for post in public_posts:
                     user = User.query.filter_by(id=post.user_id).first()
                     post_words = post.post_content.split()
@@ -439,7 +562,7 @@ def mail_night():
                 for post in system_posts:
                     post_words = post.abstract.split()
                     logger.debug('system post_words[:10] = %s', post_words[:10])
-                    post_str += "<p>COVID Flashbacks: " + ' '.join(post_words[:10]) + "......</p>"
+                    post_str += "<p>Flashbacks: " + ' '.join(post_words[:10]) + "......</p>"
             post_str += "</div>"
 
             # comments
@@ -533,7 +656,7 @@ def mail_night():
                 <!-- likes -->
                   %s
                 <div style="margin: 30px 15px;">
-                  <a class="login-button" href="https://camer-covid.journalism.wisc.edu/">Click to login back</a>
+                  <a class="login-button" href="https://camer-covid.journalism.wisc.edu/">Return to Chattera</a>
                 </div>
                 </body>
                 </html>
@@ -562,65 +685,6 @@ def mail_night():
                 message = message_html % (payment, message_template.content, top_str, post_str, comment_str, like_str)
                 subject = message_template.title
 
-                # Day 8 Post-survey promotion email
-                if day == 8:
-                    subject = "Post-survey promotion email"
-                    message = '''
-                    <!DOCTYPE html>
-                    <html lang="en">
-                    <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Notification</title>
-                    <style>
-                      body {
-                        font-family: Arial, sans-serif;
-                        background-color: #f2f2f2;
-                        padding: 15px;
-                      }
-                      .container {
-                        background-color: #f9f9f9;
-                        border-radius: 10px;
-                        padding: 10px;
-                        margin: 10px;
-                      }
-                      strong {
-                        font-weight: bold;
-                      }
-                      .title {
-                        font-weight: bold;
-                        font-size: 16px;
-                        margin-bottom: 10px;
-                      }
-                      .login-button {
-                        background-color: #007bff;
-                        color: white;
-                        padding: 15px;
-                        border: none;
-                        border-radius: 5px;
-                        cursor: pointer;
-                      }
-                      .login-button:hover {
-                        background-color: #0056b3;
-                      }
-                    </style>
-                    </head>
-                    <body>
-                    <div class="container">
-                        <p>Thank you for participating on Chattera! We wanted to remind you that there is a post-survey available for you to complete. By completing this post-survey, you will earn an additional $5 as part of your compensation.</p>
-                        <p>To access the post-survey, simply click the button below.</p>
-                        <div style="margin: 30px 15px;">
-                          <a class="login-button" href="https://uwmadison.co1.qualtrics.com/jfe/form/SV_bQ3Ngp6xOKpXbds">Click to login back</a>
-                        </div>
-                        <p>We greatly appreciate your time and participation so far, and your responses to the post-survey will be incredibly valuable to our team.</p>
-                        <p>Thank you once again!</p>
-                        </br>
-                        <p>Best regards,</p>
-                        <p>Your Chattera Team</p>
-                    </div>
-                    </body>
-                    </html>
-                    '''
                 user = User.query.filter_by(id=member.user_id).first()
                 if user is None:
                     continue
@@ -1017,6 +1081,11 @@ with app.app_context():
         """包装函数，确保在app context中执行"""
         with app.app_context():
             mail_morning()
+
+    def mail_morning_day9_job():
+        """包装函数，确保在app context中执行"""
+        with app.app_context():
+            mail_morning_day9()
     
     def mail_night_job():
         """包装函数，确保在app context中执行"""
@@ -1030,12 +1099,22 @@ with app.app_context():
     scheduler.add_job(
         func=mail_morning_job,
         trigger='cron',
-        hour=mail_template_morning.send_hour,
+        hour=7,
         id='job_mail_morning',
         name='Morning Mail Task',
         replace_existing=True
     )
-    logger.info(f"✓ Morning mail job registered: trigger at hour {mail_template_morning.send_hour}")
+    logger.info(f"✓ Morning mail job registered: trigger at hour 7")
+
+    scheduler.add_job(
+        func=mail_morning_day9_job,
+        trigger='cron',
+        hour=7,
+        id='job_mail_morning_day9',
+        name='Morning Day 9 Post-Survey Mail Task',
+        replace_existing=True
+    )
+    logger.info("✓ Morning day 9 post-survey mail job registered: trigger at hour 7")
     
     scheduler.add_job(
         func=mail_night_job,
