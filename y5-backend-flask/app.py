@@ -540,8 +540,9 @@ def mail_night():
             ).order_by(desc(PublicPost.created_at)).limit(5).all()
 
             post_str = '''<div class="container">'''
+            post_str += '<p class="title">New posts: %d</p>'
+
             if public_post_count > 0:
-                post_str += '<p class="title">New posts: %d</p>' % public_post_count
                 for post in public_posts:
                     user = User.query.filter_by(id=post.user_id).first()
                     post_words = post.post_content.split()
@@ -564,6 +565,8 @@ def mail_night():
                     logger.debug('system post_words[:10] = %s', post_words[:10])
                     post_str += "<p>Flashbacks: " + ' '.join(post_words[:10]) + "......</p>"
             post_str += "</div>"
+
+            post_str = post_str % (public_post_count + system_post_count)
 
             # comments
             new_comments = PostComment.query.filter(PostComment.user_id.in_(tuple(member_ids))).filter(
