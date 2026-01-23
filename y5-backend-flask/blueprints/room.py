@@ -462,7 +462,7 @@ def room_stats():
 
     day_activated = room.activated_at
     day = today - day_activated.date()
-    day = day.days
+    day = day.days + 1
     # day = 8
     room_members = RoomMember.query.filter_by(room_id=room.id).all()
     member_ids = []
