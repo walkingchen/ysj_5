@@ -374,6 +374,7 @@ class SystemMessageApi(Resource):
         message_serialized_list = []
         for message in messages:
             message_serialized = Serializer.serialize(message)
+            message_serialized.pop('abstract', None)
             process_post(message_serialized, current_user.id)
             message_serialized_list.append(message_serialized)
 
