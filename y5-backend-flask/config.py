@@ -134,3 +134,14 @@ TIMELINE_ALL = 2
 #     }
 # ]
 SCHEDULER_API_ENABLED = True
+
+TOPIC_LIST = [
+    '#COVID-19 and face masks#',
+    '#COVID-19 vaccine side effects#',
+    '#COVID-19 survival rate#',
+    '#COVID-19 and infertility#',
+    '#hydroxychloroquine#',
+    '#Dr. Fauci\'s background#',
+    '#how doctors report COVID-19#',
+    '#COVID-19 vaccines and myocarditis#'
+]
