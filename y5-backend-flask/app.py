@@ -685,7 +685,24 @@ def mail_night():
                 else:
                     payment = 0
 
-                message = message_html % (payment, message_template.content, top_str, post_str, comment_str, like_str)
+                content = message_template.content
+                topic = None
+                if 1 <= day <= len(config.TOPIC_LIST):
+                    topic = config.TOPIC_LIST[day - 1]
+                else:
+                    logger.warning("No topic configured for day %d in room %d", day, room.id)
+                if topic is not None and "%s" in content:
+                    try:
+                        content = content % topic
+                    except (TypeError, ValueError) as exc:
+                        logger.warning(
+                            "Mail template format error for room %d day %d: %s",
+                            room.id,
+                            day,
+                            exc,
+                        )
+
+                message = message_html % (payment, content, top_str, post_str, comment_str, like_str)
                 subject = message_template.title
 
                 user = User.query.filter_by(id=member.user_id).first()
