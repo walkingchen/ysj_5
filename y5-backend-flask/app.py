@@ -1039,7 +1039,7 @@ def test_night_mail_content():
                 </head>
                 <body>
                 <div class="container">
-                <div>Good evening! Thank you for staying with us on Chattera. So far, you have earned %s. Let's take a look at what is trendy on Chattera today—please log back to join these conversations!</div>
+                <div>Good evening! Thank you for staying with us on Chattera. So far, you have earned %s.</div>
                 <div>%s</div>
                 </div>
                 <!-- Top data -->
