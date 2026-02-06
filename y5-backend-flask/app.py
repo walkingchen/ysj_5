@@ -647,7 +647,6 @@ def mail_night():
                 </head>
                 <body>
                 <div class="container">
-                <div>Good evening! Thank you for staying with us on Chattera. So far, you have earned $%s. Let's take a look at what is trendy on Chattera today—please log back to join these conversations!</div>
                 <div>%s</div>
                 </div>
                 <!-- Top data -->
@@ -691,9 +690,25 @@ def mail_night():
                     topic = config.TOPIC_LIST[day - 1]
                 else:
                     logger.warning("No topic configured for day %d in room %d", day, room.id)
-                if topic is not None and "%s" in content:
+
+                # 替换模板中的占位符：第一个 %s 是 payment，第二个 %s 是 topic
+                if "%s" in content:
                     try:
-                        content = content % topic
+                        # 计算模板中 %s 的数量
+                        placeholder_count = content.count("%s")
+                        if placeholder_count == 2 and topic is not None:
+                            content = content % (payment, topic)
+                        elif placeholder_count == 1:
+                            # 只有一个占位符，根据模板内容判断替换 payment 还是 topic
+                            if "$%s" in content:
+                                content = content % payment
+                            elif topic is not None:
+                                content = content % topic
+                        else:
+                            logger.warning(
+                                "Mail template has %d placeholders but topic is %s for room %d day %d",
+                                placeholder_count, topic, room.id, day
+                            )
                     except (TypeError, ValueError) as exc:
                         logger.warning(
                             "Mail template format error for room %d day %d: %s",
@@ -702,7 +717,7 @@ def mail_night():
                             exc,
                         )
 
-                message = message_html % (payment, content, top_str, post_str, comment_str, like_str)
+                message = message_html % (content, top_str, post_str, comment_str, like_str)
                 subject = message_template.title
 
                 user = User.query.filter_by(id=member.user_id).first()
@@ -1039,7 +1054,6 @@ def test_night_mail_content():
                 </head>
                 <body>
                 <div class="container">
-                <div>Good evening! Thank you for staying with us on Chattera. So far, you have earned %s.</div>
                 <div>%s</div>
                 </div>
                 <!-- Top data -->
@@ -1080,7 +1094,26 @@ def test_night_mail_content():
             payment = 0
         logger.info('payment: %s, user id: %s', payment, member.user_id)
 
-        message = message_html % (payment, message_template.content, top_str, post_str, comment_str, like_str)
+        content = message_template.content
+        topic = None
+        if 1 <= day <= len(config.TOPIC_LIST):
+            topic = config.TOPIC_LIST[day - 1]
+
+        # 替换模板中的占位符：第一个 %s 是 payment，第二个 %s 是 topic
+        if "%s" in content:
+            try:
+                placeholder_count = content.count("%s")
+                if placeholder_count == 2 and topic is not None:
+                    content = content % (payment, topic)
+                elif placeholder_count == 1:
+                    if "$%s" in content:
+                        content = content % payment
+                    elif topic is not None:
+                        content = content % topic
+            except (TypeError, ValueError) as exc:
+                logger.warning("Mail template format error: %s", exc)
+
+        message = message_html % (content, top_str, post_str, comment_str, like_str)
 
         return message
 
