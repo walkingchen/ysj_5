@@ -18,7 +18,7 @@ from flask_admin.form.upload import ImageUploadField, thumbgen_filename
 from flask_admin._compat import string_types, urljoin
 
 from extensions import db
-from mail import mail_notify
+from mail_async import send_room_activation_email_async
 from models import (RoomMember, User, Room, PublicPost, PostComment, 
                    PostLike, PostFlag, PostFactcheck)
 
@@ -64,9 +64,16 @@ class RoomModelView(ModelView):
     def action_start_rooms(self, ids):
         for id in ids:
             room = Room.query.filter_by(id=id).first()
+            if room is None:
+                continue
+            was_activated = (room.activated == 1)
             room.activated = 1
+            room.activated_at = datetime.now()
             room.updated_at = time.time()
             db.session.commit()
+            # Flask-Admin bulk action不会自动触发 after_model_change，手动触发一次
+            if not was_activated:
+                self.after_model_change(None, room, False)
 
     @action('deactivate', 'Deactivate Rooms', 'Are you sure you want to stop selected rooms?')
     def action_stop_rooms(self, ids):
@@ -76,17 +83,15 @@ class RoomModelView(ModelView):
             room.updated_at = None
             db.session.commit()
 
-    # def after_model_change(self, form, model, is_created):
-    #     # if activated, send mail
-    #     # if form._obj.activated == 1:
-    #     status = form._obj.activated
-    #     # send mail
-    #     members = RoomMember.query.filter_by(room_id=form._obj.id, activated=1).all()
-    #     users = []
-    #     for member in members:
-    #         user = User.query.filter_by(id=member.user_id).first()
-    #         users.append(user)
-    #     mail_notify(users, status)
+    def after_model_change(self, form, model, is_created):
+        if model is None or model.activated != 1:
+            return
+
+        members = RoomMember.query.filter_by(room_id=model.id, activated=1).all()
+        for member in members:
+            user = User.query.filter_by(id=member.user_id).first()
+            if user and user.email:
+                send_room_activation_email_async(user.email, user.nickname, model.condition)
 
 
 class PostModelView(ModelView):
