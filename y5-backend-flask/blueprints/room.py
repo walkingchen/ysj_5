@@ -160,7 +160,6 @@ class RoomApi(Resource):
         db.session.commit()
 
         # 邮件发送移到数据库事务之外，异步执行
-        # TODO(restore): 暂停通过 Room API 激活时触发邮件发送，待人工确认恢复
         if 'activated' in data and data['activated'] == 1:
             members = RoomMember.query.filter_by(room_id=room.id).all()
             for member in members:
@@ -496,4 +495,3 @@ def room_stats():
         'new_like_count': new_like_count,
         'new_flag_count': new_flag_count
     }).__dict__)
-
