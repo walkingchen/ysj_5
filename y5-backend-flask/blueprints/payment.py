@@ -1,5 +1,5 @@
 from collections import defaultdict
-from datetime import datetime
+from datetime import date, datetime
 from time import strptime
 
 from flask import Blueprint, request, jsonify, render_template
@@ -33,7 +33,14 @@ def calculate_data_by_user(room_id, user_id, date_start, date_end):
                     COUNT(pp.id) AS post_count,
                     CAST(SUM(CASE WHEN pp.post_shared_id IS NOT NULL THEN 1 ELSE 0 END) AS SIGNED) AS share_post_count  -- 转换为整数避免 Decimal 类型
                 FROM tb_post_public pp
+                JOIN tb_room_member rm
+                    ON rm.room_id = pp.room_id
+                    AND rm.user_id = pp.user_id
+                    AND rm.activated = 1
                 WHERE pp.room_id = :room_id
+                    AND COALESCE(pp.is_system_post, 0) != 1
+                    AND pp.created_at >= :date_start
+                    AND pp.created_at < :date_end
                 GROUP BY pp.room_id, DATE(pp.created_at), pp.user_id
             ) AS pc
             LEFT JOIN (
@@ -44,7 +51,14 @@ def calculate_data_by_user(room_id, user_id, date_start, date_end):
                     COUNT(pc.id) AS comment_count
                 FROM tb_post_comment pc
                 JOIN tb_post_public pp ON pc.post_id = pp.id
+                JOIN tb_room_member rm
+                    ON rm.room_id = pp.room_id
+                    AND rm.user_id = pc.user_id
+                    AND rm.activated = 1
                 WHERE pp.room_id = :room_id
+                    AND COALESCE(pp.is_system_post, 0) != 1
+                    AND pc.created_at >= :date_start
+                    AND pc.created_at < :date_end
                 GROUP BY pp.room_id, DATE(pc.created_at), pc.user_id
             ) AS cc
             ON pc.room_id = cc.room_id
@@ -69,7 +83,14 @@ def calculate_data_by_user(room_id, user_id, date_start, date_end):
                     COUNT(pc.id) AS comment_count
                 FROM tb_post_comment pc
                 JOIN tb_post_public pp ON pc.post_id = pp.id
+                JOIN tb_room_member rm
+                    ON rm.room_id = pp.room_id
+                    AND rm.user_id = pc.user_id
+                    AND rm.activated = 1
                 WHERE pp.room_id = :room_id
+                    AND COALESCE(pp.is_system_post, 0) != 1
+                    AND pc.created_at >= :date_start
+                    AND pc.created_at < :date_end
                 GROUP BY pp.room_id, DATE(pc.created_at), pc.user_id
             ) AS cc
             LEFT JOIN (
@@ -79,7 +100,14 @@ def calculate_data_by_user(room_id, user_id, date_start, date_end):
                     pp.user_id,
                     COUNT(pp.id) AS post_count
                 FROM tb_post_public pp
+                JOIN tb_room_member rm
+                    ON rm.room_id = pp.room_id
+                    AND rm.user_id = pp.user_id
+                    AND rm.activated = 1
                 WHERE pp.room_id = :room_id
+                    AND COALESCE(pp.is_system_post, 0) != 1
+                    AND pp.created_at >= :date_start
+                    AND pp.created_at < :date_end
                 GROUP BY pp.room_id, DATE(pp.created_at), pp.user_id
             ) AS pc
             ON cc.room_id = pc.room_id
@@ -87,12 +115,20 @@ def calculate_data_by_user(room_id, user_id, date_start, date_end):
             AND cc.user_id = pc.user_id
             WHERE pc.user_id IS NULL
         ) AS mc
-        WHERE mc.date >= :date_start AND mc.date < :date_end AND mc.user_id = :user_id
+        WHERE mc.user_id = :user_id
         ORDER BY mc.room_id, mc.date, mc.total_count DESC;
     ''')
 
     # 执行 SQL 查询
-    results = db.session.execute(query, {'room_id': room_id, 'date_start': date_start, 'date_end': date_end}).fetchall()
+    results = db.session.execute(
+        query,
+        {
+            'room_id': room_id,
+            'user_id': user_id,
+            'date_start': date_start,
+            'date_end': date_end,
+        }
+    ).fetchall()
 
     return results
 
@@ -117,7 +153,14 @@ FROM (
             COUNT(pp.id) AS post_count,
             CAST(SUM(CASE WHEN pp.post_shared_id IS NOT NULL THEN 1 ELSE 0 END) AS SIGNED) AS share_post_count  -- 转换为整数避免 Decimal 类型
         FROM tb_post_public pp
+        JOIN tb_room_member rm
+            ON rm.room_id = pp.room_id
+            AND rm.user_id = pp.user_id
+            AND rm.activated = 1
         WHERE pp.room_id = :room_id
+            AND COALESCE(pp.is_system_post, 0) != 1
+            AND pp.created_at >= :date_start
+            AND pp.created_at < :date_end
         GROUP BY pp.room_id, DATE(pp.created_at), pp.user_id
     ) AS pc
     LEFT JOIN (
@@ -128,7 +171,14 @@ FROM (
             COUNT(pc.id) AS comment_count
         FROM tb_post_comment pc
         JOIN tb_post_public pp ON pc.post_id = pp.id
+        JOIN tb_room_member rm
+            ON rm.room_id = pp.room_id
+            AND rm.user_id = pc.user_id
+            AND rm.activated = 1
         WHERE pp.room_id = :room_id
+            AND COALESCE(pp.is_system_post, 0) != 1
+            AND pc.created_at >= :date_start
+            AND pc.created_at < :date_end
         GROUP BY pp.room_id, DATE(pc.created_at), pc.user_id
     ) AS cc
     ON pc.room_id = cc.room_id
@@ -153,7 +203,14 @@ FROM (
             COUNT(pc.id) AS comment_count
         FROM tb_post_comment pc
         JOIN tb_post_public pp ON pc.post_id = pp.id
+        JOIN tb_room_member rm
+            ON rm.room_id = pp.room_id
+            AND rm.user_id = pc.user_id
+            AND rm.activated = 1
         WHERE pp.room_id = :room_id
+            AND COALESCE(pp.is_system_post, 0) != 1
+            AND pc.created_at >= :date_start
+            AND pc.created_at < :date_end
         GROUP BY pp.room_id, DATE(pc.created_at), pc.user_id
     ) AS cc
     LEFT JOIN (
@@ -163,7 +220,14 @@ FROM (
             pp.user_id,
             COUNT(pp.id) AS post_count
         FROM tb_post_public pp
+        JOIN tb_room_member rm
+            ON rm.room_id = pp.room_id
+            AND rm.user_id = pp.user_id
+            AND rm.activated = 1
         WHERE pp.room_id = :room_id
+            AND COALESCE(pp.is_system_post, 0) != 1
+            AND pp.created_at >= :date_start
+            AND pp.created_at < :date_end
         GROUP BY pp.room_id, DATE(pp.created_at), pp.user_id
     ) AS pc
     ON cc.room_id = pc.room_id
@@ -171,7 +235,6 @@ FROM (
     AND cc.user_id = pc.user_id
     WHERE pc.user_id IS NULL
 ) AS mc
-WHERE mc.date >= :date_start AND mc.date < :date_end
 ORDER BY mc.room_id, mc.date, mc.total_count DESC;
     ''')
 
@@ -182,6 +245,16 @@ ORDER BY mc.room_id, mc.date, mc.total_count DESC;
 
 
 def calculate_func(room_id, date_start, date_end):
+    if isinstance(date_start, datetime):
+        date_start = date_start.replace(microsecond=0)
+    elif isinstance(date_start, date):
+        date_start = datetime.combine(date_start, datetime.min.time())
+
+    if isinstance(date_end, datetime):
+        date_end = date_end.replace(microsecond=0)
+    elif isinstance(date_end, date):
+        date_end = datetime.combine(date_end, datetime.min.time())
+
     # 计算每日post/comment等数据（调用计算函数或直接编写在此）
     results = calculate_data(room_id, date_start, date_end)  # 假设此函数返回符合要求的奖励数据
 
@@ -205,7 +278,11 @@ def calculate_func(room_id, date_start, date_end):
         for date, users in dates.items():
             # 排序用户，找出最活跃的前两位
             sorted_users = sorted(users, key=lambda x: x['total_count'], reverse=True)
-            top_two_users = sorted_users[:2]
+            if not sorted_users:
+                continue
+
+            second_place_index = min(1, len(sorted_users) - 1)
+            reward_cutoff = sorted_users[second_place_index]['total_count']
 
             for user in users:
                 user_id = user['user_id']
@@ -216,7 +293,7 @@ def calculate_func(room_id, date_start, date_end):
                     daily_reward += 0.25
 
                 # 检查用户是否为最活跃的前两名
-                is_top_two = user in top_two_users
+                is_top_two = user['total_count'] >= reward_cutoff
                 if is_top_two:
                     daily_reward += 1.0
 
