@@ -192,8 +192,14 @@ def get_top_participants(room_id, today, tomorrow):
         func.date(PublicPost.created_at).label('date'),
         PublicPost.user_id.label('user_id'),
         func.count(PublicPost.id).label('post_count')
+    ).join(
+        RoomMember,
+        (RoomMember.room_id == PublicPost.room_id) &
+        (RoomMember.user_id == PublicPost.user_id) &
+        (RoomMember.activated == 1)
     ).filter(
-        PublicPost.room_id == room_id
+        PublicPost.room_id == room_id,
+        func.coalesce(PublicPost.is_system_post, 0) != 1
     ).group_by(
         PublicPost.room_id,
         func.date(PublicPost.created_at),
@@ -208,8 +214,14 @@ def get_top_participants(room_id, today, tomorrow):
         func.count(PostComment.id).label('comment_count')
     ).join( # Join with PublicPost to get room_id
         PublicPost, PostComment.post_id == PublicPost.id
+    ).join(
+        RoomMember,
+        (RoomMember.room_id == PublicPost.room_id) &
+        (RoomMember.user_id == PostComment.user_id) &
+        (RoomMember.activated == 1)
     ).filter(
-        PublicPost.room_id == room_id
+        PublicPost.room_id == room_id,
+        func.coalesce(PublicPost.is_system_post, 0) != 1
     ).group_by(
         PublicPost.room_id,
         func.date(PostComment.created_at),
