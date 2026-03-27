@@ -312,7 +312,7 @@ def mail_morning():
                 continue
 
             # mail_template_morning = MailTemplate.query.filter_by(room_id=room.id).filter_by(day=n).filter_by(mail_type=1).first()
-            mail_template_morning = MailTemplate.query.filter_by(mail_type=1, day=n).first()
+            mail_template_morning = MailTemplate.query.filter_by(mail_type=1).first()
             if mail_template_morning is None:
                 logger.warning(f'No morning mail template found for room {room.id} day {n}')
                 continue
