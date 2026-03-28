@@ -381,8 +381,32 @@ def mail_morning():
 
             # img_str = photo_uri
 
-            # message = message_html % (mail_template_morning.content)
-            message = message_html % (mail_template_morning.content)
+            content = mail_template_morning.content
+            topic = None
+            if 1 <= n <= len(config.TOPIC_LIST):
+                topic = config.TOPIC_LIST[n - 1]
+            else:
+                logger.warning("No topic configured for morning mail day %d in room %d", n, room.id)
+
+            if "%s" in content:
+                try:
+                    placeholder_count = content.count("%s")
+                    if placeholder_count == 1 and topic is not None:
+                        content = content % topic
+                    else:
+                        logger.warning(
+                            "Morning mail template has %d placeholders but topic is %s for room %d day %d",
+                            placeholder_count, topic, room.id, n
+                        )
+                except (TypeError, ValueError) as exc:
+                    logger.warning(
+                        "Morning mail template format error for room %d day %d: %s",
+                        room.id,
+                        n,
+                        exc,
+                    )
+
+            message = message_html % content
             room_members = RoomMember.query.filter_by(room_id=room.id).all()
             
             # 准备批量邮件列表
@@ -540,7 +564,6 @@ def mail_night():
             ).order_by(desc(PublicPost.created_at)).limit(5).all()
 
             post_str = '''<div class="container">'''
-            post_str += '<p class="title">New posts: %d</p>'
 
             if public_post_count > 0:
                 for post in public_posts:
@@ -564,9 +587,13 @@ def mail_night():
                     post_words = post.abstract.split()
                     logger.debug('system post_words[:10] = %s', post_words[:10])
                     post_str += "<p>Flashbacks: " + ' '.join(post_words[:10]) + "......</p>"
+            total_post_count = public_post_count + system_post_count
+            post_str = post_str.replace(
+                '<div class="container">',
+                f'<div class="container"><p class="title">New posts: {total_post_count}</p>',
+                1
+            )
             post_str += "</div>"
-
-            post_str = post_str % (public_post_count + system_post_count)
 
             # comments
             new_comments = PostComment.query.filter(PostComment.user_id.in_(tuple(member_ids))).filter(
