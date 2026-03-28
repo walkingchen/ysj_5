@@ -359,7 +359,6 @@ def mail_morning():
                 </head>
                 <body>
                 <div class="container">
-                    <p>Good morning! Welcome back to Chattera! We value your contributions and encourage you to log in, join the discussion, and connect with the community.</p>
                     <p>%s</p>
                 </div>
                 <div style="margin: 30px 15px;">
