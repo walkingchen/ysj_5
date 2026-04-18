@@ -22,6 +22,8 @@
       :visible.sync="showShareDialog"
       center
       append-to-body
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
       class="share-dialog">
       <div class="moments-item">
         <div class="moments-item-content">

@@ -10,21 +10,23 @@
           <h2 class="serif-font">
             <highlight :content="postDetailData.post_title" />
           </h2>
-          <p class="createAt">{{ postDetailData.created_at }}</p>
         </div>
-
-        <!-- <el-button
-          v-if="postDetailData.timeline_type === 1"
-          size="mini"
-          @click="share">
-          Share
-        </el-button> -->
       </div>
 
       <img v-if="postDetailData.photo_uri" :src="postDetailData.photo_uri.medium" />
       <p class="serif-font content">
         <highlight :content="postDetailData.post_content" />
       </p>
+      <div class="detail-actions">
+        <el-button
+          v-if="postDetailData.timeline_type === 1"
+          round
+          size="small"
+          type="primary"
+          @click="share">
+          Share with Group
+        </el-button>
+      </div>
     </div>
   </el-dialog>
 </template>
@@ -48,8 +50,9 @@ export default {
   ]),
   methods: {
     share () {
+      const id = this.postDetailData.id
       this.showDetailDialog = false
-      this.$bus.$emit('share', this.postDetailData.id)
+      this.$bus.$emit('share', id)
     }
   },
   mounted () {
@@ -100,12 +103,6 @@ export default {
       line-height 44px
       margin-bottom 16px
 
-    .createAt
-      text-align center
-      color #999
-      font-size 14px
-      padding 8px 0
-
   img
     display block
     margin 0 auto
@@ -118,4 +115,9 @@ export default {
     line-height 28px
     white-space pre-wrap
     word-break break-word
+
+  .detail-actions
+    display flex
+    justify-content center
+    padding-top 18px
 </style>
