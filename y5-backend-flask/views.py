@@ -19,7 +19,7 @@ from flask_admin._compat import string_types, urljoin
 
 from extensions import db
 from mail_async import send_room_activation_email_async
-from models import (RoomMember, User, Room, PublicPost, PostComment, 
+from models import (RoomMember, User, Room, PublicPost, PrivatePost, PostComment,
                    PostLike, PostFlag, PostFactcheck)
 
 
@@ -274,6 +274,7 @@ class DataExportView(BaseView):
             with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zf:
                 # Export each table
                 self._export_table(zf, 'tb_post_public', PublicPost)
+                self._export_table(zf, 'tb_post_private', PrivatePost)
                 self._export_table(zf, 'tb_post_comment', PostComment)
                 self._export_table(zf, 'tb_post_like', PostLike)
                 self._export_table(zf, 'tb_post_flag', PostFlag)
