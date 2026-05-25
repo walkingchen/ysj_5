@@ -21,8 +21,8 @@ def calculate_data_by_user(room_id, user_id, date_start, date_end):
                 pc.room_id,
                 pc.date,
                 pc.user_id,
-                (pc.post_count + COALESCE(cc.comment_count, 0)) AS total_count,  -- total = 原创帖 + 分享帖 + 评论
-                (pc.post_count - pc.share_post_count) AS post_count,  -- 原创帖子数（不包括分享）
+                (pc.post_count + pc.share_post_count + COALESCE(cc.comment_count, 0)) AS total_count,  -- total = 原创帖 + 分享帖 + 评论
+                pc.post_count,
                 COALESCE(cc.comment_count, 0) AS comment_count,
                 pc.share_post_count
             FROM (
@@ -30,15 +30,21 @@ def calculate_data_by_user(room_id, user_id, date_start, date_end):
                     pp.room_id,
                     DATE(pp.created_at) AS date,
                     pp.user_id,
-                    COUNT(pp.id) AS post_count,
-                    CAST(SUM(CASE WHEN pp.post_shared_id IS NOT NULL THEN 1 ELSE 0 END) AS SIGNED) AS share_post_count  -- 转换为整数避免 Decimal 类型
+                    CAST(SUM(CASE
+                        WHEN pp.post_shared_id IS NULL AND COALESCE(pp.is_system_post, 0) != 1 THEN 1
+                        ELSE 0
+                    END) AS SIGNED) AS post_count,
+                    CAST(SUM(CASE WHEN pp.post_shared_id IS NOT NULL THEN 1 ELSE 0 END) AS SIGNED) AS share_post_count  -- 分享帖不排除对 system post 的分享
                 FROM tb_post_public pp
                 JOIN tb_room_member rm
                     ON rm.room_id = pp.room_id
                     AND rm.user_id = pp.user_id
                     AND rm.activated = 1
                 WHERE pp.room_id = :room_id
-                    AND COALESCE(pp.is_system_post, 0) != 1
+                    AND (
+                        pp.post_shared_id IS NOT NULL
+                        OR COALESCE(pp.is_system_post, 0) != 1
+                    )
                     AND pp.created_at >= :date_start
                     AND pp.created_at < :date_end
                 GROUP BY pp.room_id, DATE(pp.created_at), pp.user_id
@@ -56,7 +62,6 @@ def calculate_data_by_user(room_id, user_id, date_start, date_end):
                     AND rm.user_id = pc.user_id
                     AND rm.activated = 1
                 WHERE pp.room_id = :room_id
-                    AND COALESCE(pp.is_system_post, 0) != 1
                     AND pc.created_at >= :date_start
                     AND pc.created_at < :date_end
                 GROUP BY pp.room_id, DATE(pc.created_at), pc.user_id
@@ -88,7 +93,6 @@ def calculate_data_by_user(room_id, user_id, date_start, date_end):
                     AND rm.user_id = pc.user_id
                     AND rm.activated = 1
                 WHERE pp.room_id = :room_id
-                    AND COALESCE(pp.is_system_post, 0) != 1
                     AND pc.created_at >= :date_start
                     AND pc.created_at < :date_end
                 GROUP BY pp.room_id, DATE(pc.created_at), pc.user_id
@@ -98,14 +102,21 @@ def calculate_data_by_user(room_id, user_id, date_start, date_end):
                     pp.room_id,
                     DATE(pp.created_at) AS date,
                     pp.user_id,
-                    COUNT(pp.id) AS post_count
+                    CAST(SUM(CASE
+                        WHEN pp.post_shared_id IS NULL AND COALESCE(pp.is_system_post, 0) != 1 THEN 1
+                        ELSE 0
+                    END) AS SIGNED) AS post_count,
+                    CAST(SUM(CASE WHEN pp.post_shared_id IS NOT NULL THEN 1 ELSE 0 END) AS SIGNED) AS share_post_count
                 FROM tb_post_public pp
                 JOIN tb_room_member rm
                     ON rm.room_id = pp.room_id
                     AND rm.user_id = pp.user_id
                     AND rm.activated = 1
                 WHERE pp.room_id = :room_id
-                    AND COALESCE(pp.is_system_post, 0) != 1
+                    AND (
+                        pp.post_shared_id IS NOT NULL
+                        OR COALESCE(pp.is_system_post, 0) != 1
+                    )
                     AND pp.created_at >= :date_start
                     AND pp.created_at < :date_end
                 GROUP BY pp.room_id, DATE(pp.created_at), pp.user_id
@@ -141,8 +152,8 @@ FROM (
         pc.room_id,
         pc.date,
         pc.user_id,
-        (pc.post_count + COALESCE(cc.comment_count, 0)) AS total_count,  -- total = 原创帖 + 分享帖 + 评论
-        (pc.post_count - pc.share_post_count) AS post_count,  -- 原创帖子数（不包括分享）
+        (pc.post_count + pc.share_post_count + COALESCE(cc.comment_count, 0)) AS total_count,  -- total = 原创帖 + 分享帖 + 评论
+        pc.post_count,
         COALESCE(cc.comment_count, 0) AS comment_count,
         pc.share_post_count
     FROM (
@@ -150,15 +161,21 @@ FROM (
             pp.room_id,
             DATE(pp.created_at) AS date,
             pp.user_id,
-            COUNT(pp.id) AS post_count,
-            CAST(SUM(CASE WHEN pp.post_shared_id IS NOT NULL THEN 1 ELSE 0 END) AS SIGNED) AS share_post_count  -- 转换为整数避免 Decimal 类型
+            CAST(SUM(CASE
+                WHEN pp.post_shared_id IS NULL AND COALESCE(pp.is_system_post, 0) != 1 THEN 1
+                ELSE 0
+            END) AS SIGNED) AS post_count,
+            CAST(SUM(CASE WHEN pp.post_shared_id IS NOT NULL THEN 1 ELSE 0 END) AS SIGNED) AS share_post_count  -- 分享帖不排除对 system post 的分享
         FROM tb_post_public pp
         JOIN tb_room_member rm
             ON rm.room_id = pp.room_id
             AND rm.user_id = pp.user_id
             AND rm.activated = 1
         WHERE pp.room_id = :room_id
-            AND COALESCE(pp.is_system_post, 0) != 1
+            AND (
+                pp.post_shared_id IS NOT NULL
+                OR COALESCE(pp.is_system_post, 0) != 1
+            )
             AND pp.created_at >= :date_start
             AND pp.created_at < :date_end
         GROUP BY pp.room_id, DATE(pp.created_at), pp.user_id
@@ -176,7 +193,6 @@ FROM (
             AND rm.user_id = pc.user_id
             AND rm.activated = 1
         WHERE pp.room_id = :room_id
-            AND COALESCE(pp.is_system_post, 0) != 1
             AND pc.created_at >= :date_start
             AND pc.created_at < :date_end
         GROUP BY pp.room_id, DATE(pc.created_at), pc.user_id
@@ -208,7 +224,6 @@ FROM (
             AND rm.user_id = pc.user_id
             AND rm.activated = 1
         WHERE pp.room_id = :room_id
-            AND COALESCE(pp.is_system_post, 0) != 1
             AND pc.created_at >= :date_start
             AND pc.created_at < :date_end
         GROUP BY pp.room_id, DATE(pc.created_at), pc.user_id
@@ -218,14 +233,21 @@ FROM (
             pp.room_id,
             DATE(pp.created_at) AS date,
             pp.user_id,
-            COUNT(pp.id) AS post_count
+            CAST(SUM(CASE
+                WHEN pp.post_shared_id IS NULL AND COALESCE(pp.is_system_post, 0) != 1 THEN 1
+                ELSE 0
+            END) AS SIGNED) AS post_count,
+            CAST(SUM(CASE WHEN pp.post_shared_id IS NOT NULL THEN 1 ELSE 0 END) AS SIGNED) AS share_post_count
         FROM tb_post_public pp
         JOIN tb_room_member rm
             ON rm.room_id = pp.room_id
             AND rm.user_id = pp.user_id
             AND rm.activated = 1
         WHERE pp.room_id = :room_id
-            AND COALESCE(pp.is_system_post, 0) != 1
+            AND (
+                pp.post_shared_id IS NOT NULL
+                OR COALESCE(pp.is_system_post, 0) != 1
+            )
             AND pp.created_at >= :date_start
             AND pp.created_at < :date_end
         GROUP BY pp.room_id, DATE(pp.created_at), pp.user_id
