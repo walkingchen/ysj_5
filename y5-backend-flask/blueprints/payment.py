@@ -7,7 +7,7 @@ from flask_restful import Api
 from sqlalchemy import text
 
 from extensions import db
-from models import Room, Serializer
+from models import Room, RoomMember, Serializer
 
 bp_payment = Blueprint('api/payment', __name__, url_prefix='/api/payment')
 # api = Api(bp_payment, '/api/payment')
@@ -19,9 +19,17 @@ def parse_date_filter(value):
     return datetime.strptime(value, '%Y-%m-%d')
 
 
-def filter_rooms_by_activated_at(query, start_date_str=None, end_date_str=None):
-    start_date = parse_date_filter(start_date_str)
-    end_date = parse_date_filter(end_date_str)
+def parse_bool(value):
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return False
+    return str(value).lower() in ('1', 'true', 'yes', 'on')
+
+
+def filter_rooms_by_activated_at(query, start_date=None, end_date=None, include_inactive=False):
+    if not include_inactive:
+        query = query.filter_by(activated=1)
 
     if start_date:
         query = query.filter(Room.activated_at >= start_date)
@@ -29,6 +37,68 @@ def filter_rooms_by_activated_at(query, start_date_str=None, end_date_str=None):
         query = query.filter(Room.activated_at < end_date + timedelta(days=1))
 
     return query
+
+
+def get_rooms_by_activation_range(start_date_str=None, end_date_str=None, include_inactive=False):
+    start_date = parse_date_filter(start_date_str)
+    end_date = parse_date_filter(end_date_str)
+
+    if start_date and end_date and start_date > end_date:
+        raise ValueError('activation start date is after end date')
+
+    rooms_query = Room.query
+    rooms_query = filter_rooms_by_activated_at(
+        rooms_query,
+        start_date,
+        end_date,
+        include_inactive
+    )
+    return rooms_query.order_by(Room.activated_at, Room.id).all(), start_date, end_date
+
+
+def room_matches_activation_range(room, start_date=None, end_date=None, include_inactive=False):
+    if not include_inactive and room.activated != 1:
+        return False
+    if (start_date or end_date) and room.activated_at is None:
+        return False
+
+    activated_date = room.activated_at.date() if room.activated_at else None
+    if start_date and activated_date < start_date.date():
+        return False
+    if end_date and activated_date > end_date.date():
+        return False
+    return True
+
+
+def build_room_reward_preview(room, date_end=None):
+    if room.activated_at is None:
+        return {
+            'room_id': room.id,
+            'room_code': room.room_id,
+            'room_name': room.room_name,
+            'activated': room.activated,
+            'activated_at': None,
+            'member_count': RoomMember.query.filter_by(room_id=room.id).count(),
+            'payable_user_count': 0,
+            'total_reward': 0,
+            'status': 'missing activated_at'
+        }
+
+    date_end = date_end or datetime.now()
+    rewards = calculate_func(room.id, room.activated_at, date_end)
+    total_rewards = rewards['total_rewards']
+
+    return {
+        'room_id': room.id,
+        'room_code': room.room_id,
+        'room_name': room.room_name,
+        'activated': room.activated,
+        'activated_at': room.activated_at.isoformat(),
+        'member_count': RoomMember.query.filter_by(room_id=room.id).count(),
+        'payable_user_count': len(total_rewards),
+        'total_reward': round(sum(total_rewards.values()), 2),
+        'status': 'ready'
+    }
 
 
 def calculate_data_by_user(room_id, user_id, date_start, date_end):
@@ -383,18 +453,50 @@ def calculate_rewards():
 def rewards_summary():
     activation_start_date = request.args.get('activation_start_date')
     activation_end_date = request.args.get('activation_end_date')
+    include_inactive = parse_bool(request.args.get('include_inactive'))
 
-    rooms_query = Room.query.filter_by(activated=1)
-    rooms_query = filter_rooms_by_activated_at(
-        rooms_query,
-        activation_start_date,
-        activation_end_date
-    )
-    rooms = rooms_query.all()
+    try:
+        rooms, _, _ = get_rooms_by_activation_range(
+            activation_start_date,
+            activation_end_date,
+            include_inactive
+        )
+    except ValueError:
+        rooms = []
+
     rooms_serialized = Serializer.serialize_list(rooms)
     return render_template(
         'rewards.html',
         rooms=rooms_serialized,
         activation_start_date=activation_start_date or '',
-        activation_end_date=activation_end_date or ''
+        activation_end_date=activation_end_date or '',
+        include_inactive=include_inactive
     )
+
+
+@bp_payment.route('/rewards_summary/batch_preview', methods=['GET'])
+def rewards_summary_batch_preview():
+    activation_start_date = request.args.get('activation_start_date')
+    activation_end_date = request.args.get('activation_end_date')
+    include_inactive = parse_bool(request.args.get('include_inactive'))
+
+    try:
+        rooms, _, _ = get_rooms_by_activation_range(
+            activation_start_date,
+            activation_end_date,
+            include_inactive
+        )
+    except ValueError as exc:
+        return jsonify({'error': str(exc)}), 400
+
+    date_end = datetime.now()
+    room_previews = [build_room_reward_preview(room, date_end) for room in rooms]
+
+    return jsonify({
+        'rooms': room_previews,
+        'summary': {
+            'room_count': len(room_previews),
+            'payable_user_count': sum(room['payable_user_count'] for room in room_previews),
+            'total_reward': round(sum(room['total_reward'] for room in room_previews), 2)
+        }
+    })

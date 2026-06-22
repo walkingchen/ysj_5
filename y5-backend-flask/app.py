@@ -21,7 +21,7 @@ from sqlalchemy import desc
 import config
 from blueprints.auth import bp_auth, login_manager
 from blueprints.mail import bp_mail
-from blueprints.payment import bp_payment, calculate_func
+from blueprints.payment import bp_payment, calculate_func, parse_bool, parse_date_filter, room_matches_activation_range
 from blueprints.post import bp_post
 from blueprints.room import bp_room
 from blueprints.user import bp_user
@@ -769,16 +769,70 @@ def mail_night_route():
         return jsonify({"status": "success", "message": "Night mail sent"})
 
 
+def send_reward_summary_for_room(room):
+    if room.activated_at is None:
+        return {
+            "room_id": room.id,
+            "sent_count": 0,
+            "skipped_count": 0,
+            "status": "missing activated_at"
+        }
+
+    room_members = RoomMember.query.filter_by(room_id=room.id).all()
+    date_start = room.activated_at
+    date_end = datetime.datetime.now()
+    calculate_result = calculate_func(room.id, date_start, date_end)
+    reward_summary = calculate_result['reward_summary']
+    total_rewards = calculate_result['total_rewards']
+
+    sent_count = 0
+    skipped_count = 0
+
+    for member in room_members:
+        if member.user_id not in total_rewards:
+            skipped_count += 1
+            continue
+
+        user = User.query.filter_by(id=member.user_id).first()
+        if user is None or user.email is None:
+            skipped_count += 1
+            continue
+
+        formatted_data = format_data_for_user(
+            nickname=user.nickname,
+            user_id=member.user_id,
+            pre_survey_base=1,
+            post_survey_base=0,
+            reward_summary=reward_summary,
+            total_rewards=total_rewards
+        )
+
+        subject = 'Post-experiment summary'
+        message = render_template("payment_mail.html", data=formatted_data)
+
+        from mail_async import send_email_async
+        send_email_async([user.email], subject, message, message)
+        sent_count += 1
+
+    return {
+        "room_id": room.id,
+        "sent_count": sent_count,
+        "skipped_count": skipped_count,
+        "status": "sent"
+    }
+
+
 @app.route('/post_experiment_summary_mail', methods=['POST'])
 def post_experiment_summary_mail():
     data = request.get_json()
-    room_ids = data['rooms']
+    room_ids = data.get('room_ids') or data.get('rooms') or []
     activation_start_date = data.get('activation_start_date')
     activation_end_date = data.get('activation_end_date')
+    include_inactive = parse_bool(data.get('include_inactive'))
 
     try:
-        activation_start = datetime.datetime.strptime(activation_start_date, '%Y-%m-%d').date() if activation_start_date else None
-        activation_end = datetime.datetime.strptime(activation_end_date, '%Y-%m-%d').date() if activation_end_date else None
+        activation_start = parse_date_filter(activation_start_date)
+        activation_end = parse_date_filter(activation_end_date)
     except ValueError:
         return jsonify(Resp(result_code=4000, result_msg="invalid activation date", data=None).__dict__), 400
 
@@ -787,81 +841,38 @@ def post_experiment_summary_mail():
 
     sent_rooms = []
     skipped_rooms = []
+    failed_rooms = []
     with app.app_context():
-        # 指定服务器时区
-        server_timezone = pytz.timezone('America/Chicago')
-        # 获取当前服务器时间
-        server_time = datetime.datetime.now(server_timezone)
-
         for room_id in room_ids:
             room = Room.query.filter_by(id=room_id).first()
             if room is None:
+                skipped_rooms.append({
+                    "room_id": room_id,
+                    "reason": "room not found"
+                })
                 continue
-            day_activated = room.activated_at
-            if activation_start or activation_end:
-                if day_activated is None:
-                    skipped_rooms.append(room_id)
-                    continue
 
-                activated_date = day_activated.date()
-                if activation_start and activated_date < activation_start:
-                    skipped_rooms.append(room_id)
-                    continue
-                if activation_end and activated_date > activation_end:
-                    skipped_rooms.append(room_id)
-                    continue
+            if not room_matches_activation_range(room, activation_start, activation_end, include_inactive):
+                skipped_rooms.append({
+                    "room_id": room.id,
+                    "reason": "outside activation filter"
+                })
+                continue
 
-            # FIXME 解决本地时间和服务器时间不一致问题
-            local_time = time.localtime(int(day_activated.timestamp()))
-
-            room_members = RoomMember.query.filter_by(room_id=room.id).all()
-            member_ids = []
-            post_str = ""
-            for member in room_members:
-                member_ids.append(member.user_id)
-
-            date_start = local_time
-            date_end = datetime.datetime.now()
-            payments = calculate_func(room.id, date_start, date_end)
-
-            for member in room_members:
-                # TODO add payment
-                if member.user_id not in payments['total_rewards']:
-                    continue
-
-                calculate_result = calculate_func(room_id, date_start, date_end)
-                reward_summary = calculate_result['reward_summary']
-                total_rewards = calculate_result['total_rewards']
-                user = User.query.filter_by(id=member.user_id).first()
-                formatted_data = format_data_for_user(
-                    nickname=user.nickname,
-                    user_id=member.user_id,
-                    pre_survey_base=1,
-                    post_survey_base=0,
-                    reward_summary=reward_summary,
-                    total_rewards=total_rewards
-                )
-
-                subject = 'Post-experiment summary'
-                message = render_template("payment_mail.html", data=formatted_data)
-
-                # logger.debug('formatted_data: %s', formatted_data)
-
-                # return render_template("payment_mail.html", data=formatted_data)
-
-                user = User.query.filter_by(id=member.user_id).first()
-                if user.email is not None:
-                    # 异步发送邮件
-                    from mail_async import send_email_async
-                    # 注意：这里保持测试邮箱，如果需要发送给真实用户，改为 [user.email]
-                    # send_email_async(['cenux1987@163.com'], subject, message, message)
-                    send_email_async([user.email], subject, message, message)
-
-            sent_rooms.append(room.id)
+            try:
+                send_result = send_reward_summary_for_room(room)
+                sent_rooms.append(send_result)
+            except Exception as exc:
+                logger.exception("Failed to send reward summary for room %s", room.id)
+                failed_rooms.append({
+                    "room_id": room.id,
+                    "reason": str(exc)
+                })
 
         return jsonify(Resp(result_code=2000, result_msg="success", data={
             "sent_rooms": sent_rooms,
-            "skipped_rooms": skipped_rooms
+            "skipped_rooms": skipped_rooms,
+            "failed_rooms": failed_rooms
         }).__dict__)
 
 
