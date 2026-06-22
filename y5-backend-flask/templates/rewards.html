@@ -4,422 +4,698 @@
     <meta charset="UTF-8">
     <title>Reward Summary</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h2 { color: #333; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: #f4f4f4; }
-        .form-section { margin-bottom: 20px; }
-
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed;
-            z-index: 10;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+        :root {
+            --bg: #f6f7f9;
+            --panel: #ffffff;
+            --line: #d9dee7;
+            --line-strong: #c3cad6;
+            --text: #1f2937;
+            --muted: #657184;
+            --primary: #1769aa;
+            --primary-dark: #0f4f82;
+            --danger: #b42318;
+            --success: #0f7a45;
+            --warning: #9a5b00;
         }
 
-        .modal-content {
-            background: linear-gradient(to bottom, #ffffff, #f9f9f9);
-            margin: 10% auto;
-            padding: 10px 30px;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-            width: 40%;
-            height: 500px; /* Fixed height */
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-            animation: fadeIn 0.5s ease;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden; /* Prevent overflow outside the box */
+        * {
+            box-sizing: border-box;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Arial, sans-serif;
+            font-size: 14px;
         }
 
-        .close {
-            color: #555;
-            float: right;
+        main {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        h1 {
+            margin: 0 0 18px;
             font-size: 24px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .close:hover, .close:focus {
-            color: #000;
-            text-decoration: none;
+            font-weight: 700;
         }
 
         h2 {
-            font-size: 18px;
-            margin-bottom: 10px;
-            color: #333;
-            text-align: center;
+            margin: 0 0 14px;
+            font-size: 17px;
         }
 
-        #room_selection {
-            flex-grow: 1;
-            overflow-y: auto; /* Enable vertical scrolling */
-            margin-top: 10px;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 5px;
-            background: #f9f9f9;
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 18px;
+            margin-bottom: 18px;
         }
 
-        #room_selection label {
-            display: block;
-            margin: 8px 0;
-            font-size: 14px;
-            color: #444;
-            cursor: pointer;
+        .toolbar {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(160px, 1fr)) auto auto;
+            gap: 12px;
+            align-items: end;
         }
 
-        #room_selection input[type="checkbox"] {
-            margin-right: 10px;
-        }
-
-        #confirm_send_mail {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 15px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: background-color 0.3s;
-            align-self: center;
-            width: 100%;
-        }
-
-        #confirm_send_mail:hover {
-            background-color: #0056b3;
-        }
-
-        .filter-row {
+        .field {
             display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .field.inline {
+            flex-direction: row;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            padding-bottom: 7px;
+            white-space: nowrap;
+        }
+
+        label {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        input,
+        select,
+        button {
+            font: inherit;
+        }
+
+        input[type="date"],
+        select {
+            width: 100%;
+            min-height: 36px;
+            border: 1px solid var(--line-strong);
+            border-radius: 6px;
+            background: #fff;
+            color: var(--text);
+            padding: 7px 9px;
+        }
+
+        input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+        }
+
+        button {
+            min-height: 36px;
+            border: 1px solid var(--line-strong);
+            border-radius: 6px;
+            background: #fff;
+            color: var(--text);
+            padding: 7px 12px;
+            cursor: pointer;
+        }
+
+        button.primary {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: #fff;
+        }
+
+        button.primary:hover {
+            background: var(--primary-dark);
+        }
+
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
             flex-wrap: wrap;
-            margin-bottom: 12px;
+            align-items: center;
         }
 
         .muted {
-            color: #666;
+            color: var(--muted);
             font-size: 13px;
         }
 
-        .secondary-button {
-            background-color: #f4f4f4;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            padding: 5px 10px;
-            cursor: pointer;
+        .status-line {
+            margin-top: 12px;
+            color: var(--muted);
+        }
+
+        .status-line.error {
+            color: var(--danger);
+        }
+
+        .status-line.success {
+            color: var(--success);
+        }
+
+        .grid-two {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 18px;
+            align-items: start;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 720px;
+        }
+
+        th,
+        td {
+            border-bottom: 1px solid var(--line);
+            padding: 9px 10px;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        th {
+            background: #eef1f5;
+            color: #344054;
+            font-size: 12px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .number {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            min-height: 22px;
+            border-radius: 999px;
+            padding: 2px 8px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .badge.active {
+            background: #e6f4ea;
+            color: var(--success);
+        }
+
+        .badge.inactive {
+            background: #fff4e5;
+            color: var(--warning);
+        }
+
+        .badge.error {
+            background: #fdecec;
+            color: var(--danger);
+        }
+
+        .summary-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .metric {
+            min-width: 160px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fbfcfd;
+            padding: 10px 12px;
+        }
+
+        .metric .label {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .metric .value {
+            margin-top: 4px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        @media (max-width: 900px) {
+            main {
+                padding: 14px;
+            }
+
+            .toolbar,
+            .grid-two {
+                grid-template-columns: 1fr;
+            }
+
+            .field.inline {
+                padding-bottom: 0;
+            }
         }
     </style>
 </head>
 <body>
+<main>
     <h1>Chattera Room Reward Summary</h1>
 
-    <!-- Room and Date Selection Form -->
-    <div>
-        <div class="filter-row">
-            <strong>Room Activation Filter:</strong>
-            <label for="activation_start_date">Start Date:</label>
-            <input type="date" id="activation_start_date" name="activation_start_date" value="{{ activation_start_date }}">
-
-            <label for="activation_end_date">End Date:</label>
-            <input type="date" id="activation_end_date" name="activation_end_date" value="{{ activation_end_date }}">
-
-            <button id="apply_activation_filter" class="secondary-button">Apply</button>
-            <button id="clear_activation_filter" class="secondary-button">Clear</button>
-            <span id="room_filter_count" class="muted"></span>
-        </div>
-
-        <label for="room_id">Room ID:</label>
-        <!-- 显示下拉框，默认显示第一个room id-->
-        <select id="room_id" name="room_id">
-            {% for room in rooms %}
-                <option value="{{ room.id }}">{{ room.id }} - {{ room.room_id }}{% if room.activated_at %} ({{ room.activated_at[:10] }}){% endif %}</option>
-            {% endfor %}
-        </select>
-{#        <input type="text" id="room_id" name="room_id" required>#}
-
-        <label for="date_start">Start Date (YYYY-MM-DD):</label>
-        <input type="date" id="date_start" name="date_start" required>
-
-        <label for="date_end">End Date (YYYY-MM-DD):</label>
-        <input type="date" id="date_end" name="date_end" required>
-
-        <button id="calculate_rewards">Calculate Rewards</button>
-        <button id="send_mail">Send Mail</button>
-    </div>
-
-    <!-- Total Rewards Summary Table -->
-    <h2>Total Rewards Summary</h2>
-    <table id="total_rewards_table" border="1">
-        <thead>
-            <tr>
-                <th>User ID</th>
-                <th>Total Reward</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-
-    <!-- Daily Reward Summary Table -->
-    <h2>Daily Reward Details</h2>
-    <table id="reward_summary_table" border="1">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>User ID</th>
-                <th>Post Count</th>
-                <th>Share Count</th>
-                <th>Comment Count</th>
-                <th>Total Count</th>
-                <th>Is Top 2</th>
-                <th>Daily Reward</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-
-    <!-- Modal for Room Selection -->
-    <div id="roomModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Select Rooms</h2>
-            <div class="muted">Only rooms matching the activation filter are shown.</div>
-            <div id="room_selection">
-                {% for room in rooms %}
-                    <label>
-                        <input type="checkbox" value="{{ room.id }}"> {{ room.id }} - {{ room.room_id }}{% if room.activated_at %} ({{ room.activated_at[:10] }}){% endif %}
-                    </label>
-                {% endfor %}
+    <section class="panel">
+        <h2>Activation Filter</h2>
+        <div class="toolbar">
+            <div class="field">
+                <label for="activation_start_date">Activation Start</label>
+                <input type="date" id="activation_start_date" value="{{ activation_start_date }}">
             </div>
-            <button id="confirm_send_mail">Confirm</button>
+            <div class="field">
+                <label for="activation_end_date">Activation End</label>
+                <input type="date" id="activation_end_date" value="{{ activation_end_date }}">
+            </div>
+            <label class="field inline" for="include_inactive">
+                <input type="checkbox" id="include_inactive" {% if include_inactive %}checked{% endif %}>
+                Include inactive rooms
+            </label>
+            <div class="field">
+                <label>Visible Rooms</label>
+                <div class="muted" id="room_filter_count"></div>
+            </div>
+            <button id="apply_activation_filter">Apply</button>
+            <button id="clear_activation_filter">Clear</button>
         </div>
-    </div>
+        <div id="filter_status" class="status-line"></div>
+    </section>
 
-    <script>
-        const roomsData = {{ rooms|tojson }};
-        const roomSelect = document.getElementById('room_id');
-        const roomSelection = document.getElementById('room_selection');
-        const activationStartInput = document.getElementById('activation_start_date');
-        const activationEndInput = document.getElementById('activation_end_date');
-        const roomFilterCount = document.getElementById('room_filter_count');
+    <section class="grid-two">
+        <div class="panel">
+            <h2>Single Room</h2>
+            <div class="field">
+                <label for="room_id">Room</label>
+                <select id="room_id">
+                    {% for room in rooms %}
+                        <option value="{{ room.id }}">{{ room.id }} - {{ room.room_id }}{% if room.activated_at %} ({{ room.activated_at[:10] }}){% endif %}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="field" style="margin-top: 12px;">
+                <label for="date_start">Reward Start</label>
+                <input type="date" id="date_start" required>
+            </div>
+            <div class="field" style="margin-top: 12px;">
+                <label for="date_end">Reward End</label>
+                <input type="date" id="date_end" required>
+            </div>
+            <div class="actions" style="margin-top: 14px;">
+                <button id="calculate_rewards" class="primary">Calculate</button>
+                <button id="send_current_room">Send Current Room</button>
+            </div>
+            <div id="single_status" class="status-line"></div>
+        </div>
 
-        function roomLabel(room) {
-            const activatedDate = room.activated_at ? room.activated_at.slice(0, 10) : 'not activated';
-            return `${room.id} - ${room.room_id} (${activatedDate})`;
-        }
+        <div class="panel">
+            <h2>Single Room Result</h2>
+            <div class="table-wrap">
+                <table id="total_rewards_table">
+                    <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th class="number">Total Reward</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
 
-        function roomMatchesActivationFilter(room) {
-            const startDate = activationStartInput.value;
-            const endDate = activationEndInput.value;
+    <section class="panel">
+        <h2>Batch Rewards</h2>
+        <div class="actions">
+            <button id="batch_preview" class="primary">Batch Calculate Rewards</button>
+            <button id="select_all_rooms">Select All</button>
+            <button id="clear_selected_rooms">Clear Selection</button>
+            <button id="batch_send">Batch Send Mail</button>
+        </div>
+        <div id="batch_status" class="status-line"></div>
+        <div class="summary-row">
+            <div class="metric">
+                <div class="label">Rooms</div>
+                <div class="value" id="metric_rooms">0</div>
+            </div>
+            <div class="metric">
+                <div class="label">Payable Users</div>
+                <div class="value" id="metric_users">0</div>
+            </div>
+            <div class="metric">
+                <div class="label">Total Rewards</div>
+                <div class="value" id="metric_rewards">$0.00</div>
+            </div>
+        </div>
+        <div class="table-wrap" style="margin-top: 14px;">
+            <table id="batch_rooms_table">
+                <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>Room ID</th>
+                    <th>Room Code</th>
+                    <th>Room Name</th>
+                    <th>Active</th>
+                    <th>Activated At</th>
+                    <th class="number">Members</th>
+                    <th class="number">Payable Users</th>
+                    <th class="number">Total Reward</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
 
-            if (!startDate && !endDate) return true;
-            if (!room.activated_at) return false;
+    <section class="panel">
+        <h2>Daily Reward Details</h2>
+        <div class="table-wrap">
+            <table id="reward_summary_table">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>User ID</th>
+                    <th class="number">Post Count</th>
+                    <th class="number">Share Count</th>
+                    <th class="number">Comment Count</th>
+                    <th class="number">Total Count</th>
+                    <th>Top 2</th>
+                    <th class="number">Daily Reward</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
+</main>
 
-            const activatedDate = room.activated_at.slice(0, 10);
-            if (startDate && activatedDate < startDate) return false;
-            if (endDate && activatedDate > endDate) return false;
-            return true;
-        }
+<script>
+    const roomsData = {{ rooms|tojson }};
+    let batchRooms = [];
 
-        function getFilteredRooms() {
-            return roomsData.filter(roomMatchesActivationFilter);
-        }
+    const roomSelect = document.getElementById('room_id');
+    const activationStartInput = document.getElementById('activation_start_date');
+    const activationEndInput = document.getElementById('activation_end_date');
+    const includeInactiveInput = document.getElementById('include_inactive');
+    const roomFilterCount = document.getElementById('room_filter_count');
+    const filterStatus = document.getElementById('filter_status');
+    const singleStatus = document.getElementById('single_status');
+    const batchStatus = document.getElementById('batch_status');
 
-        function activationFilterIsValid() {
-            const startDate = activationStartInput.value;
-            const endDate = activationEndInput.value;
-            return !startDate || !endDate || startDate <= endDate;
-        }
+    function money(value) {
+        return `$${Number(value || 0).toFixed(2)}`;
+    }
 
-        function renderRoomControls() {
-            if (!activationFilterIsValid()) {
-                roomFilterCount.textContent = 'Start date must be before end date';
-                roomSelect.innerHTML = '';
-                roomSelection.innerHTML = '';
-                return;
-            }
+    function roomLabel(room) {
+        const activatedDate = room.activated_at ? room.activated_at.slice(0, 10) : 'not activated';
+        return `${room.id} - ${room.room_id} (${activatedDate})`;
+    }
 
-            const previousRoom = roomSelect.value;
-            const checkedRooms = new Set(
-                Array.from(document.querySelectorAll("#room_selection input:checked")).map(input => input.value)
-            );
-            const filteredRooms = getFilteredRooms();
+    function activationFilterIsValid() {
+        const startDate = activationStartInput.value;
+        const endDate = activationEndInput.value;
+        return !startDate || !endDate || startDate <= endDate;
+    }
 
+    function roomMatchesActivationFilter(room) {
+        const startDate = activationStartInput.value;
+        const endDate = activationEndInput.value;
+        const includeInactive = includeInactiveInput.checked;
+
+        if (!includeInactive && room.activated !== 1) return false;
+        if (!startDate && !endDate) return true;
+        if (!room.activated_at) return false;
+
+        const activatedDate = room.activated_at.slice(0, 10);
+        if (startDate && activatedDate < startDate) return false;
+        if (endDate && activatedDate > endDate) return false;
+        return true;
+    }
+
+    function getFilteredRooms() {
+        return roomsData.filter(roomMatchesActivationFilter);
+    }
+
+    function setStatus(element, message, type) {
+        element.textContent = message || '';
+        element.className = `status-line${type ? ' ' + type : ''}`;
+    }
+
+    function renderRoomControls() {
+        if (!activationFilterIsValid()) {
             roomSelect.innerHTML = '';
-            filteredRooms.forEach(room => {
-                const option = document.createElement('option');
-                option.value = room.id;
-                option.textContent = roomLabel(room);
-                roomSelect.appendChild(option);
-            });
-            if (filteredRooms.some(room => String(room.id) === previousRoom)) {
-                roomSelect.value = previousRoom;
-            }
-
-            roomSelection.innerHTML = '';
-            filteredRooms.forEach(room => {
-                const label = document.createElement('label');
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.value = room.id;
-                checkbox.checked = checkedRooms.has(String(room.id));
-                label.appendChild(checkbox);
-                label.appendChild(document.createTextNode(` ${roomLabel(room)}`));
-                roomSelection.appendChild(label);
-            });
-
-            roomFilterCount.textContent = `${filteredRooms.length} room(s) shown`;
+            roomFilterCount.textContent = 'Invalid date range';
+            setStatus(filterStatus, 'Activation start date must be before end date.', 'error');
+            return;
         }
 
-        activationStartInput.addEventListener('change', renderRoomControls);
-        activationEndInput.addEventListener('change', renderRoomControls);
+        setStatus(filterStatus, '', '');
+        const previousRoom = roomSelect.value;
+        const filteredRooms = getFilteredRooms();
+        roomSelect.innerHTML = '';
 
-        document.getElementById('apply_activation_filter').addEventListener('click', function() {
-            if (!activationFilterIsValid()) {
-                alert("Activation start date must be before end date.");
-                return;
-            }
-
-            const params = new URLSearchParams();
-            if (activationStartInput.value) params.set('activation_start_date', activationStartInput.value);
-            if (activationEndInput.value) params.set('activation_end_date', activationEndInput.value);
-            const query = params.toString();
-            window.location.href = query ? `/api/payment/rewards_summary?${query}` : '/api/payment/rewards_summary';
+        filteredRooms.forEach(room => {
+            const option = document.createElement('option');
+            option.value = room.id;
+            option.textContent = roomLabel(room);
+            roomSelect.appendChild(option);
         });
 
-        document.getElementById('clear_activation_filter').addEventListener('click', function() {
-            window.location.href = '/api/payment/rewards_summary';
+        if (filteredRooms.some(room => String(room.id) === previousRoom)) {
+            roomSelect.value = previousRoom;
+        }
+
+        roomFilterCount.textContent = `${filteredRooms.length} room(s) loaded`;
+    }
+
+    function filterParams() {
+        const params = new URLSearchParams();
+        if (activationStartInput.value) params.set('activation_start_date', activationStartInput.value);
+        if (activationEndInput.value) params.set('activation_end_date', activationEndInput.value);
+        if (includeInactiveInput.checked) params.set('include_inactive', '1');
+        return params;
+    }
+
+    function selectedBatchRoomIds() {
+        return Array.from(document.querySelectorAll('#batch_rooms_table tbody input[type="checkbox"]:checked'))
+            .map(input => Number(input.value));
+    }
+
+    function renderBatchTable(rooms, summary) {
+        const tbody = document.querySelector('#batch_rooms_table tbody');
+        tbody.innerHTML = '';
+
+        rooms.forEach(room => {
+            const activeClass = room.activated === 1 ? 'active' : 'inactive';
+            const activeText = room.activated === 1 ? 'Active' : 'Inactive';
+            const statusClass = room.status === 'ready' ? 'active' : 'error';
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><input type="checkbox" value="${room.room_id}" ${room.status === 'ready' ? 'checked' : 'disabled'}></td>
+                <td>${room.room_id}</td>
+                <td>${room.room_code || ''}</td>
+                <td>${room.room_name || ''}</td>
+                <td><span class="badge ${activeClass}">${activeText}</span></td>
+                <td>${room.activated_at ? room.activated_at.slice(0, 19).replace('T', ' ') : ''}</td>
+                <td class="number">${room.member_count}</td>
+                <td class="number">${room.payable_user_count}</td>
+                <td class="number">${money(room.total_reward)}</td>
+                <td><span class="badge ${statusClass}">${room.status}</span></td>
+            `;
+            tbody.appendChild(row);
         });
 
-        renderRoomControls();
+        document.getElementById('metric_rooms').textContent = summary.room_count || 0;
+        document.getElementById('metric_users').textContent = summary.payable_user_count || 0;
+        document.getElementById('metric_rewards').textContent = money(summary.total_reward);
+    }
 
-        document.getElementById('calculate_rewards').addEventListener('click', async function() {
-            const room_id = document.getElementById('room_id').value;
-            const start_date = document.getElementById('date_start').value;
-            const end_date = document.getElementById('date_end').value;
+    async function calculateSingleRoom() {
+        const roomId = roomSelect.value;
+        const startDate = document.getElementById('date_start').value;
+        const endDate = document.getElementById('date_end').value;
 
-            if (!activationFilterIsValid()) {
-                alert("Activation start date must be before end date.");
-                return;
-            }
+        if (!activationFilterIsValid()) {
+            setStatus(singleStatus, 'Activation start date must be before end date.', 'error');
+            return;
+        }
+        if (!roomId) {
+            setStatus(singleStatus, 'No room matches the activation filter.', 'error');
+            return;
+        }
+        if (!startDate || !endDate || startDate > endDate) {
+            setStatus(singleStatus, 'Select a valid reward date range.', 'error');
+            return;
+        }
 
-            if (!room_id) {
-                alert("No room matches the activation filter.");
-                return;
-            }
+        setStatus(singleStatus, 'Calculating...', '');
+        const response = await fetch(`/api/payment/calculate_rewards?room_id=${roomId}&start_date=${startDate}&end_date=${endDate}`);
+        if (!response.ok) throw new Error('Failed to fetch rewards');
 
-            // Send fetch request
-            try {
-                const response = await fetch(`/api/payment/calculate_rewards?room_id=${room_id}&start_date=${start_date}&end_date=${end_date}`);
-                if (!response.ok) throw new Error("Failed to fetch data");
+        const data = await response.json();
+        document.querySelector('#total_rewards_table tbody').innerHTML = '';
+        document.querySelector('#reward_summary_table tbody').innerHTML = '';
 
-                const data = await response.json();
-
-                // Clear previous table data
-                document.querySelector('#total_rewards_table tbody').innerHTML = '';
-                document.querySelector('#reward_summary_table tbody').innerHTML = '';
-
-                // Populate Total Rewards Summary Table
-                for (const user_id in data.total_rewards) {
-                    const row = `<tr>
-                        <td>${user_id}</td>
-                        <td>$${data.total_rewards[user_id].toFixed(2)}</td>
-                    </tr>`;
-                    document.querySelector('#total_rewards_table tbody').insertAdjacentHTML('beforeend', row);
-                }
-
-                // Populate Daily Reward Summary Table
-                for (const date in data.reward_summary) {
-                    data.reward_summary[date].forEach(user => {
-                        const row = `<tr>
-                            <td>${date}</td>
-                            <td>${user.user_id}</td>
-                            <td>${user.post_count}</td>
-                            <td>${user.share_count}</td>
-                            <td>${user.comment_count}</td>
-                            <td>${user.total_count}</td>
-                            <td>${user.is_top_two ? 'Yes' : 'No'}</td>
-                            <td>$${user.daily_reward.toFixed(2)}</td>
-                        </tr>`;
-                        document.querySelector('#reward_summary_table tbody').insertAdjacentHTML('beforeend', row);
-                    });
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                alert("Failed to retrieve rewards. Please check your inputs and try again.");
-            }
+        Object.keys(data.total_rewards).forEach(userId => {
+            const row = `<tr><td>${userId}</td><td class="number">${money(data.total_rewards[userId])}</td></tr>`;
+            document.querySelector('#total_rewards_table tbody').insertAdjacentHTML('beforeend', row);
         });
 
-        // Show modal on Send Mail button click
-        const modal = document.getElementById("roomModal");
-        const sendMailBtn = document.getElementById("send_mail");
-        const closeModal = document.getElementsByClassName("close")[0];
-        const confirmSendMail = document.getElementById("confirm_send_mail");
+        Object.keys(data.reward_summary).forEach(date => {
+            data.reward_summary[date].forEach(user => {
+                const row = `<tr>
+                    <td>${date}</td>
+                    <td>${user.user_id}</td>
+                    <td class="number">${user.post_count}</td>
+                    <td class="number">${user.share_count}</td>
+                    <td class="number">${user.comment_count}</td>
+                    <td class="number">${user.total_count}</td>
+                    <td>${user.is_top_two ? 'Yes' : 'No'}</td>
+                    <td class="number">${money(user.daily_reward)}</td>
+                </tr>`;
+                document.querySelector('#reward_summary_table tbody').insertAdjacentHTML('beforeend', row);
+            });
+        });
 
-        sendMailBtn.onclick = function() {
-            renderRoomControls();
-            modal.style.display = "block";
-        };
+        setStatus(singleStatus, 'Single room rewards calculated.', 'success');
+    }
 
-        closeModal.onclick = function() {
-            modal.style.display = "none";
-        };
+    async function batchPreview() {
+        if (!activationFilterIsValid()) {
+            setStatus(batchStatus, 'Activation start date must be before end date.', 'error');
+            return;
+        }
 
-        window.onclick = function(event) {
-            if (event.target === modal) {
-                modal.style.display = "none";
-            }
-        };
+        setStatus(batchStatus, 'Calculating batch preview...', '');
+        const params = filterParams();
+        const response = await fetch(`/api/payment/rewards_summary/batch_preview?${params.toString()}`);
+        if (!response.ok) throw new Error('Failed to calculate batch preview');
 
-        // Send Mail API call
-        confirmSendMail.onclick = async function() {
-            if (!activationFilterIsValid()) {
-                alert("Activation start date must be before end date.");
-                return;
-            }
+        const data = await response.json();
+        batchRooms = data.rooms || [];
+        renderBatchTable(batchRooms, data.summary || {});
+        setStatus(batchStatus, `Calculated ${batchRooms.length} room(s).`, 'success');
+    }
 
-            const selectedRooms = Array.from(document.querySelectorAll("#room_selection input:checked"))
-                                       .map(input => input.value);
-            if (selectedRooms.length === 0) {
-                alert("Please select at least one room.");
-                return;
-            }
+    async function sendRooms(roomIds, statusElement) {
+        statusElement = statusElement || batchStatus;
+        if (!roomIds.length) {
+            setStatus(statusElement, 'Select at least one ready room.', 'error');
+            return;
+        }
 
-            try {
-                const response = await fetch('/post_experiment_summary_mail', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        rooms: selectedRooms,
-                        activation_start_date: activationStartInput.value,
-                        activation_end_date: activationEndInput.value
-                    }),
-                });
-                if (!response.ok) throw new Error("Failed to send mail");
+        setStatus(statusElement, 'Sending mail...', '');
+        const response = await fetch('/post_experiment_summary_mail', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                room_ids: roomIds,
+                activation_start_date: activationStartInput.value,
+                activation_end_date: activationEndInput.value,
+                include_inactive: includeInactiveInput.checked
+            })
+        });
+        if (!response.ok) throw new Error('Failed to send mail');
 
-                alert("Mail sent successfully!");
-                modal.style.display = "none";
-            } catch (error) {
-                console.error("Error:", error);
-                alert("Failed to send mail. Please try again.");
-            }
-        };
-    </script>
+        const result = await response.json();
+        const data = result.data || {};
+        const sentCount = (data.sent_rooms || []).reduce((total, room) => total + (room.sent_count || 0), 0);
+        const skippedCount = (data.skipped_rooms || []).length;
+        const failedCount = (data.failed_rooms || []).length;
+        setStatus(statusElement, `Mail queued for ${sentCount} user(s). Skipped rooms: ${skippedCount}. Failed rooms: ${failedCount}.`, failedCount ? 'error' : 'success');
+    }
+
+    activationStartInput.addEventListener('change', renderRoomControls);
+    activationEndInput.addEventListener('change', renderRoomControls);
+    includeInactiveInput.addEventListener('change', renderRoomControls);
+
+    document.getElementById('apply_activation_filter').addEventListener('click', function() {
+        if (!activationFilterIsValid()) {
+            setStatus(filterStatus, 'Activation start date must be before end date.', 'error');
+            return;
+        }
+        const params = filterParams();
+        const query = params.toString();
+        window.location.href = query ? `/api/payment/rewards_summary?${query}` : '/api/payment/rewards_summary';
+    });
+
+    document.getElementById('clear_activation_filter').addEventListener('click', function() {
+        window.location.href = '/api/payment/rewards_summary';
+    });
+
+    document.getElementById('calculate_rewards').addEventListener('click', async function() {
+        try {
+            await calculateSingleRoom();
+        } catch (error) {
+            console.error(error);
+            setStatus(singleStatus, 'Failed to retrieve rewards. Check inputs and try again.', 'error');
+        }
+    });
+
+    document.getElementById('send_current_room').addEventListener('click', async function() {
+        const roomId = Number(roomSelect.value);
+        try {
+            await sendRooms(roomId ? [roomId] : [], singleStatus);
+        } catch (error) {
+            console.error(error);
+            setStatus(singleStatus, 'Failed to send current room mail.', 'error');
+        }
+    });
+
+    document.getElementById('batch_preview').addEventListener('click', async function() {
+        try {
+            await batchPreview();
+        } catch (error) {
+            console.error(error);
+            setStatus(batchStatus, 'Failed to calculate batch preview.', 'error');
+        }
+    });
+
+    document.getElementById('select_all_rooms').addEventListener('click', function() {
+        document.querySelectorAll('#batch_rooms_table tbody input[type="checkbox"]:not(:disabled)').forEach(input => {
+            input.checked = true;
+        });
+    });
+
+    document.getElementById('clear_selected_rooms').addEventListener('click', function() {
+        document.querySelectorAll('#batch_rooms_table tbody input[type="checkbox"]').forEach(input => {
+            input.checked = false;
+        });
+    });
+
+    document.getElementById('batch_send').addEventListener('click', async function() {
+        try {
+            await sendRooms(selectedBatchRoomIds(), batchStatus);
+        } catch (error) {
+            console.error(error);
+            setStatus(batchStatus, 'Failed to send batch mail.', 'error');
+        }
+    });
+
+    renderRoomControls();
+</script>
 </body>
 </html>
