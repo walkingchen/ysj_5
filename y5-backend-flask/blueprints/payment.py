@@ -1,5 +1,5 @@
 from collections import defaultdict
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from time import strptime
 
 from flask import Blueprint, request, jsonify, render_template
@@ -11,6 +11,24 @@ from models import Room, Serializer
 
 bp_payment = Blueprint('api/payment', __name__, url_prefix='/api/payment')
 # api = Api(bp_payment, '/api/payment')
+
+
+def parse_date_filter(value):
+    if not value:
+        return None
+    return datetime.strptime(value, '%Y-%m-%d')
+
+
+def filter_rooms_by_activated_at(query, start_date_str=None, end_date_str=None):
+    start_date = parse_date_filter(start_date_str)
+    end_date = parse_date_filter(end_date_str)
+
+    if start_date:
+        query = query.filter(Room.activated_at >= start_date)
+    if end_date:
+        query = query.filter(Room.activated_at < end_date + timedelta(days=1))
+
+    return query
 
 
 def calculate_data_by_user(room_id, user_id, date_start, date_end):
@@ -363,6 +381,20 @@ def calculate_rewards():
 
 @bp_payment.route('/rewards_summary')
 def rewards_summary():
-    rooms = Room.query.filter_by(activated=1).all()
+    activation_start_date = request.args.get('activation_start_date')
+    activation_end_date = request.args.get('activation_end_date')
+
+    rooms_query = Room.query.filter_by(activated=1)
+    rooms_query = filter_rooms_by_activated_at(
+        rooms_query,
+        activation_start_date,
+        activation_end_date
+    )
+    rooms = rooms_query.all()
     rooms_serialized = Serializer.serialize_list(rooms)
-    return render_template('rewards.html', rooms=rooms_serialized)
+    return render_template(
+        'rewards.html',
+        rooms=rooms_serialized,
+        activation_start_date=activation_start_date or '',
+        activation_end_date=activation_end_date or ''
+    )

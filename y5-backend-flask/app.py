@@ -773,6 +773,20 @@ def mail_night_route():
 def post_experiment_summary_mail():
     data = request.get_json()
     room_ids = data['rooms']
+    activation_start_date = data.get('activation_start_date')
+    activation_end_date = data.get('activation_end_date')
+
+    try:
+        activation_start = datetime.datetime.strptime(activation_start_date, '%Y-%m-%d').date() if activation_start_date else None
+        activation_end = datetime.datetime.strptime(activation_end_date, '%Y-%m-%d').date() if activation_end_date else None
+    except ValueError:
+        return jsonify(Resp(result_code=4000, result_msg="invalid activation date", data=None).__dict__), 400
+
+    if activation_start and activation_end and activation_start > activation_end:
+        return jsonify(Resp(result_code=4000, result_msg="activation start date is after end date", data=None).__dict__), 400
+
+    sent_rooms = []
+    skipped_rooms = []
     with app.app_context():
         # 指定服务器时区
         server_timezone = pytz.timezone('America/Chicago')
@@ -784,6 +798,19 @@ def post_experiment_summary_mail():
             if room is None:
                 continue
             day_activated = room.activated_at
+            if activation_start or activation_end:
+                if day_activated is None:
+                    skipped_rooms.append(room_id)
+                    continue
+
+                activated_date = day_activated.date()
+                if activation_start and activated_date < activation_start:
+                    skipped_rooms.append(room_id)
+                    continue
+                if activation_end and activated_date > activation_end:
+                    skipped_rooms.append(room_id)
+                    continue
+
             # FIXME 解决本地时间和服务器时间不一致问题
             local_time = time.localtime(int(day_activated.timestamp()))
 
@@ -830,7 +857,12 @@ def post_experiment_summary_mail():
                     # send_email_async(['cenux1987@163.com'], subject, message, message)
                     send_email_async([user.email], subject, message, message)
 
-        return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
+            sent_rooms.append(room.id)
+
+        return jsonify(Resp(result_code=2000, result_msg="success", data={
+            "sent_rooms": sent_rooms,
+            "skipped_rooms": skipped_rooms
+        }).__dict__)
 
 
 @app.route('/test_post_experiment_summary_mail', methods=['GET'])

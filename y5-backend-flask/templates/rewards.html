@@ -102,6 +102,27 @@
         #confirm_send_mail:hover {
             background-color: #0056b3;
         }
+
+        .filter-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .muted {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .secondary-button {
+            background-color: #f4f4f4;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -109,11 +130,24 @@
 
     <!-- Room and Date Selection Form -->
     <div>
+        <div class="filter-row">
+            <strong>Room Activation Filter:</strong>
+            <label for="activation_start_date">Start Date:</label>
+            <input type="date" id="activation_start_date" name="activation_start_date" value="{{ activation_start_date }}">
+
+            <label for="activation_end_date">End Date:</label>
+            <input type="date" id="activation_end_date" name="activation_end_date" value="{{ activation_end_date }}">
+
+            <button id="apply_activation_filter" class="secondary-button">Apply</button>
+            <button id="clear_activation_filter" class="secondary-button">Clear</button>
+            <span id="room_filter_count" class="muted"></span>
+        </div>
+
         <label for="room_id">Room ID:</label>
         <!-- 显示下拉框，默认显示第一个room id-->
         <select id="room_id" name="room_id">
             {% for room in rooms %}
-                <option value="{{ room.id }}">{{ room.id }} - {{ room.room_id }}</option>
+                <option value="{{ room.id }}">{{ room.id }} - {{ room.room_id }}{% if room.activated_at %} ({{ room.activated_at[:10] }}){% endif %}</option>
             {% endfor %}
         </select>
 {#        <input type="text" id="room_id" name="room_id" required>#}
@@ -163,10 +197,11 @@
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>Select Rooms</h2>
+            <div class="muted">Only rooms matching the activation filter are shown.</div>
             <div id="room_selection">
                 {% for room in rooms %}
                     <label>
-                        <input type="checkbox" value="{{ room.id }}"> {{ room.id }} - {{ room.room_id }}
+                        <input type="checkbox" value="{{ room.id }}"> {{ room.id }} - {{ room.room_id }}{% if room.activated_at %} ({{ room.activated_at[:10] }}){% endif %}
                     </label>
                 {% endfor %}
             </div>
@@ -175,10 +210,117 @@
     </div>
 
     <script>
+        const roomsData = {{ rooms|tojson }};
+        const roomSelect = document.getElementById('room_id');
+        const roomSelection = document.getElementById('room_selection');
+        const activationStartInput = document.getElementById('activation_start_date');
+        const activationEndInput = document.getElementById('activation_end_date');
+        const roomFilterCount = document.getElementById('room_filter_count');
+
+        function roomLabel(room) {
+            const activatedDate = room.activated_at ? room.activated_at.slice(0, 10) : 'not activated';
+            return `${room.id} - ${room.room_id} (${activatedDate})`;
+        }
+
+        function roomMatchesActivationFilter(room) {
+            const startDate = activationStartInput.value;
+            const endDate = activationEndInput.value;
+
+            if (!startDate && !endDate) return true;
+            if (!room.activated_at) return false;
+
+            const activatedDate = room.activated_at.slice(0, 10);
+            if (startDate && activatedDate < startDate) return false;
+            if (endDate && activatedDate > endDate) return false;
+            return true;
+        }
+
+        function getFilteredRooms() {
+            return roomsData.filter(roomMatchesActivationFilter);
+        }
+
+        function activationFilterIsValid() {
+            const startDate = activationStartInput.value;
+            const endDate = activationEndInput.value;
+            return !startDate || !endDate || startDate <= endDate;
+        }
+
+        function renderRoomControls() {
+            if (!activationFilterIsValid()) {
+                roomFilterCount.textContent = 'Start date must be before end date';
+                roomSelect.innerHTML = '';
+                roomSelection.innerHTML = '';
+                return;
+            }
+
+            const previousRoom = roomSelect.value;
+            const checkedRooms = new Set(
+                Array.from(document.querySelectorAll("#room_selection input:checked")).map(input => input.value)
+            );
+            const filteredRooms = getFilteredRooms();
+
+            roomSelect.innerHTML = '';
+            filteredRooms.forEach(room => {
+                const option = document.createElement('option');
+                option.value = room.id;
+                option.textContent = roomLabel(room);
+                roomSelect.appendChild(option);
+            });
+            if (filteredRooms.some(room => String(room.id) === previousRoom)) {
+                roomSelect.value = previousRoom;
+            }
+
+            roomSelection.innerHTML = '';
+            filteredRooms.forEach(room => {
+                const label = document.createElement('label');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.value = room.id;
+                checkbox.checked = checkedRooms.has(String(room.id));
+                label.appendChild(checkbox);
+                label.appendChild(document.createTextNode(` ${roomLabel(room)}`));
+                roomSelection.appendChild(label);
+            });
+
+            roomFilterCount.textContent = `${filteredRooms.length} room(s) shown`;
+        }
+
+        activationStartInput.addEventListener('change', renderRoomControls);
+        activationEndInput.addEventListener('change', renderRoomControls);
+
+        document.getElementById('apply_activation_filter').addEventListener('click', function() {
+            if (!activationFilterIsValid()) {
+                alert("Activation start date must be before end date.");
+                return;
+            }
+
+            const params = new URLSearchParams();
+            if (activationStartInput.value) params.set('activation_start_date', activationStartInput.value);
+            if (activationEndInput.value) params.set('activation_end_date', activationEndInput.value);
+            const query = params.toString();
+            window.location.href = query ? `/api/payment/rewards_summary?${query}` : '/api/payment/rewards_summary';
+        });
+
+        document.getElementById('clear_activation_filter').addEventListener('click', function() {
+            window.location.href = '/api/payment/rewards_summary';
+        });
+
+        renderRoomControls();
+
         document.getElementById('calculate_rewards').addEventListener('click', async function() {
             const room_id = document.getElementById('room_id').value;
             const start_date = document.getElementById('date_start').value;
             const end_date = document.getElementById('date_end').value;
+
+            if (!activationFilterIsValid()) {
+                alert("Activation start date must be before end date.");
+                return;
+            }
+
+            if (!room_id) {
+                alert("No room matches the activation filter.");
+                return;
+            }
 
             // Send fetch request
             try {
@@ -229,6 +371,7 @@
         const confirmSendMail = document.getElementById("confirm_send_mail");
 
         sendMailBtn.onclick = function() {
+            renderRoomControls();
             modal.style.display = "block";
         };
 
@@ -244,6 +387,11 @@
 
         // Send Mail API call
         confirmSendMail.onclick = async function() {
+            if (!activationFilterIsValid()) {
+                alert("Activation start date must be before end date.");
+                return;
+            }
+
             const selectedRooms = Array.from(document.querySelectorAll("#room_selection input:checked"))
                                        .map(input => input.value);
             if (selectedRooms.length === 0) {
@@ -257,7 +405,11 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ rooms: selectedRooms }),
+                    body: JSON.stringify({
+                        rooms: selectedRooms,
+                        activation_start_date: activationStartInput.value,
+                        activation_end_date: activationEndInput.value
+                    }),
                 });
                 if (!response.ok) throw new Error("Failed to send mail");
 
