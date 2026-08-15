@@ -8,6 +8,17 @@ from night_mail_content import (
 
 
 class NightMailContentTest(unittest.TestCase):
+    def test_updated_survey_links_for_days_five_through_eight(self):
+        self.assertEqual(
+            {day: DAILY_SURVEY_LINKS[day] for day in range(5, 9)},
+            {
+                5: "https://uwmadison.co1.qualtrics.com/jfe/form/SV_1GkkxaJOYMTpaR0",
+                6: "https://uwmadison.co1.qualtrics.com/jfe/form/SV_38VfuwQEo1qTNtk",
+                7: "https://uwmadison.co1.qualtrics.com/jfe/form/SV_1SUWdDVDs6g3sTY",
+                8: "https://uwmadison.co1.qualtrics.com/jfe/form/SV_6PAszQdAP1RJxn8",
+            },
+        )
+
     def test_each_day_uses_its_own_survey_link(self):
         self.assertEqual(len(DAILY_SURVEY_LINKS), 8)
 

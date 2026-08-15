@@ -6,10 +6,10 @@ DAILY_SURVEY_LINKS = {
     2: "https://uwmadison.co1.qualtrics.com/jfe/form/SV_8cTbJ0UWbgnSJLg",
     3: "https://uwmadison.co1.qualtrics.com/jfe/form/SV_bykweL3JOk9ayKW",
     4: "https://uwmadison.co1.qualtrics.com/jfe/form/SV_erDHeg4NlmMBU3Q",
-    5: "https://uwmadison.co1.qualtrics.com/jfe/form/SV_eM8iq038kdCV7Ya",
-    6: "https://uwmadison.co1.qualtrics.com/jfe/form/SV_d4pMvyZOmsJ54Vw",
-    7: "https://uwmadison.co1.qualtrics.com/jfe/form/SV_bDR2YbKK2Uu2wZg",
-    8: "https://uwmadison.co1.qualtrics.com/jfe/form/SV_8oJNg5sKDw7k1p4",
+    5: "https://uwmadison.co1.qualtrics.com/jfe/form/SV_1GkkxaJOYMTpaR0",
+    6: "https://uwmadison.co1.qualtrics.com/jfe/form/SV_38VfuwQEo1qTNtk",
+    7: "https://uwmadison.co1.qualtrics.com/jfe/form/SV_1SUWdDVDs6g3sTY",
+    8: "https://uwmadison.co1.qualtrics.com/jfe/form/SV_6PAszQdAP1RJxn8",
 }
 
 

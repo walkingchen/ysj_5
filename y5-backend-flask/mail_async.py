@@ -148,7 +148,7 @@ def send_room_activation_email_async(user_email, user_nickname, condition=None):
         partisan = condition in ('1', 1)
     except Exception:
         partisan = False
-    video_url = "https://youtu.be/38L93ENyGAU" if partisan else "https://youtu.be/ke6C6hCFqfU"
+    video_url = "https://youtu.be/TgDJWI6QTmA" if partisan else "https://youtu.be/D4U0Eajnb-Q"
     video_url = '<p><a href="' + video_url + '">' + video_url + '</a></p>'
     html_message = '''
     <!DOCTYPE html>
