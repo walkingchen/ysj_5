@@ -234,10 +234,10 @@ def send_post_survey_emails_for_room(room):
         </head>
         <body>
         <div class="container">
-            <p>Thank you for participating on Chattera! We wanted to remind you that there is a post-survey available for you to complete. By completing this post-survey, you will earn an additional $5 as part of your compensation.</p>
+            <p>Thank you for participating on Chattera! We wanted to remind you that there is a post-survey available for you to complete. By completing this post-survey, you will earn an additional $4 as part of your compensation.</p>
             <p>To access the post-survey, simply click the button below.</p>
             <div style="margin: 30px 15px;">
-              <a class="login-button" href="https://uwmadison.co1.qualtrics.com/jfe/form/SV_bQ3Ngp6xOKpXbds">Start the Survey</a>
+              <a class="login-button" href="https://uwmadison.co1.qualtrics.com/jfe/form/SV_bQ3Ngp6xOKpXbds">Survey link</a>
             </div>
             <p>We greatly appreciate your time and participation so far, and your responses to the post-survey will be incredibly valuable to our team.</p>
             <p>Thank you once again!</p>
