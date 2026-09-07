@@ -711,14 +711,15 @@ def mail_night():
                 else:
                     payment = 0
 
-                content = build_night_mail_content(day, payment)
+                user = User.query.filter_by(id=member.user_id).first()
+                if user is None:
+                    continue
+
+                content = build_night_mail_content(day, payment, user.rid)
 
                 message = message_html % (content, top_str, post_str, comment_str, like_str)
                 subject = build_night_mail_subject(day)
 
-                user = User.query.filter_by(id=member.user_id).first()
-                if user is None:
-                    continue
                 if user.email is not None:
                     # 异步发送邮件
                     from mail_async import send_email_async

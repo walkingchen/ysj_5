@@ -35,6 +35,23 @@ class NightMailContentTest(unittest.TestCase):
             "Chattera Night Mail and Daily Survey - DAY 6",
         )
 
+    def test_rid_is_added_to_survey_link_and_url_encoded(self):
+        link = DAILY_SURVEY_LINKS[3]
+
+        content = build_night_mail_content(3, 0.25, " participant+123 ")
+
+        expected_link = f"{link}?rid=participant%2B123"
+        self.assertIn(f'href="{expected_link}"', content)
+        self.assertIn(f">{expected_link}</a>", content)
+
+    def test_missing_rid_keeps_original_survey_link(self):
+        link = DAILY_SURVEY_LINKS[4]
+
+        content = build_night_mail_content(4, 0.25, "  ")
+
+        self.assertIn(f'href="{link}"', content)
+        self.assertNotIn("?rid=", content)
+
     def test_unknown_day_is_rejected(self):
         with self.assertRaises(KeyError):
             build_night_mail_content(9, 0)
