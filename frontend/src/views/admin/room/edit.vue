@@ -4,7 +4,7 @@
     :visible="show"
     width="500px"
     @close="close">
-    <el-form ref="form" :model="formData" :rules="rules" label-width="100px">
+    <el-form ref="form" :model="formData" :rules="rules" label-width="130px">
       <el-form-item label="Name" prop="room_name">
         <el-input v-model="formData.room_name" />
       </el-form-item>
@@ -18,6 +18,9 @@
       </el-form-item>
       <el-form-item label="Actived">
         <el-switch v-model="formData.activated" :active-value="1" :inactive-value="0" />
+      </el-form-item>
+      <el-form-item label="Activation Mail">
+        <el-switch v-model="formData.send_activation_mail" :disabled="formData.activated !== 1" />
       </el-form-item>
       <el-form-item label="Publish Time">
         <el-time-select v-model="formData.publish_time" :picker-options="{ start: '00:00', step: '01:00', end: '23:00' }" />
@@ -49,6 +52,7 @@ export default {
         room_name: '',
         room_type: '',
         activated: 1,
+        send_activation_mail: false,
         publish_time: '00:00',
         condition: ''
       },
@@ -97,6 +101,7 @@ export default {
           room_name,
           room_type,
           activated,
+          send_activation_mail: false,
           publish_time: _publish_time,
           condition: condition || ''
         }

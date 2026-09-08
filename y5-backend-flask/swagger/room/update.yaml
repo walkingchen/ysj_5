@@ -28,6 +28,10 @@ parameters:
         activated:
           type: integer
           description: is activated, 0 or 1
+        send_activation_mail:
+          type: boolean
+          default: false
+          description: send activation mail to room members after this update
         publish_time:
           type: integer
           description: publish clock, 0 ~ 23

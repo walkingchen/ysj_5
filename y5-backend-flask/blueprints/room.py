@@ -159,8 +159,9 @@ class RoomApi(Resource):
         db.session.add(room)
         db.session.commit()
 
-        # 邮件发送移到数据库事务之外，异步执行
-        if 'activated' in data and data['activated'] == 1:
+        # 邮件发送移到数据库事务之外，并且只在管理员明确开启本次发送时执行
+        send_activation_mail = data.get('send_activation_mail') in (True, 1, '1')
+        if room.activated == 1 and send_activation_mail:
             members = RoomMember.query.filter_by(room_id=room.id).all()
             for member in members:
                 user = User.query.get(member.user_id)

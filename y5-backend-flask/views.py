@@ -16,7 +16,6 @@ from wtforms.utils import unset_value
 from flask_admin.helpers import get_url
 from flask_admin.form.upload import ImageUploadField, thumbgen_filename
 from flask_admin._compat import string_types, urljoin
-from wtforms import BooleanField
 
 from extensions import db
 from mail_async import send_room_activation_email_async
@@ -60,14 +59,6 @@ class RoomModelView(ModelView):
     column_list = ['id', 'room_name', 'activated', 'room_desc', 'room_type', 'people_limit', 'created_at']
     column_searchable_list = ['room_id', 'people_limit', 'created_at']
     column_filters = column_searchable_list
-    form_extra_fields = {
-        'activation_mail': BooleanField(
-            'Activation Mail',
-            default=False,
-            description='Send the activation email to active room members after saving.'
-        )
-    }
-
     @action('activate', 'Activate Rooms', 'Are you sure you want to start selected rooms?')
     def action_start_rooms(self, ids):
         for id in ids:
@@ -95,10 +86,9 @@ class RoomModelView(ModelView):
         if model is None or model.activated != 1:
             return
 
-        # Editing an active room must not resend activation emails unless the
-        # admin explicitly enables the one-time switch on the edit form.
-        # Bulk activation has no form and keeps its existing send behavior.
-        if form is not None and not form.activation_mail.data:
+        # Activation mail is controlled by the Vue room editor. Flask-Admin
+        # bulk activation has no form and keeps its existing send behavior.
+        if form is not None:
             return
 
         members = RoomMember.query.filter_by(room_id=model.id, activated=1).all()
