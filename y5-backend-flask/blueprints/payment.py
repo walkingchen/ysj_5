@@ -1,6 +1,5 @@
 from collections import defaultdict
-from datetime import date, datetime, timedelta
-from time import strptime
+from datetime import date as date_cls, datetime, timedelta
 
 from flask import Blueprint, request, jsonify, render_template
 from flask_restful import Api
@@ -357,12 +356,12 @@ ORDER BY mc.room_id, mc.date, mc.total_count DESC;
 def calculate_func(room_id, date_start, date_end):
     if isinstance(date_start, datetime):
         date_start = date_start.replace(microsecond=0)
-    elif isinstance(date_start, date):
+    elif isinstance(date_start, date_cls):
         date_start = datetime.combine(date_start, datetime.min.time())
 
     if isinstance(date_end, datetime):
         date_end = date_end.replace(microsecond=0)
-    elif isinstance(date_end, date):
+    elif isinstance(date_end, date_cls):
         date_end = datetime.combine(date_end, datetime.min.time())
 
     # 计算每日post/comment等数据（调用计算函数或直接编写在此）
@@ -385,7 +384,7 @@ def calculate_func(room_id, date_start, date_end):
     total_rewards = defaultdict(float)  # 成员奖励总数
 
     for room, dates in formatted_data.items():
-        for date, users in dates.items():
+        for date_key, users in dates.items():
             # 排序用户，找出最活跃的前两位
             sorted_users = sorted(users, key=lambda x: x['total_count'], reverse=True)
             if not sorted_users:
@@ -416,7 +415,7 @@ def calculate_func(room_id, date_start, date_end):
                 total_rewards[user_id] += daily_reward
 
                 # 存储每日数据到 reward_summary
-                reward_summary[date].append({
+                reward_summary[date_key].append({
                     'user_id': user_id,
                     'post_count': user['post_count'],
                     'share_count': user['share_count'],
@@ -443,8 +442,11 @@ def calculate_rewards():
     room_id = data.get('room_id', type=int)
     date_start_str = data.get('start_date')  # 假设日期格式为 YYYY-MM-DD
     date_end_str = data.get('end_date')  # 假设日期格式为 YYYY-MM-DD
-    date_start = strptime(date_start_str, '%Y-%m-%d')
-    date_end = strptime(date_end_str, '%Y-%m-%d')
+    try:
+        date_start = datetime.strptime(date_start_str, '%Y-%m-%d')
+        date_end = datetime.strptime(date_end_str, '%Y-%m-%d') + timedelta(days=1)
+    except (TypeError, ValueError):
+        return jsonify({'error': 'invalid date'}), 400
 
     return jsonify(calculate_func(room_id, date_start, date_end))
 
