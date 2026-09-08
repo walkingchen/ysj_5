@@ -30,6 +30,7 @@ from room_socketio import RoomNamespace
 from extensions import db, cache, socketio, scheduler, mail
 from models import User, Room, RoomPrototype, RoomMember, PublicPost, PostComment, PostLike, \
     SystemMessage, PrivateMessage, PostFlag, PrivatePost, PollPost, MailTemplate, Serializer
+from night_mail_content import build_night_mail_content, build_night_mail_subject
 from service import get_top_participants
 
 app = Flask(__name__)
@@ -233,10 +234,10 @@ def send_post_survey_emails_for_room(room):
         </head>
         <body>
         <div class="container">
-            <p>Thank you for participating on Chattera! We wanted to remind you that there is a post-survey available for you to complete. By completing this post-survey, you will earn an additional $5 as part of your compensation.</p>
+            <p>Thank you for participating on Chattera! We wanted to remind you that there is a post-survey available for you to complete. By completing this post-survey, you will earn an additional $4 as part of your compensation.</p>
             <p>To access the post-survey, simply click the button below.</p>
             <div style="margin: 30px 15px;">
-              <a class="login-button" href="https://uwmadison.co1.qualtrics.com/jfe/form/SV_bQ3Ngp6xOKpXbds">Start the Survey</a>
+              <a class="login-button" href="https://uwmadison.co1.qualtrics.com/jfe/form/SV_bQ3Ngp6xOKpXbds">Survey link</a>
             </div>
             <p>We greatly appreciate your time and participation so far, and your responses to the post-survey will be incredibly valuable to our team.</p>
             <p>Thank you once again!</p>
@@ -710,45 +711,15 @@ def mail_night():
                 else:
                     payment = 0
 
-                content = message_template.content
-                topic = None
-                if 1 <= day <= len(config.TOPIC_LIST):
-                    topic = config.TOPIC_LIST[day - 1]
-                else:
-                    logger.warning("No topic configured for day %d in room %d", day, room.id)
-
-                # 替换模板中的占位符：第一个 %s 是 payment，第二个 %s 是 topic
-                if "%s" in content:
-                    try:
-                        # 计算模板中 %s 的数量
-                        placeholder_count = content.count("%s")
-                        if placeholder_count == 2 and topic is not None:
-                            content = content % (payment, topic)
-                        elif placeholder_count == 1:
-                            # 只有一个占位符，根据模板内容判断替换 payment 还是 topic
-                            if "$%s" in content:
-                                content = content % payment
-                            elif topic is not None:
-                                content = content % topic
-                        else:
-                            logger.warning(
-                                "Mail template has %d placeholders but topic is %s for room %d day %d",
-                                placeholder_count, topic, room.id, day
-                            )
-                    except (TypeError, ValueError) as exc:
-                        logger.warning(
-                            "Mail template format error for room %d day %d: %s",
-                            room.id,
-                            day,
-                            exc,
-                        )
-
-                message = message_html % (content, top_str, post_str, comment_str, like_str)
-                subject = message_template.title
-
                 user = User.query.filter_by(id=member.user_id).first()
                 if user is None:
                     continue
+
+                content = build_night_mail_content(day, payment, user.rid)
+
+                message = message_html % (content, top_str, post_str, comment_str, like_str)
+                subject = build_night_mail_subject(day)
+
                 if user.email is not None:
                     # 异步发送邮件
                     from mail_async import send_email_async
@@ -1163,24 +1134,7 @@ def test_night_mail_content():
             payment = 0
         logger.info('payment: %s, user id: %s', payment, member.user_id)
 
-        content = message_template.content
-        topic = None
-        if 1 <= day <= len(config.TOPIC_LIST):
-            topic = config.TOPIC_LIST[day - 1]
-
-        # 替换模板中的占位符：第一个 %s 是 payment，第二个 %s 是 topic
-        if "%s" in content:
-            try:
-                placeholder_count = content.count("%s")
-                if placeholder_count == 2 and topic is not None:
-                    content = content % (payment, topic)
-                elif placeholder_count == 1:
-                    if "$%s" in content:
-                        content = content % payment
-                    elif topic is not None:
-                        content = content % topic
-            except (TypeError, ValueError) as exc:
-                logger.warning("Mail template format error: %s", exc)
+        content = build_night_mail_content(day, payment)
 
         message = message_html % (content, top_str, post_str, comment_str, like_str)
 
