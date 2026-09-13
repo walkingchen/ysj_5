@@ -44,6 +44,31 @@ class NightMailContentTest(unittest.TestCase):
         self.assertIn(f'href="{expected_link}"', content)
         self.assertIn(f">{expected_link}</a>", content)
 
+    def test_rid_and_email_are_added_and_url_encoded(self):
+        link = DAILY_SURVEY_LINKS[3]
+
+        content = build_night_mail_content(
+            3,
+            0.25,
+            " participant+123 ",
+            " participant+test@example.com ",
+        )
+
+        expected_link = (
+            f"{link}?rid=participant%2B123"
+            "&amp;email=participant%2Btest%40example.com"
+        )
+        self.assertIn(f'href="{expected_link}"', content)
+        self.assertIn(f">{expected_link}</a>", content)
+
+    def test_email_is_added_when_rid_is_missing(self):
+        link = DAILY_SURVEY_LINKS[4]
+
+        content = build_night_mail_content(4, 0.25, "  ", "person@example.com")
+
+        expected_link = f"{link}?email=person%40example.com"
+        self.assertIn(f'href="{expected_link}"', content)
+
     def test_missing_rid_keeps_original_survey_link(self):
         link = DAILY_SURVEY_LINKS[4]
 

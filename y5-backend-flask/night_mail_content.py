@@ -18,11 +18,17 @@ def build_night_mail_subject(day):
     return f"Chattera Night Mail and Daily Survey - DAY {day}"
 
 
-def build_night_mail_content(day, payment, rid=None):
+def build_night_mail_content(day, payment, rid=None, email=None):
     survey_link = DAILY_SURVEY_LINKS[day]
+    survey_params = {}
     if rid is not None and str(rid).strip():
+        survey_params["rid"] = str(rid).strip()
+    if email is not None and str(email).strip():
+        survey_params["email"] = str(email).strip()
+
+    if survey_params:
         separator = "&" if "?" in survey_link else "?"
-        survey_link = f"{survey_link}{separator}{urlencode({'rid': str(rid).strip()})}"
+        survey_link = f"{survey_link}{separator}{urlencode(survey_params)}"
 
     survey_link_html = escape(survey_link, quote=True)
     payment_text = escape(str(payment))

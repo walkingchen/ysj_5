@@ -715,7 +715,7 @@ def mail_night():
                 if user is None:
                     continue
 
-                content = build_night_mail_content(day, payment, user.rid)
+                content = build_night_mail_content(day, payment, user.rid, user.email)
 
                 message = message_html % (content, top_str, post_str, comment_str, like_str)
                 subject = build_night_mail_subject(day)
