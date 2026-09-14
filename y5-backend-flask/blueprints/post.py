@@ -979,35 +979,75 @@ def import_members_with_messages():
     stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
     csv_input = csv.reader(stream)
 
-    room_cleaned = []
+    assignments = []
+    room_users = {}
+    room_seats = {}
+    room_user_seats = {}
     for key, line in enumerate(csv_input):
         if key == 0:
             # if line != ['id', 'user_id', 'room_type', 'room_id', 'seat_no', 'day', 'topic_no', 'message_id']:
             #     return jsonify(Resp(result_code=4000, result_msg="error content", data=None).__dict__)
             continue
         # id,user_id,room_type,room_id,seat_no,day,topic_no,message_id
-        user_id = line[1]
+        user_id = int(line[1])
         room_id = int(line[3])
-        seat_no = int(line[4])  # 转换为整数
+        seat_no = int(line[4])
         day = line[5]
         topic_no = line[6]
         message_id = line[7]
 
-        # clean by room_id, ignore if activated
-        if room_id not in room_cleaned:
-            room = Room.query.filter_by(id=room_id).first()     # id, not room_id
-            if room.activated == 1:
-                return jsonify(Resp(result_code=4000, result_msg="room activated", data=room.serialize()).__dict__)
-            # messages_existed = PrivatePost.query.filter_by(room_id=room_id).all()
-            # for message in messages_existed:
-            #     db.session.delete(message)
-            #     db.session.commit()
-            db.session.query(PrivatePost).filter_by(room_id=room_id).delete()
-            room_cleaned.append(room_id)
+        users = room_users.setdefault(room_id, set())
+        seats = room_seats.setdefault(room_id, {})
+        user_seats = room_user_seats.setdefault(room_id, {})
+        existing_user_id = seats.get(seat_no)
+        if existing_user_id is not None and existing_user_id != user_id:
+            return jsonify(Resp(
+                result_code=4000,
+                result_msg="duplicate seat_no in room %d: seat %d" % (room_id, seat_no),
+                data=None
+            ).__dict__)
+        existing_seat_no = user_seats.get(user_id)
+        if existing_seat_no is not None and existing_seat_no != seat_no:
+            return jsonify(Resp(
+                result_code=4000,
+                result_msg="multiple seat_no values for user %d in room %d" % (user_id, room_id),
+                data=None
+            ).__dict__)
+        seats[seat_no] = user_id
+        user_seats[user_id] = seat_no
+        users.add(user_id)
+        assignments.append((user_id, room_id, seat_no, day, topic_no, message_id))
 
-        user = User.query.filter_by(id=user_id).first()
+    for room_id in room_users:
+        room = Room.query.filter_by(id=room_id).first()
+        if room is None:
+            return jsonify(Resp(result_code=4000, result_msg="room not exists, id=" + str(room_id), data=None).__dict__)
+        if room.activated == 1:
+            return jsonify(Resp(result_code=4000, result_msg="room activated", data=room.serialize()).__dict__)
+    users = {}
+    messages = {}
+    for user_id, room_id, seat_no, day, topic_no, message_id in assignments:
+        user = users.get(user_id) or User.query.filter_by(id=user_id).first()
         if user is None:
-            return jsonify(Resp(result_code=4000, result_msg="username error", data=None).__dict__)
+            return jsonify(Resp(result_code=4000, result_msg="user not exists, id=" + str(user_id), data=None).__dict__)
+        users[user_id] = user
+
+        private_message = messages.get(message_id) or PrivateMessage.query.filter_by(message_id=message_id).first()
+        if private_message is None:
+            return jsonify(Resp(result_code=4000, result_msg="message id not exists, id=" + str(message_id), data=None).__dict__)
+        messages[message_id] = private_message
+
+    # The assignment CSV is the source of truth for each included room. Remove
+    # posts and memberships left by earlier cohorts before rebuilding them.
+    for room_id, assigned_user_ids in room_users.items():
+        db.session.query(PrivatePost).filter_by(room_id=room_id).delete(synchronize_session=False)
+        db.session.query(RoomMember).filter(
+            RoomMember.room_id == room_id,
+            ~RoomMember.user_id.in_(assigned_user_ids)
+        ).delete(synchronize_session=False)
+
+    for user_id, room_id, seat_no, day, topic_no, message_id in assignments:
+        user = users[user_id]
 
         member = RoomMember.query.filter_by(user_id=user.id, room_id=room_id).first()
         if member is None:
@@ -1017,16 +1057,10 @@ def import_members_with_messages():
                 seat_no=seat_no
             )
             db.session.add(member)
-            db.session.commit()
         else:
-            # 如果member已存在，更新其seat_no
             member.seat_no = seat_no
-            db.session.commit()
 
-        participant = User.query.filter_by(id=user.id).first()
-        private_message = PrivateMessage.query.filter_by(message_id=message_id).first()
-        if private_message is None:
-            return jsonify(Resp(result_code=4000, result_msg="message id not exists, id=" + str(message_id), data=None).__dict__)
+        private_message = messages[message_id]
 
         post = PrivatePost(
             message_id=message_id,
@@ -1035,13 +1069,14 @@ def import_members_with_messages():
             post_content=private_message.message_content,
             abstract=private_message.abstract,
             post_type=1,    # fixme
-            user_id=participant.id,
+            user_id=user.id,
             room_id=room_id,
             topic=topic_no,
             photo_uri=private_message.photo_uri
         )
         db.session.add(post)
-        db.session.commit()
+
+    db.session.commit()
 
     return jsonify(Resp(result_code=2000, result_msg="success", data=None).__dict__)
 
