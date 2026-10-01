@@ -4,6 +4,7 @@
 """
 import threading
 import logging
+from html import escape
 from concurrent.futures import ThreadPoolExecutor
 from flask import current_app
 from flask_mail import Message
@@ -136,18 +137,48 @@ def send_room_activation_email_async(user_email, user_nickname, condition=None):
     """
     异步发送房间激活邮件
     """
-    message = "Hi " + user_nickname + ", your platform has already been activated. " \
-              + "Login url: http://camer-covid.journalism.wisc.edu/#/login"
+    video_url = "https://youtu.be/TgDJWI6QTmA" if condition in ('1', 1) else "https://youtu.be/D4U0Eajnb-Q"
+    login_url = "https://camer-covid.journalism.wisc.edu/#/login"
+    safe_nickname = escape(str(user_nickname))
+    message = f'''Hi {user_nickname},
 
-    # 根据 condition 选择视频链接
-    partisan = False
-    try:
-        partisan = condition in ('1', 1)
-    except Exception:
-        partisan = False
-    video_url = "https://youtu.be/TgDJWI6QTmA" if partisan else "https://youtu.be/D4U0Eajnb-Q"
-    video_url = '<p><a href="' + video_url + '">' + video_url + '</a></p>'
-    html_message = '''
+Thank you for signing up to join Chattera and share your memories and stories about the COVID-19 pandemic. Your Chattera room is now active!
+
+The COVID-19 pandemic has significantly impacted our lives over the past few years. Although the pandemic has ended, reflecting on our experiences can provide valuable insights. We all went through this unprecedented time together, and your feelings matter. We invite you to join the conversation on Chattera and share your memories of the COVID-19 pandemic.
+
+What You Will Do:
+
+Your Chattera room will be open for at least eight days. Each day, you will be invited to read and respond to posts on the platform, share your thoughts, and interact with your Chattera buddies.
+
+You'll find a variety of popular social media posts about COVID-19 on Chattera. Some of these posts may contain information that differs from what you currently know or contradict the best available evidence. Note that they do not imply endorsement of the Chattera team.
+
+In today's complex information environment, it's important to verify the accuracy of what we read and share, and individual efforts are particularly vital in maintaining a well-informed community. Therefore, we encourage you to fact-check the information on the platform and share your opinions with others. As you participate in discussions, please remember to stay civil, respect differing viewpoints, and foster a supportive and constructive community.
+
+Here is a video to walk you through Chattera:
+{video_url}
+
+What You Will Receive:
+
+We encourage you to dive into the conversations on Chattera! Each day, if you contribute at least one thoughtful post, comment, or share, you'll earn $0.25 as a reward. Plus, if you're one of the two most active users in your Chattera room for a particular day, you'll score an extra $1 for that day.
+
+Stay engaged and share your insights! The top participants in your room will earn up to $10 and we hope you will be one of them!
+
+In addition to engaging on Chattera, you will be invited to complete a short daily survey about your experience on the platform. Each completed daily survey will earn you an additional $0.25, for a total of up to $2 for all eight daily surveys.
+
+The table below summarizes the activities and compensation available throughout the project.
+
+Take pre-survey: $1
+Interact with your Chattera friends: $0.25 per day for at least one thoughtful post, comment, or share (up to $2); $1 bonus per day for being one of the two most active users (up to $8).
+Take daily surveys: $0.25 per completed survey (up to $2 for all eight).
+Take post-survey: $4
+Total: Up to $17
+
+Join your Chattera room now and start sharing your experiences!
+Log in: {login_url}
+
+Best regards,
+Your Chattera Team'''
+    html_message = f'''
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -155,33 +186,33 @@ def send_room_activation_email_async(user_email, user_nickname, condition=None):
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Chattera Participation Information</title>
         <style>
-            body {
+            body {{
                 font-family: Arial, sans-serif;
                 line-height: 1.6;
                 margin: 20px;
                 color: #333;
-            }
-            table {
+            }}
+            table {{
                 width: 80%;
                 border-collapse: collapse;
                 margin: 20px auto;
-            }
-            th, td {
+            }}
+            th, td {{
                 border: 1px solid #ddd;
                 text-align: left;
                 padding: 8px;
-            }
-            th {
+            }}
+            th {{
                 background-color: #f4f4f4;
-            }
-            .content {
+            }}
+            .content {{
                 max-width: 800px;
                 margin: 0 auto;
-            }
-            .content p {
+            }}
+            .content p {{
                 margin: 10px 0;
-            }
-            .button {
+            }}
+            .button {{
                 display: inline-block;
                 padding: 10px 20px;
                 font-size: 16px;
@@ -192,42 +223,45 @@ def send_room_activation_email_async(user_email, user_nickname, condition=None):
                 border: none;
                 border-radius: 5px;
                 cursor: pointer;
-            }
-            .button:hover {
+            }}
+            .button:hover {{
                 background-color: #0056b3;
-            }
+            }}
         </style>
     </head>
     <body>
         <div class="content">
-            <p><strong>Your Chattera room is now active!</strong></p>
+            <p><img src="https://camer-covid.journalism.wisc.edu/logo.png" alt="Chattera logo" width="132" height="101"></p>
+            <p><strong>Hi {safe_nickname},</strong></p>
+            <p>Thank you for signing up to join Chattera and share your memories and stories about the COVID-19 pandemic. Your Chattera room is now active!</p>
             <p>The COVID-19 pandemic has significantly impacted our lives over the past few years. Although the pandemic has ended, reflecting on our experiences can provide valuable insights. We all went through this unprecedented time together, and your feelings matter. We invite you to join the conversation on Chattera and share your memories of the COVID-19 pandemic.</p>
             <p><strong>What You Will Do:</strong></p>
             <p>Your Chattera room will be open for at least eight days. Each day, you will be invited to read and respond to posts on the platform, share your thoughts, and interact with your Chattera buddies.</p>
-            <p>You'll find a variety of popular social media posts about COVID-19 on Chattera. Some of these posts may contain information that differs from what you currently know or contradict the best available evidence. Note that they do not imply endorsement of the Chattera team.</p>
+            <p>You'll find a variety of popular social media posts about COVID-19 on Chattera. Some of these posts may contain information that differs from what you currently know or contradict the best available evidence. Note that <strong>they do not imply endorsement of the Chattera team</strong>.</p>
             <p>In today's complex information environment, it's important to verify the accuracy of what we read and share, and individual efforts are particularly vital in maintaining a well-informed community. Therefore, we encourage you to fact-check the information on the platform and share your opinions with others. As you participate in discussions, please remember to stay civil, respect differing viewpoints, and foster a supportive and constructive community.</p>
-            <p>Here is a video to walk you through Chattera: </p>'''
-    html_message = html_message + video_url
-    html_message = html_message + '''
+            <p>Here is a video to walk you through Chattera:</p>
+            <p><a href="{video_url}">{video_url}</a></p>
             <p><strong>What You Will Receive:</strong></p>
-            <p>We encourage you to dive into the conversations on Chattera! Each day, if you contribute at least one thoughtful post, comment, or share, you'll earn <strong><u>$0.25</u></strong> as a reward. Plus, if you're one of the two most active users in your Chattera room for a particular day, you'll score an extra <strong><u>$1</u></strong> for that day.</p>
-            <p>Stay engaged and share your insights! The top participants in your room will earn up to <strong><u>$10</u></strong> and we hope you will be one of them!</p>
+            <p>We encourage you to dive into the conversations on Chattera! Each day, if you contribute at least one thoughtful post, comment, or share, you'll earn $0.25 as a reward. Plus, if you're one of the two most active users in your Chattera room for a particular day, you'll score an extra $1 for that day.</p>
+            <p>Stay engaged and share your insights! The top participants in your room will earn up to $10 and we hope you will be one of them!</p>
+            <p>In addition to engaging on Chattera, you will be invited to complete a short daily survey about your experience on the platform. Each completed daily survey will earn you an additional $0.25, for a total of up to $2 for all eight daily surveys.</p>
+            <p>The table below summarizes the activities and compensation available throughout the project.</p>
         <table>
             <thead>
                 <tr>
-                    <th>Activity</th>
-                    <th>Compensation</th>
+                    <th><strong>Activity</strong></th>
+                    <th><strong>Compensation</strong></th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>Take pre-survey</td>
+                    <td><strong>Take pre-survey</strong></td>
                     <td>
                         <strong>Base:</strong> $1
                     </td>
                 </tr>
                 <tr>
-                    <td>Interact with your Chattera friends</td>
+                    <td><strong>Interact with your Chattera friends</strong></td>
                     <td>
                         <strong>Base:</strong>
                         <ul>
@@ -242,19 +276,29 @@ def send_room_activation_email_async(user_email, user_nickname, condition=None):
                     </td>
                 </tr>
                 <tr>
-                    <td>Take post-survey</td>
+                    <td><strong>Take daily surveys</strong></td>
                     <td>
-                        <strong>Base:</strong> $5
+                        <ul>
+                            <li>Earn $0.25 for each completed daily survey.</li>
+                            <li>Earn a total of $2 by completing all 8 daily surveys.</li>
+                        </ul>
                     </td>
                 </tr>
                 <tr>
-                    <td>Total</td>
-                    <td>Up to $16</td>
+                    <td><strong>Take post-survey</strong></td>
+                    <td>
+                        <strong>Base:</strong> $4
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Total</strong></td>
+                    <td>Up to $17</td>
                 </tr>
             </tbody>
         </table>
         <p>Join your Chattera room now and start sharing your experiences!</p>
-        <a type="button" class="button" href="https://camer-covid.journalism.wisc.edu/#/login">Log in</a>
+        <a type="button" class="button" href="{login_url}">Log in</a>
+        <p>Best regards,<br>Your Chattera Team</p>
         </div>
     </body>
     </html>
