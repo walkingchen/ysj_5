@@ -5,6 +5,7 @@
 import threading
 import logging
 from html import escape
+from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 from flask import current_app
 from flask_mail import Message
@@ -14,7 +15,7 @@ from extensions import mail
 mail_executor = ThreadPoolExecutor(max_workers=5, thread_name_prefix="mail_sender")
 logger = logging.getLogger(__name__)
 
-def send_email_async(recipients, subject, body, html_body=None, sender=("Chattera Team", "chattera.platform@gmail.com")):
+def send_email_async(recipients, subject, body, html_body=None, sender=("Chattera Team", "chattera.platform@gmail.com"), inline_images=None):
     """
     异步发送邮件
     
@@ -24,6 +25,7 @@ def send_email_async(recipients, subject, body, html_body=None, sender=("Chatter
         body: 邮件正文
         html_body: HTML格式邮件正文（可选）
         sender: 发件人信息
+        inline_images: 内嵌图片，格式为 (cid, filename, data) 的列表
     """
     # 抓取当前应用实例，供后台线程使用应用上下文
     app = None
@@ -44,6 +46,14 @@ def send_email_async(recipients, subject, body, html_body=None, sender=("Chatter
                 )
                 if html_body:
                     msg.html = html_body
+                for cid, filename, data in inline_images or []:
+                    msg.attach(
+                        filename=filename,
+                        content_type="image/png",
+                        data=data,
+                        disposition="inline",
+                        headers=[("Content-ID", "<{}>".format(cid))],
+                    )
                 mail.send(msg)
                 logger.info(f"[mail_async] Successfully sent email to {recipients}, subject='{subject}'")
 
@@ -231,7 +241,7 @@ Your Chattera Team'''
     </head>
     <body>
         <div class="content">
-            <p><img src="https://camer-covid.journalism.wisc.edu/logo.png" alt="Chattera logo" width="132" height="101"></p>
+            <p><img src="cid:chattera-logo" alt="Chattera logo" width="132" height="101" style="display:block;width:132px;height:101px;border:0;"></p>
             <p><strong>Hi {safe_nickname},</strong></p>
             <p>Thank you for signing up to join Chattera and share your memories and stories about the COVID-19 pandemic. Your Chattera room is now active!</p>
             <p>The COVID-19 pandemic has significantly impacted our lives over the past few years. Although the pandemic has ended, reflecting on our experiences can provide valuable insights. We all went through this unprecedented time together, and your feelings matter. We invite you to join the conversation on Chattera and share your memories of the COVID-19 pandemic.</p>
@@ -297,7 +307,11 @@ Your Chattera Team'''
             </tbody>
         </table>
         <p>Join your Chattera room now and start sharing your experiences!</p>
-        <a type="button" class="button" href="{login_url}">Log in</a>
+        <table role="presentation" cellpadding="0" cellspacing="0" style="width:auto;margin:10px 0;border-collapse:separate;">
+            <tr><td bgcolor="#0056b3" style="background-color:#0056b3;border-radius:5px;padding:0;">
+                <a href="{login_url}" style="display:inline-block;padding:10px 20px;background-color:#0056b3;color:#ffffff !important;text-decoration:none;font-size:16px;font-weight:bold;border-radius:5px;"><span style="color:#ffffff !important;">Log in</span></a>
+            </td></tr>
+        </table>
         <p>Best regards,<br>Your Chattera Team</p>
         </div>
     </body>
@@ -305,7 +319,11 @@ Your Chattera Team'''
     '''
     
     subject = "Your Room is Now Active – Welcome to Chattera!"
-    send_email_async([user_email], subject, message, html_message)
+    logo_path = Path(__file__).resolve().parent.parent / "frontend" / "src" / "assets" / "logo.png"
+    send_email_async(
+        [user_email], subject, message, html_message,
+        inline_images=[("chattera-logo", "chattera-logo.png", logo_path.read_bytes())],
+    )
 
 def send_registration_email_async(user_email, user_nickname):
     """
