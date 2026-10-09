@@ -86,7 +86,10 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.dirname(PROJECT_ROOT)
 
 # session
-SECRET_KEY = 'dev'
+SECRET_KEY = os.environ.get('SECRET_KEY') or env_vars.get('SECRET_KEY') or 'dev'
+FRONTEND_URL = os.environ.get('FRONTEND_URL') or env_vars.get('FRONTEND_URL') or 'https://camer-covid.journalism.wisc.edu'
+if FLASK_ENV == 'production' and (SECRET_KEY == 'dev' or len(SECRET_KEY) < 32):
+    raise RuntimeError('Production SECRET_KEY must contain at least 32 characters')
 SESSION_TYPE = 'redis'
 # SESSION_KEY_PREFIX = 'flask'
 

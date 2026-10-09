@@ -28,7 +28,7 @@ from blueprints.user import bp_user
 from entity.Resp import Resp
 from room_socketio import RoomNamespace
 from extensions import db, cache, socketio, scheduler, mail
-from models import User, Room, RoomPrototype, RoomMember, PublicPost, PostComment, PostLike, \
+from models import User, Room, RoomPrototype, RoomMember, PublicPost, PostComment, PostLike, PasswordResetToken, \
     SystemMessage, PrivateMessage, PostFlag, PrivatePost, PollPost, MailTemplate, Serializer
 from night_mail_content import build_night_mail_content, build_night_mail_subject
 from service import get_top_participants
@@ -1165,6 +1165,12 @@ with app.app_context():
         """包装函数，确保在app context中执行"""
         with app.app_context():
             mail_night()
+
+    def cleanup_password_reset_tokens_job():
+        with app.app_context():
+            cutoff = datetime.datetime.utcnow() - datetime.timedelta(days=7)
+            PasswordResetToken.query.filter(PasswordResetToken.expires_at < cutoff).delete(synchronize_session=False)
+            db.session.commit()
     
     # 注册定时任务
     logger.info("=" * 80)
@@ -1199,6 +1205,15 @@ with app.app_context():
         replace_existing=True
     )
     logger.info(f"✓ Night mail job registered: trigger at hour 22")
+
+    scheduler.add_job(
+        func=cleanup_password_reset_tokens_job,
+        trigger='cron',
+        hour=3,
+        id='job_cleanup_password_reset_tokens',
+        name='Password Reset Token Cleanup',
+        replace_existing=True
+    )
     
     # 打印所有注册的任务
     jobs = scheduler.get_jobs()

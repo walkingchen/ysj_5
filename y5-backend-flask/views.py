@@ -52,6 +52,7 @@ class UserModelView(ModelView):
     # can_create = False
     # can_edit = True
     column_list = ['id', 'email', 'nickname', 'created_at', 'updated_at']
+    form_excluded_columns = ['session_version']
 
     def on_model_change(self, form, model, is_created):
         # Flask-Admin can create or edit users outside the registration endpoint.

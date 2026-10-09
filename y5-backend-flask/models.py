@@ -383,6 +383,7 @@ class User(db.Model, UserMixin):
     # user_id = Column(Integer)
     # username = Column(String(32))
     password = Column(String(128))
+    session_version = Column(Integer, nullable=False, default=0)
     email = Column(String(128))
     nickname = Column(String(32))
     # realname = Column(String(32))
@@ -391,6 +392,21 @@ class User(db.Model, UserMixin):
     sid = Column(String(128))
     created_at = Column(DateTime, server_default=FetchedValue())
     updated_at = Column(DateTime)
+
+    def get_id(self):
+        return '{}:{}'.format(self.id, self.session_version or 0)
+
+
+class PasswordResetToken(db.Model):
+    __tablename__ = 'tb_password_reset_token'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, nullable=True)
+    email_hash = Column(String(64), nullable=False, index=True)
+    token_hash = Column(String(64), nullable=False, unique=True)
+    created_at = Column(DateTime, nullable=False)
+    expires_at = Column(DateTime, nullable=False, index=True)
+    used_at = Column(DateTime, nullable=True)
 
 
 class UserProfile(db.Model):

@@ -20,6 +20,16 @@ const router = new VueRouter({
       component: () => import('@views/Login_user')
     },
     {
+      path: '/forgot-password',
+      name: 'ForgotPassword',
+      component: () => import('@views/ForgotPassword')
+    },
+    {
+      path: '/reset-password',
+      name: 'ResetPassword',
+      component: () => import('@views/ResetPassword')
+    },
+    {
       path: '/admin_login',
       name: 'AdminLogin',
       component: () => import('@views/Login_admin')
@@ -55,7 +65,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (to.name === 'Login' || to.name === 'AdminLogin' || to.name === 'Register' || localStorage.getItem('roomid')) {
+  if (to.name === 'Login' || to.name === 'AdminLogin' || to.name === 'Register' || to.name === 'ForgotPassword' || to.name === 'ResetPassword' || localStorage.getItem('roomid')) {
     next()
   } else {
     next({ name: 'Login' })
