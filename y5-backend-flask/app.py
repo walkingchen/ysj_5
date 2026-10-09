@@ -198,7 +198,7 @@ def send_post_survey_emails_for_room(room):
         <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Take the Exit Survey and Earn an Additional $5</title>
+        <title>Complete Your Chattera Post-Survey and Earn $4</title>
         <style>
           body {
             font-family: Arial, sans-serif;
@@ -234,16 +234,14 @@ def send_post_survey_emails_for_room(room):
         </head>
         <body>
         <div class="container">
-            <p>Thank you for participating on Chattera! We wanted to remind you that there is a post-survey available for you to complete. By completing this post-survey, you will earn an additional $4 as part of your compensation.</p>
-            <p>To access the post-survey, simply click the button below.</p>
+            <p>Dear Chattera participant,</p>
+            <p>Thank you for participating in Chattera. Your post-survey is ready to complete. Once you complete it, you'll receive an additional $4 in compensation.</p>
             <div style="margin: 30px 15px;">
-              <a class="login-button" href="https://uwmadison.co1.qualtrics.com/jfe/form/SV_bQ3Ngp6xOKpXbds">Survey link</a>
+              <a class="login-button" href="https://uwmadison.co1.qualtrics.com/jfe/form/SV_07lsaaJk3CiOU0m">Take the Post-Survey</a>
             </div>
-            <p>We greatly appreciate your time and participation so far, and your responses to the post-survey will be incredibly valuable to our team.</p>
-            <p>Thank you once again!</p>
-            </br>
+            <p>We appreciate your time and feedback.</p>
             <p>Best regards,</p>
-            <p>Your Chattera Team</p>
+            <p>The Chattera Team</p>
         </div>
         </body>
         </html>
@@ -255,7 +253,7 @@ def send_post_survey_emails_for_room(room):
         if user.email is not None:
             email_list.append({
                 'recipients': [user.email],
-                'subject': "Take the Exit Survey and Earn an Additional $5",
+                'subject': "Complete Your Chattera Post-Survey and Earn $4",
                 'body': message,
                 'html_body': message
             })
