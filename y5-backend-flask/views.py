@@ -19,6 +19,7 @@ from flask_admin._compat import string_types, urljoin
 
 from extensions import db
 from mail_async import send_room_activation_email_async
+from passwords import hash_password, is_password_hash
 from models import (RoomMember, User, Room, PublicPost, PrivatePost, PostComment,
                    PostLike, PostFlag, PostFactcheck)
 
@@ -51,6 +52,11 @@ class UserModelView(ModelView):
     # can_create = False
     # can_edit = True
     column_list = ['id', 'email', 'nickname', 'created_at', 'updated_at']
+
+    def on_model_change(self, form, model, is_created):
+        # Flask-Admin can create or edit users outside the registration endpoint.
+        if model.password and not is_password_hash(model.password):
+            model.password = hash_password(model.password)
 
 
 class RoomModelView(ModelView):
