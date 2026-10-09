@@ -13,9 +13,9 @@ class PasswordMigrationTest(unittest.TestCase):
         self.assertTrue(is_password_hash(hashed))
         self.assertTrue(verify_password(hashed, ' with spaces '))
         self.assertFalse(verify_password(hashed, 'with spaces'))
-        self.assertTrue(verify_password('old password', 'old password'))
+        self.assertFalse(verify_password('old password', 'old password'))
         self.assertFalse(verify_password('old password', 'wrong'))
-        self.assertTrue(verify_password('旧密码', '旧密码'))
+        self.assertTrue(verify_password(hash_password('旧密码'), '旧密码'))
 
     def test_migration_is_resumable_and_preserves_existing_hashes(self):
         engine = create_engine('sqlite:///:memory:')

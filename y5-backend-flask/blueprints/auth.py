@@ -7,7 +7,7 @@ from entity.Resp import Resp
 from extensions import db
 from models import User, RoomMember, Room, Serializer
 from mail_async import send_registration_email_async
-from passwords import hash_password, is_password_hash, verify_password
+from passwords import hash_password, verify_password
 
 bp_auth = Blueprint('api/auth', __name__, url_prefix='/api/auth')
 
@@ -88,10 +88,6 @@ def login():
 
     if user is None or not verify_password(user.password, password):
         return json.dumps(Resp(result_code=4000, result_msg='username or password wrong', data=None).__dict__)
-
-    if not is_password_hash(user.password):
-        user.password = hash_password(password)
-        db.session.commit()
 
     # Keep the user info in the session using Flask-Login
     login_user(user)

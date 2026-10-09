@@ -1,7 +1,5 @@
 """Password hashing shared by authentication and the one-time migration."""
 
-from hmac import compare_digest
-
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
@@ -17,9 +15,6 @@ def hash_password(password):
 
 
 def verify_password(stored, candidate):
-    if not isinstance(stored, str) or not isinstance(candidate, str):
+    if not is_password_hash(stored) or not isinstance(candidate, str):
         return False
-    if is_password_hash(stored):
-        return check_password_hash(stored, candidate)
-    # Transitional support for passwords written before the migration.
-    return compare_digest(stored.encode('utf-8'), candidate.encode('utf-8'))
+    return check_password_hash(stored, candidate)
