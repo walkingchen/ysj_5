@@ -210,8 +210,8 @@ def confirm_password_reset():
     password = data.get('password')
     if not isinstance(token, str) or len(token) > 128 or not token:
         return _reset_response(4000, 'This reset link is invalid or has expired.')
-    if not isinstance(password, str) or not 12 <= len(password) <= 128:
-        return _reset_response(4000, 'Password must be between 12 and 128 characters.')
+    if not isinstance(password, str) or not 8 <= len(password) <= 128:
+        return _reset_response(4000, 'Password must be between 8 and 128 characters.')
 
     token_hash = hashlib.sha256(token.encode('utf-8')).hexdigest()
     now = datetime.utcnow()

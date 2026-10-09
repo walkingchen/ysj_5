@@ -2,7 +2,7 @@
   <main class="password-auth">
     <section class="password-auth__form" aria-labelledby="reset-title">
       <h1 id="reset-title" class="password-auth__title">Set a new password</h1>
-      <p v-if="token && !complete" class="password-auth__description">Choose a password with at least 12 characters.</p>
+      <p v-if="token && !complete" class="password-auth__description">Choose a password with 8 to 128 characters.</p>
 
       <div v-if="!token && !complete" class="password-auth__message" role="alert">
         <p>This reset link is invalid or has expired. Please request a new one.</p>
@@ -43,7 +43,7 @@ export default {
       rules: {
         password: [
           { required: true, message: 'Please enter a new password.', trigger: 'blur' },
-          { min: 12, max: 128, message: 'Use 12 to 128 characters.', trigger: 'blur' }
+          { min: 8, max: 128, message: 'Use 8 to 128 characters.', trigger: 'blur' }
         ],
         confirmPassword: [{ validator: (rule, value, callback) => {
           if (value !== this.form.password) callback(new Error('Passwords do not match.'))

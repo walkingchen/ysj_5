@@ -52,17 +52,17 @@ class PasswordResetTest(unittest.TestCase):
         self.assertIsNotNone(load_user('1'))
 
         response = self.post('/api/auth/password-reset/confirm',
-                             {'token': token, 'password': 'new secure password'})
+                             {'token': token, 'password': 'newpass8'})
         self.assertEqual(response['result_code'], 2000)
         user = User.query.get(1)
-        self.assertTrue(verify_password(user.password, 'new secure password'))
+        self.assertTrue(verify_password(user.password, 'newpass8'))
         self.assertFalse(verify_password(user.password, 'original password'))
         self.assertIsNone(load_user('1'))
         self.assertIsNotNone(load_user('1:1'))
         self.assertEqual(self.post('/api/auth/login',
                                    {'email': 'member@example.test', 'password': 'original password'})['result_code'], 4000)
         self.assertEqual(self.post('/api/auth/login',
-                                   {'email': 'member@example.test', 'password': 'new secure password'})['result_code'], 2010)
+                                   {'email': 'member@example.test', 'password': 'newpass8'})['result_code'], 2010)
         self.assertEqual(self.post('/api/auth/password-reset/confirm',
                                    {'token': token, 'password': 'another password'})['result_code'], 4000)
 
@@ -79,7 +79,7 @@ class PasswordResetTest(unittest.TestCase):
         self.post('/api/auth/password-reset/request', {'email': 'member@example.test'})
         token = send_mail.call_args[0][2].split('token=')[1].splitlines()[0].strip()
         self.assertEqual(self.post('/api/auth/password-reset/confirm',
-                                   {'token': token, 'password': 'short'})['result_code'], 4000)
+                                   {'token': token, 'password': 'seven77'})['result_code'], 4000)
         reset_token = PasswordResetToken.query.first()
         reset_token.expires_at = datetime.utcnow() - timedelta(seconds=1)
         db.session.commit()
