@@ -1,23 +1,34 @@
 <template>
-  <div class="password-page">
-    <el-card class="password-card">
-      <h2>Reset your password</h2>
-      <p>Enter your Chattera email address and we'll send you a reset link.</p>
+  <main class="password-auth">
+    <section class="password-auth__form" aria-labelledby="forgot-title">
+      <h1 id="forgot-title" class="password-auth__title">Reset your password</h1>
+      <p class="password-auth__description">Enter the email address you used to register with Chattera. We'll send you a link to set a new password.</p>
+
       <el-form v-if="!submitted" ref="form" :model="form" :rules="rules" @submit.native.prevent="submit">
-        <el-form-item prop="email">
-          <el-input v-model.trim="form.email" type="email" placeholder="Email address" autocomplete="email" />
+        <el-form-item prop="email" class="password-auth__field">
+          <span class="password-auth__icon" aria-hidden="true"><v-icon name="envelope" /></span>
+          <el-input v-model.trim="form.email" type="email" placeholder="E-mail" aria-label="E-mail" autocomplete="email" @keyup.enter.native="submit" />
         </el-form-item>
-        <el-button type="primary" native-type="submit" :loading="loading" class="full-button">Send reset link</el-button>
-        <el-alert v-if="error" :title="error" type="error" :closable="false" show-icon class="form-alert" />
+        <el-button type="primary" native-type="submit" :loading="loading" class="password-auth__button">Send reset link</el-button>
+        <el-alert v-if="error" :title="error" type="error" :closable="false" show-icon class="password-auth__alert" />
       </el-form>
-      <el-alert v-else title="If an account exists for this email, a reset link will be sent. Please check your inbox." type="success" :closable="false" show-icon />
-      <el-link type="primary" class="back-link" @click="$router.push({ name: 'Login' })">Back to login</el-link>
-    </el-card>
-  </div>
+
+      <div v-else class="password-auth__message" role="status">
+        <v-icon name="envelope" class="password-auth__message-icon" aria-hidden="true" />
+        <p>If an account exists for <strong>{{ form.email }}</strong>, a reset link will be sent. Please check your inbox.</p>
+      </div>
+
+      <div class="password-auth__footer">
+        <el-link type="primary" @click="$router.push({ name: 'Login' })">Back to login</el-link>
+      </div>
+    </section>
+  </main>
 </template>
 
 <script>
+import 'vue-awesome/icons/envelope'
 import { requestPasswordReset } from '@api/auth'
+import '@assets/password-auth.css'
 
 export default {
   data() {
@@ -49,13 +60,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.password-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #2d3a4b; padding: 20px; box-sizing: border-box; }
-.password-card { width: 420px; max-width: 100%; }
-h2 { margin: 0 0 12px; }
-p { color: #606266; line-height: 1.5; margin-bottom: 24px; }
-.full-button { width: 100%; }
-.form-alert { margin-top: 16px; }
-.back-link { margin-top: 22px; }
-</style>
